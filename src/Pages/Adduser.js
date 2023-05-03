@@ -228,11 +228,13 @@ function Adduser() {
               <form id="AddUserform" className="row">
                 <div className="col-md-12 mb-3">
                   <label for="username" className="form-label">User Name:</label>
-                  <input type="text" className="form-control required" id="username" placeholder="Please enter user name" data-toggle="tooltip" data-placement="top" title="Enter User Name" required />
+                  <input type="text" className="form-control required" id="username" placeholder="Please enter user name" title="Enter User Name" required />
+                  <div class="invalid-feedback">Please Enter User Name.</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="useremail" className="form-label">User Email:</label>
-                  <input type="text" className="form-control required" id="useremail" placeholder="Please enter user email" data-toggle="tooltip" data-placement="top" title="Enter User Email" required />
+                  <input type="text" className="form-control required" id="useremail" placeholder="Please enter user email" title="Enter User Email" required />
+                  <div class="invalid-feedback">Please Enter User Email.</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>
@@ -242,6 +244,7 @@ function Adduser() {
                     <option value="supervisor">Supervisor</option>
                     <option value="dataentry">Data Entry</option>
                   </select>
+                  <div class="invalid-feedback">Please Select User Role.</div>
                 </div>
                 <div className="col-md-12 text-center">
                 {!UserList && UserId==0 && (
