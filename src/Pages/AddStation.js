@@ -10,11 +10,14 @@ function AddStation() {
   const [StationId, setStationId] = useState(0);
   const Stationaddvalidation = function (StationName, Description) {
     let isvalid = true;
+    let form = document.querySelectorAll('#AddStationform')[0];
     if (StationName == "") {
-      toast.warning('Please enter Station Name');
+      //toast.warning('Please enter Station Name');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (Description == "") {
-      toast.warning('Please enter Descriptin');
+      //toast.warning('Please enter Descriptin');
+      form.classList.add('was-validated');
       isvalid = false;
     }
     return isvalid;
@@ -213,14 +216,14 @@ function AddStation() {
               )}
             </div>
             {!StationList && (
-              <div className="row">
+              <form id="AddStationform" className="row">
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <input type="text" className="form-control" id="StationName" placeholder="Please enter Station name" />
+                  <input type="text" className="form-control required" id="StationName" placeholder="Please enter Station name" data-toggle="tooltip" data-placement="top" title="Enter Station Name" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="Description" className="form-label">Description:</label>
-                  <textarea class="form-control" id="Description" rows="3" placeholder="Please enter Description"></textarea>
+                  <textarea class="form-control required" id="Description" rows="3" placeholder="Please enter Description" data-toggle="tooltip" data-placement="top" title="Enter Description" required></textarea>
                 </div>
                 <div className="col-md-12 text-center">
                 {!StationList && StationId==0 && (
@@ -230,7 +233,7 @@ function AddStation() {
                       <button className="btn btn-primary" onClick={UpdateStation} type="button">Update Station</button>
                   )}
                 </div>
-              </div>
+              </form>
             )}
             {StationList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />

@@ -13,23 +13,30 @@ function AddDevice() {
 
   const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type) {
     let isvalid = true;
+    let form = document.querySelectorAll('#AddDeviceform')[0];
     if (StationID == "") {
-      toast.warning('Please select Station');
+      //toast.warning('Please select Station');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (DeviceName == "") {
-      toast.warning('Please enter device name');
+      //toast.warning('Please enter device name');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (DeviceModel == "") {
-      toast.warning('Please select device model');
+      //toast.warning('Please select device model');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (IPAddress == "") {
-      toast.warning('Please enter ipaddress');
+      //toast.warning('Please enter ipaddress');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (Port == "") {
-      toast.warning('Please enter port');
+      //toast.warning('Please enter port');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (Type == "") {
-      toast.warning('Please enter type');
+      //toast.warning('Please enter type');
+      form.classList.add('was-validated');
       isvalid = false;
     }
     return isvalid;
@@ -261,10 +268,10 @@ function AddDevice() {
               )}
             </div>
             {!DeviceList && (
-              <div className="row">
+              <form id="AddDeviceform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <select className="form-select" id="stationname">
+                  <select className="form-select required" id="stationname" data-toggle="tooltip" data-placement="top" title="Enter Station Name" required>
                     <option selected>Please select station name</option>
                     {ListStations.map((x, y) =>
                       <option value={x.id} key={y} >{x.stationName}</option>
@@ -273,11 +280,11 @@ function AddDevice() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
-                  <input type="text" className="form-control" id="devicename" placeholder="Please enter Device Name" />
+                  <input type="text" className="form-control required" id="devicename" placeholder="Please enter Device Name" data-toggle="tooltip" data-placement="top" title="Enter Device Name" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicemodel" className="form-label">Device Model:</label>
-                  <select className="form-select" id="devicemodel">
+                  <select className="form-select required" id="devicemodel" data-toggle="tooltip" data-placement="top" title="Select Device Model" required>
                     <option selected>Please select Device Model</option>
                     {ListDeviceModels.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceModelName}</option>
@@ -286,15 +293,15 @@ function AddDevice() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ipaddress" className="form-label">IP Address:</label>
-                  <input type="text" className="form-control" id="ipaddress" placeholder="Please enter IP Address" />
+                  <input type="text" className="form-control required" id="ipaddress" placeholder="Please enter IP Address" data-toggle="tooltip" data-placement="top" title="Enter IP Address" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="port" className="form-label">Port:</label>
-                  <input type="text" className="form-control" id="port" placeholder="Please enter port" />
+                  <input type="text" className="form-control required" id="port" placeholder="Please enter port" data-toggle="tooltip" data-placement="top" title="Enter Port" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="type" className="form-label">Type:</label>
-                  <select className="form-select" id="type">
+                  <select className="form-select required" id="type" data-toggle="tooltip" data-placement="top" title="Select Type" required>
                     <option selected value="">Please select Type</option>
                     <option value="modbus"  >Modbus</option>
                   </select>
@@ -307,7 +314,7 @@ function AddDevice() {
                     <button className="btn btn-primary" onClick={UpdateStation} type="button">Update Device</button>
                   )}
                 </div>
-              </div>
+              </form>
             )}
             {DeviceList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />

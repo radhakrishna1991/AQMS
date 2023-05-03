@@ -26,14 +26,18 @@ function GsiModbusDrivers() {
   }
   const DriverDegitalValidations = (DriverDigitalEntryName, DriverInstrumentID,CoilNumber) => {
     let isvalid = true;
+    let form = document.querySelectorAll('#GSIDigitalform')[0];
     if (DriverDigitalEntryName == "" || DriverDigitalEntryName == null) {
-      toast.error('Please enter Driver Entry Name');
+      // //toast.error('Please enter Driver Entry Name');      
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (DriverInstrumentID == "" || DriverInstrumentID == null) {
-      toast.error('Please select instrument');
+      //toast.error('Please select instrument');
+      form.classList.add('was-validated');
       isvalid = false;
     }else if (CoilNumber == "" || CoilNumber == null) {
-      toast.error('Please enter coil number');
+      //toast.error('Please enter coil number');
+      form.classList.add('was-validated');
       isvalid = false;
     }
     return isvalid;
@@ -48,8 +52,8 @@ function GsiModbusDrivers() {
     let RegisterOutput = document.getElementById("registeroutput").checked;
     let RegisterValueClosed = document.getElementById("closedvalue").value;
     let RegisterValueOpen = document.getElementById("openvalue").value;
-    let CreatedBy = document.getElementById("instrumentname").value;
-    let ModifiedBy = document.getElementById("instrumentname").value;
+    //let CreatedBy = document.getElementById("instrumentname").value;
+    //let ModifiedBy = document.getElementById("instrumentname").value;
     let isvalid = DriverDegitalValidations(DriverDigitalEntryName, DriverInstrumentID,CoilNumber);
     if (!isvalid) {
       return false;
@@ -175,11 +179,14 @@ function GsiModbusDrivers() {
   }
   const InstrumentValidations = (InstrumentName, DefaultModbusTcpIpPort) => {
     let isvalid = true;
+    let form = document.querySelectorAll('#GSIInstrumentform')[0];
     if (InstrumentName == "" || InstrumentName == null) {
-      toast.error('Please enter instrument name');
+      //toast.error('Please enter instrument name');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (DefaultModbusTcpIpPort == "" || DefaultModbusTcpIpPort == null) {
-      toast.error('Please enter TcpIp Port');
+      //toast.error('Please enter TcpIp Port');
+      form.classList.add('was-validated');
       isvalid = false;
     }
     return isvalid;
@@ -671,7 +678,7 @@ function GsiModbusDrivers() {
                 )}
               </div>
               {!Digitalgridlist && (
-                <div className="row w100 px-0 mx-0">
+                <form id="GSIDigitalform" className="row w100 px-0 mx-0" noValidate>
                   <div className="accordion px-0" id="accordioninstrumentdigital">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="digitalheadingOne">
@@ -686,7 +693,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="driverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="driverentryname" />
+                                  <input type="text" className="form-control required" id="driverentryname" data-toggle="tooltip" data-placement="top" title="Enter Driver Entry Name" required />
                                 </div>
                               </div>
                             </div>
@@ -694,8 +701,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
-                                  <select id="associatedinstrument" className="form-select">
-                                    <option selected>Choose...</option>
+                                  <select id="associatedinstrument" className="form-select required" data-toggle="tooltip" data-placement="top" title="Enter Instrument" required>
+                                    <option val="" title="Enter Instrument" selected>Choose...</option>
                                     <option>...</option>
                                   </select>
                                 </div>
@@ -705,7 +712,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="coilnumber" className="form-label col-sm-4">Coil Number:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="coilnumber" placeholder="" />
+                                  <input type="number" className="form-control required" id="coilnumber" data-toggle="tooltip" data-placement="top" title="Enter coil number" placeholder="" required />
                                 </div>
                               </div>
                             </div>
@@ -785,7 +792,7 @@ function GsiModbusDrivers() {
                       <button class="btn btn-primary" onClick={UpdateDriverDigital} type="button">Update Driver Digital</button>
                     )}
                   </div>
-                </div>
+                </form>
               )}
               {Digitalgridlist && (
                 <div>
@@ -804,7 +811,7 @@ function GsiModbusDrivers() {
                 )}
               </div>
               {!Instrumentgridlist && (
-                <div className="row w100 px-0 mx-0">
+                <form id="GSIInstrumentform" className="row w100 px-0 mx-0" noValidate>
                   <div className="accordion px-0" id="accordioninstrument">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="headingOne">
@@ -819,7 +826,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="instrumentname" className="form-label col-sm-4">Instrument Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="instrumentname" />
+                                  <input type="text" className="form-control required" id="instrumentname" data-toggle="tooltip" data-placement="top" title="Enter Instrument Name" required />
                                 </div>
                               </div>
                             </div>
@@ -827,7 +834,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="tcpipport" className="form-label col-sm-4">Default Modbus TcpIp Port:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="tcpipport" />
+                                  <input type="number" className="form-control required" id="tcpipport" data-toggle="tooltip" data-placement="top" title="Enter TcpIp Port" required/>
                                 </div>
                               </div>
                             </div>
@@ -880,7 +887,7 @@ function GsiModbusDrivers() {
                       <button class="btn btn-primary" onClick={UpdateInstrument} type="button">Update Instrument</button>
                     )}
                   </div>
-                </div>
+                </form>
               )}
               {Instrumentgridlist && (
                 <div>

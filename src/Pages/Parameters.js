@@ -876,13 +876,13 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Site:</label>
                               <div className="col-sm-10">
-                                <input type="text" ref={parametersite} className="form-control required" required />
+                                <input type="text" ref={parametersite} className="form-control required" data-toggle="tooltip" data-placement="top" title="Enter site" required />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Parameter:</label>
                               <div className="col-sm-10">
-                                <input type="text" ref={parametername} className="form-control required" required />
+                                <input type="text" ref={parametername} className="form-control required" data-toggle="tooltip" data-placement="top" title="Enter parameter" required />
                               </div>
                             </div>
                             <div className="row">
@@ -1124,7 +1124,7 @@ function Parameters1() {
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="Reportedunits" required ref={reportedunits} className="form-control required" placeholder="" />
+                                <input id="Reportedunits" required ref={reportedunits} className="form-control required" data-toggle="tooltip" data-placement="top" title="Enter Reported Units" placeholder="" />
                               </div>
                             </div>
                             <div className="row">

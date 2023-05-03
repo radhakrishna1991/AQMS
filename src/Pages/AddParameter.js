@@ -16,29 +16,38 @@ function AddParameter() {
 
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
     let isvalid = true;
+    let form = document.querySelectorAll('#AddParametersform')[0];
     if (StationID == "") {
-      toast.warning('Please select Station');
+      //toast.warning('Please select Station');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (DeviceID == "") {
-      toast.warning('Please select device name');
+      //toast.warning('Please select device name');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (DriverID == "") {
-      toast.warning('Please select driver name');
+      //toast.warning('Please select driver name');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (ParameterName == "") {
-      toast.warning('Please enter parameter name');
+      //toast.warning('Please enter parameter name');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (Unit == "") {
-      toast.warning('Please select units');
+      //toast.warning('Please select units');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (ScaleFactor == "") {
-      toast.warning('Please enter scale factor');
+      //toast.warning('Please enter scale factor');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (PollingInterval == "") {
-      toast.warning('Please enter polling interval');
+      //toast.warning('Please enter polling interval');
+      form.classList.add('was-validated');
       isvalid = false;
     } else if (AvgInterval == "") {
-      toast.warning('Please enter average interval');
+      //toast.warning('Please enter average interval');
+      form.classList.add('was-validated');
       isvalid = false;
     }
     return isvalid;
@@ -290,11 +299,11 @@ function AddParameter() {
               )}
             </div>
             {!parameterList && (
-              <div className="row">
+              <form id="AddParametersform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <select className="form-select" id="stationname">
-                    <option selected value="">Please select station name</option>
+                  <select className="form-select required" id="stationname" data-toggle="tooltip" data-placement="top" title="Enter Station Name" required>
+                    <option selected value="" title="Enter Station Name">Please select station name</option>
                     {ListStations.map((x, y) =>
                       <option value={x.id} key={y} >{x.stationName}</option>
                     )}
@@ -302,8 +311,8 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
-                  <select className="form-select" id="devicename" onChange={Deviceschange}>
-                    <option selected value="">Please select device name</option>
+                  <select className="form-select required" id="devicename" onChange={Deviceschange} data-toggle="tooltip" data-placement="top" title="Enter Device Name" required>
+                    <option selected value="" title="Select Device Name">Please select device name</option>
                     {ListDevices.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceName}</option>
                     )}
@@ -311,8 +320,8 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Driver Name:</label>
-                  <select className="form-select" id="drivername">
-                    <option selected value="">Please select driver name</option>
+                  <select className="form-select required" id="drivername" data-toggle="tooltip" data-placement="top" title="Enter Driver Name" required>
+                    <option selected value="" title="Select Driver Name">Please select driver name</option>
                     {ListdeviceDrivers.map((x, y) =>
                       <option value={x.id} key={y} >{x.driverName}</option>
                     )}
@@ -320,12 +329,12 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="parametername" className="form-label">Parameter Name:</label>
-                  <input type="text" className="form-control" id="parametername" placeholder="Please enter Parameter Name" />
+                  <input type="text" className="form-control required" id="parametername" placeholder="Please enter Parameter Name" data-toggle="tooltip" data-placement="top" title="Enter Parameter Name" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="units" className="form-label">Units:</label>
-                  <select className="form-select" id="unit">
-                    <option selected value="">Please select unit</option>
+                  <select className="form-select required" id="unit" data-toggle="tooltip" data-placement="top" title="Select Units" required>
+                    <option selected value="" title="Select Units">Please select unit</option>
                     {ListReportedUnits.map((x, y) =>
                       <option value={x.id} key={y} >{x.unitName}</option>
                     )}
@@ -333,15 +342,15 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="scalefactor" className="form-label">Scale Factor:</label>
-                  <input type="number" className="form-control" id="scalefactor" placeholder="Please enter scale factor" />
+                  <input type="number" className="form-control required" id="scalefactor" placeholder="Please enter scale factor" data-toggle="tooltip" data-placement="top" title="Enter Scale Factor" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="pollinginterval" className="form-label">Polling Interval:</label>
-                  <input type="text" className="form-control" id="pollinginterval" placeholder="Please enter Polling Interval" />
+                  <input type="text" className="form-control required" id="pollinginterval" placeholder="Please enter Polling Interval" data-toggle="tooltip" data-placement="top" title="Enter Polling Interval" required />
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="avginterval" className="form-label">Average Interval:</label>
-                  <input type="text" className="form-control" id="avginterval" placeholder="Please enter Average Interval" />
+                  <input type="text" className="form-control required" id="avginterval" placeholder="Please enter Average Interval" data-toggle="tooltip" data-placement="top" title="Enter Avg Interval" required />
                 </div>
                 <div className="col-md-12 text-center">
                   {!parameterList && parameterId == 0 && (
@@ -351,7 +360,7 @@ function AddParameter() {
                     <button className="btn btn-primary" onClick={Updateparameter} type="button">Update Parameter</button>
                   )}
                 </div>
-              </div>
+              </form>
             )}
             {parameterList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />
