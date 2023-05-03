@@ -1,0 +1,124 @@
+<div data-dojo-attach-point="MWQChart" style="font-size:10px;">
+    <div>
+        <!--<div id="IUCNProgressBar" class="loadingDiv" style="display:none">
+            <img src="configs/loading/images/predefined_loading_2.gif" />
+        </div>-->
+        <table class="mwq-selector-div" id="searchTable" style="width:100%;">
+            <tr>
+                <td align="right" id="chartTypID"><span class="labelFont" style="margin-left: 10px;">${nls.chartType}</span><span class="mandate">*</span></td>
+                <td>
+                    <select style="width:150px;" class='dropdown-Category-ead' data-dojo-attach-event="onChange:_ChartTypeSelectionChanged" id='ddlChartType'>
+                        <option>Select Value</option>
+                        <option value="Bar Chart">Bar Chart</option>
+                        <option value="Regression">X Y Scatter</option>
+                        <option value="Trend Chart">Line Chart</option>
+                    </select>
+                </td>
+                <td align="right" id="categoryID"><span class="labelFont">${nls.Category}</span></td>
+                <td>
+                    <select style="height:60px;width:250px; margin-top:40px;" id='ddlCategory' multiple data-dojo-attach-event="onChange:_categoriesSelectionChanged">
+                    </select>
+                </td>
+                <td align="right" id="sitesId"><span class="labelFont">${nls.Sites}</span><span class="mandate">*</span></td>
+                <td>
+                    <input type="text" id="siteid" class="siteClass" />
+                    <select style="height:60px;width:250px;" multiple data-dojo-attach-event="onChange:_sitesSelectionChanged" id='ddlSites'>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" style="height:5px;"></td>
+            </tr>
+            <tr>
+                <td align="right" id="typelabelID"><span class="labelFont" style="margin-left: 10px;">${nls.Type}</span><span class="mandate">*</span></td>
+                <td>
+                    <select class='dropdown-Category-ead' style="width:150px;" data-dojo-attach-event="onChange:_typeSelectionChanged" id='ddlType'>
+                        <option>Select Value</option>
+                        <option value="Indices">Indices</option>
+                        <option value="Parameters">Parameters</option>
+                    </select>
+                </td>
+                <td align="right" id="tdGroup"><span class="labelFont">${nls.Group}</span></td>
+                <td style="" id="tdGroup2">
+                    <select style="width:250px;height:60px" id='ddlGroup' multiple data-dojo-attach-event="onChange:_groupSelectionChanged">
+                    </select>
+                </td>
+                <td align="right" id="paramLabelId"><span class="labelFont">${nls.Parameters}</span><span class="mandate">*</span></td>
+                <td style="left:5px">
+                    <input type="text" id="paramid" class="paramClass" />
+                    <select style="width:250px;height:60px" id='ddlParameters' multiple data-dojo-attach-event="onChange:_parameterSelectionChanged">
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" style="height:10px;"></td>
+            </tr>
+            <tr>
+                <td align="right" id="tdValues"><span class="labelFont">${nls.Value}</span><span id="ValueAstrik" class="mandate">*</span></td>
+                <td align="left" style="" id="tdValues2">
+                    <select class='dropdown-Site-ead' style="width:150px;" data-dojo-attach-event="onChange:_valueSelectionChanged" id='ddlValues'>
+                        <option>Select Value</option>
+                        <option value="surface">Surface</option>
+                        <option value="bottom">Bottom</option>
+                        <option value="all">Both</option>
+                    </select>
+                </td>
+                <td align="right" id="mwqFrmDate" class="labelFont"><b>${nls.FromDate}<span class="mandate">*</span></b></td>
+                <td align="left" id="mwqFrmDateDD">
+                    <input type="date" id="fromDate_MWQindices" style="width:250px;border:1px solid #889aa5; height: 25px;" required>
+                </td>
+                <td align="right" id="mwqToDate" class="labelFont"><b>${nls.ToDate}<span class="mandate">*</span></b></td>
+                <td align="left" id="mwqToDateDD"><input type="date" id="toDate_MWQindices" style="width:250px;border:1px solid #889aa5; height: 25px;" required></td>
+            </tr>
+            <tr>
+                <td colspan="6" style="height:10px;"></td>
+            </tr>
+            <tr>
+                <td align="right" id="tdMethod"><span class="labelFont">${nls.Method}</span><span id="methodAstrik" class="mandate">*</span></td>
+                <td align="left" style="" id="tdMethod">
+                    <select class='methodClass' style="width:150px;" data-dojo-attach-event="onChange:_methodSelectionChanged" id='ddlMethod' disabled="disabled">
+                        <option value="">Select Value</option>
+                        <option value="raw">Raw</option>
+                        <option value="summary">Summary</option>
+                    </select>
+                </td>
+                <td align="right" id="tdVMetValue"><span class="labelFont">${nls.MethodValue}</span><span id="medthodValueAstrik" class="mandate">*</span></td>
+                <td align="left" style="" id="tdMethodValue">
+                    <select class='methodValueClass' style="width:150px;" id='ddlMethodValue' disabled="disabled">
+                        <option value="">Select Value</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                        <option value="multipleYears">Multiple Years</option>
+                    </select>
+                </td>
+                <td align="right" id="threshId"><span class="labelFont">${nls.Threshold}</span></td>
+                <td>
+                    <input type="checkbox" id="thresholdID" style="margin-left: 2px;" disabled="disabled">
+                </td>
+
+            </tr>
+            <tr>
+                <td colspan="5" style=""></td>
+                <td align="left" style="">
+                    <div id="onsubmitID" style="float:left; margin-left: 135px; margin-top: 10px;">
+                        <input type="button" id="MWQchart_button" class="Subbutton" data-dojo-attach-point="btnSubmit" data-dojo-attach-event="onclick:_onSubmitClick" value="${nls.Submit}">
+                    </div>
+                    <div id="onClearId" style="margin-top: 10px;">
+                        <input type="button" id="MWQchart_Clear" class="Subbutton" data-dojo-attach-point="btnSubmit" data-dojo-attach-event="onclick:_onResetClick" value="${nls.Clear}">
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <td colspan="6" style="height:10px;"></td>
+            </tr>
+        </table>
+        <br />
+        <div class="mwq-selector-div" id="chartContainerId" style="display:none;">
+            <div id="chartContainer" style="width:100%;"></div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,75 @@
+﻿<!doctype html>
+
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/css/claro.css">
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/dojo/1.12.3/dijit/themes/claro/claro.css" />
+    <!-- <link rel="canonical" href="//getbootstrap.com/docs/5.0/examples/navbar-fixed/"> -->
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="/css/custom.css">
+    <link rel="stylesheet" href="/css/responsive.css">
+    <link href="/Js/notification/notification.css" rel="stylesheet" />
+    <link href="//cdn.jsdelivr.net/npm/busy-load/dist/app.min.css" rel="stylesheet">
+   
+    <meta name="theme-color" content="#7952b3">
+</head>
+<script type="text/javascript">
+    var package_path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+    var dojoConfig = {
+        //The location.pathname.replace() logic below may look confusing but all its doing is
+        // enabling us to load the api from a CDN and load local modules from the correct location.
+
+        locale: location.search.substring(1) === "" ? "en-us" : location.search.substring(1),
+        packages: [
+            {
+                name: "MainWidgets",
+                location: package_path + '/Lib/MainWidgets/'
+            }
+        ],
+        parseOnLoad: false
+    };
+</script>
+
+<script type="text/javascript"  src="/Js/arcgisinit.js"></script>
+
+<script type="text/javascript" src="/Js/initMap.js"></script>
+<body>
+    <div class="analytics_rollover" id="divpopup1">
+        <div id="ErrorMsg" class="flyover out">
+            <div class="bgImage Error">
+                <img src="/images/notification/error.png">
+            </div>
+            <div class="NotificationMessage">
+                <span id="ErrorSpan" class="Error"></span>
+                <span id="ErrorMessageText"></span>
+            </div>
+            <button type="button" class="Notificationclose Error" data-dojo-attach-event="onclick:closeNotification"></button>
+        </div>
+        <div id="SucessMsg" class="flyover out">
+            <div class="bgImage Sucess">
+                <img src="/images/notification/right.png">
+            </div>
+            <div class="NotificationMessage">
+                <span id="SuccesSpan" class="Sucess"></span>
+                <span id="SuccesMessageText"></span>
+                </div>
+                <button type="button" class="Notificationclose Sucess"></button>
+            </div>
+            <div id="AlertMsg" class="flyover out">
+                <div class="bgImage Alert">
+                    <img src="jimu.js/css/images/alert.png">
+                </div>
+                <div class="NotificationMessage">
+                    <span id="AlertSpan" class="Alert"></span>
+                    <span id="AlertMessageText"></span>
+                    </div>
+                    <button type="button" class="Notificationclose Alert"></button>
+                </div>
+    </div>
+
+</body>
+
+</html>

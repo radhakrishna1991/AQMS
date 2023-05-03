@@ -1,0 +1,130 @@
+﻿
+.flyover {
+    margin-top: -1000px;
+    overflow: hidden;
+    position: fixed;
+    width: 31%;
+    opacity: 0.9;
+    z-index: 1050;
+    transition: all 0.5s ease;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px;
+    border-radius: 5px;
+        font-family: 'Roboto', sans-serif;
+}
+
+    .flyover.in {
+        margin-top: 19px;
+    }
+
+    .flyover.out {
+        margin-top: -155px;
+    }
+
+#ErrorMsg {
+    background-color: #ffcccc;
+    border: 1px solid #eb653a;
+}
+
+#AlertMsg {
+    background-color: #f8f1de;
+    border: 1px solid #ec9e40;
+}
+
+#SucessMsg {
+    background-color: #d7ede2;
+    border: 1px solid #0c9c6f;
+}
+
+.bgImage {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    vertical-align: middle;
+    display: inline-block;
+        vertical-align: middle;
+}
+
+    .bgImage img {
+        margin: 5px 4px;
+    }
+
+    .bgImage.Error {
+        background-color: #fab5a8;
+    }
+
+    .bgImage.Alert {
+        background-color: #f6deb7;
+    }
+
+    .bgImage.Sucess {
+        background-color: #add7c4;
+    }
+    .NotificationMessage{display:inline-block}
+    .NotificationMessage span{
+        display:inline-block;
+            max-width: 305px;
+            vertical-align:middle
+    }
+
+span.Error {
+    color: #ff3300;
+    margin: 0px 5px;}
+
+span.Alert {
+    color: #ff9933;
+    margin: 0px 5px;
+}
+
+span.Sucess {
+    color: #009966;
+    margin: 0px 5px;
+}
+
+.Notificationclose {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    float: right;
+}
+
+    .Notificationclose.Error {
+        background-image: url('/images/notification/closeError.png');
+        border: 1px solid #f86437;
+    }
+
+    .Notificationclose.Alert {
+        background-image: url('/images/notification/closeAlert.png');
+        border: 1px solid #ec9e40;
+    }
+
+    .Notificationclose.Sucess {
+        background-image: url('/images/notification/closeSucces.png');
+        border: 1px solid #0e9e6e;
+    }
+
+    .Notificationclose.Error:hover {
+        background-color: #fab5a8;
+    }
+
+    .Notificationclose.Alert:hover {
+        background-color: #f6deb7;
+    }
+
+    .Notificationclose.Sucess:hover {
+        background-color: #add7c4;
+    }
+
+.jimu-rtl.ar .Notificationclose {
+    float: left !important;
+}
+
+.jimu-rtl.ar .flyover {
+    font-family: 'GESSUniqueBold';
+}

@@ -1,0 +1,707 @@
+﻿<div id="divInteractiveCharts">
+    <div class="row">
+      <!--   <div class="col_left">
+            <div id="inner_tab" class="inner_tab content active">
+                <div class="set">
+                    <a class="active " data-dojo-attach-point="liTab1">${nls.CriteriaPollutants}</a>
+                    <div class="content">
+                        <ul class="form_group">
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="interactivepollutants" customValue="SO<sub>2</sub>"
+                                        value="SO2" data-dojo-attach-point="chkSO2"
+                                        data-dojo-attach-event="onclick:fillDataFilters">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="SO2_Label"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="interactivepollutants" customValue="NO<sub>2</sub>"
+                                        value="NO2" data-dojo-attach-point="chkNO2"
+                                        data-dojo-attach-event="onclick:fillDataFilters">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="NO2_Label"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="interactivepollutants" customValue="CO" value="CO"
+                                        data-dojo-attach-point="chkCO" data-dojo-attach-event="onclick:fillDataFilters">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.CO}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="interactivepollutants" customValue="O<sub>3</sub>"
+                                        value="O3" data-dojo-attach-point="chkO3"
+                                        data-dojo-attach-event="onclick:fillDataFilters">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="O3_Label"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="interactivepollutants" customValue="PM<sub>10</sub>"
+                                        value="PM10" data-dojo-attach-point="chkPM10"
+                                        data-dojo-attach-event="onclick:fillDataFilters">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="PM10_Label"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="set">
+                    <a href="#" class="" data-dojo-attach-point="liTab2">${nls.NonCriteriaPollutants}</a>
+                    <div class="content" style="display: none;">
+                        <ul class="form_group">
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="H2S"
+                                        customValue="H<sub>2</sub>S" class="nonCriteriaPollutant">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="H2S_Label"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="PM2_5"
+                                        customValue="PM<sub>2.5</sub>" class="nonCriteriaPollutant">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="PM25_Label"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="Toluene"
+                                        customValue="Toluene" class="nonCriteriaPollutant">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.Toluene}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="O_Xylene"
+                                        customValue="O_Xylene" class="nonCriteriaPollutant">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.O_Xylene}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="EthylBenzene"
+                                        customValue="EthylBenzene" class="nonCriteriaPollutant">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.EthylBenzene}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="mp_xylene"
+                                        customValue="mp_xylene" class="nonCriteriaPollutant">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.mp_xylene}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="CH4"
+                                        class="nonCriteriaPollutant" customValue="CH<sub>4</sub>">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span data-dojo-attach-point="CH4_Label"></span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="Benzene"
+                                        class="nonCriteriaPollutant" customValue="Benzene">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.Benzene}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="NMHC"
+                                        class="nonCriteriaPollutant" customValue="NMHC">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.NMHC}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="m_Xylene"
+                                        class="nonCriteriaPollutant" customValue="m_Xylene">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.m_Xylene}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="NonCriteriapollutants" value="p_Xylene"
+                                        class="nonCriteriaPollutant" customValue="p_Xylene">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.p_Xylene}</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="set">
+                    <a href="#" data-dojo-attach-point="liTab3">${nls.MetParameters}</a>
+                    <div class="content" style="display: none;">
+                        <ul class="form_group">
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="LowerAmbientTemperature"
+                                        customValue="Lower Ambient Temperature">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.LowerAmbientTemperature}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="UpperAmbientTemperature"
+                                        customValue="Upper Ambient Temperature">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.UpperAmbientTemperature}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="BarometricPressure"
+                                        customValue="Barometric Pressure">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.BarometricPressure}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="NetRadiation"
+                                        customValue="Net Radiation">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.NetRadiation}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="RelativeHumidity"
+                                        customValue="Relative Humidity">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.RelativeHumidity}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="WindDirection"
+                                        customValue="Wind Direction">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.WindDirection}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="WindSpeed"
+                                        customValue="Wind Speed">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.WindSpeed}</span>
+                                </label>
+                            </li>
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="MetParameters" value="Precipitation"
+                                        customValue="Precipitation">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.Precipitation}</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="set">
+                    <a href="#" data-dojo-attach-point="liTab4">${nls.Noise}</a>
+                    <div class="content" style="display: none;">
+                        <ul class="form_group">
+                            <li>
+                                <label class="form_btn">
+                                    <input type="checkbox" name="Noise" value="Noise" customValue="Noise">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                    <span>${nls.Noise}</span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+        <div class="col_right">
+            <!--<h4 class="top_heading"><span>${nls.Filters}</span></h4>-->
+            <div class="scroll_container">
+                <div class="clearfix"></div>
+                <!-- <ul class="filters_group" id="filter_group1">
+                    <li>
+                        <label>${nls.Pollutants}</label>
+                        <select data-dojo-attach-point="ddlPollutent" class="Pollutenttype SumoUnder">
+                            
+                        </select>
+                    </li>
+
+                    <li>
+                        <label>${nls.CriteriaPollutants}</label>
+                        <select data-dojo-attach-point="ddlCriteriaPollutent" class="Criteriapollutent SumoUnder" multiple="multiple">
+                          
+                        </select>
+                    </li>
+                    </ul> -->
+                <div class="col-md-12 pollutent_tab_main" id="inner_tab">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="criteria-tab" data-bs-toggle="tab"
+                                data-bs-target="#criteria-tab-pane" type="button" role="tab"
+                                aria-controls="general-tab-pane" aria-selected="true">${nls.CriteriaPollutants}</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="noncriteria-tab" data-bs-toggle="tab"
+                                data-bs-target="#noncriteria-tab-pane" type="button" role="tab"
+                                aria-controls="sites-tab-pane"
+                                aria-selected="false">${nls.NonCriteriaPollutants}</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="metparameter-tab" data-bs-toggle="tab"
+                                data-bs-target="#metparameter-tab-pane" type="button" role="tab"
+                                aria-controls="parameters-tab-pane" aria-selected="false">${nls.MetParameters}</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="noise-tab" data-bs-toggle="tab"
+                                data-bs-target="#noise-tab-pane" type="button" role="tab"
+                                aria-controls="parameters-tab-pane" aria-selected="false">${nls.Noise}</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="tabcontent_pollutent">
+                        <div class="tab-pane fade active show" data-dojo-attach-point="liTab1" id="criteria-tab-pane" role="tabpanel" tabIndex="0">
+                            <ul class="form_group">
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="interactivepollutants" customValue="SO<sub>2</sub>"
+                                            value="SO2" data-dojo-attach-point="chkSO2"
+                                            data-dojo-attach-event="onclick:fillDataFilters">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="SO2_Label"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="interactivepollutants" customValue="NO<sub>2</sub>"
+                                            value="NO2" data-dojo-attach-point="chkNO2"
+                                            data-dojo-attach-event="onclick:fillDataFilters">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="NO2_Label"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="interactivepollutants" customValue="CO" value="CO"
+                                            data-dojo-attach-point="chkCO"
+                                            data-dojo-attach-event="onclick:fillDataFilters">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.CO}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="interactivepollutants" customValue="O<sub>3</sub>"
+                                            value="O3" data-dojo-attach-point="chkO3"
+                                            data-dojo-attach-event="onclick:fillDataFilters">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="O3_Label"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="interactivepollutants"
+                                            customValue="PM<sub>10</sub>" value="PM10" data-dojo-attach-point="chkPM10"
+                                            data-dojo-attach-event="onclick:fillDataFilters">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="PM10_Label"></span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade" data-dojo-attach-point="liTab2" id="noncriteria-tab-pane" role="tabpanel" tabIndex="0">
+                            <ul class="form_group">
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="H2S"
+                                            customValue="H<sub>2</sub>S" class="nonCriteriaPollutant">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="H2S_Label"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="PM2_5"
+                                            customValue="PM<sub>2.5</sub>" class="nonCriteriaPollutant">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="PM25_Label"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="Toluene"
+                                            customValue="Toluene" class="nonCriteriaPollutant">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.Toluene}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="O_Xylene"
+                                            customValue="O_Xylene" class="nonCriteriaPollutant">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.O_Xylene}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="EthylBenzene"
+                                            customValue="EthylBenzene" class="nonCriteriaPollutant">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.EthylBenzene}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="mp_xylene"
+                                            customValue="mp_xylene" class="nonCriteriaPollutant">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.mp_xylene}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="CH4"
+                                            class="nonCriteriaPollutant" customValue="CH<sub>4</sub>">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span data-dojo-attach-point="CH4_Label"></span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="Benzene"
+                                            class="nonCriteriaPollutant" customValue="Benzene">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.Benzene}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="NMHC"
+                                            class="nonCriteriaPollutant" customValue="NMHC">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.NMHC}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="m_Xylene"
+                                            class="nonCriteriaPollutant" customValue="m_Xylene">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.m_Xylene}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="NonCriteriapollutants" value="p_Xylene"
+                                            class="nonCriteriaPollutant" customValue="p_Xylene">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.p_Xylene}</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade" data-dojo-attach-point="liTab3" id="metparameter-tab-pane" role="tabpanel" tabIndex="0">
+                            <ul class="form_group">
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="LowerAmbientTemperature"
+                                            customValue="Lower Ambient Temperature">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.LowerAmbientTemperature}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="UpperAmbientTemperature"
+                                            customValue="Upper Ambient Temperature">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.UpperAmbientTemperature}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="BarometricPressure"
+                                            customValue="Barometric Pressure">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.BarometricPressure}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="NetRadiation"
+                                            customValue="Net Radiation">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.NetRadiation}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="RelativeHumidity"
+                                            customValue="Relative Humidity">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.RelativeHumidity}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="WindDirection"
+                                            customValue="Wind Direction">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.WindDirection}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="WindSpeed"
+                                            customValue="Wind Speed">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.WindSpeed}</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="MetParameters" value="Precipitation"
+                                            customValue="Precipitation">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.Precipitation}</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tab-pane fade" data-dojo-attach-point="liTab4" id="noise-tab-pane" role="tabpanel" tabIndex="0">
+                            <ul class="form_group">
+                                <li>
+                                    <label class="form_btn">
+                                        <input type="checkbox" name="Noise" value="Noise" customValue="Noise">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default"
+                                            alt="">
+                                        <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked"
+                                            alt="">
+                                        <span>${nls.Noise}</span>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <ul class="filters_group" id="filter_group">
+                    <li>
+                        <label>${nls.Region}</label>
+                        <select data-dojo-attach-point="ddlRegion" class="SumoUnder1"
+                            data-dojo-attach-event="onchange:fillCategoryStationsDropdowns">
+                            <option value="">${nls.All}</option>
+                        </select>
+                    </li>
+                    <li>
+                        <label>${nls.Category}</label>
+                        <select data-dojo-attach-point="ddlCategory" class="SumoUnder1"
+                            data-dojo-attach-event="onchange:fillStationDropdown">
+                            <option value="">${nls.All}</option>
+                        </select>
+                    </li>
+                    <li class="select_station">
+                        <label>${nls.StationName}</label>
+                        <select data-dojo-attach-point="ddlStation" class="testselect3 SumoUnder stationNames"
+                            multiple="multiple">
+                            <!--<option value="">All</option>-->
+                        </select>
+                    </li>
+                    <li>
+                        <label>${nls.TimeFrame}</label>
+                        <input type="text" data-dojo-attach-point="timeframe" value="01/01/2018 - 03/05/2018" />
+                    </li>
+                    <li data-dojo-attach-point="ddlTypeOfChartList">
+                        <label>${nls.TypeofChart}</label>
+                        <select data-dojo-attach-point="ddlTypeOfChart" class="SumoUnder1">
+                            <option value="column">${nls.BarChart}</option>
+                            <option value="line">${nls.LineChart}</option>
+                            <option value="area">${nls.AreaChart}</option>
+                            <option value="scatter">${nls.ScatterChart}</option>
+                        </select>
+                    </li>
+                    <li data-dojo-attach-point="ddlCriteriatypeList">
+                        <label>${nls.Criteria}</label>
+                        <select data-dojo-attach-point="ddlCriteria" id="criteriaDrp" class="SumoUnder1">
+                            <option value="Mean">${nls.Mean}</option>
+                            <option value="MeanTimeseries">${nls.Meantime}</option>
+                            <option value="Raw">${nls.Raw}</option>
+                            <option value="Max">${nls.Maximum}</option>
+                            <option value="Compliance">${nls.CompliancePercentage}</option>
+                            <option value="Max %">${nls.Concentrationsinlimitvalues}</option>
+                            <option value="AQL Exceed">${nls.ExceedencesNumbers}</option>
+                            <option value="Percentile">${nls.Percnetile}</option>
+                        </select>
+                    </li>
+                    <li data-dojo-attach-point="ddlDataFilterList">
+                        <label>${nls.DataFilters}</label>
+                        <select data-dojo-attach-point="ddlDataFilter" class="SumoUnder1">
+                            <!--<option value="">All</option>-->
+                            <option value="1Hr">${nls.OneHrData}</option>
+                            <option value="24Hr">${nls.TwentyfourHrData}</option>
+                        </select>
+                    </li>
+                    <li data-dojo-attach-point="ThresholdlimitList">
+                        <label>${nls.Thresholdlimit}</label>
+                        <ul class="form_group">
+                            <li>
+                                <label class="form_btn">
+                                    <input data-dojo-attach-point="chkTH" type="checkbox">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/3.png" class="img-fluid default" alt="">
+                                    <img src="Lib/MainWidgets/LiveCharts/images/4.png" class="img-fluid checked" alt="">
+                                </label>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="btns">
+                    <button class="btn dynamic_chart_btn"
+                        data-dojo-attach-event="onclick:generateInteractiveChart">${nls.GenerateChart}</button>
+                </div>
+                <div class="clearfix"></div>
+                <!--<div class="loader-container" data-dojo-attach-point="divloader" id="dummy" style="display:none">
+        <div class="loader" ></div>
+    </div>-->
+                <div class="chart_Loader" style="display:none"></div>
+                <div class="chart_Loader1" style="display:none"></div>
+                <div class="charts_container" data-dojo-attach-point="charts_containerDiv">
+                    <div data-dojo-attach-point="divInteraChart" style="width:100%;"></div>
+                    <div data-dojo-attach-point="Table" style="display:none"></div>
+                </div>
+                <div class="btns dropdown_btns">
+                    <button data-dojo-attach-point="divDownloadCSV" style="display:none" class="btn dynamic_chart_btn"
+                        data-dojo-attach-event="onclick:DownloadDatatoCSV">${nls.DownloadData}</button>
+                    <div data-dojo-attach-point="divDownloadPDF" class="download_dropdown btn dynamic_chart_btn"
+                        style="display:none;">
+                        <span>${nls.Download}</span>
+                        <div class="items">
+                            <ul>
+                                <li><button data-dojo-attach-event="onclick:DownloadToPDF">${nls.DownloadPdf}</button>
+                                </li>
+                                <li><button id="DownloadJPG">${nls.DownloadJpg}</button></li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

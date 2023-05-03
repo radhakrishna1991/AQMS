@@ -1,0 +1,74 @@
+﻿ <div>
+     <div class="row">
+         <div class="col_right">
+             <label class="heading">Select Pollutant</label>
+             <ul class="form_group">
+                 <li>
+                     <label class="form_btn">
+                         <input type="radio" name="pollutants" value="CO" data-dojo-attach-point="radCO" customValue="CO" data-dojo-attach-event="onclick:generateChart">
+                         <img src="Lib/MainWidgets/LiveCharts/images/5.png" class="img-fluid default" alt="">
+                         <img src="Lib/MainWidgets/LiveCharts/images/6.png" class="img-fluid checked" alt="">
+                         <span>CO</span>
+                     </label>
+                 </li>
+                 <li>
+                     <label class="form_btn">
+                         <input type="radio" name="pollutants" value="NO2" data-dojo-attach-point="radNO2" customValue="NO<sub>2</sub>" data-dojo-attach-event="onclick:generateChart">
+                         <img src="Lib/MainWidgets/LiveCharts/images/5.png" class="img-fluid default" alt="">
+                         <img src="Lib/MainWidgets/LiveCharts/images/6.png" class="img-fluid checked" alt="">
+                         <span data-dojo-attach-point="NO2_Label" ></span>
+                     </label>
+                 </li>
+                 <li>
+                     <label class="form_btn">
+                         <input type="radio" name="pollutants" value="SO2" data-dojo-attach-point="radSO2" checked customValue="SO<sub>2</sub>" data-dojo-attach-event="onclick:generateChart">
+                         <img src="Lib/MainWidgets/LiveCharts/images/5.png" class="img-fluid default" alt="">
+                         <img src="Lib/MainWidgets/LiveCharts/images/6.png" class="img-fluid checked" alt="">
+                         <span data-dojo-attach-point="SO2_Label"></span>
+                     </label>
+                 </li>
+                 <li>
+                     <label class="form_btn">
+                         <input type="radio" name="pollutants" value="O3" data-dojo-attach-point="radO3" customValue="O<sub>3</sub>" data-dojo-attach-event="onclick:generateChart">
+                         <img src="Lib/MainWidgets/LiveCharts/images/5.png" class="img-fluid default" alt="">
+                         <img src="Lib/MainWidgets/LiveCharts/images/6.png" class="img-fluid checked" alt="">
+                         <span data-dojo-attach-point="O3_Label"></span>
+                     </label>
+                 </li>
+                 <li>
+                     <label class="form_btn">
+                         <input type="radio" name="pollutants" value="PM10" data-dojo-attach-point="radPM10" customValue="PM<sub>10</sub>" data-dojo-attach-event="onclick:generateChart">
+                         <img src="Lib/MainWidgets/LiveCharts/images/5.png" class="img-fluid default" alt="">
+                         <img src="Lib/MainWidgets/LiveCharts/images/6.png" class="img-fluid checked" alt="">
+                         <span data-dojo-attach-point="PM10_Label"></span>
+                     </label>
+                 </li>
+             </ul>
+             <div class="btns">
+                 <button class="btn dynamic_chart_btn" data-dojo-attach-event="onclick:generateChart" style="display:none">Generate Chart</button>
+             </div>
+             <div class="clearfix"></div>
+             <div class="scroll_container scrolling">
+                 <div class="clearfix"></div>
+                
+                 <div class="download_dropdown btn dynamic_chart_btn pull-right" data-dojo-attach-point="divDownloadBtn" style="display:none">
+                     <span>Download</span>
+                     <div class="items">
+                         <ul>
+                             <li><button data-dojo-attach-event="onclick:DownloadToPDFPredefined">Download PDF</button></li>
+                             <li><button>Download PNG</button></li>
+                         </ul>
+                     </div>
+                 </div>
+                 <div class="clearfix"></div>
+                 <div class="chart_Loader" style="display:none"></div>
+                 <div class="charts_container">
+                     <div data-dojo-attach-point="divChartArea">
+                     </div>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+
+     </div>

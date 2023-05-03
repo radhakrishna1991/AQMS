@@ -1,0 +1,68 @@
+﻿<div>
+    <div class="row">
+        <div class="col_right">
+            <h6 class="heading"><b>${nls.Filters}</b></h6>
+            <div class="filters_container pull-left">
+
+                <ul class="filters_group" id="filter_group">
+                    <li>
+                        <label>${nls.StationName}</label>
+                        <select class="detailed_select_1" style="width:130px !important" data-dojo-attach-point="ddlDtlStationNames"></select>
+                    </li>
+                    <li>
+                        <label>${nls.PollutantsLabel}</label>
+                        <select class="detailed_select_2 SumoUnder1" data-dojo-attach-point="ddlDtlPollutants" >
+                            <option value="SO2" data-dojo-attach-point="SO2_Label" customValue="SO<sub>2</sub>"></option>
+                            <option value="NO2" data-dojo-attach-point="NO2_Label" customValue="NO<sub>2</sub>"></option>
+                            <option value="CO" data-dojo-attach-point="CO_Label" customValue="CO">${nls.CO}</option>
+                            <option value="O3" data-dojo-attach-point="O3_Label" customValue="O<sub>3</sub>"></option>
+                            <option value="PM10" data-dojo-attach-point="PM10_Label" customValue="PM<sub>10</sub>"></option>
+                        </select>
+                    </li>
+                    <li class="ion-slider-container pull-left">
+                        <input type="range" class="js-range-slider" value="3" data-orientation="vertical">
+                    </li>
+                </ul>
+            </div>
+            
+            
+            <div class="btns pull-left">
+                <button class="btn dynamic_chart_btn" data-dojo-attach-event="onclick:generateDetailedChart">${nls.GenerateChart}</button>
+                <div class="download_dropdown btn dynamic_chart_btn pull-right" id="divDownload">
+                    <span>${nls.Download}</span>
+                    <div class="items">
+                        <ul>
+                            <li><button data-dojo-attach-event="onclick:DownloadToPDFDetailedCharts">${nls.DownloadPdf}</button></li>
+                            <li><button data-dojo-attach-event="onclick:DownloadToPNGDetailedCharts">${nls.DownloadJpg}</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="scroll_container">
+                <div class="loader-container">
+                    <div class="loader"></div>
+                </div>
+                <div class="chart_Loader definedLoader" style="display:none"></div>
+                <div class="charts_container" id="detailedcharts_container">
+                    <div data-dojo-attach-point="divAllCharts">
+                        <div data-dojo-attach-point="divAnnualAvg" style="padding-left: 10px;">
+                        </div>
+                        <div data-dojo-attach-point="divMaxCon" style="padding-left: 10px;" class="html2pdf__page-break">
+                        </div>
+                        <div data-dojo-attach-point="div24HR" style="padding-left: 10px;">
+                        </div>
+                        <div data-dojo-attach-point="div1HR" style="padding-left: 10px;" class="html2pdf__page-break">
+                        </div>
+                        <div data-dojo-attach-point="divDaysExceeding" style="padding-left: 10px;">
+                        </div>
+                        <div data-dojo-attach-point="divHoursExceeding" style="padding-left: 10px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</div>

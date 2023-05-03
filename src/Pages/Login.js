@@ -1,82 +1,109 @@
 
-import React,{Component} from "react";
-import { useNavigate,redirect } from "react-router-dom";
+import React, { Component } from "react";
+import { useNavigate, redirect } from "react-router-dom";
+import { toast } from 'react-toastify';
+function Login() {
 
- function Login(){
-
-    const Navigate=useNavigate();
-   const handleLogin=(event)=>{
-         let form=document.querySelectorAll('#Loginform')[0];
-        if (!form.checkValidity()) {
-            form.classList.add('was-validated');
-          }else{
-            window.location.href="/Dashboard";
+  const Navigate = useNavigate();
+  const handleLogin = (event) => {
+    let form = document.querySelectorAll('#Loginform')[0];
+    let UserName = document.getElementById("UserName").value;
+    let Password = document.getElementById("Password").value;
+    if (!form.checkValidity()) {
+      form.classNameList.add('was-validated');
+    } else {
+      fetch(process.env.REACT_APP_WSurl + 'api/Users/Login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ UserName: UserName, Password: Password }),
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson != null) {
+            sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
+            window.location.href = "/Dashboard";
+          } else {
+            toast.error('User name or password is incorrect. Please try again', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            return false;
           }
+        }).catch((error) => toast.error('User name or password is incorrect. Please try again'));
     }
+  }
 
-    return(
+  return (
     <main>
-    <div class="container">
+      <div className="container">
 
-      <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
-        <div class="container">
-          <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+        <section className="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+          <div className="container">
+            <div className="row justify-content-center">
+              <div className="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
 
-              <div class="d-flex justify-content-center py-3">
-                <a href="index.html" class="logo d-flex align-items-center w-auto">
-                  <img src="images/logo.png" alt="" />
-                 {/*  <span class="d-none d-lg-block">NiceAdmin</span> */}
-                </a>
-              </div>
+                <div className="d-flex justify-content-center py-3">
+                  <a href="index.html" className="logo d-flex align-items-center w-auto">
+                    <img src="images/logo.png" alt="" />
+                    {/*  <span className="d-none d-lg-block">NiceAdmin</span> */}
+                  </a>
+                </div>
 
-              <div class="card mb-3">
+                <div className="card mb-3">
 
-                <div class="card-body">
+                  <div className="card-body">
 
-                  <div class="pt-4 pb-2">
-                    <h5 class="card-title text-center pb-0 fs-4">Login to Your Account</h5>
-                    <p class="text-center small">Enter your username & password to login</p>
+                    <div className="pt-4 pb-2">
+                      <h5 className="card-title text-center pb-0 fs-4">Login to Your Account</h5>
+                      <p className="text-center small">Enter your username & password to login</p>
+                    </div>
+
+                    <form className="row g-3" autoComplete="false" id="Loginform" novalidate>
+
+                      <div className="col-12">
+                        <label htmlFor="yourUsername" className="form-label">Username</label>
+                        <div className="input-group has-validation">
+                          <span className="input-group-text" id="inputGroupPrepend">@</span>
+                          <input type="text" name="username" className="form-control required" id="UserName" required />
+                          <div className="invalid-feedback">Please enter your username.</div>
+                        </div>
+                      </div>
+
+                      <div className="col-12">
+                        <label htmlFor="yourPassword" className="form-label">Password</label>
+                        <input type="password" name="password" className="form-control" id="Password" required />
+                        <div className="invalid-feedback">Please enter your password!</div>
+                      </div>
+
+                      <div className="col-12">
+                        <div className="form-check">
+                          <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
+                          <label className="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
+                      </div>
+                    </form>
+
                   </div>
-
-                  <form class="row g-3" autocomplete="false"  id="Loginform" novalidate>
-
-                    <div class="col-12">
-                      <label for="yourUsername" class="form-label">Username</label>
-                      <div class="input-group has-validation">
-                        <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="username" class="form-control required" id="yourUsername" required />
-                        <div class="invalid-feedback">Please enter your username.</div>
-                      </div>
-                    </div>
-
-                    <div class="col-12">
-                      <label for="yourPassword" class="form-label">Password</label>
-                      <input type="password" name="password" class="form-control" id="yourPassword" required />
-                      <div class="invalid-feedback">Please enter your password!</div>
-                    </div>
-
-                    <div class="col-12">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
-                        <label class="form-check-label" for="rememberMe">Remember me</label>
-                      </div>
-                    </div>
-                    <div class="col-12">
-                      <button class="btn btn-primary w-100" onClick={handleLogin}  type="button">Login</button>
-                    </div>
-                  </form>
-
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-      </section>
+        </section>
 
-    </div>
-  </main>
+      </div>
+    </main>
   );
-    }
+}
 export default Login;

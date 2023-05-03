@@ -1,0 +1,148 @@
+﻿
+/*input[type=text] {
+    width:15px;
+    height: 15px;
+}*/
+
+/*td {
+    border-bottom: 2px solid #E2E1E9;
+      border-collapse: collapse;
+	 
+}​*/
+thead {
+  height: 50px;
+  font-weight: bold;
+  text-align: left;
+  background-color: #cccccc;
+}
+ 
+ #BuoysEfficency_P_panel .HeaderImg {
+    background-image: url('../images/Buoys.PNG');
+    width:20px;
+    height:20px;
+    color:white;
+}
+
+#MWQCharts_P_panel{	
+	top:58px!important;
+	/* right:0px !important; */
+	z-index: 99 !important;
+}
+
+ #MWQCharts_P_panel .HeaderImg {
+    background-image: url('../images/Chart.PNG');
+    width:20px;
+    height:20px;
+    color:white;
+}
+
+ #MWQchart_button,#MWQchart_Clear {
+    background-color: #2688bf;
+    border: 1px solid #2688bf;
+    border-radius: 6px;
+    color: #ffffff;
+    height: 23px;
+    width: 54px;
+    font-weight: bold;
+	margin-left: 4px;
+}
+
+#table-wrapper-Buoys {
+  position:absolute;
+}
+#table-scroll-Buoys {
+    height: 500px;
+    overflow-y: scroll;
+    margin-top: -12px;
+}
+#footerbuoys {
+    background-color: #029B66;
+    height: 25px;
+    width: 600px;
+    margin-top: 315px;
+    margin-left: -13px;
+    color: white;
+    position: absolute;
+    border-radius: 2px 0px 6px 7px;
+}
+.mandate{
+    color:red;
+}
+.mwq-selector-div {
+    /*min-height: 100px;
+    max-height: 330px;
+    border: 1px solid #d9dde0;
+    border-radius: 1px;
+    overflow: auto;*/
+    background: #fff;
+    border: 1px solid rgba(0,0,0,.1);
+    box-shadow: 0 0 3px rgba(0,0,0,.1);
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.selectize-control {
+      margin-top: 5px !important;
+}
+
+.selectize-control.multi .selectize-input.has-items {    
+    max-height: 80px !important;   
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  
+}
+.selectize-control.multi .selectize-input [data-value]{
+    background-image: linear-gradient(to bottom,#80c5f1,#80c5f1) !important;
+}
+
+.siteClass{
+    height: 35px;
+    width: 250px;
+    display: block;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+.groupClass{
+    height: 35px;
+    width: 250px;
+    display: block;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+.paramClass{
+    height: 35px;
+    width: 250px;
+    display: block;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+
+.methodClass{
+    height: 30px;
+    width: 150px;
+    display: block;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+.methodValueClass{
+    height: 30px;
+    width: 150px;
+    display: block;
+    border-radius: 3px;
+    border: 1px solid #ddd;
+}
+
+ #chartContainer > div > div {
+        height: calc(100vh - 245px) !important;
+    }
+	
+.labelFont {
+    font-family: Verdana, Arial, sans-serif;
+    font-weight: bold;
+}
+
+.mainbox div{float: left;margin-right:10px;margin-bottom: 10px;}
+.mainbox{ padding-bottom:10px;}
+.box{width: 12px;height: 12px;margin:4px ;float: left; margin-top: 0;}
+.red{background-color: red;}
+.green{background-color: green;}

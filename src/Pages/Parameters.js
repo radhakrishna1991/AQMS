@@ -1,95 +1,54 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { AgGridReact } from 'ag-grid-react';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-import { confirmAlert } from 'react-confirm-alert'; // Import
-import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
-
-import 'ag-grid-community/styles//ag-grid.css';
-import 'ag-grid-community/styles//ag-theme-alpine.css';
-
-function Parameters() {
+import { toast } from 'react-toastify';
+import Swal from "sweetalert2";
+function Parameters1() {
   const gridRef = useRef();
-  const gridRefsite = useRef();
-  const [gitHubUsers, setGitHubUsers] = useState([
-    {
-      site: "Dukhan Fahahil", parametername: "BP", enable: true, parentparameter: "", parametertemplate: "BARPRESS", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "mbar", acquiredunits: ""
-      , description: ""
-    }, {
-      site: "Dukhan Fahahil", parametername: "CH4_ppm", enable: true, parentparameter: "", parametertemplate: "CH4", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "PPM", acquiredunits: ""
-      , description: ""
-    }, {
-      site: "Dukhan Fahahil", parametername: "CH4_ug", enable: true, parentparameter: "", parametertemplate: "CH4_ug", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "UG/M3", acquiredunits: ""
-      , description: ""
-    }, {
-      site: "Dukhan Fahahil", parametername: "CO_mg", enable: true, parentparameter: "", parametertemplate: "CO_mg", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "MG/M3", acquiredunits: ""
-      , description: ""
-    }, {
-      site: "Dukhan Fahahil", parametername: "CO_ppm", enable: true, parentparameter: "", parametertemplate: "CO", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "PPM", acquiredunits: ""
-      , description: ""
-    }, {
-      site: "Dukhan Fahahil", parametername: "GS", enable: true, parentparameter: "", parametertemplate: "SOLARRAD", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "W/M2", acquiredunits: ""
-      , description: ""
-    }, {
-      site: "Dukhan Fahahil", parametername: "H2S_ppb", enable: true, parentparameter: "", parametertemplate: "H2S", parametergroup: "",
-      websitedisplayname: "", datatype: "Average / C", epapoc: "", epaparameter: "", epaunits: "", reportedunits: "PPB", acquiredunits: ""
-      , description: ""
-    },
-  ]);
-  const [sites, setsites] = useState([
-    {
-      site: "Dukhan Fahahil", enable: true, timezone: "", latitude: "", longitude: "", epasite: "", epacountrycode: "", sitegroup: "",
-      websitedisplayname: "", description: ""
-    }
-  ]);
-  const [gridApi, setGridApi] = useState(null);
-  const [sitegridApi, setSiteGridApi] = useState(null);
+  const gridRefjsgrid = useRef();
+  const $ = window.jQuery;
+  const [ListEpaParameter, setlistEpaParameter] = useState([]);
+  const [ListEpaUnits, setlistEpaUnits] = useState([]);
+  const [ListMathEquation, setlistMathEquation] = useState([]);
+  const [ListParameterTemplate, setlistParameterTemplate] = useState([]);
+  const [ListReportedUnits, setlistReportedUnits] = useState([]);
+  const [ListParameters, setlistParameters] = useState([]);
+
+  const [ListDataType, setlistDataType] = useState([]);
+  const [reporteddigits1, setreporteddigits] = useState(null)
   const [gridlist, setgridlist] = useState(true);
-  const [Totalpages, setTotalpages] = useState(1);
-  const [SiteTotalpages, setSiteTotalpages] = useState(1);
-  const PageSize = "10";
-  /* const [currentPage, setCurrentPage] = useState(1);
-  const [tableRowsPerPage, setTableRowsPerPage] = useState(5);
-  const [showlist, setshowlist] = useState(true);
-  const [Btntype, setBtntype] = useState("add");
-  const [Name, setName] = useState("");
-  const [Email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [location, setlocation] = useState(window.location.pathname); */
-
-
-  const columnDefs = [
-    { headerName: "Site", field: "site", width: 150 },
-    { headerName: "Parameter Name", field: "parametername" },
-    {
-      headerName: "Enabled", field: "enable", minWidth: 100, sortable: false, filter: false, floatingFilter: false, cellRenderer: params => {
-        return (<input type='checkbox' checked={params.value ? 'checked' : ''} />);
-      }
-    },
-    { headerName: "Parent Parameter", field: "parentparameter" },
-    { headerName: "Parameter Template", field: "parametertemplate" },
-    { headerName: "Parameter Group", field: "parametergroup" },
-    { headerName: "WebSite Display Name", field: "websitedisplayname" },
-    { headerName: "Data Type", field: "datatype" },
-    { headerName: "EPA POC", field: "epapoc" },
-    { headerName: "EPA Parameter", field: "epaparameter" },
-    { headerName: "EPA Units", field: "epaunits" },
-    { headerName: "Reported Units", field: "reportedunits" },
-    { headerName: "Acquired Units", field: "acquiredunits" },
-    { headerName: "Description", field: "description" },
-    {
-      headerName: "Actions", field: "id", minWidth: 100, sortable: false, filter: false, floatingFilter: false, cellRendererFramework: (params) =>
-        <div><i className="bi bi-pencil-square action_btn btn btn-primary mx-2" onClick={() => EditData(params)}></i>
-          <i className="bi bi-trash btn action_btn btn-secondary" onClick={() => DeleteData(params)}></i></div>
-    }
-  ];
+  const [Id, setId] = useState(0);
+  const [Addbtn, setAddbtn] = useState(true);
+  const parametersite = useRef();
+  const parametername = useRef();
+  const parentparameter = useRef();
+  const parametergroup = useRef();
+  const websitename = useRef();
+  const parametertemplate = useRef();
+  const parameterenabled = useRef();
+  const enableairnowreporting = useRef();
+  const filterfromwebsite = useRef();
+  const epapoc = useRef();
+  const epamethod = useRef();
+  const description = useRef();
+  const epaparameter = useRef();
+  const epaunits = useRef();
+  const mathequation = useRef();
+  const reporteddigits = useRef();
+  const precision = useRef();
+  const calibrationprecision = useRef();
+  const reportedunits = useRef();
+  const analyzerunits = useRef();
+  const graphminimum = useRef();
+  const graphmaximum = useRef();
+  const calibrationspan = useRef();
+  const instrumentdetectionlimit = useRef();
+  const limitofquantization = useRef();
+  const miniumdetectablelimit = useRef();
+  const practicalquantitationlimit = useRef();
+  const parameterreportorder = useRef();
+  const totalizeinreports = useRef();
+  const miniuminreports = useRef();
+  const [parameterDatatype, setparameterDatatype] = useState(1);
+  const [TruncateRoundedvalue, setTruncateRoundedvalue] = useState(1);
 
   const columnDefsSite = [
     { headerName: "Site", field: "site", width: 150 },
@@ -117,137 +76,497 @@ function Parameters() {
     alert('');
   }
   const DeleteData = (params) => {
-    confirmAlert({
-      closeOnEscape: false,
-      closeOnClickOutside: false,
-      title: 'Confirm to submit',
-      message: 'Are you sure to do this.',
-      buttons: [
+
+  }
+  const parameterformdata = () => {
+    let formData = new FormData();
+    formData.append('ID', Id);
+    formData.append('ParameterName', parametername.current.value);
+    formData.append('SiteID', parametersite.current.value);
+    formData.append('ParentParameterID', parentparameter.current == undefined ? null : parentparameter.current.value);
+    formData.append('ParameterGroupID', parametergroup.current == undefined ? null : parametergroup.current.value);
+    formData.append('WebsiteDisplayName', websitename.current.value);
+    formData.append('Enabled', parameterenabled.current.checked);
+    formData.append('EnableAirNowReporting', enableairnowreporting.current.checked);
+    formData.append('FilterFromWebsite', filterfromwebsite.current.checked);
+    formData.append('parameterDataTypeID', parameterDatatype);
+    formData.append('Description', description.current.value);
+    formData.append('MathEquationID', mathequation.current.value);
+    formData.append('EPApoc', epapoc.current.value);
+    formData.append('EPAmethod', epamethod.current.value);
+    formData.append('EPAunitsID', epaunits.current.value);
+    formData.append('EPAParameterID', epaparameter.current.value);
+    formData.append('ReportedDigits', reporteddigits1);
+    formData.append('Precision', precision.current.value);
+    formData.append('CalibrationPrecision', calibrationprecision.current.value);
+    formData.append('ParameterTemplateID', parametertemplate.current.value);
+    formData.append('TruncateRoundRule', TruncateRoundedvalue);
+    formData.append('ReportedUnitsID', reportedunits.current.value);
+    formData.append('AnalyzerUnitsID', analyzerunits.current.value);
+    formData.append('GraphMinimum', graphminimum.current.value);
+    formData.append('GraphMaximum', graphmaximum.current.value);
+    formData.append('CalibrationSpan', calibrationspan.current.value);
+    formData.append('InstrumentDetectionLimit', instrumentdetectionlimit.current.value);
+    formData.append('LimitOfQuantization', limitofquantization.current.value);
+    formData.append('MinimumDetectableLimit', miniumdetectablelimit.current.value);
+    formData.append('PracticalQuantitation', practicalquantitationlimit.current.value);
+    formData.append('ParameterReportOrder', parameterreportorder.current.value);
+    formData.append('TotalizeInReports', totalizeinreports.current.checked);
+    formData.append('MiniuminReports', miniuminreports.current.checked);
+    formData.append('Status', 1);
+    return formData;
+  }
+  const AddParameter = (event) => {
+    let form = document.querySelectorAll('#Parameterform')[0];
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+    } else {
+      fetch(process.env.REACT_APP_WSurl + 'api/Parameters', {
+        method: 'POST',
+        body: parameterformdata(),
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson == 1) {
+            toast.success('Parameter added successfully', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            GetParametersData();
+          } else {
+            toast.error('Unable to add parameter', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        })
+    }
+  }
+
+  const UpdateParameter = (event) => {
+    let form = document.querySelectorAll('#Parameterform')[0];
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+    } else {
+      let formdata = parameterformdata();
+      fetch(process.env.REACT_APP_WSurl + 'api/Parameters/' + Id, {
+        method: 'PUT',
+        body: formdata,
+      }).then((response) => response.json())
+        .then((responseJson) => {
+          if (responseJson == 1) {
+            toast.success('Parameter updated successfully', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            GetParametersData();
+          } else {
+            toast.error('Unable to update parameter', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          };
+        })
+    }
+  }
+
+  const EditParameters = (item) => {
+    setId(item.id)
+    setAddbtn(false)
+    setgridlist(false);
+    setTimeout(function () {
+      initializemulticolumn();
+      InitializeParameters(item);
+      // parametername.current.value = item.parameterName;
+      parametersite.current.value = item.siteID;
+      //$('#parentparameter').val(item.parentParameterID).trigger('change');
+      // parametergroup.current.value = item.parameterGroupID;
+        websitename.current.value = item.websiteDisplayName;
+      $('#Parametertemplate').val(item.parameterTemplateID).trigger('change');
+      parameterenabled.current.checked = item.enabled;
+      //enableairnowreporting.current.checked = item.enableAirNowReporting;
+      filterfromwebsite.current.checked = item.filterFromWebsite;
+      //setparameterDatatype(item.ParameterDataTypeID);
+      //description.current.value = item.description;
+      //$('#Mathequation').val(item.mathEquationID).trigger('change');
+      //epapoc.current.value = item.epApoc;
+      //  epamethod.current.value = item.epAmethod;
+      // epaunits.current.value = item.epAunitsID;
+      //  $('#EpaParameter').val(item.epaParameterID).trigger('change');
+      //  reporteddigits.current.value = item.reportedDigits;
+      //  precision.current.value = item.precision;
+      calibrationprecision.current.value = item.calibrationPrecision;
+      //  setTruncateRoundedvalue(item.truncateRoundRule);
+      //  $('#Reportedunits').val(item.reportedUnitsID).trigger('change');
+      $('#Analyzerunits').val(item.analyzerUnitsID).trigger('change');
+      //   graphminimum.current.value = item.graphMinimum;
+      //   graphmaximum.current.value = item.graphMaximum;
+      //   calibrationspan.current.value = item.calibrationSpan;
+      //   instrumentdetectionlimit.current.value = item.instrumentDetectionLimit;
+      //  limitofquantization.current.value = item.limitOfQuantization;
+      //  miniumdetectablelimit.current.value = item.minimumDetectableLimit;
+      //  practicalquantitationlimit.current.value = item.practicalQuantitation;
+      //  parameterreportorder.current.value = item.parameterReportOrder;
+      //  totalizeinreports.current.checked = item.totalizeInReports;
+      //  miniuminreports.current.checked = item.miniuminReports;
+    }, 100);
+  }
+
+  const ParameterApply = () => {
+    let parametertemplateid = parametertemplate.current.value;
+    let item = ListParameterTemplate.find(o => o.id === parseInt(parametertemplateid));
+    InitializeParameters(item);
+  }
+
+  const InitializeParameters = (item) => {
+    parametername.current.value = item.parameterName;
+    $('#parentparameter').val(item.parentParameterID).trigger('change');
+    parametergroup.current.value = item.parameterGroupID;
+    parameterenabled.current.checked = true;
+    enableairnowreporting.current.checked = item.enableAirNowReporting;
+    setparameterDatatype(item.parameterDataTypeID);
+    description.current.value = item.description;
+    $('#Mathequation').val(item.mathEquationID).trigger('change');
+    epapoc.current.value = item.epApoc;
+    epamethod.current.value = item.epAmethod;
+    epaunits.current.value = item.epAunitsID;
+    $('#EpaParameter').val(item.epaParameterID).trigger('change');
+    setreporteddigits(item.reportedDigits);
+    precision.current.value = item.precision;
+    setTruncateRoundedvalue(item.truncateRoundRule);
+    $('#Reportedunits').val(item.reportedUnitsID).trigger('change');
+    graphminimum.current.value = item.graphMinimum;
+    graphmaximum.current.value = item.graphMaximum;
+    calibrationspan.current.value = item.calibrationSpan;
+    instrumentdetectionlimit.current.value = item.instrumentDetectionLimit;
+    limitofquantization.current.value = item.limitOfQuantization;
+    miniumdetectablelimit.current.value = item.minimumDetectableLimit;
+    practicalquantitationlimit.current.value = item.practicalQuantitation;
+    parameterreportorder.current.value = item.parameterReportOrder;
+    totalizeinreports.current.checked = item.totalizeInReports;
+    miniuminreports.current.checked = item.miniuminReports;
+  }
+
+  const DeleteParameters = (item) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: ("You want to delete this Subscription !"),
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#5cb85c",
+      confirmButtonText: "Yes",
+      closeOnConfirm: false
+    })
+      .then(function (isConfirm) {
+        if (isConfirm) {
+          let id = item.id;
+          fetch(process.env.REACT_APP_WSurl + 'api/Parameters/' + id, {
+            method: 'DELETE'
+          }).then((response) => response.json())
+            .then((responseJson) => {
+              if (responseJson == 1) {
+                toast.success('Parameter Deleted successfully', {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
+                GetParametersData();
+              } else {
+                toast.success('Parameter Deleted successfully', {
+                  position: "top-right",
+                  autoClose: 5000,
+                  hideProgressBar: false,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "colored",
+                });
+              }
+            }).catch((error) => console.log(error));
+        }
+      });
+  }
+  useEffect(() => {
+    fetch(process.env.REACT_APP_WSurl + "api/Parameters/GetAllLookupData")
+      .then((response) => response.json())
+      .then((data) => {
+        const data1 = data;
+        let data2 = data;
+        setlistEpaParameter(data1.listEpaParameter);
+        setlistEpaUnits(data1.listEpaUnits);
+        setlistMathEquation(data1.listMathEquation);
+        setlistParameterTemplate(data1.listParameterTemplate);
+        setlistReportedUnits(data1.listReportedUnits);
+        setlistParameters(data1.listParameters);
+        setlistDataType(data1.listDataType);
+      })
+      .catch((error) => console.log(error));
+    // initializeJsGrid();
+  }, []);
+
+  useEffect(() => {
+    initializeJsGrid();
+  });
+
+
+
+  const initializeJsGrid = function () {
+    window.jQuery(gridRefjsgrid.current).jsGrid({
+      width: "100%",
+      height: "auto",
+      filtering: true,
+      editing: false,
+      inserting: false,
+      sorting: true,
+      paging: true,
+      autoload: true,
+      pageSize: 10,
+      pageButtonCount: 5,
+      controller: {
+        data: ListParameters,
+        loadData: function (filter) {
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          return $.grep(this.data, function (item) {
+            if (item.description == null) { item.description = ""; }
+            return ((!filter.siteID || item.siteID.toUpperCase().indexOf(filter.siteID.toUpperCase()) >= 0)
+              && (!filter.parameterName || item.parameterName.toUpperCase().indexOf(filter.parameterName.toUpperCase()) >= 0)
+              && (!filter.parentParameterID || item.parentParameterID === filter.parentParameterID)
+              && (!filter.parameterTemplateID || item.parameterTemplateID === filter.parameterTemplateID)
+              && (!filter.epaParameterID || item.epaParameterID === filter.epaParameterID)
+              && (!filter.epAunitsID || item.epAunitsID === filter.epAunitsID)
+              && (!filter.parameterDataTypeID || item.parameterDataTypeID === filter.parameterDataTypeID)
+              && (!filter.reportedUnitsID || item.reportedUnitsID === filter.reportedUnitsID)
+              && (!filter.analyzerUnitsID || item.analyzerUnitsID === filter.analyzerUnitsID)
+              && (!filter.parameterGroupID || item.parameterGroupID.toUpperCase().indexOf(filter.parameterGroupID.toUpperCase()) >= 0)
+              && (!filter.websiteDisplayName || item.websiteDisplayName.toUpperCase().indexOf(filter.websiteDisplayName.toUpperCase()) >= 0)
+              /*  && (!filter.Country || item.Country === filter.Country) */
+            );
+          });
+        }
+      },
+      fields: [
+        { name: "siteID", title: "Site", type: "text", width: 150 },
+        { name: "parameterName", title: "Parameter Name", type: "text" },
+        { name: "enabled", title: "Enabled", type: "checkbox", title: "Enabled", sorting: false, filtering: false },
+        { name: "parentParameterID", title: "Parent Parameter", type: "select", items: ListParameters, valueField: "id", textField: "parameterName", width: 200 },
+        { name: "parameterTemplateID", title: "Parameter Template", type: "select", items: ListParameterTemplate, valueField: "id", textField: "parameterName", width: 200 },
+        { name: "parameterGroupID", title: "Parameter Group", type: "text" },
+        { name: "websiteDisplayName", title: "WebSite Display Name", type: "text" },
+        { name: "parameterDataTypeID", title: "Data Type", type: "select", items: ListDataType, valueField: "id", textField: "dataType", width: 200},
+        { name: "epApoc", title: "EPA POC", type: "text" },
+        { name: "epaParameterID", title: "EPA Parameter", type: "select", items: ListEpaParameter, valueField: "id", textField: "description", width: 200 },
+        { name: "epAunitsID", title: "EPA Units", type: "select", items: ListEpaUnits, valueField: "id", textField: "unitDescription", width: 200 },
+        { name: "reportedUnitsID", title: "Reported Units", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 200 },
+        { name: "analyzerUnitsID", title: "Acquired Units", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 200 },
+        { name: "description", title: "Description", type: "text" },
         {
-          label: 'Yes',
-          onClick: () => alert('Click Yes')
-        },
-        {
-          label: 'No',
-          onClick: () => alert('Click No')
+          type: "control", width: 100, editButton: false, deleteButton: false,
+          itemTemplate: function (value, item) {
+            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
+
+            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
+              .click(function (e) {
+                EditParameters(item);
+                /* alert("ID: " + item.id); */
+                e.stopPropagation();
+              });
+
+            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
+              .click(function (e) {
+                DeleteParameters(item);
+                e.stopPropagation();
+              });
+
+            return $("<div>").append($customEditButton).append($customDeleteButton);
+            //return $result.add($customButton);
+          }
         }
       ]
     });
   }
 
-  useEffect(() => {
-    if (gridRef.current != null && gridRef.current.api != undefined) {
-      setTotalpages(gridRef.current.api.paginationGetTotalPages());
-    }
-     if (gridRefsite.current != null && gridRefsite.current.api != undefined) {
-      setSiteTotalpages(gridRefsite.current.api.paginationGetTotalPages());
-    }
-  });
 
-  const fetchUsers = () => {
-    fetch("https://api.github.com/users")
-      .then((response) => response.json())
-      .then((data) => setGitHubUsers(data))
-      .catch((error) => console.log(error));
-  };
+  const initializemulticolumn = () => {
+    $('#parentparameter').inputpicker({
+      data: ListParameters,
+      fields: [
+        { name: 'parameterName', text: 'Parameter' },
+        { name: 'description', text: 'Description' }
+      ],
+      //  multiple: true,
+      headShow: true,
+      fieldText: 'parameterName',
+      fieldValue: 'id',
+      filterOpen: true,
 
-  const OnGridReady = (params) => {
-    setGridApi(params);
-    // If you need to resize specific columns 
-    var allColIds = params.columnApi.getAllColumns()
-      .map(column => column.colId);
-    params.columnApi.autoSizeColumns(allColIds);
+    });
+    $('#Parametertemplate').inputpicker({
+      data: ListParameterTemplate,
+      fields: [
+        { name: 'parameterName', text: 'Parameter' },
+        { name: 'description', text: 'Description' }
+      ],
+      //  multiple: true,
+      headShow: true,
+      fieldText: 'parameterName',
+      fieldValue: 'id',
+      filterOpen: true
+    });
+    $('#Mathequation').inputpicker({
+      data: ListMathEquation,
+      fields: [
+        { name: 'equationName', text: 'Equation Name' },
+        { name: 'equation', text: 'Equation' },
+        { name: 'description', text: 'Description' }
+      ],
+      //  multiple: true,
+      headShow: true,
+      fieldText: 'equationName',
+      fieldValue: 'id',
+      filterOpen: true,
 
-    // If you want to resize all columns
-    params.columnApi.autoSizeAllColumns();
-  }
+    });
 
-  const OnGridReadysite = (params) => {
-    setSiteGridApi(params);
-    // If you need to resize specific columns 
-    var allColIds = params.columnApi.getAllColumns()
-      .map(column => column.colId);
-    params.columnApi.autoSizeColumns(allColIds);
-
-    // If you want to resize all columns
-    params.columnApi.autoSizeAllColumns();
+    $('#EpaParameter').inputpicker({
+      data: ListEpaParameter,
+      fields: [
+        { name: 'description', text: 'Description' },
+        { name: 'code', text: 'Code' },
+        { name: 'abbreviation', text: 'Abbreviation' },
+        { name: 'casNumber', text: 'CAS Number' },
+        { name: 'category', text: 'Category' }
+      ],
+      //  multiple: true,
+      headShow: true,
+      fieldText: 'description',
+      fieldValue: 'id',
+      filterOpen: true,
+    });
+    $('#Reportedunits').inputpicker({
+      data: ListReportedUnits,
+      fields: [
+        { name: 'unitName', text: 'Unit' },
+        { name: 'description', text: 'Description' },
+      ],
+      //  multiple: true,
+      headShow: true,
+      fieldText: 'unitName',
+      fieldValue: 'id',
+      filterOpen: true,
+    });
+    $('#Analyzerunits').inputpicker({
+      data: ListReportedUnits,
+      fields: [
+        { name: 'unitName', text: 'Unit' },
+        { name: 'description', text: 'Description' },
+      ],
+      //  multiple: true,
+      headShow: true,
+      fieldText: 'unitName',
+      fieldValue: 'id',
+      filterOpen: true,
+    });
   }
 
   const AddSite = (param) => {
-    toast.error('Wow so easy!', {
-      position: "top-right",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "colored",
-    });
     if (param == 'gridlist') {
       setgridlist(true);
     } else {
       setgridlist(false);
+      setAddbtn(true)
+      setTimeout(function () {
+        initializemulticolumn();
+      }, 500);
+
+    }
+  }
+  const AddParameterchange = (param) => {
+    if (param == 'gridlist') {
+      setgridlist(true);
+    } else {
+      setgridlist(false);
+      setAddbtn(true)
+      setTimeout(function () {
+        initializemulticolumn();
+      }, 500);
+
     }
   }
 
-  const onPageSizeChanged = useCallback(() => {
-    let value = document.getElementById('page-size').value;
-    gridRef.current.api.paginationSetPageSize(Number(value));
+  const GetParametersData = () => {
+    fetch(process.env.REACT_APP_WSurl + "api/Parameters",{
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        setlistParameters(data);
+        setAddbtn(true);
+        setgridlist(true);
+      }).catch((error) => console.log(error));
+  }
 
-    setTotalpages(gridRef.current.api.paginationGetTotalPages());
-    gridRef.current.api.paginationGoToFirstPage();
-    document.getElementById('gotopage').value = 1;
-  }, []);
+  const parameterdatatypechange = function (event) {
+    setparameterDatatype(event.target.value != "" ? parseInt(event.target.value) : null);
+  }
+  const Truncateroundedchange = function (event) {
+    setTruncateRoundedvalue(event.target.value != "" ? parseInt(event.target.value) : null);
+  }
 
-  const onPageChanged = useCallback(() => {
-    let value = document.getElementById('gotopage').value;
-    if (Number(value) == 1) {
-      gridRef.current.api.paginationGoToFirstPage();
-    } else {
-      gridRef.current.api.paginationGoToPage(Number(value) - 1);
+  const AllowNumbersonly=function(e){
+   let re=/^[0-9\b]+$/;
+   let typed = +e.key;
+    if ((e.keyCode !=8 && e.keyCode !=9 && !re.test(e.key))) {
+      e.preventDefault(); 
+      e.stopPropagation();
+        return false;
+    }else if(+(e.target.value + typed) > e.target.max){
+      e.preventDefault(); 
+      e.stopPropagation();
+        return false;
     }
-  }, []);
+  }
 
-  const onPageSizeChangedsite = useCallback(() => {
-    let value = document.getElementById('pagesizesite').value;
-    gridRefsite.current.api.paginationSetPageSize(Number(value));
-
-    setSiteTotalpages(gridRefsite.current.api.paginationGetTotalPages());
-    gridRefsite.current.api.paginationGoToFirstPage();
-    document.getElementById('gotopagesite').value = 1;
-  }, []);
-
-  const onPageChangedsite = useCallback(() => {
-    let value = document.getElementById('gotopagesite').value;
-    if (Number(value) == 1) {
-      gridRefsite.current.api.paginationGoToFirstPage();
-    } else {
-      gridRefsite.current.api.paginationGoToPage(Number(value) - 1);
+  const AllowNumbersanddotonly=function(e){
+    let re=/^[0-9.]*$/;
+    const typed = +e.key;
+    if ((e.keyCode !=8 && e.keyCode !=9 && !re.test(e.key))) {
+      e.preventDefault(); 
+      e.stopPropagation();
+        return false;
     }
-  }, []);
-
-  const defaultColDef = {
-    resizable: true, minWidth: 150, flex: 1,
-    wrapHeaderText: true, autoHeaderHeight: true,
-    sortable: true, filter: true, floatingFilter: true,
-    suppressMenu: true, floatingFilterComponentParams: {suppressFilterButton:true}
   }
 
   return (
     <main id="main" className="main" >
-
-      {/*   <div className="pagetitle">
-        <h1>Dashboard</h1>
-        <nav>
-          <ol className="breadcrumb">
-            <li className="breadcrumb-item"><a href="index.html">Home</a></li>
-            <li className="breadcrumb-item active">Dashboard</li>
-          </ol>
-        </nav>
-      </div>
- */}
-      <ToastContainer />
       {/* Same as */}
       <section className="section grid_section h100 w100">
         <div className="h100 w100">
@@ -450,7 +769,7 @@ function Parameters() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">EPA Country or Tribal Code:</label>
                               <div className="col-sm-10">
-                                <select className="form-select">
+                                <select className="form-select" >
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select>
@@ -529,62 +848,21 @@ function Parameters() {
               )}
               {gridlist && (
                 <div>
-                  <div className="ag-theme-alpine mx-0 row h100 w100">
-                    <AgGridReact
-                      className="px-0"
-                      ref={gridRefsite}
-                      columnDefs={columnDefsSite}
-                      rowData={sites}
-                      pagination={true}
-                      tooltipShowDelay={0}
-                      paginationPageSize={PageSize}
-                      defaultColDef={defaultColDef}
-                      suppressCellFocus={true}
-                      onGridReady={OnGridReadysite}
-                    //</div>suppressPaginationPanel={true}
-                    //tooltipHideDelay={2000}
-                    >
-                    </AgGridReact>
                   </div>
-                  <div className="pagenation_header">
-                    <div className="d-inline p-2 ">
-                      Page Size:
-                      <select onChange={onPageSizeChangedsite} id="pagesizesite">
-                        <option value="5">5</option>
-                        <option value="1" selected={true}>1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                    </div>
-                    <div className="d-inline p-2 ">
-                      Goto Page:
-                      <select onChange={onPageChangedsite} id="gotopagesite">
-                        {(() => {
-                          const options = [];
-
-                          for (let i = 1; i <= SiteTotalpages; i++) {
-                            options.push(<option value={i} key={i}>{i}</option>);
-                          }
-
-                          return options;
-                        })()}
-                      </select>
-                    </div>
-                  </div>
-                </div>
+                
               )}
             </div>
             <div className="tab-pane fade show active" id="parameters-tab-pane" role="tabpanel" aria-labelledby="parameters-tab" tabIndex="0">
               <div className="me-2 mb-2 float-end">
                 {gridlist && (
-                  <span className="operation_class mx-2" onClick={() => AddSite()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                  <span className="operation_class mx-2" onClick={() => AddParameterchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
                 )}
                 {!gridlist && (
-                  <span className="operation_class mx-2" onClick={() => AddSite('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                  <span className="operation_class mx-2" onClick={() => AddParameterchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
                 )}
               </div>
               {!gridlist && (
-                <div className="row w100 px-0 mx-0">
+                <form id="Parameterform" className="row w100 px-0 mx-0" noValidate>
                   <div className="accordion px-0" id="accordionsparameter">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="parameterheadingOne">
@@ -598,28 +876,29 @@ function Parameters() {
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Site:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" />
+                                <input type="text" ref={parametersite} className="form-control required" required />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Parameter:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" />
+                                <input type="text" ref={parametername} className="form-control required" required />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Parent Parameter:</label>
                               <div className="col-sm-10">
-                                <select id="inputState" className="form-select">
-                                  <option selected>Choose...</option>
+                                {/* <select  ref={parentparameter} className="form-select">
+                                  <option selected ></option>
                                   <option>...</option>
-                                </select>
+                                </select> */}
+                                <input id="parentparameter" ref={parentparameter} className="form-control" placeholder="" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Parameter Group:</label>
                               <div className="col-sm-10">
-                                <select id="inputState" className="form-select">
+                                <select ref={parametergroup} className="form-select">
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select>
@@ -628,7 +907,7 @@ function Parameters() {
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">WebSite Display Name:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" />
+                                <input type="text" ref={websitename} className="form-control" />
                               </div>
                             </div>
                           </div>
@@ -647,13 +926,14 @@ function Parameters() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Parameter Template:</label>
                               <div className="col-sm-10">
-                                <select id="inputState" className="form-select">
+                                {/* <select id="inputState" className="form-select">
                                   <option selected>Choose...</option>
                                   <option>...</option>
-                                </select>
+                                </select> */}
+                                <input id="Parametertemplate" ref={parametertemplate} className="form-control" placeholder="" />
                               </div>
                               <div className="text-center">
-                                <button type="button" className="btn btn-primary px-4">Apply</button>
+                                <button type="button" className="btn btn-primary px-4" onClick={ParameterApply}>Apply</button>
                               </div>
                             </div>
                           </div>
@@ -675,7 +955,7 @@ function Parameters() {
                                   <label className="form-check-label" htmlFor="gridCheck">
                                     Enabled
                                   </label>
-                                  <input className="form-check-input" type="checkbox" />
+                                  <input className="form-check-input" defaultChecked={true} ref={parameterenabled} type="checkbox" />
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -683,7 +963,7 @@ function Parameters() {
                                   <label className="form-check-label" htmlFor="gridCheck">
                                     Enable AIRNow Reporting
                                   </label>
-                                  <input className="form-check-input" type="checkbox" />
+                                  <input className="form-check-input" ref={enableairnowreporting} type="checkbox" />
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -691,7 +971,7 @@ function Parameters() {
                                   <label className="form-check-label" htmlFor="gridCheck">
                                     Filter From WebSite
                                   </label>
-                                  <input className="form-check-input" type="checkbox" />
+                                  <input className="form-check-input" ref={filterfromwebsite} type="checkbox" />
                                 </div>
                               </div>
                             </div>
@@ -700,24 +980,12 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Parameter Data Type:</label>
                                   <div className="col-sm-6">
-                                    <div className="form-check">
-                                      <input className="form-check-input" type="radio" name="pdtradio" id="exampleRadios1" value="option1" checked />
-                                      <label className="form-check-label" htmlFor="exampleRadios1">
-                                        Average / Continuous
-                                      </label>
-                                    </div>
-                                    <div className="form-check">
-                                      <input className="form-check-input" type="radio" name="pdtradio" id="exampleRadios2" value="option2" />
-                                      <label className="form-check-label" htmlFor="exampleRadios2">
-                                        Continuous Sample
-                                      </label>
-                                    </div>
-                                    <div className="form-check">
-                                      <input className="form-check-input" type="radio" name="pdtradio" id="exampleRadios3" value="option3" />
-                                      <label className="form-check-label" htmlFor="exampleRadios3">
-                                        Sample / Non-Continuous
-                                      </label>
-                                    </div>
+                                    {ListDataType.map((x, y) =>
+                                      <div className="form-check">
+                                        <input className="form-check-input" type="radio" name="pdtradio" id="inlineRadio11" value={x.id} defaultChecked={x.id == 1} checked={x.id == parameterDatatype} onChange={parameterdatatypechange} />
+                                        <label className="form-check-label" htmlFor={"inlineRadio" + x.id}>{x.dataType}</label>
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -725,7 +993,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">EPA POC:</label>
                                   <div className="col-sm-8">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="text" className="form-control" ref={epapoc} placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -733,7 +1001,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">EPA Method:</label>
                                   <div className="col-sm-8">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="text" className="form-control" ref={epamethod} placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -741,34 +1009,39 @@ function Parameters() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Description:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" ref={description} placeholder="" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Math Equation(If Calculated):</label>
                               <div className="col-sm-10">
-                                <select className="form-select">
+                                {/*  <select className="form-select">
                                   <option selected>Choose...</option>
                                   <option>...</option>
-                                </select>
+                                </select> */}
+                                <input id="Mathequation" ref={mathequation} className="form-control" placeholder="" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">EPA Units:</label>
                               <div className="col-sm-10">
-                                <select className="form-select">
+                                <select className="form-select" ref={epaunits}>
                                   <option selected>Choose...</option>
-                                  <option>...</option>
+                                  {ListEpaUnits.map((x, y) =>
+                                    <option value={x.id} key={y} >{x.unitCode + "-" + x.unitDescription}</option>
+                                  )}
                                 </select>
+                                {/* <input id="demo-2"  className="form-control" placeholder="" /> */}
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">EPA Parameters:</label>
                               <div className="col-sm-10">
-                                <select className="form-select">
+                                {/* <select className="form-select">
                                   <option selected>Choose...</option>
                                   <option>...</option>
-                                </select>
+                                </select> */}
+                                <input id="EpaParameter" ref={epaparameter} className="form-control" placeholder="" />
                               </div>
                             </div>
                             <div className="row">
@@ -776,7 +1049,8 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">Reported Digits:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" min="0" max="5" className="form-control" placeholder="" />
+                                    <input type="number" min="0" max="6" ref={reporteddigits} value={reporteddigits1}   onKeyDown={AllowNumbersonly}
+                                    onChange={e => setreporteddigits(e.target.value)} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -784,7 +1058,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">Precision:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" min="0" max="5" className="form-control" placeholder="" />
+                                    <input type="number" min="0" max={reporteddigits1} onFocus={e=>{if(!reporteddigits1)setreporteddigits(1)}} onKeyDown={AllowNumbersonly} ref={precision} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -792,7 +1066,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">Calibration Precision:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" min="0" max="5" className="form-control" placeholder="" />
+                                    <input type="number" min="0" max="5" ref={calibrationprecision} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -816,11 +1090,11 @@ function Parameters() {
                                   <label htmlFor="inputAddress" className="form-label mt-0 col-sm-6">Truncate Round Rule:</label>
                                   <div className="col-sm-6">
                                     <div className="form-check form-check-inline">
-                                      <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" />
+                                      <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="1" checked={TruncateRoundedvalue == 1} onChange={Truncateroundedchange} />
                                       <label className="form-check-label" htmlFor="inlineRadio1">Round</label>
                                     </div>
                                     <div className="form-check form-check-inline">
-                                      <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2" />
+                                      <input className="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="2" checked={TruncateRoundedvalue == 2} onChange={Truncateroundedchange} />
                                       <label className="form-check-label" htmlFor="inlineRadio2">Truncate</label>
                                     </div>
                                   </div>
@@ -828,9 +1102,9 @@ function Parameters() {
                               </div>
                               <div className="col-sm-4">
                                 <div className="row">
-                                  <label htmlFor="inputAddress" className="form-label col-sm-6">Graph Minium:</label>
+                                  <label htmlFor="inputAddress" className="form-label col-sm-6">Graph Minimum:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="text" ref={graphminimum} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -838,7 +1112,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Graph Maximum:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="text" ref={graphmaximum} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -846,19 +1120,21 @@ function Parameters() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Reported Units:</label>
                               <div className="col-sm-10">
-                                <select className="form-select">
+                                {/* <select className="form-select">
                                   <option selected>Choose...</option>
                                   <option>...</option>
-                                </select>
+                                </select> */}
+                                <input id="Reportedunits" required ref={reportedunits} className="form-control required" placeholder="" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Analyzer Units (if diffrent):</label>
                               <div className="col-sm-10">
-                                <select className="form-select">
+                                {/* <select className="form-select">
                                   <option selected>Choose...</option>
                                   <option>...</option>
-                                </select>
+                                </select> */}
+                                <input id="Analyzerunits" ref={analyzerunits} className="form-control" placeholder="" />
                               </div>
                             </div>
                             <div className="row">
@@ -866,7 +1142,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Calibration Span:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="number" ref={calibrationspan} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -874,7 +1150,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Instrument Detection Limit:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="number" ref={instrumentdetectionlimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -882,7 +1158,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Limot of Quantization:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="number" ref={limitofquantization} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -892,7 +1168,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Minimum Detectable Limit:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="number" ref={miniumdetectablelimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -900,7 +1176,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Practical Quantitation Limit:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" className="form-control" placeholder="" />
+                                    <input type="number" ref={practicalquantitationlimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -908,7 +1184,7 @@ function Parameters() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Parameter Report Order:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" className="form-control" placeholder="" />
+                                    <input type="number" ref={parameterreportorder} min="0" max="999" onKeyDown={AllowNumbersonly} className="form-control" placeholder="" />
                                   </div>
                                 </div>
                               </div>
@@ -919,7 +1195,7 @@ function Parameters() {
                                   <label className="form-check-label" htmlFor="gridCheck">
                                     Totalize in Reports
                                   </label>
-                                  <input className="form-check-input" type="checkbox" />
+                                  <input className="form-check-input" ref={totalizeinreports} type="checkbox" />
                                 </div>
                               </div>
                               <div className="col-sm-4">
@@ -927,7 +1203,7 @@ function Parameters() {
                                   <label className="form-check-label" htmlFor="gridCheck">
                                     Minimum in Reports
                                   </label>
-                                  <input className="form-check-input" type="checkbox" />
+                                  <input className="form-check-input" ref={miniuminreports} type="checkbox" />
                                 </div>
                               </div>
                             </div>
@@ -936,52 +1212,19 @@ function Parameters() {
                       </div>
                     </div>
                   </div>
-                </div>
+                  <div class="col-12 text-center mt-2">
+                    {Addbtn && (
+                      <button class="btn btn-primary" onClick={AddParameter} type="button">Add Parameter</button>
+                    )}
+                    {!Addbtn && (
+                      <button class="btn btn-primary" onClick={UpdateParameter} type="button">Update Parameter</button>
+                    )}
+                  </div>
+                </form>
               )}
               {gridlist && (
                 <div>
-                  <div className="ag-theme-alpine mx-0 row h100 w100">
-                    <AgGridReact
-                      className="px-0"
-                      ref={gridRef}
-                      columnDefs={columnDefs}
-                      rowData={gitHubUsers}
-                      pagination={true}
-                      tooltipShowDelay={0}
-                      paginationPageSize={PageSize}
-                      defaultColDef={defaultColDef}
-                      suppressCellFocus={true}
-                      onGridReady={OnGridReady}
-                    //</div>suppressPaginationPanel={true}
-                    //tooltipHideDelay={2000}
-                    >
-                    </AgGridReact>
-                  </div>
-                  <div className="pagenation_header">
-                    <div className="d-inline p-2 ">
-                      Page Size:
-                      <select onChange={onPageSizeChanged} id="page-size">
-                        <option value="5">5</option>
-                        <option value="1" selected={true}>1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                      </select>
-                    </div>
-                    <div className="d-inline p-2 ">
-                      Goto Page:
-                      <select onChange={onPageChanged} id="gotopage">
-                        {(() => {
-                          const options = [];
-
-                          for (let i = 1; i <= Totalpages; i++) {
-                            options.push(<option value={i} key={i} >{i}</option>);
-                          }
-
-                          return options;
-                        })()}
-                      </select>
-                    </div>
-                  </div>
+                  <div className="jsGrid" ref={gridRefjsgrid} />
                 </div>
               )}
             </div>
@@ -992,4 +1235,4 @@ function Parameters() {
     </main>
   );
 }
-export default Parameters;
+export default Parameters1;

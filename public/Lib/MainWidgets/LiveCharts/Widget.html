@@ -1,0 +1,28 @@
+
+<div data-dojo-attach-point="divCharCtrl">
+    <!--<h1>Testing</h1>-->
+    <div class="tabs_container1">
+        <section class="main_tab analytics_btns">
+            <header>
+                <ul data-dojo-attach-point="main_tabCharts" class="tab_charts">
+                    <li class="tab-link current_item pre_defined_btn" data-tab="tab-2"><span>Pre-Defined Charts</span></li>
+                    <li class="tab-link interactive_btn" data-tab="tab-1"><span>Interactive Analytics</span></li>
+                    <li class="tab-link analysis_btn" data-tab="tab-3"><span>Detailed Analysis</span></li>
+                </ul>
+            </header>
+
+            <div class="clearfix"></div>
+            <div class="analysis_tabs">
+                <div id="tab-1" class="tab-content current_item about_tabs pre_defined_chart">
+                    <div data-dojo-attach-point="divPredefinedCharts"></div>
+                </div>
+                <div id="tab-2" class="tab-content interactive_charts">
+                    <div data-dojo-attach-point="divInteractiveCharts"></div>
+                </div>
+                <div id="tab-3" class="tab-content analysis_charts">
+                    <div data-dojo-attach-point="divDetailedAnalysis"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
