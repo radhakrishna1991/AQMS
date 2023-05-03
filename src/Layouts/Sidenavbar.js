@@ -11,6 +11,7 @@ function Sidenavbar() {
           <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
             <span>Dashboard</span>
+            <span>Dashboard12</span>
           </NavLink >
         </li>
         {/*  <li className="nav-item">
