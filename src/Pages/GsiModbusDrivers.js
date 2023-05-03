@@ -39,7 +39,7 @@ function GsiModbusDrivers() {
     return isvalid;
   }
   const AddDriverDigital = (event) => {
-    let DriverDigitalEntryName = document.getElementById("driverentryname").value;
+    let DriverDigitalEntryName = document.getElementById("digitaldriverentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstrument").value;
     let CoilNumber = document.getElementById("coilnumber").value;
     let InputType = document.getElementById("inputradio").checked;
@@ -48,11 +48,12 @@ function GsiModbusDrivers() {
     let RegisterOutput = document.getElementById("registeroutput").checked;
     let RegisterValueClosed = document.getElementById("closedvalue").value;
     let RegisterValueOpen = document.getElementById("openvalue").value;
-    let CreatedBy = document.getElementById("instrumentname").value;
-    let ModifiedBy = document.getElementById("instrumentname").value;
+    let CreatedBy = document.getElementById("digitaldriverentryname").value;
+    let ModifiedBy = document.getElementById("digitaldriverentryname").value;
+    
     let isvalid = DriverDegitalValidations(DriverDigitalEntryName, DriverInstrumentID,CoilNumber);
     if (!isvalid) {
-      return false;
+       return false;
     }
     fetch(process.env.REACT_APP_WSurl + 'api/DriverDigital', {
       method: 'POST',
@@ -60,24 +61,24 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ DriverDigitalEntryName: DriverDigitalEntryName, DriverInstrumentID: DriverInstrumentID, CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen}),
+      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverDigitalEntryName: DriverDigitalEntryName,  CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen}),
     }).then((response) => response.json())
       .then((responseJson) => {
-        if (responseJson == "Instrumentadd") {
+        if (responseJson == "Driverdigitaladd") {
           GetDriverDigital();
           setInstrumentgridlist(true);
           setInstrumenttAddbtn(true);
           toast.success('Driver digital added successfully');
-        } else if (responseJson == "Instrumentexist") {
+        } else if (responseJson == "Driverdigitalexist") {
           toast.error('Driver digital already exists with given name. Please try with another driver digital name');
         } else {
-          toast.error('Unable to add Instrument. Please contact adminstrator');
+          toast.error('Unable to add Driver digital. Please contact adminstrator');
         }
       })
   }
 
   const UpdateDriverDigital = (event) => {
-    let DriverDigitalEntryName = document.getElementById("driverentryname").value;
+    let DriverDigitalEntryName = document.getElementById("digitaldriverentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstrument").value;
     let CoilNumber = document.getElementById("coilnumber").value;
     let InputType = document.getElementById("inputradio").checked;
@@ -86,19 +87,19 @@ function GsiModbusDrivers() {
     let RegisterOutput = document.getElementById("registeroutput").checked;
     let RegisterValueClosed = document.getElementById("closedvalue").value;
     let RegisterValueOpen = document.getElementById("openvalue").value;
-    let CreatedBy = document.getElementById("instrumentname").value;
-    let ModifiedBy = document.getElementById("instrumentname").value;
+    let CreatedBy = document.getElementById("digitaldriverentryname").value;
+    let ModifiedBy = document.getElementById("digitaldriverentryname").value;
     let isvalid = DriverDegitalValidations(DriverDigitalEntryName, DriverInstrumentID,CoilNumber);
     if (!isvalid) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Instrument/' + InstrumentId, {
+    fetch(process.env.REACT_APP_WSurl + 'api/DriverDigital/' + DigitalId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ DriverDigitalEntryName: DriverDigitalEntryName, DriverInstrumentID: DriverInstrumentID, CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen})  }).then((response) => response.json())
+      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverDigitalEntryName: DriverDigitalEntryName,  CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen})  }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
           GetDriverDigital();
@@ -118,12 +119,15 @@ function GsiModbusDrivers() {
     setDigitalId(param.id);
     setDigitalAddbtn(false);
     setTimeout(() => {
-      document.getElementById("instrumentname").value = param.instrumentName;;
-      document.getElementById("tcpipport").value = param.defaultModbusTcpIpPort;
-      document.getElementById("modbuscode").value = param.defaultModbusCode;
-      document.getElementById("modbuscommandtype").value = param.defaultModbusCommandType;
-      document.getElementById("timeout").value = param.defaultTimeoutMs;
-      document.getElementById("multiplecoils").checked = param.supportsForceMultipleCoils;
+      document.getElementById("digitaldriverentryname").value = param.driverDigitalEntryName;;
+      document.getElementById("associatedinstrument").value = param.driverInstrumentID;
+      document.getElementById("coilnumber").value = param.coilNumber;
+      document.getElementById("closedvalue").value = param.registerValueClosed;
+      document.getElementById("openvalue").value = param.registerValueOpen;
+      document.getElementById("inputradio").checked = param.inputType;
+      document.getElementById("outputradio").checked = param.outputType;
+      document.getElementById("registeroutput").checked = param.registerOutput;
+      document.getElementById("discreteinput").checked = param.discreteInput;
     }, 10);
   }
 
@@ -140,7 +144,7 @@ function GsiModbusDrivers() {
       .then(function (isConfirm) {
         if (isConfirm) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/Instrument/' + id, {
+          fetch(process.env.REACT_APP_WSurl + 'api/DriverDigital/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -161,6 +165,7 @@ function GsiModbusDrivers() {
       .then((data) => {
         if (data) {
           setDigitalList(data);
+          //setInstrumentsList(data);
         }
       }).catch((error) => toast.error('Unable to get the driver digital list. Please contact adminstrator'));
   }
@@ -359,7 +364,7 @@ function GsiModbusDrivers() {
   }
 
   const initializeDigitalJsGrid = function () {
-    window.jQuery(InstrumentgridRef.current).jsGrid({
+    window.jQuery(DigitalgridRef.current).jsGrid({
       width: "100%",
       height: "auto",
       filtering: true,
@@ -377,14 +382,16 @@ function GsiModbusDrivers() {
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
             return ((!filter.id || item.id.toUpperCase().indexOf(filter.id.toUpperCase()) >= 0)
-              && (!filter.instrumentName || item.instrumentName.toUpperCase().indexOf(filter.instrumentName.toUpperCase()) >= 0)
+              && (!filter.driverDigitalEntryName || item.driverDigitalEntryName.toUpperCase().indexOf(filter.driverDigitalEntryName.toUpperCase()) >= 0)
+              && (!filter.DriverInstrumentID || item.DriverInstrumentID.toUpperCase().indexOf(filter.DriverInstrumentID.toUpperCase()) >= 0)
             );
           });
         }
       },
       fields: [
-        { name: "id", title: "Instrument ID", type: "text" },
-        { name: "instrumentName", title: "Instrument Name", type: "text" },
+        { name: "id", title: "Driver ID", type: "text" },
+        { name: "driverDigitalEntryName", title: "Digital Driver Name", type: "text" },
+        { name: "DriverInstrumentID", title: "Driver Instrument ID", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -392,14 +399,14 @@ function GsiModbusDrivers() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
-                EditInstrument(item);
+                EditDriverDigital(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
             var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
               .click(function (e) {
-                DeleteInstrument(item);
+                DeleteDriverDigital(item);
                 e.stopPropagation();
               });
 
@@ -684,9 +691,9 @@ function GsiModbusDrivers() {
                           <div className="row">
                             <div className="col-md-6">
                               <div className="row">
-                                <label htmlFor="driverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
+                                <label htmlFor="digitaldriverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="driverentryname" />
+                                  <input type="text" className="form-control" id="digitaldriverentryname" />
                                 </div>
                               </div>
                             </div>
@@ -694,9 +701,11 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
-                                  <select id="associatedinstrument" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
+                                  <select className="form-select" id="associatedinstrument">
+                                      <option selected>Please select instrument</option>
+                                      {InstrumentsList.map((x, y) =>
+                                        <option value={x.id} key={y} >{x.instrumentName}</option>
+                                      )}
                                   </select>
                                 </div>
                               </div>
