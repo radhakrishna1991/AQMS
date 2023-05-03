@@ -10,7 +10,7 @@ function Sidenavbar() {
         <li className="nav-item">
           <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
-            <span>Dashboard1</span>
+            <span>Dashboard12</span>
           </NavLink >
         </li>
         {/*  <li className="nav-item">
