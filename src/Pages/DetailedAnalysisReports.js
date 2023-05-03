@@ -429,7 +429,7 @@ function DetailedAnalysisReports() {
           display: false,
           position: 'top',
         },
-        title: {
+        title: { 
           display: true,
           text: pollutent+' HOURS EXCEEDING -24Hr',
         },
