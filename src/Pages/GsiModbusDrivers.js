@@ -645,8 +645,8 @@ function GsiModbusDrivers() {
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
             return ((!filter.id || item.id.toUpperCase().indexOf(filter.id.toUpperCase()) >= 0)
-              && (!filter.driverEntryName || item.driverEntryName.toUpperCase().indexOf(filter.driverEntryName.toUpperCase()) >= 0)
-              && (!filter.DriverInstrID || item.DriverInstrID.toUpperCase().indexOf(filter.DriverInstrID.toUpperCase()) >= 0)
+              && (!filter.gsiDriverEntryName || item.gsiDriverEntryName.toUpperCase().indexOf(filter.gsiDriverEntryName.toUpperCase()) >= 0)
+              && (!filter.gsiDriverInstrID || item.gsiDriverInstrID.toUpperCase().indexOf(filter.gsiDriverInstrID.toUpperCase()) >= 0)
             );
           });
         }
