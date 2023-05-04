@@ -55,7 +55,7 @@ function StasticsReport() {
             search: true
           });
           $('#pollutentid').SumoSelect({
-            triggerChangeCombined: true, placeholder: 'Select Pollutent', floatWidth: 200, selectAll: true,
+            triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
             search: true
           });
         }, 100);
@@ -408,7 +408,7 @@ function StasticsReport() {
                 </select>
               </div>
               <div className="col">
-                <label className="form-label">Pollutents</label>
+                <label className="form-label">Parameters</label>
                 <select className="form-select pollutentid" id="pollutentid" multiple="multiple">
                   {/* <option selected> Select Pollutents</option> */}
                   {Pollutents.map((x, y) =>
@@ -449,7 +449,7 @@ function StasticsReport() {
               <div className="col">
                 <label className="form-label">Interval</label>
                 <select className="form-select" id="intervalid">
-                  <option value="" selected>Select Criteria</option>
+                  <option value="" selected>Select Interval</option>
                   {Criteria.map((x, y) =>
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}
