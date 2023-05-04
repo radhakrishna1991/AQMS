@@ -16,6 +16,7 @@ function GsiModbusDrivers() {
   const [DigitalList, setDigitalList] = useState([]);
   const [Type, setType] = useState();
   const [DigitalAddbtn, setDigitalAddbtn] = useState(true);
+  const [OutputDivValues, setOutputDivValues]=useState(true);
 
   const [DriverEntrygridlist, setDriverEntrygridlist] = useState(true);
   const [DriverEntryId, setDriverEntryId] = useState(0);
@@ -679,6 +680,12 @@ function GsiModbusDrivers() {
       ]
     });
   }
+  const inputchange=function(){    
+    setOutputDivValues(true);
+  }
+  const Outputchange=function(){
+    setOutputDivValues(false);
+  }
   
   useEffect(() => {
     initializeInstrumentJsGrid();
@@ -991,7 +998,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="digitaldriverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="digitaldriverentryname" required />
+                                  <input type="text" className="form-control" id="digitaldriverentryname" placeholder="Enter Driver name" required />
                                   <div class="invalid-feedback">Please Enter Driver Name</div>
                                 </div>
                               </div>
@@ -1000,8 +1007,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
-                                  <select className="form-select" id="associatedinstrument">
-                                      <option selected>Please select instrument</option>
+                                  <select className="form-select" id="associatedinstrument" required>
+                                      <option selected value="">select instrument</option>
                                       {InstrumentsList.map((x, y) =>
                                         <option value={x.id} key={y} >{x.instrumentName}</option>
                                       )}
@@ -1014,7 +1021,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="coilnumber" className="form-label col-sm-4">Coil Number:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="coilnumber" placeholder="" required />
+                                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil number" required />
                                   <div class="invalid-feedback">Please Enter Coil Number</div>
                                 </div>
                               </div>
@@ -1024,18 +1031,18 @@ function GsiModbusDrivers() {
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Input/Output Type:</label>
                                 <div className="col-sm-8 mt-3">
                                   <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="radio" name="inputRadioOptions" defaultChecked="true" id="inputradio" value="input" />
+                                    <input className="form-check-input" type="radio" name="inputRadioOptions" defaultChecked="true" id="inputradio" value="input" onChange={inputchange}/>
                                     <label className="form-check-label" htmlFor="inputradio">Input</label>
                                   </div>
                                   <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="radio" name="inputRadioOptions" id="outputradio" value="output" />
+                                    <input className="form-check-input" type="radio" name="inputRadioOptions" id="outputradio" value="output" onChange={Outputchange} />
                                     <label className="form-check-label" htmlFor="outputradio">Output</label>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="col-md-6 mt-3">
-                              <div className="parse_fixed">
+                            <div className="col-md-6 mt-3 InputOptionsDiv">
+                              <div className={"parse_fixed " + (OutputDivValues?"":"disable")}>
                                 <h6>Input Options</h6>
                                 <div className="row">
                                   <div className="col-sm-12">
@@ -1049,8 +1056,8 @@ function GsiModbusDrivers() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-md-6 mt-3">
-                              <div className="parse_fixed">
+                            <div className="col-md-6 mt-3 OutputOptionsDiv">
+                              <div className={"parse_fixed "+ (OutputDivValues?"disable":"")}>
                                 <h6>Output Options</h6>
                                 <div className="row">
                                   <div className="col-sm-12">
@@ -1067,7 +1074,7 @@ function GsiModbusDrivers() {
                                   <div className="row">
                                   <label htmlFor="closedvalue" className="form-label col-sm-5">Closed Value:</label>
                                   <div className="col-sm-7">
-                                    <input type="number" id="closedvalue" className="form-control" placeholder="" />
+                                    <input type="number" id="closedvalue" className="form-control" placeholder="Enter Closed Value"  />
                                   </div>
                                   </div>
                                   </div>
@@ -1075,7 +1082,7 @@ function GsiModbusDrivers() {
                                     <div className="row">
                                   <label htmlFor="openvalue" className="form-label col-sm-5">Open Value:</label>
                                   <div className="col-sm-7">
-                                    <input type="number" id="openvalue" className="form-control" placeholder="" />
+                                    <input type="number" id="openvalue" className="form-control" placeholder="Enter Open Value"  />
                                   </div>
                                   </div>
                                   </div>
@@ -1130,7 +1137,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="instrumentname" className="form-label col-sm-4">Instrument Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="instrumentname" required />
+                                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Instrument name" required />
                                   <div class="invalid-feedback">Please Enter Instrument Name</div>
                                 </div>
                               </div>
@@ -1139,7 +1146,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="tcpipport" className="form-label col-sm-4">Default Modbus TcpIp Port:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="tcpipport" required/>
+                                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Modbus TcpIp port" required/>
                                   <div class="invalid-feedback">Please Enter Modbus TcpIp Port</div>
                                 </div>
                               </div>
@@ -1148,7 +1155,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscode" className="form-label col-sm-4">Default Modbus Code:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="modbuscode" maxLength="3" placeholder="" />
+                                  <input type="text" className="form-control" id="modbuscode" maxLength="3" placeholder="Enter Modbus code" />
                                 </div>
                               </div>
                             </div>
@@ -1156,7 +1163,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Default Modbus Command Type:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="modbuscommandtype" maxLength="3" placeholder="" />
+                                  <input type="text" className="form-control" id="modbuscommandtype" maxLength="3" placeholder="Enter Modbus type" />
                                 </div>
                               </div>
                             </div>
@@ -1164,7 +1171,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Default Timeout(ms):</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="timeout" placeholder="" />
+                                  <input type="number" className="form-control" id="timeout" placeholder="Enter Timeout" />
                                 </div>
                               </div>
                             </div>

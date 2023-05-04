@@ -599,13 +599,13 @@ function Parameters1() {
                         <div className="row">
                           <label htmlFor="inputAddress" className="form-label col-sm-2">System Name:</label>
                           <div className="col-sm-10">
-                            <input type="text" className="form-control" placeholder="" />
+                            <input type="text" className="form-control" placeholder="Enter System name" />
                           </div>
                         </div>
                         <div className="row">
                           <label htmlFor="inputAddress" className="form-label col-sm-2">Country Code:</label>
                           <div className="col-sm-10">
-                            <input type="text" className="form-control" placeholder="" />
+                            <input type="text" className="form-control" placeholder="Enter Country code" />
                           </div>
                         </div>
                         <div className="row">
@@ -629,19 +629,19 @@ function Parameters1() {
                         <div className="row">
                           <label htmlFor="inputAddress" className="form-label col-sm-2">AirNow Agency Code:</label>
                           <div className="col-sm-10">
-                            <input type="text" className="form-control" placeholder="" />
+                            <input type="text" className="form-control" placeholder="Enter Agency code" />
                           </div>
                         </div>
                         <div className="row">
                           <label htmlFor="inputAddress" className="form-label col-sm-2">Zip Code:</label>
                           <div className="col-sm-10">
-                            <input type="text" className="form-control" placeholder="" />
+                            <input type="text" className="form-control" placeholder="Enter zip code" />
                           </div>
                         </div>
                         <div className="row">
                           <label htmlFor="inputAddress" className="form-label col-sm-2">System Database Identifier:</label>
                           <div className="col-sm-10">
-                            <input type="text" className="form-control" placeholder="" />
+                            <input type="text" className="form-control" placeholder="Enter Database identifier" />
                           </div>
                         </div>
                       </div>
@@ -687,7 +687,7 @@ function Parameters1() {
                               <div className="row">
                                 <label htmlFor="inputEmail4" className="form-label col-sm-3">Name:</label>
                                 <div className="col-sm-9">
-                                  <input type="text" className="form-control" id="inputEmail4" />
+                                  <input type="text" className="form-control" placeholder="Enter Name" id="inputEmail4" />
                                 </div>
                               </div>
                             </div>
@@ -695,7 +695,7 @@ function Parameters1() {
                               <div className="row">
                                 <label htmlFor="inputPassword4" className="form-label col-sm-3">Description:</label>
                                 <div className="col-sm-9">
-                                  <input type="text" className="form-control" id="inputPassword4" />
+                                  <input type="text" className="form-control" placeholder="Enter Description" id="inputPassword4" />
                                 </div>
                               </div>
                             </div>
@@ -703,7 +703,7 @@ function Parameters1() {
                               <div className="row">
                                 <label htmlFor="inputAddress" className="form-label col-sm-3">Abbreviation:</label>
                                 <div className="col-sm-9">
-                                  <input type="text" className="form-control" placeholder="" />
+                                  <input type="text" className="form-control" placeholder="Enter Abbreviation" />
                                 </div>
                               </div>
                             </div>
@@ -741,29 +741,29 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Lattitude:</label>
                               <div className="col-sm-4">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter Latitude" />
                               </div>
 
                               <label htmlFor="inputAddress" className="form-label col-sm-2">EPA Site:</label>
                               <div className="col-sm-4">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter EPA site" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Longitude:</label>
                               <div className="col-sm-4">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter Longitude" />
                               </div>
 
                               <label htmlFor="inputAddress" className="form-label col-sm-2">AIRNow Mnemonic:</label>
                               <div className="col-sm-4">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter AIRNow Mnemonic" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">File Import Code:</label>
                               <div className="col-sm-4">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter File code" />
                               </div>
                             </div>
                             <div className="row">
@@ -787,7 +787,7 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">WebSite Display Name:</label>
                               <div className="col-sm-6">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter Website Name" />
                               </div>
                             </div>
                           </div>
@@ -806,37 +806,37 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Street Address1:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter Address1" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Street Address2:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter Address2" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">City:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter City" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Country:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter City" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">State Region:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter Region" />
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Zip Code:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" placeholder="" />
+                                <input type="text" className="form-control" placeholder="Enter zip code" />
                               </div>
                             </div>
                           </div>
@@ -876,14 +876,14 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Site:</label>
                               <div className="col-sm-10">
-                                <input type="text" ref={parametersite} className="form-control" required />
+                                <input type="text" ref={parametersite} className="form-control" placeholder="Enter Site" required />
                                 <div class="invalid-feedback">Please Enter Site</div>
                               </div>
                             </div>
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">Parameter:</label>
                               <div className="col-sm-10">
-                                <input type="text" ref={parametername} className="form-control" required />
+                                <input type="text" ref={parametername} className="form-control" placeholder="Enter Parameter" required />
                                 <div class="invalid-feedback">Please Enter Parameter</div>
                               </div>
                             </div>
@@ -894,7 +894,7 @@ function Parameters1() {
                                   <option selected ></option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="parentparameter" ref={parentparameter} className="form-control" placeholder="" />
+                                <input id="parentparameter" ref={parentparameter} className="form-control" placeholder="Enter Parent parameter" />
                               </div>
                             </div>
                             <div className="row">
@@ -909,7 +909,7 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputEmail4" className="form-label col-sm-2">WebSite Display Name:</label>
                               <div className="col-sm-10">
-                                <input type="text" ref={websitename} className="form-control" />
+                                <input type="text" ref={websitename} className="form-control" placeholder="Enter Display Name" />
                               </div>
                             </div>
                           </div>
@@ -932,7 +932,7 @@ function Parameters1() {
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="Parametertemplate" ref={parametertemplate} className="form-control" placeholder="" />
+                                <input id="Parametertemplate" ref={parametertemplate} className="form-control" placeholder="Enter Parameter template" />
                               </div>
                               <div className="text-center">
                                 <button type="button" className="btn btn-primary px-4" onClick={ParameterApply}>Apply</button>
@@ -995,7 +995,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">EPA POC:</label>
                                   <div className="col-sm-8">
-                                    <input type="text" className="form-control" ref={epapoc} placeholder="" />
+                                    <input type="text" className="form-control" ref={epapoc} placeholder="Enter EPA POC" />
                                   </div>
                                 </div>
                               </div>
@@ -1003,7 +1003,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">EPA Method:</label>
                                   <div className="col-sm-8">
-                                    <input type="text" className="form-control" ref={epamethod} placeholder="" />
+                                    <input type="text" className="form-control" ref={epamethod} placeholder="Enter EPA Method" />
                                   </div>
                                 </div>
                               </div>
@@ -1011,7 +1011,7 @@ function Parameters1() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-2">Description:</label>
                               <div className="col-sm-10">
-                                <input type="text" className="form-control" ref={description} placeholder="" />
+                                <input type="text" className="form-control" ref={description} placeholder="Enter Description" />
                               </div>
                             </div>
                             <div className="row">
@@ -1021,7 +1021,7 @@ function Parameters1() {
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="Mathequation" ref={mathequation} className="form-control" placeholder="" />
+                                <input id="Mathequation" ref={mathequation} className="form-control" placeholder="Enter Equation" />
                               </div>
                             </div>
                             <div className="row">
@@ -1043,7 +1043,7 @@ function Parameters1() {
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="EpaParameter" ref={epaparameter} className="form-control" placeholder="" />
+                                <input id="EpaParameter" ref={epaparameter} className="form-control" placeholder="Enter EPA Parameters" />
                               </div>
                             </div>
                             <div className="row">
@@ -1052,7 +1052,7 @@ function Parameters1() {
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">Reported Digits:</label>
                                   <div className="col-sm-4">
                                     <input type="number" min="0" max="6" ref={reporteddigits} value={reporteddigits1}   onKeyDown={AllowNumbersonly}
-                                    onChange={e => setreporteddigits(e.target.value)} className="form-control" placeholder="" />
+                                    onChange={e => setreporteddigits(e.target.value)} className="form-control" placeholder="Enter Reported Digits" />
                                   </div>
                                 </div>
                               </div>
@@ -1060,7 +1060,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">Precision:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" min="0" max={reporteddigits1} onFocus={e=>{if(!reporteddigits1)setreporteddigits(1)}} onKeyDown={AllowNumbersonly} ref={precision} className="form-control" placeholder="" />
+                                    <input type="number" min="0" max={reporteddigits1} onFocus={e=>{if(!reporteddigits1)setreporteddigits(1)}} onKeyDown={AllowNumbersonly} ref={precision} className="form-control" placeholder="Enter Precision" />
                                   </div>
                                 </div>
                               </div>
@@ -1068,7 +1068,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-4">Calibration Precision:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" min="0" max="5" ref={calibrationprecision} className="form-control" placeholder="" />
+                                    <input type="number" min="0" max="5" ref={calibrationprecision} className="form-control" placeholder="Enter Calibration Precision" />
                                   </div>
                                 </div>
                               </div>
@@ -1106,7 +1106,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Graph Minimum:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" ref={graphminimum} className="form-control" placeholder="" />
+                                    <input type="text" ref={graphminimum} className="form-control" placeholder="Enter Graph Minimum" />
                                   </div>
                                 </div>
                               </div>
@@ -1114,7 +1114,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Graph Maximum:</label>
                                   <div className="col-sm-6">
-                                    <input type="text" ref={graphmaximum} className="form-control" placeholder="" />
+                                    <input type="text" ref={graphmaximum} className="form-control" placeholder="Enter Graph Maximum" />
                                   </div>
                                 </div>
                               </div>
@@ -1126,7 +1126,7 @@ function Parameters1() {
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="Reportedunits" ref={reportedunits} className="form-control" placeholder="" required/>
+                                <input id="Reportedunits" ref={reportedunits} className="form-control" placeholder="Enter Reported Units" required/>
                                 <div class="invalid-feedback">Please Select Reported Units</div>
                               </div>
                             </div>
@@ -1137,7 +1137,7 @@ function Parameters1() {
                                   <option selected>Choose...</option>
                                   <option>...</option>
                                 </select> */}
-                                <input id="Analyzerunits" ref={analyzerunits} className="form-control" placeholder="" />
+                                <input id="Analyzerunits" ref={analyzerunits} className="form-control" placeholder="Enter Analyzer Units" />
                               </div>
                             </div>
                             <div className="row">
@@ -1145,7 +1145,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Calibration Span:</label>
                                   <div className="col-sm-6">
-                                    <input type="number" ref={calibrationspan} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
+                                    <input type="number" ref={calibrationspan} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="Enter Calibration" />
                                   </div>
                                 </div>
                               </div>
@@ -1153,7 +1153,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Instrument Detection Limit:</label>
                                   <div className="col-sm-6">
-                                    <input type="number" ref={instrumentdetectionlimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
+                                    <input type="number" ref={instrumentdetectionlimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="Enter Instrument Detection Limit" />
                                   </div>
                                 </div>
                               </div>
@@ -1161,7 +1161,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Limot of Quantization:</label>
                                   <div className="col-sm-6">
-                                    <input type="number" ref={limitofquantization} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
+                                    <input type="number" ref={limitofquantization} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="Enter Limot of Quantization" />
                                   </div>
                                 </div>
                               </div>
@@ -1171,7 +1171,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Minimum Detectable Limit:</label>
                                   <div className="col-sm-6">
-                                    <input type="number" ref={miniumdetectablelimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="" />
+                                    <input type="number" ref={miniumdetectablelimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly}  className="form-control" placeholder="Enter Minimum Limit" />
                                   </div>
                                 </div>
                               </div>
@@ -1179,7 +1179,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Practical Quantitation Limit:</label>
                                   <div className="col-sm-6">
-                                    <input type="number" ref={practicalquantitationlimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly} className="form-control" placeholder="" />
+                                    <input type="number" ref={practicalquantitationlimit} onBlur={e=>e.target.value=parseFloat(e.target.value).toFixed(2)} onKeyDown={AllowNumbersanddotonly} className="form-control" placeholder="Enter Quantitation Limit" />
                                   </div>
                                 </div>
                               </div>
@@ -1187,7 +1187,7 @@ function Parameters1() {
                                 <div className="row">
                                   <label htmlFor="inputAddress" className="form-label col-sm-6">Parameter Report Order:</label>
                                   <div className="col-sm-4">
-                                    <input type="number" ref={parameterreportorder} min="0" max="999" onKeyDown={AllowNumbersonly} className="form-control" placeholder="" />
+                                    <input type="number" ref={parameterreportorder} min="0" max="999" onKeyDown={AllowNumbersonly} className="form-control" placeholder="Enter Report Order" />
                                   </div>
                                 </div>
                               </div>

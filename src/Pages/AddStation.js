@@ -8,6 +8,7 @@ function AddStation() {
   const [ListStations, setListStations] = useState([]);
   const [StationList, setStationList] = useState(true);
   const [StationId, setStationId] = useState(0);
+  const [Status, setStatus] = useState(true);
   const Stationaddvalidation = function (StationName, Description) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddStationform')[0];
@@ -25,6 +26,9 @@ function AddStation() {
   const Stationadd = function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
+    let CreatedBy = "";
+    let ModifiedBy = "";
+    let status = Status?1:0;
     let validation = Stationaddvalidation(StationName, Description);
     if (!validation) {
       return false;
@@ -35,7 +39,7 @@ function AddStation() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationName: StationName, Description: Description}),
+      body: JSON.stringify({ StationName: StationName, Description: Description,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Stationadd") {
@@ -52,17 +56,22 @@ function AddStation() {
 
   const EditStation = function (param) {
     setStationList(false);
-    setStationId(param.id)
+    setStationId(param.id);
+    setStatus(param.status==1?true:false)
     setTimeout(() => {
       document.getElementById("StationName").value = param.stationName;
       document.getElementById("Description").value = param.description;
-    }, 10);
-   
+      //setStatus(param.status==1?true:false)
+    }, 1);
+
   }
 
-  const UpdateStation=function(){
+  const UpdateStation = function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
+    let CreatedBy = "";
+    let ModifiedBy = "";
+    let status = Status?1:0;
     let validation = Stationaddvalidation(StationName, Description);
     if (!validation) {
       return false;
@@ -73,14 +82,14 @@ function AddStation() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationName: StationName, Description: Description, ID:StationId }),
+      body: JSON.stringify({ StationName: StationName, Description: Description,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy}),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
           toast.success('Station Updated successfully');
           GetStation();
           setStationList(true);
-        }else if (responseJson == 2) {
+        } else if (responseJson == 2) {
           toast.error('Station already exist with given Station Name. Please try with another Station Name.');
         } else {
           toast.error('Unable to update the Station. Please contact adminstrator');
@@ -195,10 +204,10 @@ function AddStation() {
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {!StationList && StationId==0 && (
+          {!StationList && StationId == 0 && (
             <h1>Add Station</h1>
           )}
-           {!StationList && StationId!=0 && (
+          {!StationList && StationId != 0 && (
             <h1>Update Station</h1>
           )}
           {StationList && (
@@ -227,12 +236,25 @@ function AddStation() {
                   <textarea class="form-control required" id="Description" rows="3" placeholder="enter Description" required></textarea>
                   <div class="invalid-feedback">Please Enter Description</div>
                 </div>
+                <div className="col-md-12">
+                  <label for="Status" className="form-label">Status: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
+                    {Status && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Active</label>
+                    )}
+                    {!Status && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Inactive</label>
+                    )}
+                  </div>
+                </div>
+
                 <div className="col-md-12 text-center">
-                {!StationList && StationId==0 && (
-                  <button className="btn btn-primary" onClick={Stationadd} type="button">Add Station</button>
+                  {!StationList && StationId == 0 && (
+                    <button className="btn btn-primary" onClick={Stationadd} type="button">Add Station</button>
                   )}
-                  {!StationList && StationId!=0 && (
-                      <button className="btn btn-primary" onClick={UpdateStation} type="button">Update Station</button>
+                  {!StationList && StationId != 0 && (
+                    <button className="btn btn-primary" onClick={UpdateStation} type="button">Update Station</button>
                   )}
                 </div>
               </form>
