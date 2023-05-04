@@ -71,7 +71,7 @@ function DataReport() {
         { name: "interval", title: "Date", type: "text" },
         { name: "parameterName", title: "Parameter Name", type: "text" },
         { name: "parametervalue", title: "Value", type: "text", },
-        { name: "type", title: "Inteval", type: "text" },
+        { name: "type", title: "Interval", type: "text" },
         { type: "control", width: 100, editButton: false, deleteButton: false },
       ]
     });
@@ -146,7 +146,7 @@ function DataReport() {
       });
       isvalid = false;
     } else if (Pollutent == "") {
-      toast.error('Please select pollutent', {
+      toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -303,7 +303,7 @@ function DataReport() {
                 </select>
               </div>
               <div className="col-md-2">
-                <label className="form-label">Pollutents</label>
+                <label className="form-label">Parameters</label>
                 <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
                   {/* <option selected> Select Pollutents</option> */}
                   {Pollutents.map((x, y) =>
