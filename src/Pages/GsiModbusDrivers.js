@@ -950,7 +950,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="digitaldriverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control required" id="digitaldriverentryname" data-toggle="tooltip" data-placement="top" title="Enter Driver Entry Name" required />
+                                  <input type="text" className="form-control" id="digitaldriverentryname" required />
+                                  <div class="invalid-feedback">Please Enter Driver Name</div>
                                 </div>
                               </div>
                             </div>
@@ -964,6 +965,7 @@ function GsiModbusDrivers() {
                                         <option value={x.id} key={y} >{x.instrumentName}</option>
                                       )}
                                   </select>
+                                  <div class="invalid-feedback">Please Select Associated Instrument</div>
                                 </div>
                               </div>
                             </div>
@@ -971,7 +973,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="coilnumber" className="form-label col-sm-4">Coil Number:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control required" id="coilnumber" data-toggle="tooltip" data-placement="top" title="Enter coil number" placeholder="" required />
+                                  <input type="number" className="form-control" id="coilnumber" placeholder="" required />
+                                  <div class="invalid-feedback">Please Enter Coil Number</div>
                                 </div>
                               </div>
                             </div>
@@ -1086,7 +1089,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="instrumentname" className="form-label col-sm-4">Instrument Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control required" id="instrumentname" data-toggle="tooltip" data-placement="top" title="Enter Instrument Name" required />
+                                  <input type="text" className="form-control" id="instrumentname" required />
+                                  <div class="invalid-feedback">Please Enter Instrument Name</div>
                                 </div>
                               </div>
                             </div>
@@ -1094,7 +1098,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="tcpipport" className="form-label col-sm-4">Default Modbus TcpIp Port:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control required" id="tcpipport" data-toggle="tooltip" data-placement="top" title="Enter TcpIp Port" required/>
+                                  <input type="number" className="form-control" id="tcpipport" required/>
+                                  <div class="invalid-feedback">Please Enter Modbus TcpIp Port</div>
                                 </div>
                               </div>
                             </div>
