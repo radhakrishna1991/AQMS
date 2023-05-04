@@ -10,7 +10,7 @@ function Sidenavbar() {
         <li className="nav-item">
           <NavLink to="/Dashboard" className="nav-link animation-forwards animate-delay-1" >
             <i className="bi bi-grid"></i>
-            <span>Dashboard1</span>
+            <span>Dashboard</span>
           </NavLink >
         </li>
         {/*  <li className="nav-item">
@@ -24,7 +24,7 @@ function Sidenavbar() {
             <i className="bi bi-menu-button-wide"></i><span>Configuration Editors</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
           <ul id="configuration-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-            <li>
+            {/* <li>
               <a className="animation-forwards animate-delay-1 disable" href="components-alerts.html">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="stroke-1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
                 <span className="animate-fill-mode-forwards">Cal Expected Values</span>
@@ -34,13 +34,13 @@ function Sidenavbar() {
               <a className="animation-forwards animate-delay-2 disable" href="components-accordion.html">
                 <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Favorites Editors - All Users</span>
               </a>
-            </li>
+            </li> */}
             <li>
               <NavLink to="/GsiModbusDrivers" className="animation-forwards animate-delay-3">
                 <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Gsi/Modbus Drivers</span>
               </NavLink>
             </li>
-            <li>
+           {/*  <li>
               <a className="animation-forwards animate-delay-4 disable" href="components-breadcrumbs.html">
                 <i className="bi bi-circle"></i><span>Logger Channels</span>
               </a>
@@ -54,13 +54,13 @@ function Sidenavbar() {
               <a className="animation-forwards animate-delay-6 disable" href="components-buttons.html">
                 <i className="bi bi-circle"></i><span>Parameter MDL Editor</span>
               </a>
-            </li>
+            </li> */}
             <li>
               <NavLink to="/Parameters" className="animation-forwards animate-delay-7">
                 <i className="bi bi-circle"></i><span>Parameter Settings</span>
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <a className="animation-forwards animate-delay-8 disable" href="components-buttons.html">
                 <i className="bi bi-circle"></i><span>PC Configuration</span>
               </a>
@@ -118,7 +118,7 @@ function Sidenavbar() {
               <a className="animation-forwards animate-delay-11 disable" href="components-buttons.html">
                 <i className="bi bi-circle"></i><span>Task Scheduler</span>
               </a>
-            </li>
+            </li> */}
           </ul>
         </li>
         <li className="nav-item">
@@ -126,7 +126,7 @@ function Sidenavbar() {
             <i className="bi bi-menu-button-wide"></i><span>Admin</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
           <ul id="admin-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-            <li>
+            {/* <li>
               <NavLink to="/Adduser" className="animation-forwards animate-delay-1" >
                 <i className="bi bi-circle"></i>
                 <span>Users</span>
@@ -137,7 +137,7 @@ function Sidenavbar() {
                 <i className="bi bi-circle"></i>
                 <span>Users Log</span>
               </NavLink >
-            </li>
+            </li> */}
             <li>
               <NavLink to="/AddStation" className="animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
@@ -158,7 +158,7 @@ function Sidenavbar() {
             </li>
           </ul>
         </li>
-        <li className="nav-item">
+      {/*   <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-3 disable" data-bs-target="#Data-nav" data-bs-toggle="collapse" href="#">
             <i className="bi bi-journal-text"></i><span>Data Editors</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
@@ -196,7 +196,7 @@ function Sidenavbar() {
               </ul>
             </li>
           </ul>
-        </li>
+        </li> */}
 
         <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-4" data-bs-target="#report-nav" data-bs-toggle="collapse" href="#">
@@ -232,7 +232,7 @@ function Sidenavbar() {
                 <span>Data Reports</span>
               </NavLink >
             </li>
-            <li className="nav-item">
+           {/*  <li className="nav-item">
               <a className="nav-link collapsed animation-forwards animate-delay-1 disable" data-bs-target="#report-nav-sub" data-bs-toggle="collapse" href="#">
                 <i className="bi bi-folder-fill"></i><span>Average Reports</span><i className="bi bi-chevron-down ms-auto"></i>
               </a>
@@ -586,10 +586,10 @@ function Sidenavbar() {
                   </a>
                 </li>
               </ul>
-            </li>
+            </li> */}
           </ul>
         </li>
-        <li className="nav-item">
+       {/*  <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-5 disable" data-bs-target="#utilities-nav" data-bs-toggle="collapse" href="#">
             <i className="bi bi-bar-chart"></i><span>Utilities</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
@@ -771,7 +771,7 @@ function Sidenavbar() {
               </ul>
             </li>
           </ul>
-        </li>
+        </li> */}
         {/*  <li className="nav-heading animation-forwards animate-delay-7">Pages</li> */}
       </ul>
     </aside>
