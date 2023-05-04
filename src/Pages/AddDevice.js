@@ -271,40 +271,46 @@ function AddDevice() {
               <form id="AddDeviceform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <select className="form-select required" id="stationname" data-toggle="tooltip" data-placement="top" title="Enter Station Name" required>
-                    <option selected>Please select station name</option>
+                  <select className="form-select" id="stationname" required>
+                    <option selected value="">select station name</option>
                     {ListStations.map((x, y) =>
                       <option value={x.id} key={y} >{x.stationName}</option>
                     )}
                   </select>
+                  <div class="invalid-feedback">Please Select Station Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
-                  <input type="text" className="form-control required" id="devicename" placeholder="Please enter Device Name" data-toggle="tooltip" data-placement="top" title="Enter Device Name" required />
+                  <input type="text" className="form-control" id="devicename" placeholder="enter Device Name" required />
+                  <div class="invalid-feedback">Please Enter Device Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicemodel" className="form-label">Device Model:</label>
-                  <select className="form-select required" id="devicemodel" data-toggle="tooltip" data-placement="top" title="Select Device Model" required>
-                    <option selected>Please select Device Model</option>
+                  <select className="form-select" id="devicemodel" required>
+                    <option selected value="">select Device Model</option>
                     {ListDeviceModels.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceModelName}</option>
                     )}
                   </select>
+                  <div class="invalid-feedback">Please Select Device Model</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ipaddress" className="form-label">IP Address:</label>
-                  <input type="text" className="form-control required" id="ipaddress" placeholder="Please enter IP Address" data-toggle="tooltip" data-placement="top" title="Enter IP Address" required />
+                  <input type="text" className="form-control" id="ipaddress" placeholder="enter IP Address" required />
+                  <div class="invalid-feedback">Please Enter IP Address</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="port" className="form-label">Port:</label>
-                  <input type="text" className="form-control required" id="port" placeholder="Please enter port" data-toggle="tooltip" data-placement="top" title="Enter Port" required />
+                  <input type="text" className="form-control" id="port" placeholder="enter port" required />
+                  <div class="invalid-feedback">Please Enter Port</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="type" className="form-label">Type:</label>
-                  <select className="form-select required" id="type" data-toggle="tooltip" data-placement="top" title="Select Type" required>
-                    <option selected value="">Please select Type</option>
+                  <select className="form-select" id="type" required>
+                    <option selected value="">select Type</option>
                     <option value="modbus"  >Modbus</option>
                   </select>
+                  <div class="invalid-feedback">Please Select Type</div>
                 </div>
                 <div className="col-md-12 text-center">
                   {!DeviceList && DeviceId == 0 && (

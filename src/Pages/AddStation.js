@@ -219,11 +219,13 @@ function AddStation() {
               <form id="AddStationform" className="row">
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <input type="text" className="form-control required" id="StationName" placeholder="Please enter Station name" data-toggle="tooltip" data-placement="top" title="Enter Station Name" required />
+                  <input type="text" className="form-control" id="StationName" placeholder="enter Station name" required />
+                  <div class="invalid-feedback">Please Enter Station Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="Description" className="form-label">Description:</label>
-                  <textarea class="form-control required" id="Description" rows="3" placeholder="Please enter Description" data-toggle="tooltip" data-placement="top" title="Enter Description" required></textarea>
+                  <textarea class="form-control required" id="Description" rows="3" placeholder="enter Description" required></textarea>
+                  <div class="invalid-feedback">Please Enter Description</div>
                 </div>
                 <div className="col-md-12 text-center">
                 {!StationList && StationId==0 && (
