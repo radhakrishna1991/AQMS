@@ -16,6 +16,7 @@ function GsiModbusDrivers() {
   const [DigitalList, setDigitalList] = useState([]);
   const [Type, setType] = useState();
   const [DigitalAddbtn, setDigitalAddbtn] = useState(true);
+  const [OutputDivValues, setOutputDivValues]=useState(true);
 
   const [DriverEntrygridlist, setDriverEntrygridlist] = useState(true);
   const [DriverEntryId, setDriverEntryId] = useState(0);
@@ -644,6 +645,12 @@ function GsiModbusDrivers() {
       ]
     });
   }
+  const inputchange=function(){    
+    setOutputDivValues(true);
+  }
+  const Outputchange=function(){
+    setOutputDivValues(false);
+  }
   
   useEffect(() => {
     initializeInstrumentJsGrid();
@@ -959,7 +966,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
-                                  <select className="form-select" id="associatedinstrument">
+                                  <select className="form-select" id="associatedinstrument" required>
                                       <option selected value="">select instrument</option>
                                       {InstrumentsList.map((x, y) =>
                                         <option value={x.id} key={y} >{x.instrumentName}</option>
@@ -983,18 +990,18 @@ function GsiModbusDrivers() {
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Input/Output Type:</label>
                                 <div className="col-sm-8 mt-3">
                                   <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="radio" name="inputRadioOptions" defaultChecked="true" id="inputradio" value="input" />
+                                    <input className="form-check-input" type="radio" name="inputRadioOptions" defaultChecked="true" id="inputradio" value="input" onChange={inputchange}/>
                                     <label className="form-check-label" htmlFor="inputradio">Input</label>
                                   </div>
                                   <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="radio" name="inputRadioOptions" id="outputradio" value="output" />
+                                    <input className="form-check-input" type="radio" name="inputRadioOptions" id="outputradio" value="output" onChange={Outputchange} />
                                     <label className="form-check-label" htmlFor="outputradio">Output</label>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="col-md-6 mt-3">
-                              <div className="parse_fixed">
+                            <div className="col-md-6 mt-3 InputOptionsDiv">
+                              <div className={"parse_fixed " + (OutputDivValues?"":"disable")}>
                                 <h6>Input Options</h6>
                                 <div className="row">
                                   <div className="col-sm-12">
@@ -1008,8 +1015,8 @@ function GsiModbusDrivers() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-md-6 mt-3">
-                              <div className="parse_fixed">
+                            <div className="col-md-6 mt-3 OutputOptionsDiv">
+                              <div className={"parse_fixed "+ (OutputDivValues?"disable":"")}>
                                 <h6>Output Options</h6>
                                 <div className="row">
                                   <div className="col-sm-12">
@@ -1026,7 +1033,7 @@ function GsiModbusDrivers() {
                                   <div className="row">
                                   <label htmlFor="closedvalue" className="form-label col-sm-5">Closed Value:</label>
                                   <div className="col-sm-7">
-                                    <input type="number" id="closedvalue" className="form-control" placeholder="" />
+                                    <input type="number" id="closedvalue" className="form-control" placeholder="Enter Closed Value"  />
                                   </div>
                                   </div>
                                   </div>
@@ -1034,7 +1041,7 @@ function GsiModbusDrivers() {
                                     <div className="row">
                                   <label htmlFor="openvalue" className="form-label col-sm-5">Open Value:</label>
                                   <div className="col-sm-7">
-                                    <input type="number" id="openvalue" className="form-control" placeholder="" />
+                                    <input type="number" id="openvalue" className="form-control" placeholder="Enter Open Value"  />
                                   </div>
                                   </div>
                                   </div>
