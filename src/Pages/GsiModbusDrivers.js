@@ -653,8 +653,8 @@ function GsiModbusDrivers() {
       },
       fields: [
         { name: "id", title: "Driver ID", type: "text" },
-        { name: "driverEntryName", title: "Driver Name", type: "text" },
-        { name: "DriverInstrID", title: "Driver Instrument ID", type: "text" },
+        { name: "gsiDriverEntryName", title: "Driver Name", type: "text" },
+        { name: "gsiDriverInstrID", title: "Driver Instrument ID", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
