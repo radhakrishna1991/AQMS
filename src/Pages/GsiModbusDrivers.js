@@ -700,7 +700,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="digitaldriverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="digitaldriverentryname" required />
+                                  <input type="text" className="form-control" id="digitaldriverentryname" placeholder="Enter Driver name" required />
                                   <div class="invalid-feedback">Please Enter Driver Name</div>
                                 </div>
                               </div>
@@ -710,7 +710,7 @@ function GsiModbusDrivers() {
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
                                   <select className="form-select" id="associatedinstrument">
-                                      <option selected>Please select instrument</option>
+                                      <option selected value="">select instrument</option>
                                       {InstrumentsList.map((x, y) =>
                                         <option value={x.id} key={y} >{x.instrumentName}</option>
                                       )}
@@ -723,7 +723,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="coilnumber" className="form-label col-sm-4">Coil Number:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="coilnumber" placeholder="" required />
+                                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil number" required />
                                   <div class="invalid-feedback">Please Enter Coil Number</div>
                                 </div>
                               </div>
@@ -838,7 +838,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="instrumentname" className="form-label col-sm-4">Instrument Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="instrumentname" required />
+                                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Instrument name" required />
                                   <div class="invalid-feedback">Please Enter Instrument Name</div>
                                 </div>
                               </div>
@@ -847,7 +847,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="tcpipport" className="form-label col-sm-4">Default Modbus TcpIp Port:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="tcpipport" required/>
+                                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Modbus TcpIp port" required/>
                                   <div class="invalid-feedback">Please Enter Modbus TcpIp Port</div>
                                 </div>
                               </div>
@@ -856,7 +856,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscode" className="form-label col-sm-4">Default Modbus Code:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="modbuscode" maxLength="3" placeholder="" />
+                                  <input type="text" className="form-control" id="modbuscode" maxLength="3" placeholder="Enter Modbus code" />
                                 </div>
                               </div>
                             </div>
@@ -864,7 +864,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Default Modbus Command Type:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="modbuscommandtype" maxLength="3" placeholder="" />
+                                  <input type="text" className="form-control" id="modbuscommandtype" maxLength="3" placeholder="Enter Modbus type" />
                                 </div>
                               </div>
                             </div>
@@ -872,7 +872,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Default Timeout(ms):</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="timeout" placeholder="" />
+                                  <input type="number" className="form-control" id="timeout" placeholder="Enter Timeout" />
                                 </div>
                               </div>
                             </div>
