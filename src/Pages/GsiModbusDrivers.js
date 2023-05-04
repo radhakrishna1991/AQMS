@@ -4,6 +4,7 @@ import Swal from "sweetalert2";
 function GsiModbusDrivers() {
   const InstrumentgridRef = useRef();
   const DigitalgridRef = useRef();
+  const DriverEntrygridRef = useRef();
   const $ = window.jQuery;
   const [Instrumentgridlist, setInstrumentgridlist] = useState(true);
   const [InstrumentId, setInstrumentId] = useState(0);
@@ -15,6 +16,171 @@ function GsiModbusDrivers() {
   const [DigitalList, setDigitalList] = useState([]);
   const [Type, setType] = useState();
   const [DigitalAddbtn, setDigitalAddbtn] = useState(true);
+
+  const [DriverEntrygridlist, setDriverEntrygridlist] = useState(true);
+  const [DriverEntryId, setDriverEntryId] = useState(0);
+  const [DriverEntryList, setDriverEntryList] = useState([]);
+  const [DriverEntryAddbtn, setDriverEntryAddbtn] = useState(true);
+
+  
+  const AddDriverEntrychange = (param) => {
+    if (param == 'driverentrylist') {
+      setDriverEntrygridlist(true);
+    } else {
+      setDriverEntrygridlist(false);
+      setDriverEntryAddbtn(true)
+    }
+  }
+  const DriverEntryValidations = (DriverEntryName, DriverInstrID,EntryType) => {
+    let isvalid = true;
+    let form = document.querySelectorAll('#GSIDriverEntryform')[0];
+    if (DriverEntryName == "" || DriverEntryName == null) {
+      // //toast.error('Please enter Driver Entry Name');      
+      form.classList.add('was-validated');
+      isvalid = false;
+    } else if (DriverInstrID == "" || DriverInstrID == null) {
+      //toast.error('Please select instrument');
+      form.classList.add('was-validated');
+      isvalid = false;
+    }else if (EntryType == "" || EntryType == null) {
+      //toast.error('Please enter coil number');
+      form.classList.add('was-validated');
+      isvalid = false;
+    }
+    return isvalid;
+  }
+  const AddDriverEntry = (event) => {
+    let DriverEntryName = document.getElementById("digitaldriverentryname").value;
+    let DriverInstrumentID = document.getElementById("associatedinstrument").value;
+    let CoilNumber = document.getElementById("coilnumber").value;
+    let InputType = document.getElementById("inputradio").checked;
+    let OutputType = document.getElementById("outputradio").checked;
+    let DiscreteInput = document.getElementById("discreteinput").checked;
+    let RegisterOutput = document.getElementById("registeroutput").checked;
+    let RegisterValueClosed = document.getElementById("closedvalue").value;
+    let RegisterValueOpen = document.getElementById("openvalue").value;
+    let CreatedBy = document.getElementById("digitaldriverentryname").value;
+    let ModifiedBy = document.getElementById("digitaldriverentryname").value;
+    
+    let isvalid = DriverEntryValidations(DriverEntryName, DriverInstrumentID,CoilNumber);
+    if (!isvalid) {
+       return false;
+    }
+    fetch(process.env.REACT_APP_WSurl + 'api/DriverEntry', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen}),
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson == "DriverEntryadd") {
+          GetDriverEntry();
+          setDriverEntrygridlist(true);
+          setDriverEntryAddbtn(true);
+          toast.success('Driver Entry added successfully');
+        } else if (responseJson == "DriverEntryexist") {
+          toast.error('Driver Entry already exists with given name. Please try with another driver digital name');
+        } else {
+          toast.error('Unable to add Driver Entry. Please contact adminstrator');
+        }
+      })
+  }
+
+  const UpdateDriverEntry = (event) => {
+    let DriverEntryName = document.getElementById("digitaldriverentryname").value;
+    let DriverInstrumentID = document.getElementById("associatedinstrument").value;
+    let CoilNumber = document.getElementById("coilnumber").value;
+    let InputType = document.getElementById("inputradio").checked;
+    let OutputType = document.getElementById("outputradio").checked;
+    let DiscreteInput = document.getElementById("discreteinput").checked;
+    let RegisterOutput = document.getElementById("registeroutput").checked;
+    let RegisterValueClosed = document.getElementById("closedvalue").value;
+    let RegisterValueOpen = document.getElementById("openvalue").value;
+    let CreatedBy = document.getElementById("digitaldriverentryname").value;
+    let ModifiedBy = document.getElementById("digitaldriverentryname").value;
+    let isvalid = DriverEntryValidations(DriverEntryName, DriverInstrumentID,CoilNumber);
+    if (!isvalid) {
+      return false;
+    }
+    fetch(process.env.REACT_APP_WSurl + 'api/DriverEntry/' + DriverEntryId, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen})  }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson == 1) {
+          GetDriverEntry();
+          setDriverEntryList(true);
+          setDriverEntryAddbtn(true);
+          toast.success('Driver Entry updated successfully');
+        } else if (responseJson == 2) {
+          toast.error('Driver Entry already exists with given name. Please try with another driver entry name');
+        } else {
+          toast.error('Unable to update driver entry');
+        };
+      })
+  }
+
+  const EditDriverEntry = (param) => {
+    setDriverEntrygridlist(false);
+    setDriverEntryId(param.id);
+    setDriverEntryAddbtn(false);
+    setTimeout(() => {
+      document.getElementById("digitaldriverentryname").value = param.driverDigitalEntryName;;
+      document.getElementById("associatedinstrument").value = param.driverInstrumentID;
+      document.getElementById("coilnumber").value = param.coilNumber;
+      document.getElementById("closedvalue").value = param.registerValueClosed;
+      document.getElementById("openvalue").value = param.registerValueOpen;
+      document.getElementById("inputradio").checked = param.inputType;
+      document.getElementById("outputradio").checked = param.outputType;
+      document.getElementById("registeroutput").checked = param.registerOutput;
+      document.getElementById("discreteinput").checked = param.discreteInput;
+    }, 10);
+  }
+
+  const DeleteDriverEntry = (item) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: ("You want to delete this driver entry !"),
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#5cb85c",
+      confirmButtonText: "Yes",
+      closeOnConfirm: false
+    })
+      .then(function (isConfirm) {
+        if (isConfirm) {
+          let id = item.id;
+          fetch(process.env.REACT_APP_WSurl + 'api/DriverEntry/' + id, {
+            method: 'DELETE'
+          }).then((response) => response.json())
+            .then((responseJson) => {
+              if (responseJson == 1) {
+                toast.success('Driver entry deleted successfully')
+                GetDriverEntry();
+              } else {
+                toast.error('Unable to delete driver entry. Please contact adminstrator');
+              }
+            }).catch((error) => toast.error('Unable to delete driver entry. Please contact adminstrator'));
+        }
+      });
+  }
+  const GetDriverEntry = function () {
+    fetch(process.env.REACT_APP_WSurl + "api/DriverEntry", {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setDriverEntryList(data);
+        }
+      }).catch((error) => toast.error('Unable to get the driver entry list. Please contact adminstrator'));
+  }
+
+
 
   const AddDriverDigitalchange = (param) => {
     if (param == 'driverdigitallist') {
@@ -424,13 +590,70 @@ function GsiModbusDrivers() {
       ]
     });
   }
+  const initializeDriverEntryJsGrid = function () {
+    window.jQuery(DriverEntrygridRef.current).jsGrid({
+      width: "100%",
+      height: "auto",
+      filtering: true,
+      editing: false,
+      inserting: false,
+      sorting: true,
+      paging: true,
+      autoload: true,
+      pageSize: 100,
+      pageButtonCount: 5,
+      controller: {
+        data: DriverEntryList,
+        loadData: function (filter) {
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          return $.grep(this.data, function (item) {
+            return ((!filter.id || item.id.toUpperCase().indexOf(filter.id.toUpperCase()) >= 0)
+              && (!filter.driverEntryName || item.driverEntryName.toUpperCase().indexOf(filter.driverEntryName.toUpperCase()) >= 0)
+              && (!filter.DriverInstrID || item.DriverInstrID.toUpperCase().indexOf(filter.DriverInstrID.toUpperCase()) >= 0)
+            );
+          });
+        }
+      },
+      fields: [
+        { name: "id", title: "Driver ID", type: "text" },
+        { name: "driverEntryName", title: "Driver Name", type: "text" },
+        { name: "DriverInstrID", title: "Driver Instrument ID", type: "text" },
+        {
+          type: "control", width: 100, editButton: false, deleteButton: false,
+          itemTemplate: function (value, item) {
+            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
+
+            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
+              .click(function (e) {
+                EditDriverEntry(item);
+                /* alert("ID: " + item.id); */
+                e.stopPropagation();
+              });
+
+            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
+              .click(function (e) {
+                DeleteDriverEntry(item);
+                e.stopPropagation();
+              });
+
+            return $("<div>").append($customEditButton).append($customDeleteButton);
+            //return $result.add($customButton);
+          }
+        },
+      ]
+    });
+  }
+  
   useEffect(() => {
     initializeInstrumentJsGrid();
     initializeDigitalJsGrid();
+    initializeDriverEntryJsGrid();
   });
   useEffect(() => {
     GetInstruments();
     GetDriverDigital();
+    GetDriverEntry();
   }, [])
   return (
     <main id="main" className="main" >
@@ -451,21 +674,32 @@ function GsiModbusDrivers() {
               <button className="nav-link active" id="parameters-tab" data-bs-toggle="tab" data-bs-target="#parameters-tab-pane" type="button" role="tab" aria-controls="parameters-tab-pane" aria-selected="false" > GSI Driver Instrument</button>
             </li>
           </ul>
+          
           <div className="tab-content" id="myTabContent">
             <div className="tab-pane fade" id="general-tab-pane" role="tabpanel" aria-labelledby="general-tab" tabIndex="0">
-              <div className="accordion px-0" id="accordionentry">
-                <div className="accordion-item">
-                  <h2 className="accordion-header" id="entryOne">
-                    <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#entrycollapseOne" aria-expanded="true" aria-controls="entrycollapseOne">
-                      Details
-                    </button>
-                  </h2>
-                  <div id="entrycollapseOne" className="accordion-collapse collapse show" aria-labelledby="entryOne" data-bs-parent="#accordionentry">
-                    <div className="accordion-body">
-                      <div className="">
-                        <div className="row">
-                          <div className="col-md-6">
-                            <div className="row">
+                <div className="me-2 mb-2 float-end">
+                    {DriverEntrygridlist && (
+                      <span className="operation_class mx-2" onClick={() => AddDriverEntrychange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                    )}
+                    {!DriverEntrygridlist && (
+                      <span className="operation_class mx-2" onClick={() => AddDriverEntrychange('driverentrylist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                    )}
+                </div>
+              {!DriverEntrygridlist && (
+                <form id="GSIDriverEntryform" className="row w100 px-0 mx-0" noValidate>  
+                   <div className="accordion px-0" id="accordionentry">
+                       <div className="accordion-item">
+                            <h2 className="accordion-header" id="entryOne">
+                                <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#entrycollapseOne" aria-expanded="true" aria-controls="entrycollapseOne">
+                                    Details
+                                </button>
+                            </h2>
+                   <div id="entrycollapseOne" className="accordion-collapse collapse show" aria-labelledby="entryOne" data-bs-parent="#accordionentry">
+                     <div className="accordion-body">
+                       <div className="">
+                         <div className="row">
+                           <div className="col-md-6">
+                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-4">Driver Entry Name:</label>
                               <div className="col-sm-8">
                                 <input type="text" id="driverentryname" className="form-control" placeholder="" />
@@ -674,7 +908,23 @@ function GsiModbusDrivers() {
                   </div>
                 </div>
               </div>
-            </div>
+            
+					<div class="col-12 text-center mt-2">
+						{DriverEntryAddbtn && (
+						  <button class="btn btn-primary" onClick={AddDriverEntry} type="button">Add Driver Entry</button>
+						)}
+						{!DriverEntryAddbtn && (
+						  <button class="btn btn-primary" onClick={UpdateDriverEntry} type="button">Update Driver Entry</button>
+						)}
+					</div>
+				</form>
+				)}
+				{DriverEntrygridlist && (
+                <div>
+                  <div className="jsGrid" ref={DriverEntrygridRef} />
+                </div>
+              )}
+			</div>
             <div className="tab-pane fade" id="sites-tab-pane" role="tabpanel" aria-labelledby="sites-tab" tabIndex="0">
               <div className="me-2 mb-2 float-end">
                 {Digitalgridlist && (
@@ -700,7 +950,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="digitaldriverentryname" className="form-label col-sm-4">Driver Entry Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control required" id="digitaldriverentryname" data-toggle="tooltip" data-placement="top" title="Enter Driver Entry Name" required />
+                                  <input type="text" className="form-control" id="digitaldriverentryname" placeholder="Enter Driver name" required />
+                                  <div class="invalid-feedback">Please Enter Driver Name</div>
                                 </div>
                               </div>
                             </div>
@@ -709,11 +960,12 @@ function GsiModbusDrivers() {
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
                                   <select className="form-select" id="associatedinstrument">
-                                      <option selected>Please select instrument</option>
+                                      <option selected value="">select instrument</option>
                                       {InstrumentsList.map((x, y) =>
                                         <option value={x.id} key={y} >{x.instrumentName}</option>
                                       )}
                                   </select>
+                                  <div class="invalid-feedback">Please Select Associated Instrument</div>
                                 </div>
                               </div>
                             </div>
@@ -721,7 +973,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="coilnumber" className="form-label col-sm-4">Coil Number:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control required" id="coilnumber" data-toggle="tooltip" data-placement="top" title="Enter coil number" placeholder="" required />
+                                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil number" required />
+                                  <div class="invalid-feedback">Please Enter Coil Number</div>
                                 </div>
                               </div>
                             </div>
@@ -793,6 +1046,7 @@ function GsiModbusDrivers() {
                       </div>
                     </div>
                   </div>
+                  
                   <div class="col-12 text-center mt-2">
                     {DigitalAddbtn && (
                       <button class="btn btn-primary" onClick={AddDriverDigital} type="button">Add Driver Digital</button>
@@ -835,7 +1089,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="instrumentname" className="form-label col-sm-4">Instrument Name:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control required" id="instrumentname" data-toggle="tooltip" data-placement="top" title="Enter Instrument Name" required />
+                                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Instrument name" required />
+                                  <div class="invalid-feedback">Please Enter Instrument Name</div>
                                 </div>
                               </div>
                             </div>
@@ -843,7 +1098,8 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="tcpipport" className="form-label col-sm-4">Default Modbus TcpIp Port:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control required" id="tcpipport" data-toggle="tooltip" data-placement="top" title="Enter TcpIp Port" required/>
+                                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Modbus TcpIp port" required/>
+                                  <div class="invalid-feedback">Please Enter Modbus TcpIp Port</div>
                                 </div>
                               </div>
                             </div>
@@ -851,7 +1107,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscode" className="form-label col-sm-4">Default Modbus Code:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="modbuscode" maxLength="3" placeholder="" />
+                                  <input type="text" className="form-control" id="modbuscode" maxLength="3" placeholder="Enter Modbus code" />
                                 </div>
                               </div>
                             </div>
@@ -859,7 +1115,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Default Modbus Command Type:</label>
                                 <div className="col-sm-8">
-                                  <input type="text" className="form-control" id="modbuscommandtype" maxLength="3" placeholder="" />
+                                  <input type="text" className="form-control" id="modbuscommandtype" maxLength="3" placeholder="Enter Modbus type" />
                                 </div>
                               </div>
                             </div>
@@ -867,7 +1123,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Default Timeout(ms):</label>
                                 <div className="col-sm-8">
-                                  <input type="number" className="form-control" id="timeout" placeholder="" />
+                                  <input type="number" className="form-control" id="timeout" placeholder="Enter Timeout" />
                                 </div>
                               </div>
                             </div>
@@ -904,7 +1160,9 @@ function GsiModbusDrivers() {
                 </div>
               )}
             </div>
-          </div>
+          
+</div>
+
         </div>
       </section>
 

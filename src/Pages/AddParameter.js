@@ -302,55 +302,63 @@ function AddParameter() {
               <form id="AddParametersform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <select className="form-select required" id="stationname" data-toggle="tooltip" data-placement="top" title="Enter Station Name" required>
-                    <option selected value="" title="Enter Station Name">Please select station name</option>
+                  <select className="form-select" id="stationname" required>
+                    <option selected value="" title="Enter Station Name">select station name</option>
                     {ListStations.map((x, y) =>
                       <option value={x.id} key={y} >{x.stationName}</option>
                     )}
                   </select>
+                  <div class="invalid-feedback">Please Select Station Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
-                  <select className="form-select required" id="devicename" onChange={Deviceschange} data-toggle="tooltip" data-placement="top" title="Enter Device Name" required>
-                    <option selected value="" title="Select Device Name">Please select device name</option>
+                  <select className="form-select" id="devicename" onChange={Deviceschange} required>
+                    <option selected value="" title="Select Device Name">select device name</option>
                     {ListDevices.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceName}</option>
                     )}
                   </select>
+                  <div class="invalid-feedback">Please Select Device Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Driver Name:</label>
-                  <select className="form-select required" id="drivername" data-toggle="tooltip" data-placement="top" title="Enter Driver Name" required>
-                    <option selected value="" title="Select Driver Name">Please select driver name</option>
+                  <select className="form-select" id="drivername" required>
+                    <option selected value="" title="Select Driver Name">select driver name</option>
                     {ListdeviceDrivers.map((x, y) =>
                       <option value={x.id} key={y} >{x.driverName}</option>
                     )}
                   </select>
+                  <div class="invalid-feedback">Please Select Driver Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="parametername" className="form-label">Parameter Name:</label>
-                  <input type="text" className="form-control required" id="parametername" placeholder="Please enter Parameter Name" data-toggle="tooltip" data-placement="top" title="Enter Parameter Name" required />
+                  <input type="text" className="form-control" id="parametername" placeholder="enter Parameter Name" required />
+                  <div class="invalid-feedback">Please Enter Parameter Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="units" className="form-label">Units:</label>
-                  <select className="form-select required" id="unit" data-toggle="tooltip" data-placement="top" title="Select Units" required>
-                    <option selected value="" title="Select Units">Please select unit</option>
+                  <select className="form-select" id="unit" required>
+                    <option selected value="" title="Select Units">select unit</option>
                     {ListReportedUnits.map((x, y) =>
                       <option value={x.id} key={y} >{x.unitName}</option>
                     )}
                   </select>
+                  <div class="invalid-feedback">Please Select Units</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="scalefactor" className="form-label">Scale Factor:</label>
-                  <input type="number" className="form-control required" id="scalefactor" placeholder="Please enter scale factor" data-toggle="tooltip" data-placement="top" title="Enter Scale Factor" required />
+                  <input type="number" className="form-control" id="scalefactor" placeholder="enter scale factor" required />
+                  <div class="invalid-feedback">Please Enter Scale Factor</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="pollinginterval" className="form-label">Polling Interval:</label>
-                  <input type="text" className="form-control required" id="pollinginterval" placeholder="Please enter Polling Interval" data-toggle="tooltip" data-placement="top" title="Enter Polling Interval" required />
+                  <input type="text" className="form-control" id="pollinginterval" placeholder="enter Polling Interval" required />
+                  <div class="invalid-feedback">Please Enter Polling Interval</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="avginterval" className="form-label">Average Interval:</label>
-                  <input type="text" className="form-control required" id="avginterval" placeholder="Please enter Average Interval" data-toggle="tooltip" data-placement="top" title="Enter Avg Interval" required />
+                  <input type="text" className="form-control" id="avginterval" placeholder="enter Average Interval" required />
+                  <div class="invalid-feedback">Please Enter Average Interval</div>
                 </div>
                 <div className="col-md-12 text-center">
                   {!parameterList && parameterId == 0 && (
