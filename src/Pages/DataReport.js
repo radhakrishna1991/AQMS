@@ -25,7 +25,7 @@ function DataReport() {
             search: true
           });
           $('#pollutentid').SumoSelect({
-            triggerChangeCombined: true, placeholder: 'Select Pollutent', floatWidth: 200, selectAll: true,
+            triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
             search: true
           });
         }, 100);
@@ -182,7 +182,7 @@ function DataReport() {
       });
       isvalid = false;
     } else if (Interval == "") {
-      toast.error('Please select criteria', {
+      toast.error('Please select interval', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -320,9 +320,9 @@ function DataReport() {
                 <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
               </div>
               <div className="col-md-2">
-                <label className="form-label">Criteria</label>
+                <label className="form-label">Interval</label>
                 <select className="form-select" id="criteriaid">
-                  <option value="" selected>Select Criteria</option>
+                  <option value="" selected>Select Interval</option>
                   {Criteria.map((x, y) =>
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}
