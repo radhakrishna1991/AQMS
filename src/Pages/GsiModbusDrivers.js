@@ -85,7 +85,6 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      //body: JSON.stringify({ DriverInstrID: DriverInstrumentID, DriverEntryName: DriverEntryName,DataFieldType:DataFieldType}),
       body: JSON.stringify({ GsiDriverInstrID: DriverInstrumentID, GsiDriverEntryName: DriverEntryName,DataFieldType:DataFieldType,EntryType: DataFieldType,DataValueFormat: DataValueFormat,ModbusRegister: ModbusRegister,SendName: SendName, AutosendString: AutoSendString, AutosendRepeatInterval: AutosendRepeatInterval,ParseName: ParseName, ParseSyncString: ParseSyncString,NumberOfCharsToData: NumCharsToData, DelimiterChars: DelimiterChars,DataFieldWidth: DateFieldWidth,NumberParseCharsInString:NumParseCharsinString, NumberOfDelimitersToData: NumDelimiData, NumberOfDelimitersInString: NumDelimiString, PrimaryDriverEntryID: PrimaryDriver,InputIndex: InputIndex, DigitalIOString: "", Units:""}),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -106,22 +105,23 @@ function GsiModbusDrivers() {
     let DriverEntryName = document.getElementById("driverentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstument").value;
     let ModbusRegister = document.getElementById("modbusregister").value;
-    let DataValueFormat = document.getElementById("datavalueformat").value;
-    let DataFieldType = document.getElementById("datafieldtype").value;
+    let DataValueFormat = "F"
+    //let DataValueFormat = document.getElementById("datavalueformat").value;
+    //let DataFieldType = document.getElementById("datafieldtype").value;
+    let DataFieldType = "F";
     let AutoSendString = document.getElementById("autosendstring").value;
-    //let autosendRepeatinterval = document.getElementById("autosendRepeatinterval").value;
     let SendName = document.getElementById("sendname").value;
     let AutosendRepeatInterval = document.getElementById("autosendRepeatintervalString").value + document.getElementById("autosendRepeatinterval").value;
-    //let autosendRepeatintervalString = document.getElementById("autosendRepeatintervalString").value;
     let ParseName = document.getElementById("parsename").value;
-    let ParseString = document.getElementById("parsestring").value;
+    let ParseSyncString = document.getElementById("parsestring").value;
     let NumCharsToData = document.getElementById("numcharstodata").value;
     let DateFieldWidth = document.getElementById("datafieldwidth").value;
-    let NumCharsinString = document.getElementById("numcharsinstring").value;
+    let NumParseCharsinString = document.getElementById("numcharsinstring").value;
     let DelimiterChars = document.getElementById("delimiterchars").value;
     let NumDelimiData = document.getElementById("NumDelimiterData").value;
     let NumDelimiString = document.getElementById("numdelimitersinstring").value;
-    let PrimaryDriver = document.getElementById("primarydriver").value;
+    //let PrimaryDriver = document.getElementById("primarydriver").value;
+    let PrimaryDriver = "2";
     let InputIndex = document.getElementById("inputindex").value;
     let CreatedBy = document.getElementById("driverentryname").value;
     let ModifiedBy = document.getElementById("driverentryname").value;
@@ -136,7 +136,7 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  DataFieldType: DataFieldType, ModbusRegister: ModbusRegister, DataValueFormat: DataValueFormat, AutosendString: AutoSendString,AutosendRepeatInterval: AutosendRepeatInterval, SendName: SendName, ParseName: ParseName, ParseString: ParseString, NumCharsToData: NumCharsToData, DelimiterChars: DelimiterChars, NumCharsinString: NumCharsinString, DateFieldWidth: DateFieldWidth, NumDelimiData: NumDelimiData, NumDelimiString: NumDelimiString, PrimaryDriver: PrimaryDriver, InputIndex: InputIndex}) })
+      body: JSON.stringify({ GsiDriverInstrID: DriverInstrumentID, GsiDriverEntryName: DriverEntryName,DataFieldType:DataFieldType,EntryType: DataFieldType,DataValueFormat: DataValueFormat,ModbusRegister: ModbusRegister,SendName: SendName, AutosendString: AutoSendString, AutosendRepeatInterval: AutosendRepeatInterval,ParseName: ParseName, ParseSyncString: ParseSyncString,NumberOfCharsToData: NumCharsToData, DelimiterChars: DelimiterChars,DataFieldWidth: DateFieldWidth,NumberParseCharsInString:NumParseCharsinString, NumberOfDelimitersToData: NumDelimiData, NumberOfDelimitersInString: NumDelimiString, PrimaryDriverEntryID: PrimaryDriver,InputIndex: InputIndex, DigitalIOString: "", Units:""}) }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
           GetDriverEntry();
