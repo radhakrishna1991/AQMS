@@ -596,7 +596,7 @@ function GsiModbusDrivers() {
           return $.grep(this.data, function (item) {
             return ((!filter.id || item.id.toUpperCase().indexOf(filter.id.toUpperCase()) >= 0)
               && (!filter.driverDigitalEntryName || item.driverDigitalEntryName.toUpperCase().indexOf(filter.driverDigitalEntryName.toUpperCase()) >= 0)
-              && (!filter.DriverInstrumentID || item.DriverInstrumentID.toUpperCase().indexOf(filter.DriverInstrumentID.toUpperCase()) >= 0)
+              && (!filter.driverInstrumentID || item.driverInstrumentID.toUpperCase().indexOf(filter.driverInstrumentID.toUpperCase()) >= 0)
             );
           });
         }
@@ -604,7 +604,7 @@ function GsiModbusDrivers() {
       fields: [
         { name: "id", title: "Driver ID", type: "text" },
         { name: "driverDigitalEntryName", title: "Digital Driver Name", type: "text" },
-        { name: "DriverInstrumentID", title: "Driver Instrument ID", type: "text" },
+        { name: "driverInstrumentID", title: "Driver Instrument ID", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
