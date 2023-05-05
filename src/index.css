@@ -239,7 +239,7 @@ table.table .avatar {
 }
 
 /* Modal styles */
-.modal .modal-dialog {
+/* .modal .modal-dialog {
   max-width: 400px;
 }
 
@@ -280,7 +280,7 @@ table.table .avatar {
 .modal form label {
   font-weight: normal;
 }
-
+ */
 .form-label {
   font-size: 0.75rem;
   font-weight: 700;
@@ -323,59 +323,124 @@ table.table .avatar {
 .disable i {
   color: #dddddd87 !important;
 }
-h6{
- font-size: 0.875rem !important;
- font-weight: 600 !important;
+
+h6 {
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
 }
-.parse_fixed{
+
+.parse_fixed {
   background-color: #f6f9ff;
   padding: 15px;
 }
-.form-switch .form-check-input{
-padding:10px 24px;
+
+.form-switch .form-check-input {
+  padding: 10px 24px;
 }
-.form-switch .form-check-label{
-  margin-left:10px;
+
+.form-switch .form-check-label {
+  margin-left: 10px;
   margin-top: 6px;
   font-weight: 600;
+}
+
+.was-validated .form-switch .form-check-input:valid:checked {
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%272%27 fill=%27%23fff%27/%3e%3c/svg%3e");
+}
+
+.was-validated .form-switch .form-check-input:valid {
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%273%27 fill=%27rgba%280, 0, 0, 0.25%29%27/%3e%3c/svg%3e");
+}
+
+.dashboard .card {
+  box-shadow: 0rem 0rem 0.11rem 0.11rem #5f9ea0;
+  color: #5f9ea0;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0px !important;
+  height: 97%;
+  /* border: 1px solid #1e40afb0; */
+}
+/* .dashboard .card .card-body{
+  padding: 0.5rem 1rem !important;
+} */
+
+.dashboard .card .device {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.dashboard .card .parameter span {
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dashboard .card .icons,
+.dashboard .card .parameter i {
+  font-size: 1rem;
+}
+
+.dashboard .card .values .btn1 {
+  border: 2px solid #5f9ea0 !important;
+  border-radius: 4px;
+  color: #5f9ea0 !important;
+  background-color: #fff;
+  pointer-events: none;
+}
+
+.dashboard .card .values .btn2 {
+  border: 2px solid #5f9ea0 !important;
+  border-radius: 4px;
+  color: #fff !important;
+  background-color: #5f9ea0;
+  pointer-events: none;
+  width: 4rem;
+}
+
+.dashboard_row {
+  width: 100%;
+  /*  display: block; */
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 2px;
+}
+
+.dashboard_col {
+  width: 25%;
+  flex: 0 0 auto;
+  /*  display: inline-block; */
+  padding: 0rem 0.5rem;
+}
+
+.dashboard_row::-webkit-scrollbar {
+  height: 8px;
+  width: 4px;
+  border: 1px solid #5f9ea0;
+  border-radius: 5px;
+}
+
+.dashboard_row::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 6px #5f9ea0;
+  box-shadow: inset 0 0 6px #5f9ea0;
+}
+
+.modal.fade.zoom:not(.show) .modal-dialog {
+  transform: scale(0.2);
+}
+
+@media (max-width: 991px) {
+  .dashboard_col {
+    width: 33.33%;
   }
-  .was-validated .form-switch .form-check-input:valid:checked{
-    background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%272%27 fill=%27%23fff%27/%3e%3c/svg%3e");
+}
+
+@media (max-width: 767px) {
+  .dashboard_col {
+    width: 50%;
   }
-  .was-validated .form-switch  .form-check-input:valid{
-    background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%273%27 fill=%27rgba%280, 0, 0, 0.25%29%27/%3e%3c/svg%3e");
-  }
-  .dashboard .card{
-    box-shadow: 0rem 0rem 0.11rem 0.11rem #1e40afb0;
-    color: #1e40af;
-    /* border: 1px solid #1e40afb0; */
-  }
-  .dashboard .card .device{
-    font-size: 1rem;
-    font-weight: 600;
-  }
-  .dashboard .card .parameter span{
-    font-size: 0.875rem;
-    font-weight: 600;
-  }
-  .dashboard .card .icons,.dashboard .card .parameter i{
-    font-size: 1rem;
-  }
-  .dashboard .card .values .btn1{
-    border: 2px solid #1e40af !important;
-    border-radius: 4px;
-    color: #1e40af !important;
-    background-color: #fff;
-    pointer-events: none;
-  }
-  .dashboard .card .values .btn2{
-    border: 2px solid #1e40af !important;
-    border-radius: 4px;
-    color: #fff !important;
-    background-color: #1e40af;
-    pointer-events: none;
-    width: 4rem;
-  }
+}
+
 /* .filtergroup .col{
   padding: 0px 5px;
 } */
