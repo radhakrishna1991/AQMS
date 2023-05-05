@@ -16,6 +16,7 @@ function GsiModbusDrivers() {
   const [DigitalList, setDigitalList] = useState([]);
   const [Type, setType] = useState();
   const [DigitalAddbtn, setDigitalAddbtn] = useState(true);
+  const [OutputDivValues, setOutputDivValues]=useState(true);
 
   const [DriverEntrygridlist, setDriverEntrygridlist] = useState(true);
   const [DriverEntryId, setDriverEntryId] = useState(0);
@@ -50,19 +51,30 @@ function GsiModbusDrivers() {
     return isvalid;
   }
   const AddDriverEntry = (event) => {
-    let DriverEntryName = document.getElementById("digitaldriverentryname").value;
-    let DriverInstrumentID = document.getElementById("associatedinstrument").value;
-    let CoilNumber = document.getElementById("coilnumber").value;
-    let InputType = document.getElementById("inputradio").checked;
-    let OutputType = document.getElementById("outputradio").checked;
-    let DiscreteInput = document.getElementById("discreteinput").checked;
-    let RegisterOutput = document.getElementById("registeroutput").checked;
-    let RegisterValueClosed = document.getElementById("closedvalue").value;
-    let RegisterValueOpen = document.getElementById("openvalue").value;
-    let CreatedBy = document.getElementById("digitaldriverentryname").value;
-    let ModifiedBy = document.getElementById("digitaldriverentryname").value;
+    let DriverEntryName = document.getElementById("driverentryname").value;
+    let DriverInstrumentID = document.getElementById("associatedinstument").value;
+    let ModbusRegister = document.getElementById("modbusregister").value;
+    let DataValueFormat = "F"
+    //let DataValueFormat = document.getElementById("datavalueformat").value;
+    //let DataFieldType = document.getElementById("datafieldtype").value;
+    let DataFieldType = "F";
+    let AutoSendString = document.getElementById("autosendstring").value;
+    let SendName = document.getElementById("sendname").value;
+    let AutosendRepeatInterval = document.getElementById("autosendRepeatintervalString").value + document.getElementById("autosendRepeatinterval").value;
+    let ParseName = document.getElementById("parsename").value;
+    let ParseSyncString = document.getElementById("parsestring").value;
+    let NumCharsToData = document.getElementById("numcharstodata").value;
+    let DateFieldWidth = document.getElementById("datafieldwidth").value;
+    let NumParseCharsinString = document.getElementById("numcharsinstring").value;
+    let DelimiterChars = document.getElementById("delimiterchars").value;
+    let NumDelimiData = document.getElementById("NumDelimiterData").value;
+    let NumDelimiString = document.getElementById("numdelimitersinstring").value;
+    let PrimaryDriver = document.getElementById("primarydriver").value;
+    let InputIndex = document.getElementById("inputindex").value;
+    let CreatedBy = document.getElementById("driverentryname").value;
+    let ModifiedBy = document.getElementById("driverentryname").value;
     
-    let isvalid = DriverEntryValidations(DriverEntryName, DriverInstrumentID,CoilNumber);
+    let isvalid = DriverEntryValidations(DriverEntryName, DriverInstrumentID,DataFieldType);
     if (!isvalid) {
        return false;
     }
@@ -72,7 +84,8 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen}),
+      //body: JSON.stringify({ DriverInstrID: DriverInstrumentID, DriverEntryName: DriverEntryName,DataFieldType:DataFieldType}),
+      body: JSON.stringify({ GsiDriverInstrID: DriverInstrumentID, GsiDriverEntryName: DriverEntryName,DataFieldType:DataFieldType,EntryType: DataFieldType,DataValueFormat: DataValueFormat,ModbusRegister: ModbusRegister,SendName: SendName, AutosendString: AutoSendString, AutosendRepeatInterval: AutosendRepeatInterval,ParseName: ParseName, ParseSyncString: ParseSyncString,NumberOfCharsToData: NumCharsToData, DelimiterChars: DelimiterChars,DataFieldWidth: DateFieldWidth,NumberParseCharsInString:NumParseCharsinString, NumberOfDelimitersToData: NumDelimiData, NumberOfDelimitersInString: NumDelimiString, PrimaryDriverEntryID: PrimaryDriver,InputIndex: InputIndex, DigitalIOString: "", Units:""}),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "DriverEntryadd") {
@@ -89,18 +102,29 @@ function GsiModbusDrivers() {
   }
 
   const UpdateDriverEntry = (event) => {
-    let DriverEntryName = document.getElementById("digitaldriverentryname").value;
-    let DriverInstrumentID = document.getElementById("associatedinstrument").value;
-    let CoilNumber = document.getElementById("coilnumber").value;
-    let InputType = document.getElementById("inputradio").checked;
-    let OutputType = document.getElementById("outputradio").checked;
-    let DiscreteInput = document.getElementById("discreteinput").checked;
-    let RegisterOutput = document.getElementById("registeroutput").checked;
-    let RegisterValueClosed = document.getElementById("closedvalue").value;
-    let RegisterValueOpen = document.getElementById("openvalue").value;
-    let CreatedBy = document.getElementById("digitaldriverentryname").value;
-    let ModifiedBy = document.getElementById("digitaldriverentryname").value;
-    let isvalid = DriverEntryValidations(DriverEntryName, DriverInstrumentID,CoilNumber);
+
+    let DriverEntryName = document.getElementById("driverentryname").value;
+    let DriverInstrumentID = document.getElementById("associatedinstument").value;
+    let ModbusRegister = document.getElementById("modbusregister").value;
+    let DataValueFormat = document.getElementById("datavalueformat").value;
+    let DataFieldType = document.getElementById("datafieldtype").value;
+    let autosendRepeatinterval = document.getElementById("autosendRepeatinterval").value;
+    let SendName = document.getElementById("sendname").value;
+    let autosendRepeatintervalString = document.getElementById("autosendRepeatintervalString").value;
+    let ParseName = document.getElementById("parsename").value;
+    let ParseString = document.getElementById("parsestring").value;
+    let NumCharsToData = document.getElementById("numcharstodata").value;
+    let DateFieldWidth = document.getElementById("datafieldwidth").value;
+    let NumCharsinString = document.getElementById("numcharsinstring").value;
+    let DelimiterChars = document.getElementById("delimiterchars").value;
+    let NumDelimiData = document.getElementById("NumDelimiterData").value;
+    let NumDelimiString = document.getElementById("numdelimitersinstring").value;
+    let PrimaryDriver = document.getElementById("primarydriver").value;
+    let InputIndex = document.getElementById("inputindex").value;
+    let CreatedBy = document.getElementById("driverentryname").value;
+    let ModifiedBy = document.getElementById("driverentryname").value;
+
+    let isvalid = DriverEntryValidations(DriverEntryName, DriverInstrumentID,DataFieldType);
     if (!isvalid) {
       return false;
     }
@@ -110,7 +134,7 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  CoilNumber: CoilNumber, InputType: InputType, OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed, RegisterValueOpen: RegisterValueOpen})  }).then((response) => response.json())
+      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  DataFieldType: DataFieldType, ModbusRegister: ModbusRegister, DataValueFormat: DataValueFormat, AutosendString: autosendRepeatintervalString,AutosendRepeatInterval: autosendRepeatinterval, SendName: SendName, ParseName: ParseName, ParseString: ParseString, NumCharsToData: NumCharsToData, DelimiterChars: DelimiterChars, NumCharsinString: NumCharsinString, DateFieldWidth: DateFieldWidth, NumDelimiData: NumDelimiData, NumDelimiString: NumDelimiString, PrimaryDriver: PrimaryDriver, InputIndex: InputIndex}) })
       .then((responseJson) => {
         if (responseJson == 1) {
           GetDriverEntry();
@@ -130,15 +154,27 @@ function GsiModbusDrivers() {
     setDriverEntryId(param.id);
     setDriverEntryAddbtn(false);
     setTimeout(() => {
-      document.getElementById("digitaldriverentryname").value = param.driverDigitalEntryName;;
-      document.getElementById("associatedinstrument").value = param.driverInstrumentID;
-      document.getElementById("coilnumber").value = param.coilNumber;
-      document.getElementById("closedvalue").value = param.registerValueClosed;
-      document.getElementById("openvalue").value = param.registerValueOpen;
-      document.getElementById("inputradio").checked = param.inputType;
-      document.getElementById("outputradio").checked = param.outputType;
-      document.getElementById("registeroutput").checked = param.registerOutput;
-      document.getElementById("discreteinput").checked = param.discreteInput;
+
+    document.getElementById("driverentryname").value = param.driverEntryName;
+    document.getElementById("associatedinstument").value= param.associatedinstument;
+    document.getElementById("modbusregister").value = param.modbusregister;
+    document.getElementById("datavalueformat").value= param.datavalueformat;
+    document.getElementById("datafieldtype").value = param.datafieldtype;
+    document.getElementById("autosendinterval").value = param.autosendinterval;
+    document.getElementById("sendname").value = param.sendname;
+    document.getElementById("autosendstring").value = param.autosendstring;
+    document.getElementById("timeinterval").value = param.timeinterval;
+    document.getElementById("parsename").value = param.parsename;
+    document.getElementById("parsestring").value = param.parsestring;
+    document.getElementById("numcharstodata").value = param.numcharstodata;
+    document.getElementById("datafieldwidth").value = param.datafieldwidth;
+    document.getElementById("numcharsinstring").value = param.numcharsinstring;
+    document.getElementById("delimiterchars").value = param.delimiterchars;
+    document.getElementById("NumDelimiterData").value = param.NumDelimiterData;
+    document.getElementById("numdelimitersinstring").value = param.numdelimitersinstring;
+    document.getElementById("primarydriver").value = param.primarydriver;
+    document.getElementById("inputindex").value = param.inputindex;
+
     }, 10);
   }
 
@@ -609,16 +645,16 @@ function GsiModbusDrivers() {
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
             return ((!filter.id || item.id.toUpperCase().indexOf(filter.id.toUpperCase()) >= 0)
-              && (!filter.driverEntryName || item.driverEntryName.toUpperCase().indexOf(filter.driverEntryName.toUpperCase()) >= 0)
-              && (!filter.DriverInstrID || item.DriverInstrID.toUpperCase().indexOf(filter.DriverInstrID.toUpperCase()) >= 0)
+              && (!filter.gsiDriverEntryName || item.gsiDriverEntryName.toUpperCase().indexOf(filter.gsiDriverEntryName.toUpperCase()) >= 0)
+              && (!filter.gsiDriverInstrID || item.gsiDriverInstrID.toUpperCase().indexOf(filter.gsiDriverInstrID.toUpperCase()) >= 0)
             );
           });
         }
       },
       fields: [
         { name: "id", title: "Driver ID", type: "text" },
-        { name: "driverEntryName", title: "Driver Name", type: "text" },
-        { name: "DriverInstrID", title: "Driver Instrument ID", type: "text" },
+        { name: "gsiDriverEntryName", title: "Driver Name", type: "text" },
+        { name: "gsiDriverInstrID", title: "Driver Instrument ID", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -643,6 +679,12 @@ function GsiModbusDrivers() {
         },
       ]
     });
+  }
+  const inputchange=function(){    
+    setOutputDivValues(true);
+  }
+  const Outputchange=function(){
+    setOutputDivValues(false);
   }
   
   useEffect(() => {
@@ -710,7 +752,13 @@ function GsiModbusDrivers() {
                               <div className="col-sm-8">
                                 <select id="datafieldtype" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>...</option>
+                                  <option> F = Float(GSI and Modbus) </option>
+                                  <option> I = Integer(GSI and Modbus) </option>
+                                  <option> B = Bipolar Int(Modbus) </option>
+                                  <option> U = Unipolar Int(Modbus) </option>
+                                  <option> P = Pulse(Modbus) </option>
+                                  <option> S = IEEE 754 Hex String(GSI) </option>
+                                  <option> R = IEEE 754 Float Bytes(GSI)</option>
                                 </select>
                               </div>
                             </div>
@@ -719,7 +767,10 @@ function GsiModbusDrivers() {
                               <div className="col-sm-8">
                                 <select id="datavalueformat" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>...</option>
+                                  <option>F = IEEE754/Little Endian(Modbus) or Float(GSI)</option>
+                                  <option> W = IEEE754/Big Endian(Modbus) </option>
+                                  <option> B = Reverse Little Endian(Modbus) </option>
+                                  <option> 2 = Reverse Big Endian(Modbus)</option>
                                 </select>
                               </div>
                             </div>
@@ -729,8 +780,10 @@ function GsiModbusDrivers() {
                               <label htmlFor="inputAddress" className="form-label col-sm-4">Associated Instrument:</label>
                               <div className="col-sm-8">
                                 <select id="associatedinstument" className="form-select">
-                                  <option selected>Choose...</option>
-                                  <option>...</option>
+                                      <option selected>Please select instrument</option>
+                                      {InstrumentsList.map((x, y) =>
+                                        <option value={x.id} key={y} >{x.instrumentName}</option>
+                                      )}
                                 </select>
                               </div>
                             </div>
@@ -738,15 +791,6 @@ function GsiModbusDrivers() {
                               <label htmlFor="modbusregister" className="form-label col-sm-4">Modbus Register:</label>
                               <div className="col-sm-8">
                                 <input type="number" id="modbusregister" className="form-control" placeholder="" />
-                              </div>
-                            </div>
-                            <div className="row">
-                              <label htmlFor="inputAddress" className="form-label col-sm-4">Data Value Format:</label>
-                              <div className="col-sm-8">
-                                <select id="inputState" className="form-select">
-                                  <option selected>Choose...</option>
-                                  <option>...</option>
-                                </select>
                               </div>
                             </div>
                           </div>
@@ -777,12 +821,15 @@ function GsiModbusDrivers() {
                             <div className="row">
                               <label htmlFor="inputAddress" className="form-label col-sm-4">Auto Send Repeat Interval:</label>
                               <div className="col-sm-3 px-0">
-                                <input type="text" id="driverentryname" className="form-control" placeholder="" />
+                                <input type="text" id="autosendRepeatintervalString" className="form-control" placeholder="" />
                               </div>
                               <div className="col-sm-5">
-                                <select id="associatedinstument" className="form-select">
+                                <select id="autosendRepeatinterval" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>...</option>
+                                  <option>Seconds</option>
+                                  <option>Minutes</option>
+                                  <option>Hours</option>
+                                  <option>Days</option>
                                 </select>
                               </div>
                             </div>
@@ -857,7 +904,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="inputAddress" className="form-label col-sm-4">Number of Delimiters to Data:</label>
                                 <div className="col-sm-8">
-                                  <input type="number" id="datafieldwidth" className="form-control" placeholder="" />
+                                  <input type="number" id="NumDelimiterData" className="form-control" placeholder="" />
                                 </div>
                               </div>
                               <div className="row">
@@ -889,7 +936,8 @@ function GsiModbusDrivers() {
                               <div className="col-sm-8">
                                 <select id="primarydriver" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>...</option>
+                                  <option>Driver-1</option>
+                                  <option>Driver-2</option>
                                 </select>
                               </div>
                             </div>
@@ -959,7 +1007,7 @@ function GsiModbusDrivers() {
                               <div className="row">
                                 <label htmlFor="associatedinstrument" className="form-label col-sm-4">Associated Instrument:</label>
                                 <div className="col-sm-8">
-                                  <select className="form-select" id="associatedinstrument">
+                                  <select className="form-select" id="associatedinstrument" required>
                                       <option selected value="">select instrument</option>
                                       {InstrumentsList.map((x, y) =>
                                         <option value={x.id} key={y} >{x.instrumentName}</option>
@@ -983,18 +1031,18 @@ function GsiModbusDrivers() {
                                 <label htmlFor="modbuscommandtype" className="form-label col-sm-4">Input/Output Type:</label>
                                 <div className="col-sm-8 mt-3">
                                   <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="radio" name="inputRadioOptions" defaultChecked="true" id="inputradio" value="input" />
+                                    <input className="form-check-input" type="radio" name="inputRadioOptions" defaultChecked="true" id="inputradio" value="input" onChange={inputchange}/>
                                     <label className="form-check-label" htmlFor="inputradio">Input</label>
                                   </div>
                                   <div className="form-check form-check-inline">
-                                    <input className="form-check-input" type="radio" name="inputRadioOptions" id="outputradio" value="output" />
+                                    <input className="form-check-input" type="radio" name="inputRadioOptions" id="outputradio" value="output" onChange={Outputchange} />
                                     <label className="form-check-label" htmlFor="outputradio">Output</label>
                                   </div>
                                 </div>
                               </div>
                             </div>
-                            <div className="col-md-6 mt-3">
-                              <div className="parse_fixed">
+                            <div className="col-md-6 mt-3 InputOptionsDiv">
+                              <div className={"parse_fixed " + (OutputDivValues?"":"disable")}>
                                 <h6>Input Options</h6>
                                 <div className="row">
                                   <div className="col-sm-12">
@@ -1008,8 +1056,8 @@ function GsiModbusDrivers() {
                                 </div>
                               </div>
                             </div>
-                            <div className="col-md-6 mt-3">
-                              <div className="parse_fixed">
+                            <div className="col-md-6 mt-3 OutputOptionsDiv">
+                              <div className={"parse_fixed "+ (OutputDivValues?"disable":"")}>
                                 <h6>Output Options</h6>
                                 <div className="row">
                                   <div className="col-sm-12">
@@ -1026,7 +1074,7 @@ function GsiModbusDrivers() {
                                   <div className="row">
                                   <label htmlFor="closedvalue" className="form-label col-sm-5">Closed Value:</label>
                                   <div className="col-sm-7">
-                                    <input type="number" id="closedvalue" className="form-control" placeholder="" />
+                                    <input type="number" id="closedvalue" className="form-control" placeholder="Enter Closed Value"  />
                                   </div>
                                   </div>
                                   </div>
@@ -1034,7 +1082,7 @@ function GsiModbusDrivers() {
                                     <div className="row">
                                   <label htmlFor="openvalue" className="form-label col-sm-5">Open Value:</label>
                                   <div className="col-sm-7">
-                                    <input type="number" id="openvalue" className="form-control" placeholder="" />
+                                    <input type="number" id="openvalue" className="form-control" placeholder="Enter Open Value"  />
                                   </div>
                                   </div>
                                   </div>
