@@ -1,6 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js';
+import { Line } from 'react-chartjs-2';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
 function Dashboard() {
 
   const [ListAllData, setListAllData] = useState();
@@ -15,6 +36,32 @@ function Dashboard() {
         }
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
   });
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      title: {
+        display: true,
+        text: 'Line Chart',
+      },
+    },
+  };
+  
+  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Dataset 1',
+        data: [-10,5,20,6,-20,20],
+        borderColor: 'rgb(30, 64, 175)',
+        backgroundColor: 'rgba(30, 64, 175, 0.5)',
+      }
+    ],
+  };
   return (
     <main id="main" className="main">
 
@@ -29,16 +76,16 @@ function Dashboard() {
       </div>
 
       <section className="section dashboard">
-        {ListAllData &&(
-        <div className="row">
+        {ListAllData && (
+          <div className="row">
 
-          <div className="col-lg-12">
-            <div className="row">
+            <div className="col-lg-12">
+              <div className="row" style={{display:"none"}}>
 
-              <div className="col-xxl-4 col-md-4">
-                <div className="card info-card sales-card">
+                <div className="col-xxl-4 col-md-4">
+                  <div className="card info-card sales-card">
 
-                  {/*  <div className="filter">
+                    {/*  <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
               <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li className="dropdown-header text-start">
@@ -51,25 +98,25 @@ function Dashboard() {
               </ul>
             </div> */}
 
-                  <div className="card-body">
-                    <h5 className="card-title text-center">Stations</h5>
+                    <div className="card-body">
+                      <h5 className="card-title text-center">Stations</h5>
 
-                    <div className="align-items-center text-center">
-                      {/* <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <div className="align-items-center text-center">
+                        {/* <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
                   <i className="bi bi-cart"></i>
                 </div> */}
-                      <div className="ps-3">
-                        <h6>{ListAllData.listStations.length}</h6>
+                        <div className="ps-3">
+                          <h6>{ListAllData.listStations.length}</h6>
+                        </div>
                       </div>
                     </div>
+
                   </div>
-
                 </div>
-              </div>
 
-              <div className="col-xxl-4 col-md-4">
-                <div className="card info-card revenue-card">
-                  {/* 
+                <div className="col-xxl-4 col-md-4">
+                  <div className="card info-card revenue-card">
+                    {/* 
             <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
               <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
@@ -83,27 +130,27 @@ function Dashboard() {
               </ul>
             </div> */}
 
-                  <div className="card-body">
-                    <h5 className="card-title text-center">Devices</h5>
+                    <div className="card-body">
+                      <h5 className="card-title text-center">Devices</h5>
 
-                    <div className="align-items-center text-center">
-                      {/* <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <div className="align-items-center text-center">
+                        {/* <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
                   <i className="bi bi-currency-dollar"></i>
                 </div> */}
-                      <div className="ps-3">
-                        <h6>{ListAllData.listDevices.length}</h6>
+                        <div className="ps-3">
+                          <h6>{ListAllData.listDevices.length}</h6>
+                        </div>
                       </div>
                     </div>
+
                   </div>
-
                 </div>
-              </div>
 
-              <div className="col-xxl-4 col-md-4">
+                <div className="col-xxl-4 col-md-4">
 
-                <div className="card info-card customers-card">
+                  <div className="card info-card customers-card">
 
-                  {/*     <div className="filter">
+                    {/*     <div className="filter">
               <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
               <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
                 <li className="dropdown-header text-start">
@@ -116,24 +163,24 @@ function Dashboard() {
               </ul>
             </div> */}
 
-                  <div className="card-body">
-                    <h5 className="card-title text-center">Parameters</h5>
+                    <div className="card-body">
+                      <h5 className="card-title text-center">Parameters</h5>
 
-                    <div className="align-items-center text-center">
-                      {/*  <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                      <div className="align-items-center text-center">
+                        {/*  <div className="card-icon rounded-circle d-flex align-items-center justify-content-center">
                   <i className="bi bi-people"></i>
                 </div> */}
-                      <div className="ps-3 text-center">
-                        <h6>{ListAllData.listPollutents.length}</h6>
+                        <div className="ps-3 text-center">
+                          <h6>{ListAllData.listPollutents.length}</h6>
+                        </div>
                       </div>
-                    </div>
 
+                    </div>
                   </div>
+
                 </div>
 
-              </div>
-
-              {/*  <div className="col-12">
+                {/*  <div className="col-12">
           <div className="card">
 
             <div className="filter">
@@ -303,10 +350,110 @@ function Dashboard() {
           </div>
         </div> */}
 
-            </div>
-          </div>
+              </div>
 
-          {/* 
+              <div className="row">
+
+              <div className=" col-md-3">
+                  <div className="card info-card revenue-card">
+                    <div className="card-body ">
+                      <div className="d-flex justify-content-between mb-2">
+                      <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                      <div className="device">O3 42 M</div>
+                      <div className="icons"><i className="bi bi-info-circle"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-start mb-2">
+                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
+                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
+                      <div className="icons"><i className="bi bi-graph-up"></i></div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div className=" col-md-3">
+                  <div className="card info-card revenue-card">
+                    <div className="card-body ">
+                      <div className="d-flex justify-content-between mb-2">
+                      <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                      <div className="device">O3 42 M</div>
+                      <div className="icons"><i className="bi bi-info-circle"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-start mb-2">
+                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
+                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
+                      <div className="icons"><i className="bi bi-graph-up"></i></div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div className=" col-md-3">
+                  <div className="card info-card revenue-card">
+                    <div className="card-body ">
+                      <div className="d-flex justify-content-between mb-2">
+                      <div className="icons"><i class="bi bi-sliders2-vertical"></i></div>
+                      <div className="device">O3 42 M</div>
+                      <div className="icons"><i className="bi bi-info-circle"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-start mb-2">
+                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
+                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
+                      <div className="icons"><i className="bi bi-graph-up"></i></div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+                <div className=" col-md-3">
+                  <div className="card info-card revenue-card">
+                    <div className="card-body ">
+                      <div className="d-flex justify-content-between mb-2">
+                      <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                      <div className="device">O3 42 M</div>
+                      <div className="icons"><i className="bi bi-info-circle"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-start mb-2">
+                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                      </div>
+                      <div className="d-flex justify-content-between">
+                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
+                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
+                      <div className="icons"><i className="bi bi-graph-up"></i></div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+              <Line options={options} data={data} />;
+              </div>
+            </div>
+
+            {/* 
     <div className="col-lg-4">
       <div className="card">
         <div className="filter">
@@ -478,7 +625,7 @@ function Dashboard() {
 
     </div> */}
 
-        </div>
+          </div>
         )}
       </section>
 
