@@ -13,6 +13,7 @@ function AddParameter() {
   const [Listparameters, setListparameters] = useState([]);
   const [parameterList, setparameterList] = useState(true);
   const [parameterId, setparameterId] = useState(0);
+  const [Status,setStatus]=useState(true);
 
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
     let isvalid = true;
@@ -60,7 +61,10 @@ function AddParameter() {
     let ScaleFactor = document.getElementById("scalefactor").value;
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
-    let UnitID = document.getElementById("unit").ariaValueMin;
+    let UnitID = document.getElementById("unit").ariaValueMin;    
+    let CreatedBy = "";
+    let ModifiedBy = "";
+    let status = Status?1:0;
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, ScaleFactor);
     if (!validation) {
       return false;
@@ -71,7 +75,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, UnitID: UnitID, ScaleFactor: ScaleFactor }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, UnitID: UnitID, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -89,6 +93,7 @@ function AddParameter() {
   const Editparameter = function (param) {
     setparameterList(false);
     setparameterId(param.id)
+    setStatus(param.status==1?true:false)
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceID;
@@ -112,6 +117,9 @@ function AddParameter() {
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
     let UnitID = document.getElementById("unit").value;
+    let CreatedBy = "";
+    let ModifiedBy = "";
+    let status = Status?1:0;
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID);
     if (!validation) {
       return false;
@@ -122,7 +130,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -303,62 +311,74 @@ function AddParameter() {
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
                   <select className="form-select" id="stationname" required>
-                    <option selected value="" title="Enter Station Name">select station name</option>
+                    <option selected value="">Select station name</option>
                     {ListStations.map((x, y) =>
                       <option value={x.id} key={y} >{x.stationName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please Select Station Name</div>
+                  <div class="invalid-feedback">Please select station name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
                   <select className="form-select" id="devicename" onChange={Deviceschange} required>
-                    <option selected value="" title="Select Device Name">select device name</option>
+                    <option selected value="">Select device name</option>
                     {ListDevices.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please Select Device Name</div>
+                  <div class="invalid-feedback">Please select device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Driver Name:</label>
                   <select className="form-select" id="drivername" required>
-                    <option selected value="" title="Select Driver Name">select driver name</option>
+                    <option selected value="">Select driver name</option>
                     {ListdeviceDrivers.map((x, y) =>
                       <option value={x.id} key={y} >{x.driverName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please Select Driver Name</div>
+                  <div class="invalid-feedback">Please select driver name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="parametername" className="form-label">Parameter Name:</label>
-                  <input type="text" className="form-control" id="parametername" placeholder="enter Parameter Name" required />
-                  <div class="invalid-feedback">Please Enter Parameter Name</div>
+                  <input type="text" className="form-control" id="parametername" placeholder="Enter parameter name" required />
+                  <div class="invalid-feedback">Please enter parameter name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="units" className="form-label">Units:</label>
                   <select className="form-select" id="unit" required>
-                    <option selected value="" title="Select Units">select unit</option>
+                    <option selected value="" title="Select Units">Select unit</option>
                     {ListReportedUnits.map((x, y) =>
                       <option value={x.id} key={y} >{x.unitName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please Select Units</div>
+                  <div class="invalid-feedback">Please select units</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="scalefactor" className="form-label">Scale Factor:</label>
-                  <input type="number" className="form-control" id="scalefactor" placeholder="enter scale factor" required />
-                  <div class="invalid-feedback">Please Enter Scale Factor</div>
+                  <input type="number" className="form-control" id="scalefactor" placeholder="Enter scale factor" required />
+                  <div class="invalid-feedback">Please enter scale factor</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="pollinginterval" className="form-label">Polling Interval:</label>
-                  <input type="text" className="form-control" id="pollinginterval" placeholder="enter Polling Interval" required />
-                  <div class="invalid-feedback">Please Enter Polling Interval</div>
+                  <input type="text" className="form-control" id="pollinginterval" placeholder="Enter polling interval" required />
+                  <div class="invalid-feedback">Please enter polling interval</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="avginterval" className="form-label">Average Interval:</label>
-                  <input type="text" className="form-control" id="avginterval" placeholder="enter Average Interval" required />
-                  <div class="invalid-feedback">Please Enter Average Interval</div>
+                  <input type="text" className="form-control" id="avginterval" placeholder="Enter average interval" required />
+                  <div class="invalid-feedback">Please enter average interval</div>
+                </div>
+                <div className="col-md-12 mb-3">
+                  <label for="Status" className="form-label">Status: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
+                    {Status && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Active</label>
+                    )}
+                    {!Status && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Inactive</label>
+                    )}
+                  </div>
                 </div>
                 <div className="col-md-12 text-center">
                   {!parameterList && parameterId == 0 && (
