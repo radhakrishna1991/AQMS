@@ -69,7 +69,8 @@ function GsiModbusDrivers() {
     let DelimiterChars = document.getElementById("delimiterchars").value;
     let NumDelimiData = document.getElementById("NumDelimiterData").value;
     let NumDelimiString = document.getElementById("numdelimitersinstring").value;
-    let PrimaryDriver = document.getElementById("primarydriver").value;
+    //let PrimaryDriver = document.getElementById("primarydriver").value;
+    let PrimaryDriver = "2";
     let InputIndex = document.getElementById("inputindex").value;
     let CreatedBy = document.getElementById("driverentryname").value;
     let ModifiedBy = document.getElementById("driverentryname").value;
@@ -84,7 +85,6 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      //body: JSON.stringify({ DriverInstrID: DriverInstrumentID, DriverEntryName: DriverEntryName,DataFieldType:DataFieldType}),
       body: JSON.stringify({ GsiDriverInstrID: DriverInstrumentID, GsiDriverEntryName: DriverEntryName,DataFieldType:DataFieldType,EntryType: DataFieldType,DataValueFormat: DataValueFormat,ModbusRegister: ModbusRegister,SendName: SendName, AutosendString: AutoSendString, AutosendRepeatInterval: AutosendRepeatInterval,ParseName: ParseName, ParseSyncString: ParseSyncString,NumberOfCharsToData: NumCharsToData, DelimiterChars: DelimiterChars,DataFieldWidth: DateFieldWidth,NumberParseCharsInString:NumParseCharsinString, NumberOfDelimitersToData: NumDelimiData, NumberOfDelimitersInString: NumDelimiString, PrimaryDriverEntryID: PrimaryDriver,InputIndex: InputIndex, DigitalIOString: "", Units:""}),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -102,24 +102,26 @@ function GsiModbusDrivers() {
   }
 
   const UpdateDriverEntry = (event) => {
-
     let DriverEntryName = document.getElementById("driverentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstument").value;
     let ModbusRegister = document.getElementById("modbusregister").value;
-    let DataValueFormat = document.getElementById("datavalueformat").value;
-    let DataFieldType = document.getElementById("datafieldtype").value;
-    let autosendRepeatinterval = document.getElementById("autosendRepeatinterval").value;
+    let DataValueFormat = "F"
+    //let DataValueFormat = document.getElementById("datavalueformat").value;
+    //let DataFieldType = document.getElementById("datafieldtype").value;
+    let DataFieldType = "F";
+    let AutoSendString = document.getElementById("autosendstring").value;
     let SendName = document.getElementById("sendname").value;
-    let autosendRepeatintervalString = document.getElementById("autosendRepeatintervalString").value;
+    let AutosendRepeatInterval = document.getElementById("autosendRepeatintervalString").value + document.getElementById("autosendRepeatinterval").value;
     let ParseName = document.getElementById("parsename").value;
-    let ParseString = document.getElementById("parsestring").value;
+    let ParseSyncString = document.getElementById("parsestring").value;
     let NumCharsToData = document.getElementById("numcharstodata").value;
     let DateFieldWidth = document.getElementById("datafieldwidth").value;
-    let NumCharsinString = document.getElementById("numcharsinstring").value;
+    let NumParseCharsinString = document.getElementById("numcharsinstring").value;
     let DelimiterChars = document.getElementById("delimiterchars").value;
     let NumDelimiData = document.getElementById("NumDelimiterData").value;
     let NumDelimiString = document.getElementById("numdelimitersinstring").value;
-    let PrimaryDriver = document.getElementById("primarydriver").value;
+    //let PrimaryDriver = document.getElementById("primarydriver").value;
+    let PrimaryDriver = "2";
     let InputIndex = document.getElementById("inputindex").value;
     let CreatedBy = document.getElementById("driverentryname").value;
     let ModifiedBy = document.getElementById("driverentryname").value;
@@ -134,7 +136,7 @@ function GsiModbusDrivers() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ DriverInstrumentID: DriverInstrumentID, DriverEntryName: DriverEntryName,  DataFieldType: DataFieldType, ModbusRegister: ModbusRegister, DataValueFormat: DataValueFormat, AutosendString: autosendRepeatintervalString,AutosendRepeatInterval: autosendRepeatinterval, SendName: SendName, ParseName: ParseName, ParseString: ParseString, NumCharsToData: NumCharsToData, DelimiterChars: DelimiterChars, NumCharsinString: NumCharsinString, DateFieldWidth: DateFieldWidth, NumDelimiData: NumDelimiData, NumDelimiString: NumDelimiString, PrimaryDriver: PrimaryDriver, InputIndex: InputIndex}) })
+      body: JSON.stringify({ GsiDriverInstrID: DriverInstrumentID, GsiDriverEntryName: DriverEntryName,DataFieldType:DataFieldType,EntryType: DataFieldType,DataValueFormat: DataValueFormat,ModbusRegister: ModbusRegister,SendName: SendName, AutosendString: AutoSendString, AutosendRepeatInterval: AutosendRepeatInterval,ParseName: ParseName, ParseSyncString: ParseSyncString,NumberOfCharsToData: NumCharsToData, DelimiterChars: DelimiterChars,DataFieldWidth: DateFieldWidth,NumberParseCharsInString:NumParseCharsinString, NumberOfDelimitersToData: NumDelimiData, NumberOfDelimitersInString: NumDelimiString, PrimaryDriverEntryID: PrimaryDriver,InputIndex: InputIndex, DigitalIOString: "", Units:""}) }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
           GetDriverEntry();
@@ -155,25 +157,27 @@ function GsiModbusDrivers() {
     setDriverEntryAddbtn(false);
     setTimeout(() => {
 
-    document.getElementById("driverentryname").value = param.driverEntryName;
-    document.getElementById("associatedinstument").value= param.associatedinstument;
-    document.getElementById("modbusregister").value = param.modbusregister;
-    document.getElementById("datavalueformat").value= param.datavalueformat;
-    document.getElementById("datafieldtype").value = param.datafieldtype;
-    document.getElementById("autosendinterval").value = param.autosendinterval;
-    document.getElementById("sendname").value = param.sendname;
-    document.getElementById("autosendstring").value = param.autosendstring;
-    document.getElementById("timeinterval").value = param.timeinterval;
-    document.getElementById("parsename").value = param.parsename;
-    document.getElementById("parsestring").value = param.parsestring;
-    document.getElementById("numcharstodata").value = param.numcharstodata;
-    document.getElementById("datafieldwidth").value = param.datafieldwidth;
-    document.getElementById("numcharsinstring").value = param.numcharsinstring;
-    document.getElementById("delimiterchars").value = param.delimiterchars;
-    document.getElementById("NumDelimiterData").value = param.NumDelimiterData;
-    document.getElementById("numdelimitersinstring").value = param.numdelimitersinstring;
-    document.getElementById("primarydriver").value = param.primarydriver;
-    document.getElementById("inputindex").value = param.inputindex;
+    document.getElementById("driverentryname").value = param.gsiDriverEntryName;
+    document.getElementById("associatedinstument").value= param.gsiDriverInstrID;
+    document.getElementById("modbusregister").value = param.modbusRegister;
+    document.getElementById("datavalueformat").value= param.dataValueFormat;
+    document.getElementById("datafieldtype").value = param.dataFieldType;
+    const autosendRepeatIntervalStr = param.autosendRepeatInterval.slice(0,-1);
+    document.getElementById("autosendRepeatintervalString").value =autosendRepeatIntervalStr;
+    const autosendRepeatInterval = param.autosendRepeatInterval.charAt(param.autosendRepeatInterval.length - 1);
+    document.getElementById("autosendRepeatinterval").value=autosendRepeatInterval;
+    document.getElementById("sendname").value = param.sendName;
+    document.getElementById("autosendstring").value = param.autosendString;
+    document.getElementById("parsename").value = param.parseName;
+    document.getElementById("parsestring").value = param.parseSyncString;
+    document.getElementById("numcharstodata").value = param.numberOfCharsToData;
+    document.getElementById("datafieldwidth").value = param.dataFieldWidth;
+    document.getElementById("numcharsinstring").value = param.numberParseCharsInString;
+    document.getElementById("delimiterchars").value = param.delimiterChars;
+    document.getElementById("NumDelimiterData").value = param.numberOfDelimitersToData;
+    document.getElementById("numdelimitersinstring").value = param.numberOfDelimitersInString;
+    //document.getElementById("primarydriver").value = param.primaryDriverEntryID;
+    document.getElementById("inputindex").value = param.inputIndex;
 
     }, 10);
   }
@@ -592,7 +596,7 @@ function GsiModbusDrivers() {
           return $.grep(this.data, function (item) {
             return ((!filter.id || item.id.toUpperCase().indexOf(filter.id.toUpperCase()) >= 0)
               && (!filter.driverDigitalEntryName || item.driverDigitalEntryName.toUpperCase().indexOf(filter.driverDigitalEntryName.toUpperCase()) >= 0)
-              && (!filter.DriverInstrumentID || item.DriverInstrumentID.toUpperCase().indexOf(filter.DriverInstrumentID.toUpperCase()) >= 0)
+              && (!filter.driverInstrumentID || item.driverInstrumentID.toUpperCase().indexOf(filter.driverInstrumentID.toUpperCase()) >= 0)
             );
           });
         }
@@ -600,7 +604,7 @@ function GsiModbusDrivers() {
       fields: [
         { name: "id", title: "Driver ID", type: "text" },
         { name: "driverDigitalEntryName", title: "Digital Driver Name", type: "text" },
-        { name: "DriverInstrumentID", title: "Driver Instrument ID", type: "text" },
+        { name: "driverInstrumentID", title: "Driver Instrument ID", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -752,13 +756,14 @@ function GsiModbusDrivers() {
                               <div className="col-sm-8">
                                 <select id="datafieldtype" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option> F = Float(GSI and Modbus) </option>
-                                  <option> I = Integer(GSI and Modbus) </option>
-                                  <option> B = Bipolar Int(Modbus) </option>
-                                  <option> U = Unipolar Int(Modbus) </option>
-                                  <option> P = Pulse(Modbus) </option>
-                                  <option> S = IEEE 754 Hex String(GSI) </option>
-                                  <option> R = IEEE 754 Float Bytes(GSI)</option>
+                                  <option value="" selected>select user role</option>
+                                  <option value="F"> F = Float(GSI and Modbus) </option>
+                                  <option value="I"> I = Integer(GSI and Modbus) </option>
+                                  <option value="B"> B = Bipolar Int(Modbus) </option>
+                                  <option value="U"> U = Unipolar Int(Modbus) </option>
+                                  <option value="P"> P = Pulse(Modbus) </option>
+                                  <option value="S"> S = IEEE 754 Hex String(GSI) </option>
+                                  <option value="R"> R = IEEE 754 Float Bytes(GSI)</option>
                                 </select>
                               </div>
                             </div>
@@ -767,10 +772,10 @@ function GsiModbusDrivers() {
                               <div className="col-sm-8">
                                 <select id="datavalueformat" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>F = IEEE754/Little Endian(Modbus) or Float(GSI)</option>
-                                  <option> W = IEEE754/Big Endian(Modbus) </option>
-                                  <option> B = Reverse Little Endian(Modbus) </option>
-                                  <option> 2 = Reverse Big Endian(Modbus)</option>
+                                  <option value="F">F = IEEE754/Little Endian(Modbus) or Float(GSI)</option>
+                                  <option value="W"> W = IEEE754/Big Endian(Modbus) </option>
+                                  <option value="B"> B = Reverse Little Endian(Modbus) </option>
+                                  <option value="2"> 2 = Reverse Big Endian(Modbus)</option>
                                 </select>
                               </div>
                             </div>
@@ -826,10 +831,10 @@ function GsiModbusDrivers() {
                               <div className="col-sm-5">
                                 <select id="autosendRepeatinterval" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>Seconds</option>
-                                  <option>Minutes</option>
-                                  <option>Hours</option>
-                                  <option>Days</option>
+                                  <option value="S">Seconds</option>
+                                  <option value="M">Minutes</option>
+                                  <option value="H">Hours</option>
+                                  <option value="D">Days</option>
                                 </select>
                               </div>
                             </div>
@@ -936,8 +941,8 @@ function GsiModbusDrivers() {
                               <div className="col-sm-8">
                                 <select id="primarydriver" className="form-select">
                                   <option selected>Choose...</option>
-                                  <option>Driver-1</option>
-                                  <option>Driver-2</option>
+                                  <option value="1">Driver-1</option>
+                                  <option value="2">Driver-2</option>
                                 </select>
                               </div>
                             </div>
