@@ -10,6 +10,7 @@ function AddDevice() {
   const [DeviceList, setDeviceList] = useState(true);
   const [ListDeviceModels, setListDeviceModels] = useState([]);
   const [DeviceId, setDeviceId] = useState(0);
+  const [Status,setStatus]=useState(true);
 
   const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type) {
     let isvalid = true;
@@ -48,6 +49,9 @@ function AddDevice() {
     let IPAddress = document.getElementById("ipaddress").value;
     let Port = document.getElementById("port").value;
     let Type = document.getElementById("type").value;
+    let CreatedBy = "";
+    let ModifiedBy = "";
+    let status = Status?1:0;
     let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type);
     if (!validation) {
       return false;
@@ -58,7 +62,7 @@ function AddDevice() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type }),
+      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Deviceadd") {
@@ -75,7 +79,8 @@ function AddDevice() {
 
   const EditStation = function (param) {
     setDeviceList(false);
-    setDeviceId(param.id)
+    setDeviceId(param.id);
+    setStatus(param.status==1?true:false)
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceName;
@@ -94,6 +99,9 @@ function AddDevice() {
     let IPAddress = document.getElementById("ipaddress").value;
     let Port = document.getElementById("port").value;
     let Type = document.getElementById("type").value;
+    let CreatedBy = "";
+    let ModifiedBy = "";
+    let status = Status?1:0;
     let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type);
     if (!validation) {
       return false;
@@ -104,7 +112,7 @@ function AddDevice() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, ID: DeviceId }),
+      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, ID: DeviceId,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -272,45 +280,57 @@ function AddDevice() {
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
                   <select className="form-select" id="stationname" required>
-                    <option selected value="">select station name</option>
+                    <option selected value="">Select station name</option>
                     {ListStations.map((x, y) =>
                       <option value={x.id} key={y} >{x.stationName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please Select Station Name</div>
+                  <div class="invalid-feedback">Please select station name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
-                  <input type="text" className="form-control" id="devicename" placeholder="enter Device Name" required />
-                  <div class="invalid-feedback">Please Enter Device Name</div>
+                  <input type="text" className="form-control" id="devicename" placeholder="Enter device name" required />
+                  <div class="invalid-feedback">Please enter device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicemodel" className="form-label">Device Model:</label>
                   <select className="form-select" id="devicemodel" required>
-                    <option selected value="">select Device Model</option>
+                    <option selected value="">Select device model</option>
                     {ListDeviceModels.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceModelName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please Select Device Model</div>
+                  <div class="invalid-feedback">Please select device model</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ipaddress" className="form-label">IP Address:</label>
-                  <input type="text" className="form-control" id="ipaddress" placeholder="enter IP Address" required />
-                  <div class="invalid-feedback">Please Enter IP Address</div>
+                  <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
+                  <div class="invalid-feedback">Please enter IP address</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="port" className="form-label">Port:</label>
-                  <input type="text" className="form-control" id="port" placeholder="enter port" required />
-                  <div class="invalid-feedback">Please Enter Port</div>
+                  <input type="text" className="form-control" id="port" placeholder="Enter port" required />
+                  <div class="invalid-feedback">Please enter port</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="type" className="form-label">Type:</label>
                   <select className="form-select" id="type" required>
-                    <option selected value="">select Type</option>
+                    <option selected value="">Select type</option>
                     <option value="modbus"  >Modbus</option>
                   </select>
-                  <div class="invalid-feedback">Please Select Type</div>
+                  <div class="invalid-feedback">Please select type</div>
+                </div>
+                <div className="col-md-12 mb-3">
+                  <label for="Status" className="form-label">Status: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
+                    {Status && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Active</label>
+                    )}
+                    {!Status && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Inactive</label>
+                    )}
+                  </div>
                 </div>
                 <div className="col-md-12 text-center">
                   {!DeviceList && DeviceId == 0 && (

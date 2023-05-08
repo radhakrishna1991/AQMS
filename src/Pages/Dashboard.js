@@ -35,7 +35,7 @@ function Dashboard() {
           setListAllData(data);
         }
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
-  });
+  }, []);
 
   const options = {
     responsive: true,
@@ -49,22 +49,38 @@ function Dashboard() {
       },
     },
   };
-  
+
   const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
   const data = {
     labels,
     datasets: [
       {
         label: 'Dataset 1',
-        data: [-10,5,20,6,-20,20],
-        borderColor: 'rgb(30, 64, 175)',
-        backgroundColor: 'rgba(30, 64, 175, 0.5)',
+        data: [-10, 5, 20, 6, -20, 20],
+        borderColor: 'rgb(95 158 160)',
+        backgroundColor: 'rgb(95 158 160 0.5)',
       }
     ],
   };
   return (
     <main id="main" className="main">
-
+      <div className="modal fade zoom" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              ...
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" className="btn btn-primary">Understood</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="pagetitle">
         <h1>Dashboard</h1>
         {/* <nav>
@@ -80,7 +96,7 @@ function Dashboard() {
           <div className="row">
 
             <div className="col-lg-12">
-              <div className="row" style={{display:"none"}}>
+              <div className="row" style={{ display: "none" }}>
 
                 <div className="col-xxl-4 col-md-4">
                   <div className="card info-card sales-card">
@@ -106,7 +122,7 @@ function Dashboard() {
                   <i className="bi bi-cart"></i>
                 </div> */}
                         <div className="ps-3">
-                          <h6>{ListAllData.listStations.length}</h6>
+                         {/*  <h6>{ListAllData.listStations.length}</h6> */}
                         </div>
                       </div>
                     </div>
@@ -352,104 +368,41 @@ function Dashboard() {
 
               </div>
 
-              <div className="row">
+              <div className="dashboard_row">
+                {ListAllData.listDevices.map((x, y) =>
+                x.stationID==2 && (
+                  <div className="dashboard_col">
+                    <div className="card info-card revenue-card">
+                      <div className="card-body ">
+                        <div className="d-flex justify-content-between">
+                          <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                          <div className="device">{x.deviceName}</div>
+                          <div className="icons" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i className="bi bi-info-circle"></i></div>
+                        </div>
+                        <div className="d-flex justify-content-start mt-2">
+                          <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
+                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                        </div>
+                        {ListAllData.listPollutents.map((i, j) =>
+                         i.deviceID==x.id && (
+                        <div className="d-flex justify-content-between mt-2">
+                          <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
+                          <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
+                          <div className="icons"><i className="bi bi-graph-up"></i></div>
+                        </div>
+                        )
+                        )}
+                      </div>
 
-              <div className=" col-md-3">
-                  <div className="card info-card revenue-card">
-                    <div className="card-body ">
-                      <div className="d-flex justify-content-between mb-2">
-                      <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
-                      <div className="device">O3 42 M</div>
-                      <div className="icons"><i className="bi bi-info-circle"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-start mb-2">
-                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
-                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
-                      <div className="icons"><i className="bi bi-graph-up"></i></div>
-                      </div>
                     </div>
-
                   </div>
-                </div>
-                <div className=" col-md-3">
-                  <div className="card info-card revenue-card">
-                    <div className="card-body ">
-                      <div className="d-flex justify-content-between mb-2">
-                      <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
-                      <div className="device">O3 42 M</div>
-                      <div className="icons"><i className="bi bi-info-circle"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-start mb-2">
-                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
-                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
-                      <div className="icons"><i className="bi bi-graph-up"></i></div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-
-                <div className=" col-md-3">
-                  <div className="card info-card revenue-card">
-                    <div className="card-body ">
-                      <div className="d-flex justify-content-between mb-2">
-                      <div className="icons"><i class="bi bi-sliders2-vertical"></i></div>
-                      <div className="device">O3 42 M</div>
-                      <div className="icons"><i className="bi bi-info-circle"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-start mb-2">
-                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
-                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
-                      <div className="icons"><i className="bi bi-graph-up"></i></div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
-                <div className=" col-md-3">
-                  <div className="card info-card revenue-card">
-                    <div className="card-body ">
-                      <div className="d-flex justify-content-between mb-2">
-                      <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
-                      <div className="device">O3 42 M</div>
-                      <div className="icons"><i className="bi bi-info-circle"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-start mb-2">
-                      <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                      </div>
-                      <div className="d-flex justify-content-between">
-                      <div className="parameter"><i className="bi bi-check2"></i> <span>MS-O3</span></div>
-                      <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
-                      <div className="icons"><i className="bi bi-graph-up"></i></div>
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
+                  )
+                )}
               </div>
               <div className="row">
-              <Line options={options} data={data} />;
+                <Line options={options} data={data} />;
               </div>
             </div>
 
