@@ -14,6 +14,7 @@ const Parameters =lazy(() => import("./Pages/Parameters"));
 const AirQuality =lazy(() => import("./Pages/AirQuality"));
 const DataReport=lazy(() => import("./Pages/DataReport"));
 const StasticsReport=lazy(() => import("./Pages/StasticsReport"));
+const StasticsDataReport=lazy(() => import("./Pages/StasticsDataReport"));
 const Adduser=lazy(() => import("./Pages/Adduser"));
 const AddStation=lazy(() => import("./Pages/AddStation"));
 const AddDevice=lazy(() => import("./Pages/AddDevice"));
@@ -41,6 +42,7 @@ function App() {
       <Route   path="/AirQuality" exact element={<AirQuality />} />
       <Route   path="/DataReport" exact element={<DataReport />} />
       <Route   path="/StatisticalReport" exact element={<StasticsReport />} />
+      <Route   path="/StasticsDataReport" exact element={<StasticsDataReport />} />
       <Route   path="/Adduser" exact element={<Adduser />} />
       <Route   path="/AddStation" exact element={<AddStation />} />
       <Route   path="/AddDevice" exact element={<AddDevice />} />

@@ -9,13 +9,13 @@ function Sidenavbar() {
 
   const getUserRole = function ()  {
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
-      {
-        document.getElementById("Configuration-Panel").style.display="block";
-      }
-      else{
-        document.getElementById("Configuration-Panel").style.display="none";
-      }
+    // if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
+    //   {
+    //     document.getElementById("Configuration-Panel").style.display="block";
+    //   }
+    //   else{
+    //     document.getElementById("Configuration-Panel").style.display="none";
+    //   }
   }
   useEffect(() => {
     getUserRole();
@@ -250,6 +250,12 @@ function Sidenavbar() {
               <NavLink to="/DataReport" className="nav-item animation-forwards animate-delay-5" >
                 <i className="bi bi-circle"></i>
                 <span>Data Reports</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/StasticsDataReport" className="nav-item animation-forwards animate-delay-6" >
+                <i className="bi bi-circle"></i>
+                <span>Stastics Data Reports</span>
               </NavLink >
             </li>
            {/*  <li className="nav-item">
