@@ -10,35 +10,15 @@ function AddDevice() {
   const [DeviceList, setDeviceList] = useState(true);
   const [ListDeviceModels, setListDeviceModels] = useState([]);
   const [DeviceId, setDeviceId] = useState(0);
-  const [Status,setStatus]=useState(true);
+  const [Status, setStatus] = useState(true);
+  const [Type, setType] = useState(true);
 
-  const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type) {
+  const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddDeviceform')[0];
-    if (StationID == "") {
-      //toast.warning('Please select Station');
+    if (!form.checkValidity()) {
       form.classList.add('was-validated');
-      isvalid = false;
-    } else if (DeviceName == "") {
-      //toast.warning('Please enter device name');
-      form.classList.add('was-validated');
-      isvalid = false;
-    } else if (DeviceModel == "") {
-      //toast.warning('Please select device model');
-      form.classList.add('was-validated');
-      isvalid = false;
-    } else if (IPAddress == "") {
-      //toast.warning('Please enter ipaddress');
-      form.classList.add('was-validated');
-      isvalid = false;
-    } else if (Port == "") {
-      //toast.warning('Please enter port');
-      form.classList.add('was-validated');
-      isvalid = false;
-    } else if (Type == "") {
-      //toast.warning('Please enter type');
-      form.classList.add('was-validated');
-      isvalid = false;
+      isvalid=false;
     }
     return isvalid;
   }
@@ -46,13 +26,19 @@ function AddDevice() {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
-    let IPAddress = document.getElementById("ipaddress").value;
-    let Port = document.getElementById("port").value;
+    let IPAddress = "";
+    let Number = "";
     let Type = document.getElementById("type").value;
+    if (Type == 'Tcp/IP') {
+      IPAddress = document.getElementById("ipaddress").value;
+    } else if (Type == 'Serial') {
+      Number = document.getElementById("number").value;
+    }
+    let Port = document.getElementById("port").value;
     let CreatedBy = "";
     let ModifiedBy = "";
-    let status = Status?1:0;
-    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type);
+    let status = Status ? 1 : 0;
+    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number);
     if (!validation) {
       return false;
     }
@@ -62,7 +48,7 @@ function AddDevice() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, Number: Number, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Deviceadd") {
@@ -80,14 +66,19 @@ function AddDevice() {
   const EditStation = function (param) {
     setDeviceList(false);
     setDeviceId(param.id);
-    setStatus(param.status==1?true:false)
+    setType(param.type);
+    setStatus(param.status == 1 ? true : false)
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceName;
       document.getElementById("devicemodel").value = param.deviceModel;
-      document.getElementById("ipaddress").value = param.ipAddress;
-      document.getElementById("port").value = param.port;
       document.getElementById("type").value = param.type;
+      if (param.type == 'Tcp/IP') {
+        document.getElementById("ipaddress").value = param.ipAddress;
+      } else if (param.type == 'Serial') {
+        document.getElementById("number").value = param.number;
+      }
+      document.getElementById("port").value = param.port;
     }, 10);
 
   }
@@ -96,13 +87,19 @@ function AddDevice() {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
-    let IPAddress = document.getElementById("ipaddress").value;
-    let Port = document.getElementById("port").value;
+    let IPAddress = "";
+    let Number = "";
     let Type = document.getElementById("type").value;
+    if (Type == 'Tcp/IP') {
+      IPAddress = document.getElementById("ipaddress").value;
+    } else if(Type=='Serial') {
+      Number = document.getElementById("number").value;
+    }
+    let Port = document.getElementById("port").value;
     let CreatedBy = "";
     let ModifiedBy = "";
-    let status = Status?1:0;
-    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type);
+    let status = Status ? 1 : 0;
+    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number);
     if (!validation) {
       return false;
     }
@@ -112,7 +109,7 @@ function AddDevice() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, ID: DeviceId,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, Number: Number, ID: DeviceId, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -303,22 +300,34 @@ function AddDevice() {
                   <div class="invalid-feedback">Please select device model</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="ipaddress" className="form-label">IP Address:</label>
-                  <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
-                  <div class="invalid-feedback">Please enter IP address</div>
+                  <label for="type" className="form-label">Type:</label>
+                  <select className="form-select" id="type" onChange={(e) => setType(e.target.value)} required>
+                    <option selected value="">Select type</option>
+                    <option value="Serial"  >Serial</option>
+                    <option value="Tcp/IP"  >Tcp/IP</option>
+                    <option value="Analog"  >Analog</option>
+                    {/*  <option value="modbus"  >Modbus</option> */}
+                  </select>
+                  <div class="invalid-feedback">Please select type</div>
                 </div>
+                {Type == 'serial' && (
+                  <div className="col-md-12 mb-3">
+                    <label for="number" className="form-label">Number:</label>
+                    <input type="number" className="form-control" id="number" placeholder="Enter number" required />
+                    <div class="invalid-feedback">Please enter number</div>
+                  </div>
+                )}
+                {Type == 'tcp/ip' && (
+                  <div className="col-md-12 mb-3">
+                    <label for="ipaddress" className="form-label">IP Address:</label>
+                    <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
+                    <div class="invalid-feedback">Please enter IP address</div>
+                  </div>
+                )}
                 <div className="col-md-12 mb-3">
                   <label for="port" className="form-label">Port:</label>
                   <input type="text" className="form-control" id="port" placeholder="Enter port" required />
                   <div class="invalid-feedback">Please enter port</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="type" className="form-label">Type:</label>
-                  <select className="form-select" id="type" required>
-                    <option selected value="">Select type</option>
-                    <option value="modbus"  >Modbus</option>
-                  </select>
-                  <div class="invalid-feedback">Please select type</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="Status" className="form-label">Status: </label>

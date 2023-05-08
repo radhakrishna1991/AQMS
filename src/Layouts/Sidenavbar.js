@@ -8,14 +8,14 @@ function Sidenavbar() {
   
 
   const getUserRole = function ()  {
-    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  /*   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
     if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
       {
         document.getElementById("Configuration-Panel").style.display="block";
       }
       else{
         document.getElementById("Configuration-Panel").style.display="none";
-      }
+      } */
   }
   useEffect(() => {
     getUserRole();
