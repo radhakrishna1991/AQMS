@@ -24,7 +24,10 @@ ChartJS.register(
 
 function Dashboard() {
 
+  const $ = window.jQuery;
   const [ListAllData, setListAllData] = useState();
+  const [Infodevices, setInfodevices] = useState();
+  const [InfoParameters, setInfoParameters] = useState();
 
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/Dashboard", {
@@ -62,21 +65,324 @@ function Dashboard() {
       }
     ],
   };
+
+  const Deviceinfo = function (param) {
+    setInfodevices(param);
+    let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
+    setInfoParameters(parameters);
+    $('#infomodal').modal('show');
+  }
+  const Devicealert = function (param) {
+    setInfodevices(param);
+    let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
+    setInfoParameters(parameters);
+    $('#alertmodal').modal('show');
+  }
+  const Devicealarm = function (param) {
+    setInfodevices(param);
+    let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
+    setInfoParameters(parameters);
+    $('#alarmmodal').modal('show');
+  }
+  
   return (
     <main id="main" className="main">
-      <div className="modal fade zoom" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div className="modal fade zoom dashboard_dmodal" id="infomodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Device Information</h1>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
-              ...
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>From</th>
+                      <th>Property</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  {Infodevices && (
+                    <tbody>
+                      <tr className="body_active">
+                        <td>Device</td>
+                        <td>Wording</td>
+                        <td>{Infodevices.deviceName}</td>
+                      </tr>
+                      <tr className="body_active">
+                        <td>Acquisition</td>
+                        <td>Type</td>
+                        <td>{Infodevices.type}</td>
+                      </tr>
+                      {Infodevices.type == 'Tcp/IP' && (
+                        <tr className="body_active">
+                          <td>Physcical Channel</td>
+                          <td>IP Address</td>
+                          <td>{Infodevices.ipAddress}</td>
+                        </tr>
+                      )}
+                      {Infodevices.type == 'Serial' && (
+                        <tr className="body_active">
+                          <td>Physcical Channel</td>
+                          <td>Number</td>
+                          <td>{Infodevices.number}</td>
+                        </tr>
+                      )}
+                      <tr className="body_active">
+                        <td>Protocol</td>
+                        <td>Type</td>
+                        <td>APIIP</td>
+                      </tr>
+                      {InfoParameters.map((x, y) =>
+                        <React.Fragment>
+                          <tr>
+                            <td rowSpan={3}>{x.parameterName}</td>
+                            <td>Number</td>
+                            <td>2</td>
+                          </tr>
+                          <tr>
+                            <td>COEF A</td>
+                            <td>1</td>
+                          </tr>
+                          <tr>
+                            <td>COEF B</td>
+                            <td>0</td>
+                          </tr>
+                        </React.Fragment>
+                      )}
+                    </tbody>
+                  )}
+                </table>
+              </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" className="btn btn-primary">Understood</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="modal fade zoom dashboard_dmodal" id="alertmodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">View of the device failures</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>From</th>
+                      <th>Wording</th>
+                      <th>State</th>
+                    </tr>
+                  </thead>
+                  {Infodevices && (
+                    <tbody>
+                      <tr>
+                        <td rowSpan={14}>{Infodevices.deviceName}</td>
+                        <td>Serial link failure</td>
+                        <td>Active</td>
+                      </tr>
+                      <tr>
+                        <td>MAINT</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>DEBIT</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>DEBOZONE</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>OZONEUR</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>PRESSION</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>TMPINT</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>TMPCHAM</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>TMPIZS</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>TMPCONV</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>TMPPM</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>ZERODYAN</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>SPANDYN</td>
+                        <td>Inactive</td>
+                      </tr>
+                      <tr>
+                        <td>DCALIM</td>
+                        <td>Inactive</td>
+                      </tr>
+                      {InfoParameters.map((x, y) =>
+                        <React.Fragment>
+                          <tr>
+                            <td rowSpan={4}>{x.parameterName}</td>
+                            <td>Overrange under a signal value threshold</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                            <td>Overrange above a signal value threshold</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                            <td>Overrange of signal slope</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                            <td>Overrange of immobile signal</td>
+                            <td>Inactive</td>
+                          </tr>
+                        </React.Fragment>
+                      )}
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="modal fade zoom dashboard_dmodal" id="alarmmodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">View of the device alaram</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>Measure</th>
+                      <th>From</th>
+                      <th>State</th>
+                    </tr>
+                  </thead>
+                  {Infodevices && (
+                    <tbody>
+                      {InfoParameters.map((x, y) =>
+                        <React.Fragment>
+                          <tr>
+                            <td rowSpan={21}>{x.parameterName}</td>
+                            <td>Low threshold 1 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 2 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 3 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 4 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 5 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 1 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 2 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 3 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 4 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 5 sample</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 1 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr></tr>
+                          <tr>
+                          <td>Low threshold 2 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 3 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 4 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>Low threshold 5 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 1 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 2 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 3 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 4 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                          <tr>
+                          <td>High threshold 5 mean</td>
+                            <td>Inactive</td>
+                          </tr>
+                        </React.Fragment>
+                      )}
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
             </div>
           </div>
         </div>
@@ -122,7 +428,7 @@ function Dashboard() {
                   <i className="bi bi-cart"></i>
                 </div> */}
                         <div className="ps-3">
-                         {/*  <h6>{ListAllData.listStations.length}</h6> */}
+                          {/*  <h6>{ListAllData.listStations.length}</h6> */}
                         </div>
                       </div>
                     </div>
@@ -370,34 +676,34 @@ function Dashboard() {
 
               <div className="dashboard_row">
                 {ListAllData.listDevices.map((x, y) =>
-                x.stationID==2 && (
-                  <div className="dashboard_col">
-                    <div className="card info-card revenue-card">
-                      <div className="card-body ">
-                        <div className="d-flex justify-content-between">
-                          <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
-                          <div className="device">{x.deviceName}</div>
-                          <div className="icons" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><i className="bi bi-info-circle"></i></div>
+                  x.stationID == 2 && (
+                    <div className="dashboard_col">
+                      <div className="card info-card revenue-card">
+                        <div className="card-body ">
+                          <div className="d-flex justify-content-between">
+                            <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                            <div className="device">{x.deviceName}</div>
+                            <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
+                          </div>
+                          <div className="d-flex justify-content-start mt-2">
+                            <div className="icons"><i className="bi bi-exclamation-triangle"></i>&nbsp;</div>
+                            <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
+                            <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
+                            <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                          </div>
+                          {ListAllData.listPollutents.map((i, j) =>
+                            i.deviceID == x.id && (
+                              <div className="d-flex justify-content-between mt-2">
+                                <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
+                                <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
+                                <div className="icons"><i className="bi bi-graph-up"></i></div>
+                              </div>
+                            )
+                          )}
                         </div>
-                        <div className="d-flex justify-content-start mt-2">
-                          <div className="icons"><i className="bi bi-exclamation-triangle"></i></div>
-                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                        </div>
-                        {ListAllData.listPollutents.map((i, j) =>
-                         i.deviceID==x.id && (
-                        <div className="d-flex justify-content-between mt-2">
-                          <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                          <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
-                          <div className="icons"><i className="bi bi-graph-up"></i></div>
-                        </div>
-                        )
-                        )}
-                      </div>
 
+                      </div>
                     </div>
-                  </div>
                   )
                 )}
               </div>

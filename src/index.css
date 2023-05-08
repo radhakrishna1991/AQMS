@@ -360,6 +360,7 @@ h6 {
   height: 97%;
   /* border: 1px solid #1e40afb0; */
 }
+
 /* .dashboard .card .card-body{
   padding: 0.5rem 1rem !important;
 } */
@@ -377,6 +378,7 @@ h6 {
 .dashboard .card .icons,
 .dashboard .card .parameter i {
   font-size: 1rem;
+  cursor: pointer;
 }
 
 .dashboard .card .values .btn1 {
@@ -427,6 +429,79 @@ h6 {
 
 .modal.fade.zoom:not(.show) .modal-dialog {
   transform: scale(0.2);
+}
+
+.dashboard_dmodal table {
+  margin-bottom: 0px;
+}
+
+.dashboard_dmodal .table tr.header_active th {
+  background-color: #6e9ce3;
+}
+
+.dashboard_dmodal .table tr.body_active td {
+  background-color: #cfe2ff;
+}
+
+.dashboard_dmodal table.table tr th,
+.dashboard_dmodal table.table tr td {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  width: 10%;
+  ;
+}
+
+.dashboard_dmodal .modal-title {
+  font-size: 1rem !important;
+  font-weight: 700;
+}
+
+.dashboard_dmodal .modal-header {
+  padding: 0.5rem;
+}
+
+.dashboard_dmodal .modal-footer {
+  padding: 0rem;
+}
+
+.dashboard_dmodal .modal-footer .btn {
+  padding: 0.2rem 1rem;
+}
+
+.dashboard_dmodal .modal-body {
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.dashboard_dmodal .modal-body::-webkit-scrollbar {
+  height: 8px;
+  width: 7px;
+  border: 1px solid #6e9ce3;
+  border-radius: 5px;
+}
+
+.dashboard_dmodal .modal-body::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  -webkit-box-shadow: inset 0 0 6px #6e9ce3;
+  box-shadow: inset 0 0 6px #6e9ce3;
+}
+
+.blink {
+  color: red;
+  animation: blink 2s steps(5, start) infinite;
+  -webkit-animation: blink 1s steps(5, start) infinite;
+}
+
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+@-webkit-keyframes blink {
+  to {
+    visibility: hidden;
+  }
 }
 
 @media (max-width: 991px) {

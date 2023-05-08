@@ -278,6 +278,12 @@ function Sidenavbar() {
                 <span>Data Reports</span>
               </NavLink >
             </li>
+            <li>
+              <NavLink to="/StasticsDataReport" className="nav-item animation-forwards animate-delay-6" >
+                <i className="bi bi-circle"></i>
+                <span>Stastics Data Reports</span>
+              </NavLink >
+            </li>
            {/*  <li className="nav-item">
               <a className="nav-link collapsed animation-forwards animate-delay-1 disable" data-bs-target="#report-nav-sub" data-bs-toggle="collapse" href="#">
                 <i className="bi bi-folder-fill"></i><span>Average Reports</span><i className="bi bi-chevron-down ms-auto"></i>
