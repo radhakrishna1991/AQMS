@@ -9,13 +9,13 @@ function Sidenavbar() {
 
   const getUserRole = function ()  {
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
-      {
-        document.getElementById("Configuration-Panel").style.display="block";
-      }
-      else{
-        document.getElementById("Configuration-Panel").style.display="none";
-      }
+    // if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
+    //   {
+    //     document.getElementById("Configuration-Panel").style.display="block";
+    //   }
+    //   else{
+    //     document.getElementById("Configuration-Panel").style.display="none";
+    //   }
   }
   useEffect(() => {
     getUserRole();
@@ -139,6 +139,32 @@ function Sidenavbar() {
                   </a>
                 </li> */}
               </ul>
+            </li>
+
+            <li className="nav-item">
+              <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#loggerchannels-nav" data-bs-toggle="collapse" href="#">
+                <i className="bi bi-menu-button-wide"></i><span>Logger Channels</span><i className="bi bi-chevron-down ms-auto"></i>
+              </a>
+              <ul id="loggerchannels-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
+                <li>
+                  <NavLink to="/AverageAlarms" className="animation-forwards animate-delay-2" >
+                    <i className="bi bi-circle"></i>
+                    <span>Average Alarms</span>
+                  </NavLink >
+                </li>
+                <li>
+                  <NavLink to="/Channels" className="animation-forwards animate-delay-3">
+                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Channels</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/Calibrations" className="animation-forwards animate-delay-3">
+                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Calibrations</span>
+                  </NavLink>
+                </li>
+
+              </ul>
+
             </li>
        
         <li className="nav-item">
