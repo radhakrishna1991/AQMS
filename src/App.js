@@ -25,7 +25,7 @@ const GsiModbusDrivers=lazy(() => import("./Pages/GsiModbusDrivers"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
-  
+    
   return (
   <div>
   <BrowserRouter basename={process.env.REACT_APP_BASE_URL}> 

@@ -1,8 +1,26 @@
-import React from "react";
+import React, {useEffect, useState } from "react";
 import { useParams, NavLink } from "react-router-dom";
+import Roles from "../config/Roles";
+
 function Sidenavbar() {
   let Params = useParams();
   console.log(Params);
+  
+
+  const getUserRole = function ()  {
+    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+    if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
+      {
+        document.getElementById("Configuration-Panel").style.display="block";
+      }
+      else{
+        document.getElementById("Configuration-Panel").style.display="none";
+      }
+  }
+  useEffect(() => {
+    getUserRole();
+  });
+
   return (
     <aside id="sidebar" className="sidebar">
       <ul className="sidebar-nav" id="sidebar-nav">
@@ -19,108 +37,110 @@ function Sidenavbar() {
       <span>Parameters</span>
     </NavLink >
   </li> */}
-        <li className="nav-item">
-          <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#configuration-nav" data-bs-toggle="collapse" href="#">
-            <i className="bi bi-menu-button-wide"></i><span>Configuration Editors</span><i className="bi bi-chevron-down ms-auto"></i>
-          </a>
-          <ul id="configuration-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-            {/* <li>
-              <a className="animation-forwards animate-delay-1 disable" href="components-alerts.html">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="stroke-1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                <span className="animate-fill-mode-forwards">Cal Expected Values</span>
+       
+            <li className="nav-item" id="Configuration-Panel">
+              <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#configuration-nav" data-bs-toggle="collapse" href="#">
+                <i className="bi bi-menu-button-wide"></i><span>Configuration Editors</span><i className="bi bi-chevron-down ms-auto"></i>
               </a>
-            </li>
-            <li>
-              <a className="animation-forwards animate-delay-2 disable" href="components-accordion.html">
-                <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Favorites Editors - All Users</span>
-              </a>
-            </li> */}
-            <li>
-              <NavLink to="/GsiModbusDrivers" className="animation-forwards animate-delay-3">
-                <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Gsi/Modbus Drivers</span>
-              </NavLink>
-            </li>
-           {/*  <li>
-              <a className="animation-forwards animate-delay-4 disable" href="components-breadcrumbs.html">
-                <i className="bi bi-circle"></i><span>Logger Channels</span>
-              </a>
-            </li>
-            <li>
-              <a className="animation-forwards animate-delay-5 disable" href="components-buttons.html">
-                <i className="bi bi-circle"></i><span>My Favorites Editor</span>
-              </a>
-            </li>
-            <li>
-              <a className="animation-forwards animate-delay-6 disable" href="components-buttons.html">
-                <i className="bi bi-circle"></i><span>Parameter MDL Editor</span>
-              </a>
-            </li> */}
-            <li>
-              <NavLink to="/Parameters" className="animation-forwards animate-delay-7">
-                <i className="bi bi-circle"></i><span>Parameter Settings</span>
-              </NavLink>
-            </li>
-            {/* <li>
-              <a className="animation-forwards animate-delay-8 disable" href="components-buttons.html">
-                <i className="bi bi-circle"></i><span>PC Configuration</span>
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link collapsed animation-forwards animate-delay-9 disable" data-bs-target="#configuration-nav-sub" data-bs-toggle="collapse" href="#">
-                <i className="bi bi-folder-fill"></i><span>Report Configuration</span><i className="bi bi-chevron-down ms-auto"></i>
-              </a>
-              <ul id="configuration-nav-sub" className="nav-content collapse nav_sub" data-bs-parent="#configuration-nav">
-                <li>
-                  <a className="animation-forwards animate-delay-1" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>Calibration Asset Editor</span>
+              <ul id="configuration-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
+                {/* <li>
+                  <a className="animation-forwards animate-delay-1 disable" href="components-alerts.html">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="stroke-1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    <span className="animate-fill-mode-forwards">Cal Expected Values</span>
                   </a>
                 </li>
                 <li>
-                  <a className="animation-forwards animate-delay-2" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>Report Logo Editor</span>
+                  <a className="animation-forwards animate-delay-2 disable" href="components-accordion.html">
+                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Favorites Editors - All Users</span>
+                  </a>
+                </li> */}
+                <li>
+                  <NavLink to="/GsiModbusDrivers" className="animation-forwards animate-delay-3">
+                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Gsi/Modbus Drivers</span>
+                  </NavLink>
+                </li>
+              {/*  <li>
+                  <a className="animation-forwards animate-delay-4 disable" href="components-breadcrumbs.html">
+                    <i className="bi bi-circle"></i><span>Logger Channels</span>
                   </a>
                 </li>
+                <li>
+                  <a className="animation-forwards animate-delay-5 disable" href="components-buttons.html">
+                    <i className="bi bi-circle"></i><span>My Favorites Editor</span>
+                  </a>
+                </li>
+                <li>
+                  <a className="animation-forwards animate-delay-6 disable" href="components-buttons.html">
+                    <i className="bi bi-circle"></i><span>Parameter MDL Editor</span>
+                  </a>
+                </li> */}
+                <li>
+                  <NavLink to="/Parameters" className="animation-forwards animate-delay-7">
+                    <i className="bi bi-circle"></i><span>Parameter Settings</span>
+                  </NavLink>
+                </li>
+                {/* <li>
+                  <a className="animation-forwards animate-delay-8 disable" href="components-buttons.html">
+                    <i className="bi bi-circle"></i><span>PC Configuration</span>
+                  </a>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link collapsed animation-forwards animate-delay-9 disable" data-bs-target="#configuration-nav-sub" data-bs-toggle="collapse" href="#">
+                    <i className="bi bi-folder-fill"></i><span>Report Configuration</span><i className="bi bi-chevron-down ms-auto"></i>
+                  </a>
+                  <ul id="configuration-nav-sub" className="nav-content collapse nav_sub" data-bs-parent="#configuration-nav">
+                    <li>
+                      <a className="animation-forwards animate-delay-1" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>Calibration Asset Editor</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="animation-forwards animate-delay-2" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>Report Logo Editor</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li className="nav-item">
+                  <a className="nav-link collapsed animation-forwards animate-delay-10 disable" data-bs-target="#configuration-nav-sub1" data-bs-toggle="collapse" href="#">
+                    <i className="bi bi-folder-fill"></i><span>Security</span><i className="bi bi-chevron-down ms-auto"></i>
+                  </a>
+                  <ul id="configuration-nav-sub1" className="nav-content collapse nav_sub" data-bs-parent="#configuration-nav">
+                    <li>
+                      <a className="animation-forwards animate-delay-1" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>Api Key Editor</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="animation-forwards animate-delay-2" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>Group Permissions</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="animation-forwards animate-delay-3" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>Groups Editor</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="animation-forwards animate-delay-4" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>My User Info</span>
+                      </a>
+                    </li>
+                    <li>
+                      <a className="animation-forwards animate-delay-5" href="components-buttons.html">
+                        <i className="bi bi-circle"></i><span>User Editor</span>
+                      </a>
+                    </li>
+                  </ul>
+                </li>
+                <li>
+                  <a className="animation-forwards animate-delay-11 disable" href="components-buttons.html">
+                    <i className="bi bi-circle"></i><span>Task Scheduler</span>
+                  </a>
+                </li> */}
               </ul>
             </li>
-            <li className="nav-item">
-              <a className="nav-link collapsed animation-forwards animate-delay-10 disable" data-bs-target="#configuration-nav-sub1" data-bs-toggle="collapse" href="#">
-                <i className="bi bi-folder-fill"></i><span>Security</span><i className="bi bi-chevron-down ms-auto"></i>
-              </a>
-              <ul id="configuration-nav-sub1" className="nav-content collapse nav_sub" data-bs-parent="#configuration-nav">
-                <li>
-                  <a className="animation-forwards animate-delay-1" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>Api Key Editor</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-2" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>Group Permissions</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-3" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>Groups Editor</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-4" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>My User Info</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-5" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>User Editor</span>
-                  </a>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <a className="animation-forwards animate-delay-11 disable" href="components-buttons.html">
-                <i className="bi bi-circle"></i><span>Task Scheduler</span>
-              </a>
-            </li> */}
-          </ul>
-        </li>
+       
         <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">
             <i className="bi bi-menu-button-wide"></i><span>Admin</span><i className="bi bi-chevron-down ms-auto"></i>

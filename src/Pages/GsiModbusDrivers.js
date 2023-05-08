@@ -23,6 +23,7 @@ function GsiModbusDrivers() {
   const [DriverEntryList, setDriverEntryList] = useState([]);
   const [DriverEntryAddbtn, setDriverEntryAddbtn] = useState(true);
 
+  let cuser = process.env.REACT_APP_CurrentUser1;
   
   const AddDriverEntrychange = (param) => {
     if (param == 'driverentrylist') {
