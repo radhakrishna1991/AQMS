@@ -386,7 +386,7 @@ h6 {
   border-radius: 4px;
   color: #5f9ea0 !important;
   background-color: #fff;
-  pointer-events: none;
+ /*  pointer-events: none; */
 }
 
 .dashboard .card .values .btn2 {

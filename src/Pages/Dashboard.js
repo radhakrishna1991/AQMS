@@ -109,6 +109,10 @@ function Dashboard() {
     $('#alarmmodal').modal('show');
   }
 
+  const Codesinformation = function () {
+    $('#alertcode').modal('show');
+  }
+
   return (
     <main id="main" className="main">
       <div className="modal fade zoom dashboard_dmodal" id="infomodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -402,6 +406,97 @@ function Dashboard() {
                       )}
                     </tbody>
                   )}
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="modal fade zoom dashboard_dmodal" id="alertcode" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Codes Information</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>Code</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                      <tr>
+                        <td>A</td>
+                        <td>OK</td>
+                      </tr>
+                      <tr>
+                        <td>R</td>
+                        <td>Rebuild</td>
+                      </tr>
+                      <tr>
+                        <td>O</td>
+                        <td>Corrected</td>
+                      </tr>
+                      <tr>
+                        <td>P</td>
+                        <td>Drift</td>
+                      </tr>
+                      <tr>
+                        <td>W</td>
+                        <td>Warning</td>
+                      </tr>
+                      <tr>
+                        <td>I</td>
+                        <td>Invalid</td>
+                      </tr>
+                      <tr>
+                        <td>D</td>
+                        <td>Failed</td>
+                      </tr>
+                      <tr>
+                        <td>M</td>
+                        <td>Maint</td>
+                      </tr>
+                      <tr>
+                        <td>Z</td>
+                        <td>Zero</td>
+                      </tr>
+                      <tr>
+                        <td>B</td>
+                        <td>Anomaly</td>
+                      </tr>
+                      <tr>
+                        <td>X</td>
+                        <td>Stop</td>
+                      </tr>
+                      <tr>
+                        <td>G</td>
+                        <td>Out of range</td>
+                      </tr>
+                      <tr>
+                        <td>g</td>
+                        <td>Out of range but valid</td>
+                      </tr>
+                      <tr>
+                        <td>H</td>
+                        <td>Out of domain</td>
+                      </tr>
+                      <tr>
+                        <td>S</td>
+                        <td>Alternative value</td>
+                      </tr>
+                      <tr>
+                        <td>C</td>
+                        <td>Span</td>
+                      </tr>
+                    </tbody>
                 </table>
               </div>
             </div>
@@ -724,7 +819,7 @@ function Dashboard() {
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1">A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
+                              <div className="values"><button className="btn1" onClick={Codesinformation} >A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
                               <div className="icons"><i className="bi bi-graph-up"></i></div>
                             </div>
                           )
