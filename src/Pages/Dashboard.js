@@ -700,7 +700,7 @@ function Dashboard() {
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1">A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName}</sub></div>
+                              <div className="values"><button className="btn1">A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
                               <div className="icons"><i className="bi bi-graph-up"></i></div>
                             </div>
                           )
