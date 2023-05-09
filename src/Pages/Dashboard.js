@@ -676,7 +676,7 @@ function Dashboard() {
 
               <div className="dashboard_row">
                 {ListAllData.listDevices.map((x, y) =>
-                  x.stationID == 2 && (
+                   
                     <div className="dashboard_col">
                       <div className="card info-card revenue-card">
                         <div className="card-body ">
@@ -704,7 +704,7 @@ function Dashboard() {
 
                       </div>
                     </div>
-                  )
+                  
                 )}
               </div>
               <div className="row">

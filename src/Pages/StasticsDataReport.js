@@ -15,6 +15,16 @@ import {
     Legend,
     defaults 
   } from 'chart.js';
+  ChartJS.register(
+      CategoryScale,
+      LinearScale,
+      PointElement,
+      LineElement,
+      Filler,
+      Title,
+      Tooltip,
+      Legend
+    );
 function StasticsDataReport() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -26,6 +36,7 @@ function StasticsDataReport() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
+  const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
   const [ChartData, setChartData] = useState({labels:[],datasets:[]});
   const [ChartOptions, setChartOptions] = useState();
@@ -59,6 +70,26 @@ function StasticsDataReport() {
   });
   /* reported data start */
   const initializeJsGrid = function () {
+        var dataForGrid = [];
+        var layout = [];
+        for(var i=0; i< SelectedPollutents.length;i++){
+            layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i]  + " Value", type: "text" });
+        }
+        layout.push({ name: "Date", title: "Date", type: "text" });
+        layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
+        for (var k = 0; k < ListReportData.length; k++) {
+            var obj = {};
+            var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
+            if(temp >= 0)
+            {
+                dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
+            }else{
+                obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+                obj["Date"] = ListReportData[k].interval;
+                dataForGrid.push(obj);
+            }
+        }
+
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
       height: "auto",
@@ -71,17 +102,35 @@ function StasticsDataReport() {
       pageSize: 100,
       pageButtonCount: 5,
       controller: {
-        data: ListReportData,
+        data: dataForGrid,
         loadData: function (filter) {
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
-            return ((!filter.parameterName || item.parameterName.toUpperCase().indexOf(filter.parameterName.toUpperCase()) >= 0)
-              && (!filter.parametervalue || item.parametervalue.toUpperCase().indexOf(filter.parametervalue.toUpperCase()) >= 0)
-              && (!filter.stationID || item.stationID === filter.stationID)
-              && (!filter.type || item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
-              && (!filter.interval || item.interval.toUpperCase().indexOf(filter.interval.toUpperCase()) >= 0)
-            );
+            let returnData="";
+            
+            // for (var key in SelectedPollutents) {
+            //     //console.log("key " + key + " has value " + SelectedPollutents[key]);
+            //     returnData += (!filter[SelectedPollutents[key]]  || item[SelectedPollutents[key]].indexOf(filter[SelectedPollutents[key]]) >= 0) + " && "
+            //     }
+            for(var i=0; i< SelectedPollutents.length;i++){
+                if (i==0){
+                    returnData = (!filter[SelectedPollutents[i]]  || item[SelectedPollutents[i]].indexOf(filter[SelectedPollutents[i]]) >= 0) + " && "
+                }
+                else{
+                    returnData += (!filter[SelectedPollutents[i]]  || item[SelectedPollutents[i]].indexOf(filter[SelectedPollutents[i]]) >= 0) + " && "
+                }
+                //returnData.push((!filter[SelectedPollutents[i]]  || item[SelectedPollutents[i]].indexOf(filter[SelectedPollutents[i]]) >= 0))
+            }
+            //returnData.push(!filter.Date || item.Date.indexOf(filter.Date) >= 0);
+            returnData += (!filter.Date || item.Date.indexOf(filter.Date) >= 0)
+            // return (
+            //     (!filter.parameterName || item.parameterName.toUpperCase().indexOf(filter.parameterName.toUpperCase()) >= 0)
+            //    && (!filter.parametervalue || item.parametervalue.toUpperCase().indexOf(filter.parametervalue.toUpperCase()) >= 0)
+            //   //&& (!filter.type || item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
+            //   && (!filter.Date || item.Date.toUpperCase().indexOf(filter.Date.toUpperCase()) >= 0)
+            // );
+            return (returnData);
           });
         }
       },
@@ -95,14 +144,17 @@ function StasticsDataReport() {
         
         $row.toggleClass("highlight");
       },
-      fields: [
-        { name: "stationID", title: "Station Name", type: "select", items: Stations, valueField: "id", textField: "stationName", width: 200 },
-        { name: "interval", title: "Date", type: "text" },
-        { name: "parameterName", title: "Parameter Name", type: "text" },
-        { name: "parametervalue", title: "Value", type: "text", },
-        { name: "type", title: "Interval", type: "text" },
-        { type: "control", width: 100, editButton: false, deleteButton: false },
-      ]
+      fields: layout
+    //   fields: [
+    //     //{ name: "stationID", title: "Station Name", type: "select", items: Stations, valueField: "id", textField: "stationName", width: 200 },
+        
+    //     { name: "parametervalue", title: "NO2 Value", type: "text" },
+    //     //{ name: "parameterName", title: "Parameter Name", type: "text" },
+    //     { name: "parametervalue", title: "SO2 Value", type: "text", },
+    //     { name: "interval", title: "Date", type: "text" },
+    //     //{ name: "type", title: "Interval", type: "text" },
+    //     { type: "control", width: 100, editButton: false, deleteButton: false },
+    //   ]
     });
   }
   const hexToRgbA = function (hex) {
@@ -365,8 +417,10 @@ function StasticsDataReport() {
   }
   $('#pollutentid').change(function (e) {
     setcriteria([]);
+    setSelectedPollutents([]);
     let stationID = $("#stationid").val();
     let filter1 = $(this).val();
+    setSelectedPollutents(filter1);
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
     if (finaldata.length > 0) {
@@ -392,7 +446,8 @@ function StasticsDataReport() {
     setcriteria([]);
     setToDate(new Date());
     setFromDate(new Date());
-    setListReportData([])
+    setListReportData([]);
+    setSelectedPollutents([]);
   }
 
   const getchartdata = function (data, pollutent, charttype, criteria) {

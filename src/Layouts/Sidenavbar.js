@@ -281,7 +281,7 @@ function Sidenavbar() {
             <li>
               <NavLink to="/StasticsDataReport" className="nav-item animation-forwards animate-delay-6" >
                 <i className="bi bi-circle"></i>
-                <span>Stastics Data Reports</span>
+                <span>Statistical Data Reports</span>
               </NavLink >
             </li>
            {/*  <li className="nav-item">
