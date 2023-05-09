@@ -8,6 +8,7 @@ function DataReport() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [ListReportData, setListReportData] = useState([]);
+  const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
@@ -40,6 +41,26 @@ function DataReport() {
   });
   /* reported data start */
   const initializeJsGrid = function () {
+    var dataForGrid = [];
+    var layout = [];
+    for(var i=0; i< SelectedPollutents.length;i++){
+        layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - ppb" , type: "text" });
+    }
+    layout.push({ name: "Date", title: "Date", type: "text" });
+    layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
+    for (var k = 0; k < ListReportData.length; k++) {
+        var obj = {};
+        var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
+        if(temp >= 0)
+        {
+            dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
+        }else{
+            obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+            obj["Date"] = ListReportData[k].interval;
+            dataForGrid.push(obj);
+        }
+    }
+
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
       height: "auto",
@@ -52,7 +73,7 @@ function DataReport() {
       pageSize: 100,
       pageButtonCount: 5,
       controller: {
-        data: ListReportData,
+        data: dataForGrid,
         loadData: function (filter) {
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
@@ -66,14 +87,15 @@ function DataReport() {
           });
         }
       },
-      fields: [
+      fields: layout
+      /* fields: [
         { name: "stationID", title: "Station Name", type: "select", items: Stations, valueField: "id", textField: "stationName", width: 200 },
         { name: "interval", title: "Date", type: "text" },
         { name: "parameterName", title: "Parameter Name", type: "text" },
         { name: "parametervalue", title: "Value", type: "text", },
         { name: "type", title: "Interval", type: "text" },
         { type: "control", width: 100, editButton: false, deleteButton: false },
-      ]
+      ] */
     });
   }
   const getdtareport = function () {
@@ -83,6 +105,7 @@ function DataReport() {
       Station.join(',')
     }
     let Pollutent = $("#pollutentid").val();
+    setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
@@ -257,6 +280,7 @@ function DataReport() {
     setcriteria([]);
     let stationID = $("#stationid").val();
     let filter1 = $(this).val();
+   
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
     if (finaldata.length > 0) {
@@ -282,7 +306,8 @@ function DataReport() {
     setcriteria([]);
     setToDate(new Date());
     setFromDate(new Date());
-    setListReportData([])
+    setListReportData([]);
+    setSelectedPollutents([]);
   }
   return (
     <main id="main" className="main" >

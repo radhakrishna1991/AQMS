@@ -179,6 +179,7 @@ function StasticsDataReport() {
       Station.join(',')
     }
     let Pollutent = $("#pollutentid").val();
+    setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
@@ -417,10 +418,9 @@ function StasticsDataReport() {
   }
   $('#pollutentid').change(function (e) {
     setcriteria([]);
-    setSelectedPollutents([]);
     let stationID = $("#stationid").val();
     let filter1 = $(this).val();
-    setSelectedPollutents(filter1);
+    
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
     if (finaldata.length > 0) {
