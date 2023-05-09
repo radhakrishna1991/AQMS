@@ -235,7 +235,7 @@ function AddParameter() {
         }
       },
       fields: [
-        { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200 },
+        { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
         { name: "deviceID", title: "Device Name", type: "select", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
         { name: "driverID", title: "Driver Name", type: "select", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
         { name: "parameterName", title: "parameter Name", type: "text" },
