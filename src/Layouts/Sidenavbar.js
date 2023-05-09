@@ -59,6 +59,7 @@ function Sidenavbar() {
                     <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Gsi/Modbus Drivers</span>
                   </NavLink>
                 </li>
+                
               {/*  <li>
                   <a className="animation-forwards animate-delay-4 disable" href="components-breadcrumbs.html">
                     <i className="bi bi-circle"></i><span>Logger Channels</span>
@@ -79,6 +80,24 @@ function Sidenavbar() {
                     <i className="bi bi-circle"></i><span>Parameter Settings</span>
                   </NavLink>
                 </li>
+                <li>
+              <NavLink to="/AddStation" className="animation-forwards animate-delay-2" >
+                <i className="bi bi-circle"></i>
+                <span>Stations</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/AddDevice" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Devices</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/AddParameter" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Parameters</span>
+              </NavLink >
+            </li>
                 {/* <li>
                   <a className="animation-forwards animate-delay-8 disable" href="components-buttons.html">
                     <i className="bi bi-circle"></i><span>PC Configuration</span>
@@ -182,24 +201,6 @@ function Sidenavbar() {
               <NavLink to="/UserLogHistory" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Users Log</span>
-              </NavLink >
-            </li>
-            <li>
-              <NavLink to="/AddStation" className="animation-forwards animate-delay-2" >
-                <i className="bi bi-circle"></i>
-                <span>Stations</span>
-              </NavLink >
-            </li>
-            <li>
-              <NavLink to="/AddDevice" className="animation-forwards animate-delay-3" >
-                <i className="bi bi-circle"></i>
-                <span>Devices</span>
-              </NavLink >
-            </li>
-            <li>
-              <NavLink to="/AddParameter" className="animation-forwards animate-delay-3" >
-                <i className="bi bi-circle"></i>
-                <span>Parameters</span>
               </NavLink >
             </li>
           </ul>
