@@ -73,7 +73,7 @@ function StasticsDataReport() {
         var dataForGrid = [];
         var layout = [];
         for(var i=0; i< SelectedPollutents.length;i++){
-            layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] , type: "text" });
+            layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - ppb" , type: "text" });
         }
         layout.push({ name: "Date", title: "Date", type: "text" });
         layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
