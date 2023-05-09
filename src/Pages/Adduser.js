@@ -8,6 +8,7 @@ function Adduser() {
   const [ListUsers, setListUsers] = useState([]);
   const [UserList, setUserList] = useState(true);
   const [UserId, setUserId] = useState(0);
+  const [Notification, setNotification] = useState(true);
   const Useraddvalidation = function (UserName, UserEmail, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
@@ -245,6 +246,18 @@ function Adduser() {
                     <option value="dataentry">Data Entry</option>
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>
+                </div>
+                <div className="col-md-12 mb-3">
+                  <label for="Notification" className="form-label">Notification: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
+                    {Notification && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
+                    )}
+                    {!Notification && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
+                    )}
+                  </div>
                 </div>
                 <div className="col-md-12 text-center">
                 {!UserList && UserId==0 && (
