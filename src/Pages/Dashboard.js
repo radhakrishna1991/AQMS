@@ -42,6 +42,30 @@ function Dashboard() {
 
   const options = {
     responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true,
+       // steps: 1,
+       // stepValue: 10,
+        max: 15
+      },
+    },
+    /* scales: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      yAxes: [{
+              display: true,
+              ticks: {
+                  beginAtZero: true,
+                  steps: 10,
+                  stepValue: 5,
+                  max: 100
+              }
+          }]
+  }, */
     plugins: {
       legend: {
         position: 'top',
@@ -53,13 +77,13 @@ function Dashboard() {
     },
   };
 
-  const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+  const labels = ['20:30:30', '20:31:30', '20:32:30', '20:33:30', '20:34:30', '20:35:30', '20:36:30'];
   const data = {
     labels,
     datasets: [
       {
         label: 'SO2',
-        data: [-10, 5, 20, 6, -20, 20],
+        data: [10.5, 10.8, 10.5, 10, 10.4, 10,10.3],
         borderColor: 'rgb(95, 158, 160)',
         backgroundColor: 'rgb(95, 158, 160, 0.5)',
       }
@@ -713,7 +737,7 @@ function Dashboard() {
                 )}
               </div>
               <div className="row">
-                <Line options={options} data={data} />;
+                <Line options={options} data={data}  height={100}/>;
               </div>
             </div>
 

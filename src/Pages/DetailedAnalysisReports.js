@@ -527,32 +527,32 @@ function DetailedAnalysisReports() {
             <div className="row mt-5">
               {ChartDataAvg && (
                 <div className="col-md-6">
-                  <Bar ref={chartRef} options={ChartOptionsAvg} data={ChartDataAvg} height={120} />
+                  <Bar ref={chartRef} options={ChartOptionsAvg} data={ChartDataAvg} height={90} />
                 </div>
               )}
               {ChartDataMax && (
                 <div className="col-md-6">
-                  <Bar ref={chartRef} options={ChartOptionsMax} data={ChartDataMax} height={120} />
+                  <Bar ref={chartRef} options={ChartOptionsMax} data={ChartDataMax} height={90} />
                 </div>
               )}
               {ChartData24h && (
                 <div className="col-md-6">
-                  <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={120}/>
+                  <Line ref={chartRef} options={ChartOptions24h} data={ChartData24h} height={90}/>
                 </div>
               )}
               {ChartOptionsh && (
                 <div className="col-md-6">
-                  <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={120}/>
+                  <Line ref={chartRef} options={ChartOptionsh} data={ChartDatah} height={90}/>
                 </div>
               )}
               {ChartOptionsExcedence24h && (
                 <div className="col-md-6">
-                  <Bar ref={chartRef} options={ChartOptionsExcedence24h} data={ChartDataExcedence24h} height={120} />
+                  <Bar ref={chartRef} options={ChartOptionsExcedence24h} data={ChartDataExcedence24h} height={90} />
                 </div>
               )}
               {ChartOptionsExcedence1h && (
                 <div className="col-md-6">
-                  <Bar ref={chartRef} options={ChartOptionsExcedence1h} data={ChartDataExcedence1h} height={120} />
+                  <Bar ref={chartRef} options={ChartOptionsExcedence1h} data={ChartDataExcedence1h} height={90} />
                 </div>
               )}
             </div>

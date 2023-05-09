@@ -462,17 +462,17 @@ function StasticsReport() {
             </div>
             {ChartData && ChartType == 'bar' && (
               <div className="col-md-12">
-                 <Bar ref={chartRef} options={ChartOptions} data={ChartData} />
+                 <Bar ref={chartRef} options={ChartOptions} data={ChartData}  height={120} />
               </div>
             )}
             {ChartData && ChartType == 'line' && (
               <div className="col-md-12">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} />
+                <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={120} />
               </div>
             )}
             {ChartData && ChartType == 'area' && (
               <div className="col-md-12">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} />
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
               </div>
             )}
           </div>

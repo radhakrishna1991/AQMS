@@ -178,7 +178,7 @@ function PredefinedCharts() {
               </div>
               {ChartData && (
                 <div className="col-md-12">
-                  <Line ref={chartRef} options={ChartOptions} data={ChartData} />
+                  <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={120}/>
                 </div>
               )}
             </div>

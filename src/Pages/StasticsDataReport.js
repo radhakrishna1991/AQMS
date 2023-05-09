@@ -638,7 +638,7 @@ function StasticsDataReport() {
               )} */}
                {ChartData && (
                  <div >
-                     <Line ref={chartRef} options={ChartOptions} data={ChartData} />
+                     <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120}/>
                  </div>    
                 )}
 
