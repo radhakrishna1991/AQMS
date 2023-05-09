@@ -58,10 +58,10 @@ function Dashboard() {
     labels,
     datasets: [
       {
-        label: 'Dataset 1',
+        label: 'SO2',
         data: [-10, 5, 20, 6, -20, 20],
-        borderColor: 'rgb(95 158 160)',
-        backgroundColor: 'rgb(95 158 160 0.5)',
+        borderColor: 'rgb(95, 158, 160)',
+        backgroundColor: 'rgb(95, 158, 160, 0.5)',
       }
     ],
   };
@@ -84,7 +84,7 @@ function Dashboard() {
     setInfoParameters(parameters);
     $('#alarmmodal').modal('show');
   }
-  
+
   return (
     <main id="main" className="main">
       <div className="modal fade zoom dashboard_dmodal" id="infomodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -275,7 +275,7 @@ function Dashboard() {
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5" id="staticBackdropLabel">View of the device alaram</h1>
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">View of the device alarm</h1>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div className="modal-body">
@@ -298,80 +298,80 @@ function Dashboard() {
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 2 sample</td>
+                            <td>Low threshold 2 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 3 sample</td>
+                            <td>Low threshold 3 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 4 sample</td>
+                            <td>Low threshold 4 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 5 sample</td>
+                            <td>Low threshold 5 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 1 sample</td>
+                            <td>High threshold 1 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 2 sample</td>
+                            <td>High threshold 2 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 3 sample</td>
+                            <td>High threshold 3 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 4 sample</td>
+                            <td>High threshold 4 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 5 sample</td>
+                            <td>High threshold 5 sample</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 1 mean</td>
+                            <td>Low threshold 1 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr></tr>
                           <tr>
-                          <td>Low threshold 2 mean</td>
+                            <td>Low threshold 2 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 3 mean</td>
+                            <td>Low threshold 3 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 4 mean</td>
+                            <td>Low threshold 4 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>Low threshold 5 mean</td>
+                            <td>Low threshold 5 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 1 mean</td>
+                            <td>High threshold 1 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 2 mean</td>
+                            <td>High threshold 2 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 3 mean</td>
+                            <td>High threshold 3 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 4 mean</td>
+                            <td>High threshold 4 mean</td>
                             <td>Inactive</td>
                           </tr>
                           <tr>
-                          <td>High threshold 5 mean</td>
+                            <td>High threshold 5 mean</td>
                             <td>Inactive</td>
                           </tr>
                         </React.Fragment>
@@ -676,35 +676,40 @@ function Dashboard() {
 
               <div className="dashboard_row">
                 {ListAllData.listDevices.map((x, y) =>
-                   
-                    <div className="dashboard_col">
-                      <div className="card info-card revenue-card">
-                        <div className="card-body ">
-                          <div className="d-flex justify-content-between">
-                            <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
-                            <div className="device">{x.deviceName}</div>
-                            <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
-                          </div>
-                          <div className="d-flex justify-content-start mt-2">
-                            <div className="icons"><i className="bi bi-exclamation-triangle"></i>&nbsp;</div>
-                            <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
+
+                  <div className="dashboard_col">
+                    <div className="card info-card revenue-card">
+                      <div className="card-body ">
+                        <div className="d-flex justify-content-between">
+                          <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                          <div className="device">{x.deviceName}</div>
+                          <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
+                        </div>
+                        <div className="d-flex justify-content-start mt-2">
+                        <div className="icons" title="Service Mode"> <i class="bi bi-modem"></i>&nbsp;</div>
+                          <div className="icons" title="Calibration"><i class="bi bi-gear"></i>&nbsp;</div>
+                          <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
+                          {y == 0 && (
                             <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
+                          )}
+                          {y != 0 && (
                             <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                          </div>
-                          {ListAllData.listPollutents.map((i, j) =>
-                            i.deviceID == x.id && (
-                              <div className="d-flex justify-content-between mt-2">
-                                <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                                <div className="values"><button className="btn1">A</button> <button className="btn2">24</button></div>
-                                <div className="icons"><i className="bi bi-graph-up"></i></div>
-                              </div>
-                            )
                           )}
                         </div>
-
+                        {ListAllData.listPollutents.map((i, j) =>
+                          i.deviceID == x.id && (
+                            <div className="d-flex justify-content-between mt-2">
+                              <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
+                              <div className="values"><button className="btn1">A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName}</sub></div>
+                              <div className="icons"><i className="bi bi-graph-up"></i></div>
+                            </div>
+                          )
+                        )}
                       </div>
+
                     </div>
-                  
+                  </div>
+
                 )}
               </div>
               <div className="row">

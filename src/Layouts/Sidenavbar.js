@@ -172,7 +172,7 @@ function Sidenavbar() {
             <i className="bi bi-menu-button-wide"></i><span>Admin</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
           <ul id="admin-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-            {/* <li>
+            <li>
               <NavLink to="/Adduser" className="animation-forwards animate-delay-1" >
                 <i className="bi bi-circle"></i>
                 <span>Users</span>
@@ -183,7 +183,7 @@ function Sidenavbar() {
                 <i className="bi bi-circle"></i>
                 <span>Users Log</span>
               </NavLink >
-            </li> */}
+            </li>
             <li>
               <NavLink to="/AddStation" className="animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
