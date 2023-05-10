@@ -104,34 +104,22 @@ function StasticsDataReport() {
       controller: {
         data: dataForGrid,
         loadData: function (filter) {
+          let resultData = this.data;
+          var d = $.Deferred();
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
-          return $.grep(this.data, function (item) {
-            let returnData="";
-            
-            // for (var key in SelectedPollutents) {
-            //     //console.log("key " + key + " has value " + SelectedPollutents[key]);
-            //     returnData += (!filter[SelectedPollutents[key]]  || item[SelectedPollutents[key]].indexOf(filter[SelectedPollutents[key]]) >= 0) + " && "
-            //     }
-            for(var i=0; i< SelectedPollutents.length;i++){
-                if (i==0){
-                    returnData = (!filter[SelectedPollutents[i]]  || item[SelectedPollutents[i]].indexOf(filter[SelectedPollutents[i]]) >= 0) + " && "
-                }
-                else{
-                    returnData += (!filter[SelectedPollutents[i]]  || item[SelectedPollutents[i]].indexOf(filter[SelectedPollutents[i]]) >= 0) + " && "
-                }
-                //returnData.push((!filter[SelectedPollutents[i]]  || item[SelectedPollutents[i]].indexOf(filter[SelectedPollutents[i]]) >= 0))
+          for (var prop in filter) {
+              if (filter[prop].length > 0) {
+                resultData = $.grep(resultData, function (item) {
+                  if(!filter[prop]  || item[prop].toString().indexOf(filter[prop]) >= 0){
+                    return item;
+                  }
+                });
+                break;
+              }
             }
-            //returnData.push(!filter.Date || item.Date.indexOf(filter.Date) >= 0);
-            returnData += (!filter.Date || item.Date.indexOf(filter.Date) >= 0)
-            // return (
-            //     (!filter.parameterName || item.parameterName.toUpperCase().indexOf(filter.parameterName.toUpperCase()) >= 0)
-            //    && (!filter.parametervalue || item.parametervalue.toUpperCase().indexOf(filter.parametervalue.toUpperCase()) >= 0)
-            //   //&& (!filter.type || item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
-            //   && (!filter.Date || item.Date.toUpperCase().indexOf(filter.Date.toUpperCase()) >= 0)
-            // );
-            return (returnData);
-          });
+            d.resolve(resultData);
+            return d.promise();
         }
       },
       rowClick: function(args) {
