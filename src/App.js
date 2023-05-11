@@ -24,6 +24,7 @@ const PredefinedCharts=lazy(() => import("./Pages/PredefinedCharts"));
 const DetailedAnalysisReports=lazy(() => import("./Pages/DetailedAnalysisReports"));
 const GsiModbusDrivers=lazy(() => import("./Pages/GsiModbusDrivers"));
 const Calibration=lazy(()=> import("./Pages/Calibration"));
+const AverageAlarm=lazy(()=> import("./Pages/AverageAlarm"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
@@ -53,6 +54,7 @@ function App() {
       <Route   path="/DetailedAnalysisReports" exact element={<DetailedAnalysisReports />} />
       <Route   path="/GsiModbusDrivers" exact element={<GsiModbusDrivers />} />
       <Route   path="/Calibrations"  exact element={<Calibration />}/>
+      <Route   path="/AverageAlarm"  exact element={<AverageAlarm />}/>
       </Routes>
       </Suspense>
   </BrowserRouter>

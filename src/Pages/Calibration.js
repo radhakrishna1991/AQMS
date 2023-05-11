@@ -126,29 +126,33 @@ function Calibration() {
   }
 
   const AddSequence = function () {
-    let SequenceType = document.getElementById("sequencetype").value;
-    let SequenceName = document.getElementById("sequencename").value;
-    let EnableStatus = document.getElementById("enablecalibration").checked;
-    let RecoveryTime = document.getElementById("recoverytime").value + document.getElementById("recoverytimerole").value[0];
+    let CalibrationSeqName = document.getElementById("sequencename").value;
+    let SourceId = "1";
+    //let EnableStatus = document.getElementById("enablecalibration").checked;
+    let EnableStatus = "1";
+    //let CalibrationTypeEnum = document.getElementById("sequencetype").value;
+
+    let CalibrationTypeEnum="2"
+    //let StartTime = document.getElementById("starttime").value;
+    let StartTime = "";
     let RepeatedInterval = document.getElementById("repeatedinterval").value + document.getElementById("repeatedintervalrole").value[0];
-    let StartTime = document.getElementById("starttime").value;
-    let SourceId = "";
+    let StartPattern = "patt";
+    let RecoveryTime = document.getElementById("recoverytime").value + document.getElementById("recoverytimerole").value[0];
+    let NumberOfCalibrationRecords = "4";
+    let NumberOfRuns = "3";
+    let RunInterval = "2";
+    let StartupDelay = "a";
+    let StartupMinute = "4";
+    let OfflineOutOfControlCheck = "0";
+    let CentralOutOfControlCheck = "0";
+    let KeepOtherCalibrationsInStartup = "0";
+    let RecoveryOutputPattern = "r";
+    let CalibrationSequenceTypeEnum = "3";
+    let SeekFlag = "d";
     let CreatedBy = "";
     let ModifiedBy = "";
-    let NumberOfCalibrationRecords = "";
-    let StartPattern = "";
-    let NumberOfRuns = "";
-    let RunInterval = "";
-    let StartupDelay = "";
-    let StartupMinute = "";
-    let OfflineOutOfControlCheck = false;
-    let CentralOutOfControlCheck = false;
-    let KeepOtherCalibrationsInStartup = false;
-    let RecoveryOutputPattern = "";
-    let CalibrationSequenceTypeEnum = "";
-    let SeekFlag = "";
-
-    let validation = SequenceAddValidation(SequenceType, SequenceName);
+    
+    let validation = SequenceAddValidation(CalibrationTypeEnum, CalibrationSeqName);
     if (!validation) {
       return false;
     }
@@ -158,7 +162,7 @@ function Calibration() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ CalibrationName: SequenceName, SourceID: SourceId, Enabled: EnableStatus, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, CalibrationTypeEnum: SequenceType, Started: StartTime, RepeatInterval: RepeatedInterval, StartPattern: StartPattern, RecoveryTime: RecoveryTime, NumberOfCalibrationRecords: NumberOfCalibrationRecords, NumberOfRuns: NumberOfRuns, RunInterval: RunInterval, StartupDelay: StartupDelay, StartupMinute: StartupMinute, OfflineOutOfControlCheck: OfflineOutOfControlCheck, CentralOutOfControlCheck: CentralOutOfControlCheck, KeepOtherCalibrationsInStartup: KeepOtherCalibrationsInStartup, RecoveryOutputPattern: RecoveryOutputPattern, CalibrationSequenceTypeEnum: CalibrationSequenceTypeEnum, SeekFlag: SeekFlag }),
+    body: JSON.stringify({ CalibrationName: CalibrationSeqName, SourceID: SourceId, Enabled: EnableStatus, CreatedBy: CreatedBy,ModifiedBy: ModifiedBy, CalibrationTypeEnum: CalibrationTypeEnum, Started: StartTime, RepeatInterval: RepeatedInterval, StartPattern: StartPattern, RecoveryTime: RecoveryTime, NumberOfCalibrationRecords: NumberOfCalibrationRecords, NumberOfRuns: NumberOfRuns, RunInterval: RunInterval, StartupDelay: StartupDelay, StartupMinute: StartupMinute, OfflineOutOfControlCheck: OfflineOutOfControlCheck, CentralOutOfControlCheck: CentralOutOfControlCheck, KeepOtherCalibrationsInStartup: KeepOtherCalibrationsInStartup, RecoveryOutputPattern: RecoveryOutputPattern, CalibrationSequenceTypeEnum: CalibrationSequenceTypeEnum, SeekFlag: SeekFlag }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Sequenceadd") {
@@ -468,10 +472,10 @@ function Calibration() {
                               <div className="col-sm-6">
                                 <input type="number" className="form-control" id="recoverytime" placeholder="Enter Recovery Time" />
                                 <select className="form-select" id="recoverytimerole" required>
-                                  <option value="Seconds">Seconds</option>
-                                  <option value="Minutes" selected>Minutes</option>
-                                  <option value="Hours">Hours</option>
-                                  <option value="Days">Days</option>
+                                  <option value="S">Seconds</option>
+                                  <option value="M" selected>Minutes</option>
+                                  <option value="H">Hours</option>
+                                  <option value="D">Days</option>
                                 </select>
                               </div>
                             </div>
@@ -482,10 +486,10 @@ function Calibration() {
                               <div className="col-sm-6">
                                 <input type="number" className="form-control" id="repeatedinterval" placeholder="Enter Repeated Interval" />
                                 <select className="form-select" id="repeatedintervalrole" required>
-                                  <option value="Seconds">Seconds</option>
-                                  <option value="Minutes">Minutes</option>
-                                  <option value="Hours">Hours</option>
-                                  <option value="Days" selected>Days</option>
+                                  <option value="S">Seconds</option>
+                                  <option value="M">Minutes</option>
+                                  <option value="H">Hours</option>
+                                  <option value="D" selected>Days</option>
                                 </select>
                               </div>
                             </div>

@@ -166,7 +166,7 @@ function Sidenavbar() {
               </a>
               <ul id="loggerchannels-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
                 <li>
-                  <NavLink to="/AverageAlarms" className="animation-forwards animate-delay-2" >
+                  <NavLink to="/AverageAlarm" className="animation-forwards animate-delay-2" >
                     <i className="bi bi-circle"></i>
                     <span>Average Alarms</span>
                   </NavLink >
