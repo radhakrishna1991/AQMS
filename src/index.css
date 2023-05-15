@@ -386,7 +386,7 @@ h6 {
   border-radius: 4px;
   color: #5f9ea0 !important;
   background-color: #fff;
- /*  pointer-events: none; */
+  /*  pointer-events: none; */
 }
 
 .dashboard .card .values .btn2 {
@@ -514,6 +514,42 @@ h6 {
   .dashboard_col {
     width: 50%;
   }
+}
+
+.dashboard_dmodal fieldset {
+  display: block;
+  margin-inline-start: 2px;
+  margin-inline-end: 2px;
+  padding-block-start: 0.35em;
+  padding-inline-start: 0.75em;
+  padding-inline-end: 0.75em;
+  padding-block-end: 0.625em;
+  min-inline-size: min-content;
+  border-width: 2px;
+  border-style: groove;
+  border-color: rgb(192, 192, 192);
+  border-image: initial;
+  height: 100%;
+}
+
+.dashboard_dmodal legend {
+  display: block;
+  padding-inline-start: 2px;
+  padding-inline-end: 2px;
+  border-width: initial;
+  border-style: none;
+  border-color: initial;
+  border-image: initial;
+  float: none;
+  width: auto;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.dashboard_dmodal .col-form-label {
+  font-size: 0.75rem;
+  padding: 0.2rem;
+  text-align: right;
 }
 
 /* .filtergroup .col{

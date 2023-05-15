@@ -28,8 +28,8 @@ function Dashboard() {
   const $ = window.jQuery;
   const chartRef = useRef();
   const [ListAllData, setListAllData] = useState();
-  const [Infodevices, setInfodevices] = useState();
-  const [InfoParameters, setInfoParameters] = useState();
+  const [Infodevices, setInfodevices] = useState([]);
+  const [InfoParameters, setInfoParameters] = useState([]);
   const [LiveChartStatus, setLiveChartStatus] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
@@ -158,6 +158,12 @@ function Dashboard() {
   }
   const Codesinformation = function () {
     $('#alertcode').modal('show');
+  }
+
+  const Devicecalibration = function (param) {
+    let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
+    setInfoParameters(parameters);
+    $('#calibrationmodal').modal('show');
   }
 
   
@@ -292,7 +298,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
             </div>
           </div>
         </div>
@@ -400,7 +406,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
             </div>
           </div>
         </div>
@@ -516,7 +522,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
             </div>
           </div>
         </div>
@@ -537,77 +543,799 @@ function Dashboard() {
                       <th>Message</th>
                     </tr>
                   </thead>
-                    <tbody>
-                      <tr>
-                        <td>A</td>
-                        <td>OK</td>
-                      </tr>
-                      <tr>
-                        <td>R</td>
-                        <td>Rebuild</td>
-                      </tr>
-                      <tr>
-                        <td>O</td>
-                        <td>Corrected</td>
-                      </tr>
-                      <tr>
-                        <td>P</td>
-                        <td>Drift</td>
-                      </tr>
-                      <tr>
-                        <td>W</td>
-                        <td>Warning</td>
-                      </tr>
-                      <tr>
-                        <td>I</td>
-                        <td>Invalid</td>
-                      </tr>
-                      <tr>
-                        <td>D</td>
-                        <td>Failed</td>
-                      </tr>
-                      <tr>
-                        <td>M</td>
-                        <td>Maint</td>
-                      </tr>
-                      <tr>
-                        <td>Z</td>
-                        <td>Zero</td>
-                      </tr>
-                      <tr>
-                        <td>B</td>
-                        <td>Anomaly</td>
-                      </tr>
-                      <tr>
-                        <td>X</td>
-                        <td>Stop</td>
-                      </tr>
-                      <tr>
-                        <td>G</td>
-                        <td>Out of range</td>
-                      </tr>
-                      <tr>
-                        <td>g</td>
-                        <td>Out of range but valid</td>
-                      </tr>
-                      <tr>
-                        <td>H</td>
-                        <td>Out of domain</td>
-                      </tr>
-                      <tr>
-                        <td>S</td>
-                        <td>Alternative value</td>
-                      </tr>
-                      <tr>
-                        <td>C</td>
-                        <td>Span</td>
-                      </tr>
-                    </tbody>
+                  <tbody>
+                    <tr>
+                      <td>A</td>
+                      <td>OK</td>
+                    </tr>
+                    <tr>
+                      <td>R</td>
+                      <td>Rebuild</td>
+                    </tr>
+                    <tr>
+                      <td>O</td>
+                      <td>Corrected</td>
+                    </tr>
+                    <tr>
+                      <td>P</td>
+                      <td>Drift</td>
+                    </tr>
+                    <tr>
+                      <td>W</td>
+                      <td>Warning</td>
+                    </tr>
+                    <tr>
+                      <td>I</td>
+                      <td>Invalid</td>
+                    </tr>
+                    <tr>
+                      <td>D</td>
+                      <td>Failed</td>
+                    </tr>
+                    <tr>
+                      <td>M</td>
+                      <td>Maint</td>
+                    </tr>
+                    <tr>
+                      <td>Z</td>
+                      <td>Zero</td>
+                    </tr>
+                    <tr>
+                      <td>B</td>
+                      <td>Anomaly</td>
+                    </tr>
+                    <tr>
+                      <td>X</td>
+                      <td>Stop</td>
+                    </tr>
+                    <tr>
+                      <td>G</td>
+                      <td>Out of range</td>
+                    </tr>
+                    <tr>
+                      <td>g</td>
+                      <td>Out of range but valid</td>
+                    </tr>
+                    <tr>
+                      <td>H</td>
+                      <td>Out of domain</td>
+                    </tr>
+                    <tr>
+                      <td>S</td>
+                      <td>Alternative value</td>
+                    </tr>
+                    <tr>
+                      <td>C</td>
+                      <td>Span</td>
+                    </tr>
+                  </tbody>
                 </table>
               </div>
             </div>
             <div className="modal-footer">
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">ok</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="modal fade zoom dashboard_dmodal" id="calibrationmodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-xl modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Punctual calibration</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="calibrationmodal">
+                <div className="row">
+                  <div className="col-md-2">
+                    <label for="formGroupExampleInput" class="form-label">Measure</label>
+                  </div>
+                  <div className="col-md-4">
+                    <select className="form-select">
+                      {InfoParameters.map((x, y) =>
+                        <option value={x.parameterName}>{x.parameterName}</option>
+                      )}
+                    </select>
+                  </div>
+                  <div className="col-md-4">
+                    <select className="form-select">
+                      <option value="User Profile">User Profile</option>
+                    </select>
+                  </div>
+                </div>
+                <ul className="nav nav-tabs mt-3" id="calibrationTab" role="tablist">
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link active" id="sequence1-tab" data-bs-toggle="tab" data-bs-target="#sequence1-tab-pane" type="button" role="tab" aria-controls="sequence1-tab-pane" aria-selected="true">Sequence1</button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link" id="sequence2-tab" data-bs-toggle="tab" data-bs-target="#sequence2-tab-pane" type="button" role="tab" aria-controls="sequence2-tab-pane" aria-selected="false">Sequence2</button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link " id="sequence3-tab" data-bs-toggle="tab" data-bs-target="#sequence3-tab-pane" type="button" role="tab" aria-controls="sequence3-tab-pane" aria-selected="false" >Sequence3</button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link " id="sequence4-tab" data-bs-toggle="tab" data-bs-target="#sequence4-tab-pane" type="button" role="tab" aria-controls="sequence4-tab-pane" aria-selected="false" >Sequence4</button>
+                  </li>
+                  <li className="nav-item" role="presentation">
+                    <button className="nav-link " id="sequence5-tab" data-bs-toggle="tab" data-bs-target="#sequence5-tab-pane" type="button" role="tab" aria-controls="sequence5-tab-pane" aria-selected="false" >Sequence5</button>
+                  </li>
+                </ul>
+                <div className="tab-content" id="calibrationTabContent">
+                  <div className="tab-pane fade show active" id="sequence1-tab-pane" role="tabpanel" aria-labelledby="sequence1-tab" >
+                    <div className="dashboard_row">
+                      <div className="col-md-9">
+                        <fieldset>
+                          <legend>Configuration</legend>
+                          <div className="row">
+                            <div className="col-md-6">
+                            </div>
+                            <div className="col-md-6">
+                              <div className="row mb-3">
+                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                <div className="col-md-8">
+                                  <select id="typeofsequence" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                <div className="col-md-8">
+                                  <select id="totaltime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                <div className="col-md-8">
+                                  <select id="risingtime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="fallingtime" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="highdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="lowdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="signalvalue" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                      <div className="col-md-3">
+                        <fieldset>
+                          <legend>Commands</legend>
+                          <div className="row">
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tab-pane fade" id="sequence2-tab-pane" role="tabpanel" aria-labelledby="sequence2-tab" >
+                    <div className="dashboard_row">
+                      <div className="col-md-9">
+                        <fieldset>
+                          <legend>Configuration</legend>
+                          <div className="row">
+                            <div className="col-md-6">
+                            </div>
+                            <div className="col-md-6">
+                              <div className="row mb-3">
+                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                <div className="col-md-8">
+                                  <select id="typeofsequence" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                <div className="col-md-8">
+                                  <select id="totaltime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                <div className="col-md-8">
+                                  <select id="risingtime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="fallingtime" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="highdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="lowdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="signalvalue" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                      <div className="col-md-3">
+                        <fieldset>
+                          <legend>Commands</legend>
+                          <div className="row">
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tab-pane fade" id="sequence3-tab-pane" role="tabpanel" aria-labelledby="sequence3-tab" >
+                    <div className="dashboard_row">
+                      <div className="col-md-9">
+                        <fieldset>
+                          <legend>Configuration</legend>
+                          <div className="row">
+                            <div className="col-md-6">
+                            </div>
+                            <div className="col-md-6">
+                              <div className="row mb-3">
+                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                <div className="col-md-8">
+                                  <select id="typeofsequence" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                <div className="col-md-8">
+                                  <select id="totaltime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                <div className="col-md-8">
+                                  <select id="risingtime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="fallingtime" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="highdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="lowdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="signalvalue" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                      <div className="col-md-3">
+                        <fieldset>
+                          <legend>Commands</legend>
+                          <div className="row">
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tab-pane fade" id="sequence4-tab-pane" role="tabpanel" aria-labelledby="sequence4-tab" >
+                    <div className="dashboard_row">
+                      <div className="col-md-9">
+                        <fieldset>
+                          <legend>Configuration</legend>
+                          <div className="row">
+                            <div className="col-md-6">
+                            </div>
+                            <div className="col-md-6">
+                              <div className="row mb-3">
+                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                <div className="col-md-8">
+                                  <select id="typeofsequence" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                <div className="col-md-8">
+                                  <select id="totaltime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                <div className="col-md-8">
+                                  <select id="risingtime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="fallingtime" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="highdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="lowdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="signalvalue" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                      <div className="col-md-3">
+                        <fieldset>
+                          <legend>Commands</legend>
+                          <div className="row">
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="tab-pane fade" id="sequence5-tab-pane" role="tabpanel" aria-labelledby="sequence5-tab" >
+                    <div className="dashboard_row">
+                      <div className="col-md-9">
+                        <fieldset>
+                          <legend>Configuration</legend>
+                          <div className="row">
+                            <div className="col-md-6">
+                            </div>
+                            <div className="col-md-6">
+                              <div className="row mb-3">
+                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                <div className="col-md-8">
+                                  <select id="typeofsequence" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                <div className="col-md-8">
+                                  <select id="totaltime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                <div className="col-md-8">
+                                  <select id="risingtime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                <div className="col-md-8">
+                                  <select id="fallingtime" className="form-select">
+                                    <option selected>Choose...</option>
+                                    <option>...</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="highdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="lowdrift" />
+                                </div>
+                              </div>
+                              <div className="row mb-3">
+                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                <div className="col-md-8">
+                                  <input type="number" className="form-control" id="signalvalue" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                      <div className="col-md-3">
+                        <fieldset>
+                          <legend>Commands</legend>
+                          <div className="row">
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                            <div className="col-md-12 mb-2">
+                              <select className="form-select">
+                                <option selected>Nothing</option>
+                                <option>...</option>
+                              </select>
+                            </div>
+                          </div>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
             </div>
           </div>
         </div>
@@ -911,8 +1639,8 @@ function Dashboard() {
                           <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
                         </div>
                         <div className="d-flex justify-content-start mt-2">
-                        <div className="icons" title="Service Mode"> <i class="bi bi-modem"></i>&nbsp;</div>
-                          <div className="icons" title="Calibration"><i class="bi bi-gear"></i>&nbsp;</div>
+                          <div className="icons" title="Service Mode"> <i class="bi bi-modem"></i>&nbsp;</div>
+                          <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
                           <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
                           {y == 0 && (
                             <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
