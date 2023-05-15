@@ -182,16 +182,22 @@ function Dashboard() {
     
     for (let i = 0; i < pollutents.length; i++) {
       if(Cookies.get(pollutents[i].id + "_ChartStatus") == 'true'){
+          chartdata = [];
           for (let k = 0; k < Parametervalues.length; k++) {
+            
             if(Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName){
             
                 chartdata.push(Parametervalues[k].parametervalue);
-                let index = labels.indexOf(Parametervalues[k].createdTime);
+                let cTime = Parametervalues[k].createdTime.split("T");
+                //let index = labels.indexOf(Parametervalues[k].createdTime);
+                let index = labels.indexOf(cTime[1]);
                 if (index == -1) {
-                  labels.push(Parametervalues[k].createdTime);
+                  //labels.push(Parametervalues[k].createdTime);
+                  labels.push(cTime[1]);
                 }
                 
             }
+            //datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
           }
           datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
       }
