@@ -27,6 +27,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
 function DataProcessing() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -39,10 +40,13 @@ function DataProcessing() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
+  const [selectedgrid, setselectedgrid] = useState([]);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
+  const [dataForGridcopy, setdataForGridcopy] = useState([]);
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const [ChartOptions, setChartOptions] = useState();
+  const [ListHistory, setListHistory] = useState([]);
   let jsptable = null;
   var lastSelectedRow;
   var dataForGrid = [];
@@ -81,33 +85,11 @@ function DataProcessing() {
     // }
   }, [ListReportData]);
 
-  const toggleRow = function (row, lastSelectedRow) {
-    //row.className = row.className == 'selected' ? '' : 'selected';
-    row.classList.toggle('highlight');
-    return lastSelectedRow = row;
-  }
-
-  const selectRowsBetweenIndexes = function (indexes, trs) {
-    indexes.sort(function (a, b) {
-      return a - b;
-    });
-
-    for (var i = indexes[0]; i <= indexes[1]; i++) {
-      // trs[i-1].className = 'selected';
-      trs[i - 1].classList.add('highlight');
-    }
-  }
-
-  const clearAll = function (trs) {
-    for (var i = 0; i < trs.length; i++) {
-      trs[i].classList.remove('highlight');
-      // trs[i].className = 'selected';
-    }
-  }
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
-    jsptable.resetStyle();
+    setselectedgrid([startcolindex,stratrowindex])
+    setdataForGridcopy(dataForGrid)
     let finalarr = [];
     for (let j = data1[0]; j <= data1[(data1.length - 1)]; j++) {
       finalarr.push(dataForGrid[j]);
@@ -116,7 +98,7 @@ function DataProcessing() {
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
     for (let j = 0; j < SelectedPollutents.length; j++) {
-      chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 0; return x });
+      chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 2; return x });
     }
     for (let k = startcolindex; k <= endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
@@ -124,29 +106,79 @@ function DataProcessing() {
         if (index > -1) {
           chartdata.datasets[k - 1].pointRadius[i] = 10;
         } else {
-          chartdata.datasets[k - 1].pointRadius[i] = 0;
+          chartdata.datasets[k - 1].pointRadius[i] = 2;
         }
       }
     }
     chart.update();
   }
   const changed = function (instance, cell, x, y, value) {
-    var cellName = jspreadsheet.helpers.getColumnNameFromCoords(x, y);
-    if (cellName) {
-      if (jsptable.getStyle(cellName) == 'text-align: center;')
-        jsptable.setStyle(cellName, 'background-color', 'yellow');
-    }
+    let changearr=dataForGrid[y];
+    cell.classList.add('updated');
+    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName==SelectedPollutents[x-1]);
+    let chart = chartRef.current;
+    let chartdata = chart != null ? chart.data : [];
+    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+    let ModifiedBy=currentUser.userName;
+    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({Parametervalue: value, ModifiedBy:ModifiedBy }),
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson == 1) {
+          chartdata.datasets[x - 1].data[y] = value;
+          chart.update();
+        }
+      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
   }
-  const Applystyles=function(instance){
-    instance.jexcel.setStyle('B3', 'background-color', 'yellow');
+  const loadtable=function(instance){
+    for(let i=0;i<SelectedPollutents.length;i++){
+      let filnallist=ListReportData.filter(x=>x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.corrected==1);
+          for(let j=0;j<filnallist.length;j++){
+            let index=dataForGrid.findIndex(y=>y.Date===filnallist[j].interval);
+            if(index>-1){
+            console.log(index);
+            let cell=instance.jexcel.getCellFromCoords(i+1,index);
+            cell.classList.add('updated');
+          }
+          }
+        }
   }
+  
+  const gethistory=function(){
+    console.log(dataForGridcopy);
+    let changearr=dataForGridcopy[selectedgrid[1]];
+    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName==SelectedPollutents[selectedgrid[0]-1]);
+    let params = new URLSearchParams({ id:filtered[0].id});
+   
+    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?'+ params, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((historydata) => {
+        if (historydata) {
+          setListHistory(historydata);
+        }
+      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+    $('#historymodal').modal('show');
+      }
+    
+      const reverttoprevious=function(){
+    
+      }
+      const generateDatabaseDateTime=function(date) {
+        return date.replace("T"," ").substring(0, 19);
+      }
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
     var layout = [];
     layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "text" });
+      layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "numaric" });
     }
 
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
@@ -161,18 +193,17 @@ function DataProcessing() {
         dataForGrid.push(obj);
       }
     }
-
+   // setdataForGridcopy(dataForGrid);
     // if (!jspreadRef) {
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
-      columns: layout,
       rowResize: true,
-      columnDrag: false,
+    //  columnDrag: true,
       tableOverflow:true,
-      style: Applystyles,
+      columns: layout,
       onselection: selectionActive,
       onchange: changed,
-      onload:Applystyles
+      onload:loadtable,
     });
     // }
   }
@@ -228,67 +259,7 @@ function DataProcessing() {
 
 
   }
-  const GenarateChart = function (Station, Pollutent, Fromdate, Todate, Interval) {
-    // let Station = $("#stationid").val();
-    // let Pollutent = $("#pollutentid").val();
-    // let Fromdate = document.getElementById("fromdateid").value;
-    // let Todate = document.getElementById("todateid").value;
-    // let Interval = document.getElementById("intervalid").value;
-    // let Criteria = document.getElementById("criteriaid").value;
-    let Criteria = "Raw";
-    if (Criteria == "Raw") {
-      if (Station.length > 1) {
-        toast.error('Please select only one station at a time to generate chart.', {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "colored",
-        });
-        return false;
-      }
-    }
-    // if (Station.length > 1) {
-    //   Station.join(',')
-    // }
-    if (Pollutent.length > 1) {
-      Pollutent.join(',')
-    }
-    //let ChartType = document.getElementById("charttypeid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
-    if (!valid) {
-      return false;
-    }
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
-    let suburl = "getRawData";
-    // let suburl = "getAnnualAverages";
-    // if (Criteria == 'Max') {
-    //   suburl = "geMaxValuePollutants";
-    // } else if (Criteria == 'Percentile') {
-    //   suburl = "getPercentile";
-    // } else if (Criteria == 'MeanTimeseries') {
-    //   suburl = "getMetParametersValues";
-    // } else if (Criteria == "Raw") {
-    //   suburl = "getRawData";
-    // }
-    fetch(url + suburl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ StationName: Station.toString(), FromDate: Fromdate, ToDate: Todate, Criteria: Criteria, DataFilter: Interval, Pollutant: Pollutent.toString() }),
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          let data1 = JSON.parse(data);
-          getchartdata(data1, Pollutent, "line", "Raw");
-        }
-      }).catch((error) => console.log(error));
-  }
+  
   const DownloadExcel = function () {
     let Station = $("#stationid").val();
     if (Station.length > 0) {
@@ -502,7 +473,7 @@ function DataProcessing() {
           labels.push(pollutentdata[k].interval)
         }
         chartdata.push(pollutentdata[k].parametervalue)
-        pointRadius.push(0);
+        pointRadius.push(2);
       }
       if (charttype == 'line') {
         datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius })
@@ -541,6 +512,45 @@ function DataProcessing() {
       {/* Same as */}
       {/* <section className="section grid_section h100 w100">
         <div className="h100 w100"> */}
+         <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Parameter History</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>Parameter Name</th>
+                      <th>Value</th>
+                      <th>Modified By</th>
+                      <th>Modified On</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                      {ListHistory&&(
+                      ListHistory.map((x, y) =>
+                        <tr className="body_active">
+                        <td>{AllLookpdata.listPollutents.filter(z=>z.id==x.parameterID)[0].parameterName}</td>
+                        <td>{x.parametervalue}</td>
+                        <td>{x.modifiedBy}</td>
+                        <td>{x.modifiedOn !=null?generateDatabaseDateTime(x.modifiedOn):x.modifiedOn}</td>
+                      </tr>
+                      )
+                     )}
+                    </tbody>
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <section>
         <div>
           <div>
@@ -585,14 +595,19 @@ function DataProcessing() {
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
             </div>
+            {ListReportData.length > 0 && (
+              <div>
+            <div className="row">
+              <div className="col-md-12 mb-3">
+              <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
+                <button type="button" className="btn btn-primary mx-1" title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+              </div>
+              </div>
 
-            {ListReportData.length > 0 && (
-              <div className="jsGrid" ref={gridRefjsgridreport} />
-            )}
-            {ListReportData.length > 0 && (
               <div className="jsGrid" ref={jspreadRef} />
+              </div>
             )}
-            {ChartData && (
+            {ListReportData.length > 0 && ChartData && (
               <div >
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
               </div>
