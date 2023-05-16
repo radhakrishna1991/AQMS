@@ -1,34 +1,37 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import jspreadsheet from "jspreadsheet-ce";
+import "jspreadsheet-ce/dist/jspreadsheet.css";
 import { Line } from 'react-chartjs-2';
 import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    PointElement,
-    LineElement,
-    Filler,
-    Title,
-    Tooltip,
-    Legend,
-    defaults 
-  } from 'chart.js';
-  ChartJS.register(
-     CategoryScale,
-     LinearScale,
-     PointElement,
-     LineElement,
-     Filler,
-     Title,
-     Tooltip,
-     Legend
-    );
-function StasticsDataReport() {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend,
+  defaults
+} from 'chart.js';
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Title,
+  Tooltip,
+  Legend
+);
+function DataProcessing() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const chartRef = useRef();
+  const jspreadRef = useRef(null);
   const [selectedStations, setselectedStations] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
@@ -38,9 +41,11 @@ function StasticsDataReport() {
   const [Pollutents, setPollutents] = useState([]);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
-  const [ChartData, setChartData] = useState({labels:[],datasets:[]});
+  const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const [ChartOptions, setChartOptions] = useState();
- var lastSelectedRow;
+  let jsptable = null;
+  var lastSelectedRow;
+  var dataForGrid = [];
 
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
@@ -68,125 +73,108 @@ function StasticsDataReport() {
     // initializeJsGrid();
   }, []);
   useEffect(() => {
+    // if (!jspreadRef.current) {
+    if (jsptable) {
+      jsptable.refresh();
+    }
     initializeJsGrid();
-  });
+    // }
+  }, [ListReportData]);
 
-  const toggleRow=function(row,lastSelectedRow) {
+  const toggleRow = function (row, lastSelectedRow) {
     //row.className = row.className == 'selected' ? '' : 'selected';
     row.classList.toggle('highlight');
-   return lastSelectedRow=row;
-}
+    return lastSelectedRow = row;
+  }
 
-const selectRowsBetweenIndexes=function(indexes,trs) {
-    indexes.sort(function(a, b) {
-        return a - b;
+  const selectRowsBetweenIndexes = function (indexes, trs) {
+    indexes.sort(function (a, b) {
+      return a - b;
     });
 
     for (var i = indexes[0]; i <= indexes[1]; i++) {
-       // trs[i-1].className = 'selected';
-        trs[i-1].classList.add('highlight');
+      // trs[i-1].className = 'selected';
+      trs[i - 1].classList.add('highlight');
     }
-}
+  }
 
-const clearAll=function(trs) {
+  const clearAll = function (trs) {
     for (var i = 0; i < trs.length; i++) {
       trs[i].classList.remove('highlight');
-       // trs[i].className = 'selected';
+      // trs[i].className = 'selected';
     }
-}
+  }
+  const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
+    var data = jsptable.getData(true);
+    var data1 = jsptable.getSelectedRows(true);
+    jsptable.resetStyle();
+    let finalarr = [];
+    for (let j = data1[0]; j <= data1[(data1.length - 1)]; j++) {
+      finalarr.push(dataForGrid[j]);
+    }
+    let key = Object.keys(finalarr[0]);
+    let chart = chartRef.current;
+    let chartdata = chart != null ? chart.data : [];
+    for (let j = 0; j < SelectedPollutents.length; j++) {
+      chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 0; return x });
+    }
+    for (let k = startcolindex; k <= endcolindex; k++) {
+      for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
+        const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
+        if (index > -1) {
+          chartdata.datasets[k - 1].pointRadius[i] = 10;
+        } else {
+          chartdata.datasets[k - 1].pointRadius[i] = 0;
+        }
+      }
+    }
+    chart.update();
+  }
+  const changed = function (instance, cell, x, y, value) {
+    var cellName = jspreadsheet.helpers.getColumnNameFromCoords(x, y);
+    if (cellName) {
+      if (jsptable.getStyle(cellName) == 'text-align: center;')
+        jsptable.setStyle(cellName, 'background-color', 'yellow');
+    }
+  }
+  const Applystyles=function(instance){
+    instance.jexcel.setStyle('B3', 'background-color', 'yellow');
+  }
   /* reported data start */
   const initializeJsGrid = function () {
-        var dataForGrid = [];
-        var layout = [];
-        for(var i=0; i< SelectedPollutents.length;i++){
-            layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - ppb" , type: "text" });
-        }
-        layout.push({ name: "Date", title: "Date", type: "text" });
-        layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
-        for (var k = 0; k < ListReportData.length; k++) {
-            var obj = {};
-            var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
-            if(temp >= 0)
-            {
-                dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
-            }else{
-                obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
-                obj["Date"] = ListReportData[k].interval;
-                dataForGrid.push(obj);
-            }
-        }
+    dataForGrid = [];
+    var layout = [];
+    layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "text" });
+    }
 
-    window.jQuery(gridRefjsgridreport.current).jsGrid({
-      width: "100%",
-      height: "auto",
-      filtering: true,
-      editing: false,
-      inserting: false,
-      sorting: true,
-      paging: true,
-      autoload: true,
-      pageSize: 100,
-      pageButtonCount: 5,
-      controller: {
-        data: dataForGrid,
-        loadData: function (filter) {
-          let resultData = this.data;
-          var d = $.Deferred();
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
-          for (var prop in filter) {
-              if (filter[prop].length > 0) {
-                resultData = $.grep(resultData, function (item) {
-                  if(!filter[prop]  || item[prop].toString().indexOf(filter[prop]) >= 0){
-                    return item;
-                  }
-                });
-                break;
-              }
-            }
-            d.resolve(resultData);
-            return d.promise();
-        }
-      },
-    //  rowSelection: 'multiple',
-      rowClick: function(args) {
-var trs = this._body[0].getElementsByTagName('tr')
-        var $row1 = args.event.target;
-        var currenttr = this.rowByItem(args.item)[0],
-            selectedRow = $(".jsGrid").find('table tr.highlight');
-            if (window.event.ctrlKey) {
-              lastSelectedRow=toggleRow(currenttr,lastSelectedRow);
-          }
-          
-          if (window.event.button === 0) {
-              if (!window.event.ctrlKey && !window.event.shiftKey) {
-                  clearAll(trs);
-                  lastSelectedRow=toggleRow(currenttr,lastSelectedRow);
-              }
-          
-              if (window.event.shiftKey) {
-                  selectRowsBetweenIndexes([lastSelectedRow.rowIndex+1, args.itemIndex+1],trs)
-              }
-          }
-        
-       /*  if (selectedRow.length) {
-            selectedRow.toggleClass('highlight');
-        }; */
-        $row1.classList.toggle('highlight');
-        //$row.toggleClass("highlight");
-      },
-      fields: layout
-    //   fields: [
-    //     //{ name: "stationID", title: "Station Name", type: "select", items: Stations, valueField: "id", textField: "stationName", width: 200 },
-        
-    //     { name: "parametervalue", title: "NO2 Value", type: "text" },
-    //     //{ name: "parameterName", title: "Parameter Name", type: "text" },
-    //     { name: "parametervalue", title: "SO2 Value", type: "text", },
-    //     { name: "interval", title: "Date", type: "text" },
-    //     //{ name: "type", title: "Interval", type: "text" },
-    //     { type: "control", width: 100, editButton: false, deleteButton: false },
-    //   ]
+    //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
+    for (var k = 0; k < ListReportData.length; k++) {
+      var obj = {};
+      var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval)
+      if (temp >= 0) {
+        dataForGrid[temp][ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+      } else {
+        obj["Date"] = ListReportData[k].interval;
+        obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+        dataForGrid.push(obj);
+      }
+    }
+
+    // if (!jspreadRef) {
+    jsptable = jspreadsheet(jspreadRef.current, {
+      data: dataForGrid,
+      columns: layout,
+      rowResize: true,
+      columnDrag: false,
+      tableOverflow:true,
+      style: Applystyles,
+      onselection: selectionActive,
+      onchange: changed,
+      onload:Applystyles
     });
+    // }
   }
   const hexToRgbA = function (hex) {
     var c;
@@ -201,6 +189,7 @@ var trs = this._body[0].getElementsByTagName('tr')
     throw new Error('Bad Hex');
   }
   const getdatareport = function () {
+    setListReportData([]);
     console.log(new Date());
     // if (chartRef.current != null) {
     //     chartRef.current.data = {};
@@ -232,21 +221,21 @@ var trs = this._body[0].getElementsByTagName('tr')
           //let Chart_data = JSON.parse(data);
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
-          GenarateChart(Station,Pollutent,Fromdate,Todate,Interval);
-          //getchartdata(Chart_data, Pollutent, "Raw")
+          // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
+          getchartdata(data1, Pollutent, "line", "Raw");
         }
       }).catch((error) => console.log(error));
-    
+
 
   }
-  const GenarateChart = function (Station,Pollutent,Fromdate,Todate,Interval) {
+  const GenarateChart = function (Station, Pollutent, Fromdate, Todate, Interval) {
     // let Station = $("#stationid").val();
     // let Pollutent = $("#pollutentid").val();
     // let Fromdate = document.getElementById("fromdateid").value;
     // let Todate = document.getElementById("todateid").value;
     // let Interval = document.getElementById("intervalid").value;
     // let Criteria = document.getElementById("criteriaid").value;
-    let Criteria ="Raw";
+    let Criteria = "Raw";
     if (Criteria == "Raw") {
       if (Station.length > 1) {
         toast.error('Please select only one station at a time to generate chart.', {
@@ -296,7 +285,7 @@ var trs = this._body[0].getElementsByTagName('tr')
       .then((data) => {
         if (data) {
           let data1 = JSON.parse(data);
-          getchartdata(data1, Pollutent, "line", "Raw")
+          getchartdata(data1, Pollutent, "line", "Raw");
         }
       }).catch((error) => console.log(error));
   }
@@ -317,7 +306,7 @@ var trs = this._body[0].getElementsByTagName('tr')
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
+    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params, "_blank");
     /*  fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())
@@ -422,7 +411,7 @@ var trs = this._body[0].getElementsByTagName('tr')
     }
     setPollutents(finaldata1);
     setTimeout(function () {
-     // $('.pollutentid')[0].sumo.unSelectAll(); 
+      // $('.pollutentid')[0].sumo.unSelectAll(); 
       $('.pollutentid')[0].sumo.reload();
     }, 10);
   })
@@ -451,7 +440,7 @@ var trs = this._body[0].getElementsByTagName('tr')
     setcriteria([]);
     let stationID = $("#stationid").val();
     let filter1 = $(this).val();
-    
+
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
     if (finaldata.length > 0) {
@@ -469,7 +458,7 @@ var trs = this._body[0].getElementsByTagName('tr')
       setcriteria(finalinterval);
     }
   })
-  const Resetfilters=function(){
+  const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
     $('.stationid')[0].sumo.reload();
@@ -485,8 +474,8 @@ var trs = this._body[0].getElementsByTagName('tr')
     if (chartRef.current != null) {
       chartRef.current.data = {};
     }
-    
-    setChartData({labels:[],datasets:[]});
+
+    setChartData({ labels: [], datasets: [] });
     setChartOptions();
     let datasets = [];
     let chartdata = [];
@@ -497,92 +486,26 @@ var trs = this._body[0].getElementsByTagName('tr')
     let NinetyEightPercentileValue = 0;
     let FiftyPercentileValue = 0;
     let MaxVal = 0;
+    let pointRadius = [];
     let xAxislabel = [];
     for (let i = 0; i < pollutent.length; i++) {
       chartdata = [];
+      pointRadius = [];
       NinetyEightPercentile = [];
       FiftyPercentile = [];
-      let pollutentdata = data[pollutent[i]];
-      if (criteria == 'MeanTimeseries') {
-        for (var x = 0; x < data[pollutent[i] + "xAxisData"].length; x++) {
-          let index = xAxislabel.indexOf(data[pollutent[i] + "xAxisData"][x].Value);
-          if (index == -1) {
-            xAxislabel.push(data[pollutent[i] + "xAxisData"][x].Value)
-          }
-        }
-      }
-      if (criteria != 'Raw') {
-        for (let j = 0; j < data.StationNames.length; j++) {
-          NinetyEightPercentileValue = 0;
-          FiftyPercentileValue = 0;
-          let index = labels.indexOf(data.StationNames[j].StationName);
-          if (index == -1) {
-            labels.push(data.StationNames[j].StationName)
-          }
-          tempdata = [];
-          for (let k = 0; k < pollutentdata.length; k++) {
-            if (data.StationNames[j].StationName == pollutentdata[k].StationName) {
-              if (criteria == 'Percentile') {
-                NinetyEightPercentileValue = pollutentdata[k][pollutent[i] + "98Percentile"];
-                FiftyPercentileValue = pollutentdata[k][pollutent[i] + "50Percentile"];
-                NinetyEightPercentile.push(NinetyEightPercentileValue);
-                FiftyPercentile.push(FiftyPercentileValue);
-                if (MaxVal < pollutentdata[k][pollutent[i] + "98Percentile"]) {
-                  MaxVal = pollutentdata[k][pollutent[i] + "98Percentile"];
-                }
-              } else if (criteria == 'MeanTimeseries') {
-                tempdata.push({ value: pollutentdata[k].PollutantValue, period: pollutentdata[k].Value })
-              } else {
-                chartdata.push(pollutentdata[k][pollutent[i]]);
-              }
-            }
-          }
-          if (criteria == 'MeanTimeseries') {
-            chartdata = [];
-            for (var t = 0; t < xAxislabel.length; t++) {
-              let index1 = tempdata.findIndex(y => y.period === xAxislabel[t]);
-              if (index1 == -1) {
-                chartdata.push(0)
-              } else {
-                chartdata.push(tempdata[index1].value)
-              }
-            }
-            datasets.push({ label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[j],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[j]) })
-          }
+      // let pollutentdata = data[pollutent[i]];
+      let pollutentdata = data.filter(val => val.parameterName.toLowerCase() == pollutent[i].toLowerCase());
 
+      for (let k = 0; k < pollutentdata.length; k++) {
+        let index = labels.indexOf(pollutentdata[k].interval);
+        if (index == -1) {
+          labels.push(pollutentdata[k].interval)
         }
-      } else {
-        for (let k = 0; k < pollutentdata.length; k++) {
-          let index = labels.indexOf(pollutentdata[k].Period1);
-          if (index == -1) {
-            labels.push(pollutentdata[k].Period1)
-          }
-          chartdata.push(pollutentdata[k].PollutantValue)
-        }
+        chartdata.push(pollutentdata[k].parametervalue)
+        pointRadius.push(0);
       }
-      if (criteria != 'MeanTimeseries') {
-        if (charttype == 'bar') {
-          if (criteria == 'Percentile') {
-            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
-            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
-          } else {
-            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
-          }
-        } else if (charttype == 'line') {
-          if (criteria == 'Percentile') {
-            datasets.push({ label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
-            datasets.push({ label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
-          } else {
-            datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
-          }
-        } else if (charttype == 'area') {
-          if (criteria == 'Percentile') {
-            datasets.push({ fill: true, label: pollutent[i] + " - 98 %ile", data: NinetyEightPercentile, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: hexToRgbA(colorArray[(colorArray.length) - (i + 1)]) })
-            datasets.push({ fill: true, label: pollutent[i] + " - 50 %ile", data: FiftyPercentile, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
-          } else {
-            datasets.push({ fill: true, label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
-          }
-        }
+      if (charttype == 'line') {
+        datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius })
       }
     }
     setChartOptions({
@@ -591,7 +514,7 @@ var trs = this._body[0].getElementsByTagName('tr')
         mode: 'index',
         intersect: false,
       }, */
-   //   maintainAspectRatio: true,
+      //   maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
@@ -612,7 +535,7 @@ var trs = this._body[0].getElementsByTagName('tr')
       })
     }, 10);
   }
- 
+
   return (
     <main id="main" className="main" >
       {/* Same as */}
@@ -661,27 +584,18 @@ var trs = this._body[0].getElementsByTagName('tr')
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
-              
-              {/* {ListReportData.length>0 &&(
-              <div className="col-md-6">
-                <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
-              </div>
-              )} */}
-               {ChartData && (
-                 <div >
-                     <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120}/>
-                 </div>    
-                )}
-
-                {ListReportData.length>0 &&(
-                    <div className="col-md-12">
-                        <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
-                    </div>
-                 )}
             </div>
-            
-            {ListReportData.length>0 &&(
-                <div className="jsGrid" ref={gridRefjsgridreport} />
+
+            {ListReportData.length > 0 && (
+              <div className="jsGrid" ref={gridRefjsgridreport} />
+            )}
+            {ListReportData.length > 0 && (
+              <div className="jsGrid" ref={jspreadRef} />
+            )}
+            {ChartData && (
+              <div >
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+              </div>
             )}
           </div>
         </div>
@@ -690,4 +604,4 @@ var trs = this._body[0].getElementsByTagName('tr')
     </main>
   );
 }
-export default StasticsDataReport;
+export default DataProcessing;

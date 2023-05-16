@@ -303,6 +303,7 @@
                 case "rowClass":
                 case "rowRenderer":
                 case "rowClick":
+                case "columnClick":
                 case "rowDoubleClick":
                 case "noDataRowClass":
                 case "noDataContent":
@@ -615,7 +616,7 @@
 
             $result.addClass(this._getRowClasses(item, itemIndex))
                 .data(JSGRID_ROW_DATA_KEY, item)
-                .on("click", $.proxy(function (e) {
+                .on("mousedown", $.proxy(function (e) {
                     this.rowClick({
                         item: item,
                         itemIndex: itemIndex,

@@ -555,3 +555,18 @@ h6 {
 /* .filtergroup .col{
   padding: 0px 5px;
 } */
+tr.highlight td.jsgrid-cell {
+  background-color: green;
+}
+ td.jsgrid-cell.highlight {
+  background-color: green;
+}
+.jcontextmenu{
+  display: none;
+}
+.jexcel{
+  width: 100% !important;
+}
+.jexcel .highlight, .jexcel .highlight-selected {
+  background-color: #0dcaf075;
+}
