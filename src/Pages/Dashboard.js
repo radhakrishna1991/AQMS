@@ -48,9 +48,9 @@ function Dashboard() {
           for(var i=0;i<data.listPollutents.length;i++){
             parameterChartStatus.push({paramaterID:data.listPollutents[i].id,paramaterName:data.listPollutents[i].parameterName,ChartStatus:false})
             //sessionStorage.setItem(data.listPollutents[i].id + "_ChartStatus", false);
-            //if(Cookies.indexOf(data.listPollutents[i].id + "_ChartStatus")==-1){
+            if(!Cookies.get(data.listPollutents[i].id + "_ChartStatus")){
                Cookies.set(data.listPollutents[i].id + "_ChartStatus", false, { expires: 7 });
-            //}
+            }
           }
           setLiveChartStatus(parameterChartStatus);
         }
@@ -208,6 +208,42 @@ function Dashboard() {
     }
     setChartOptions({
       responsive: true,
+      // scales: {
+      //   xAxes: [{
+      //     type: 'time'
+      //   }]
+      // },
+      scales:{
+       
+        xAxes:[{
+            Type: 'time',
+            time: {
+                parser: 'HH:mm:ss a',   
+                unit: 'second',   
+                displayFormats: {
+                    'millisecond': 'HH:mm:ss a',
+                    'second': 'HH:mm:ss a',
+                    'minute': 'HH:mm:ss a',
+                    'hour': 'HH:mm:ss a',
+                    'day': 'HH:mm:ss a',
+                    'week': 'HH:mm:ss a',
+                    'month': 'HH:mm:ss a',
+                    'quarter': 'HH:mm:ss a',
+                    'year': 'HH:mm:ss a',
+                }
+            },
+            ticks: {
+                source: 'auto'
+            },
+            scaleLabel:{
+                display: true,
+                labelString: 'Present Time',
+                fontColor: '#000',                        
+                fontWeight: 'bold',
+                fontSize:25
+        }
+        }]
+    },
       maintainAspectRatio: true,
       plugins: {
         legend: {
