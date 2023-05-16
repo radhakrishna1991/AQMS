@@ -570,3 +570,6 @@ tr.highlight td.jsgrid-cell {
 .jexcel .highlight, .jexcel .highlight-selected {
   background-color: #0dcaf075;
 }
+/* .jexcel .highlight {
+  background-color: #0dcaf075 !important;
+} */

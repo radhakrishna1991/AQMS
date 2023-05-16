@@ -189,8 +189,10 @@ function Dashboard() {
             
                 chartdata.push(Parametervalues[k].parametervalue);
                 let cTime = Parametervalues[k].createdTime.split("T");
+                let pTime=Parametervalues[k].createdTime.replace("T",' ');
                 //let index = labels.indexOf(Parametervalues[k].createdTime);
                 let index = labels.indexOf(cTime[1]);
+                //let index = labels.indexOf(pTime);
                 if (index == -1) {
                   //labels.push(Parametervalues[k].createdTime);
                   labels.push(cTime[1]);
@@ -208,41 +210,43 @@ function Dashboard() {
     }
     setChartOptions({
       responsive: true,
-      // scales: {
-      //   xAxes: [{
-      //     type: 'time'
-      //   }]
-      // },
-      scales:{
-       
-        xAxes:[{
-            Type: 'time',
-            time: {
-                parser: 'HH:mm:ss a',   
-                unit: 'second',   
-                displayFormats: {
-                    'millisecond': 'HH:mm:ss a',
-                    'second': 'HH:mm:ss a',
-                    'minute': 'HH:mm:ss a',
-                    'hour': 'HH:mm:ss a',
-                    'day': 'HH:mm:ss a',
-                    'week': 'HH:mm:ss a',
-                    'month': 'HH:mm:ss a',
-                    'quarter': 'HH:mm:ss a',
-                    'year': 'HH:mm:ss a',
-                }
-            },
-            ticks: {
-                source: 'auto'
-            },
-            scaleLabel:{
-                display: true,
-                labelString: 'Present Time',
-                fontColor: '#000',                        
-                fontWeight: 'bold',
-                fontSize:25
-        }
-        }]
+       scales:{
+        xAxes: [{
+          type: 'time',
+          time: {
+              parser: 'YYYY-MM-DD HH:mm:ss a',
+              unit: 'minute',
+              displayFormats: {
+                  'minute': 'HH:mm:ss',
+                  'hour': 'HH:mm:ss'
+              }
+          },
+          ticks: {
+              source: 'data'
+          }
+      }]          
+        // xAxes:[{
+        //     Type: 'time',
+        //     time: {
+        //         parser: 'HH:mm:ss',   
+        //         unit: 'second',   
+        //         displayFormats: {
+        //             'millisecond': 'HH:mm:ss a',
+        //             'second': 'HH:mm:ss a',
+        //             'minute': 'HH:mm:ss a',
+        //             'hour': 'HH:mm:ss a',
+        //             'day': 'HH:mm:ss a',
+        //             'week': 'HH:mm:ss a',
+        //             'month': 'HH:mm:ss a',
+        //             'quarter': 'HH:mm:ss a',
+        //             'year': 'HH:mm:ss a',
+        //         }
+        //     },
+        //     ticks: {
+        //         source: 'auto'
+        //     },
+            
+        // }]
     },
       maintainAspectRatio: true,
       plugins: {

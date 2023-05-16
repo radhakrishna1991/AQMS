@@ -43,8 +43,10 @@ function DataProcessing() {
   const [Criteria, setcriteria] = useState([]);
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const [ChartOptions, setChartOptions] = useState();
+  const [SelectedCells, setSelectedCells] = useState([]);
   let jsptable = null;
   var lastSelectedRow;
+  let cellnames=[];
   var dataForGrid = [];
 
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
@@ -104,10 +106,38 @@ function DataProcessing() {
       // trs[i].className = 'selected';
     }
   }
+  const resetSelection= function(startcolindex, stratrowindex){
+
+  }
+  
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
-    jsptable.resetStyle();
+    // var cName = jspreadsheet.helpers.getColumnNameFromCoords(startcolindex, stratrowindex);
+   
+    //   for(var p=0; p< cellnames.length;p++){
+    //     //if(cName!=cellnames[p]){
+    //       jsptable.setStyle(cellnames[p], 'background-color', 'white');
+    //     //}        
+    //   }
+   
+    
+    cellnames=[];
+    for(var i=stratrowindex; i<=endrowidex; i++){
+      for(var k=startcolindex; k<=endcolindex; k++){
+        var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
+        cellnames.push(cellName);
+        if (cellName) {
+          if (jsptable.getStyle(cellName) == 'text-align: center;'){
+            //jsptable.setStyle(cellName, 'background-color', 'white');
+            jsptable.setStyle(cellName, 'background-color', '#0dcaf075');
+          }
+        }
+      }
+    }
+    //setSelectedCells(cellnames);
+    
+    //jsptable.resetStyle();
     let finalarr = [];
     for (let j = data1[0]; j <= data1[(data1.length - 1)]; j++) {
       finalarr.push(dataForGrid[j]);
