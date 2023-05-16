@@ -96,6 +96,28 @@ function DataProcessing() {
     var data1 = jsptable.getSelectedRows(true);
     setselectedgrid([startcolindex,stratrowindex])
     setdataForGridcopy(dataForGrid)
+
+    //   for(var p=0; p< cellnames.length;p++){
+    //     //if(cName!=cellnames[p]){
+    //       jsptable.setStyle(cellnames[p], 'background-color', 'white');
+    //     //}        
+    //   }
+   
+    
+    cellnames=[];
+    for(var i=stratrowindex; i<=endrowidex; i++){
+      for(var k=startcolindex; k<=endcolindex; k++){
+        var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
+        cellnames.push(cellName);
+        if (cellName) {
+          if (jsptable.getStyle(cellName) == 'text-align: center;'){
+            //jsptable.setStyle(cellName, 'background-color', 'white');
+            jsptable.setStyle(cellName, 'background-color', '#0dcaf075');
+          }
+        }
+      }
+    }
+    
     let finalarr = [];
     for (let j = data1[0]; j <= data1[(data1.length - 1)]; j++) {
       finalarr.push(dataForGrid[j]);
