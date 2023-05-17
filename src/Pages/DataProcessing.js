@@ -17,6 +17,7 @@ import {
   Legend,
   defaults
 } from 'chart.js';
+import 'chartjs-plugin-dragdata'
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -50,7 +51,7 @@ function DataProcessing() {
   const [SelectedCells, setSelectedCells] = useState([]);
   let jsptable = null;
   var lastSelectedRow;
-  let cellnames=[];
+  let cellnames = [];
   var dataForGrid = [];
 
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
@@ -87,14 +88,14 @@ function DataProcessing() {
     // }
   }, [ListReportData]);
 
-  const resetSelection= function(startcolindex, stratrowindex){
+  const resetSelection = function (startcolindex, stratrowindex) {
 
   }
-  
+
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
-    setselectedgrid([startcolindex,stratrowindex])
+    setselectedgrid([startcolindex, stratrowindex])
     setdataForGridcopy(dataForGrid)
 
     //   for(var p=0; p< cellnames.length;p++){
@@ -102,22 +103,22 @@ function DataProcessing() {
     //       jsptable.setStyle(cellnames[p], 'background-color', 'white');
     //     //}        
     //   }
-   
-    
-    cellnames=[];
-    for(var i=stratrowindex; i<=endrowidex; i++){
-      for(var k=startcolindex; k<=endcolindex; k++){
+
+
+    cellnames = [];
+    for (var i = stratrowindex; i <= endrowidex; i++) {
+      for (var k = startcolindex; k <= endcolindex; k++) {
         var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
         cellnames.push(cellName);
         if (cellName) {
-          if (jsptable.getStyle(cellName) == 'text-align: center;'){
+          if (jsptable.getStyle(cellName) == 'text-align: center;') {
             //jsptable.setStyle(cellName, 'background-color', 'white');
             jsptable.setStyle(cellName, 'background-color', '#0dcaf075');
           }
         }
       }
     }
-    
+
     let finalarr = [];
     for (let j = data1[0]; j <= data1[(data1.length - 1)]; j++) {
       finalarr.push(dataForGrid[j]);
@@ -141,20 +142,20 @@ function DataProcessing() {
     chart.update();
   }
   const changed = function (instance, cell, x, y, value) {
-    let changearr=dataForGrid[y];
+    let changearr = dataForGrid[y];
     cell.classList.add('updated');
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName==SelectedPollutents[x-1]);
+    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    let ModifiedBy=currentUser.userName;
+    let ModifiedBy = currentUser.userName;
     fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({Parametervalue: value, ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -163,27 +164,27 @@ function DataProcessing() {
         }
       }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
   }
-  const loadtable=function(instance){
-    for(let i=0;i<SelectedPollutents.length;i++){
-      let filnallist=ListReportData.filter(x=>x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.corrected==1);
-          for(let j=0;j<filnallist.length;j++){
-            let index=dataForGrid.findIndex(y=>y.Date===filnallist[j].interval);
-            if(index>-1){
-            console.log(index);
-            let cell=instance.jexcel.getCellFromCoords(i+1,index);
-            cell.classList.add('updated');
-          }
-          }
+  const loadtable = function (instance) {
+    for (let i = 0; i < SelectedPollutents.length; i++) {
+      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.corrected == 1);
+      for (let j = 0; j < filnallist.length; j++) {
+        let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
+        if (index > -1) {
+          console.log(index);
+          let cell = instance.jexcel.getCellFromCoords(i + 1, index);
+          cell.classList.add('updated');
         }
+      }
+    }
   }
-  
-  const gethistory=function(){
+
+  const gethistory = function () {
     console.log(dataForGridcopy);
-    let changearr=dataForGridcopy[selectedgrid[1]];
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName==SelectedPollutents[selectedgrid[0]-1]);
-    let params = new URLSearchParams({ id:filtered[0].id});
-   
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?'+ params, {
+    let changearr = dataForGridcopy[selectedgrid[1]];
+    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    let params = new URLSearchParams({ id: filtered[0].id });
+
+    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((historydata) => {
@@ -192,14 +193,25 @@ function DataProcessing() {
         }
       }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
     $('#historymodal').modal('show');
-      }
-    
-      const reverttoprevious=function(){
-    
-      }
-      const generateDatabaseDateTime=function(date) {
-        return date.replace("T"," ").substring(0, 19);
-      }
+  }
+
+  const reverttoprevious = function () {
+    let changearr = dataForGridcopy[selectedgrid[1]];
+    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
+    let params = new URLSearchParams({ id: filtered[0].id });
+
+    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((originaldata) => {
+        if (originaldata) {
+          //setListHistory(historydata);
+        }
+      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+  }
+  const generateDatabaseDateTime = function (date) {
+    return date.replace("T", " ").substring(0, 19);
+  }
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
@@ -221,17 +233,17 @@ function DataProcessing() {
         dataForGrid.push(obj);
       }
     }
-   // setdataForGridcopy(dataForGrid);
+    // setdataForGridcopy(dataForGrid);
     // if (!jspreadRef) {
     jsptable = jspreadsheet(jspreadRef.current, {
       data: dataForGrid,
       rowResize: true,
-    //  columnDrag: true,
-      tableOverflow:true,
+      //  columnDrag: true,
+      tableOverflow: true,
       columns: layout,
       onselection: selectionActive,
       onchange: changed,
-      onload:loadtable,
+      onload: loadtable,
     });
     // }
   }
@@ -287,7 +299,7 @@ function DataProcessing() {
 
 
   }
-  
+
   const DownloadExcel = function () {
     let Station = $("#stationid").val();
     if (Station.length > 0) {
@@ -522,6 +534,17 @@ function DataProcessing() {
           display: true,
           //text: 'Chart.js Bar Chart',
         },
+        dragData: {
+          onDragStart: function (e) {
+            console.log(e)
+          },
+          onDrag: function (e, datasetIndex, index, value) {
+            console.log(datasetIndex, index, value)
+          },
+          onDragEnd: function (e, datasetIndex, index, value) {
+            console.log(datasetIndex, index, value)
+          }
+        }
       },
     });
     if (criteria == 'MeanTimeseries') {
@@ -540,7 +563,7 @@ function DataProcessing() {
       {/* Same as */}
       {/* <section className="section grid_section h100 w100">
         <div className="h100 w100"> */}
-         <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div className="modal fade zoom dashboard_dmodal" id="historymodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
@@ -558,18 +581,18 @@ function DataProcessing() {
                       <th>Modified On</th>
                     </tr>
                   </thead>
-                    <tbody>
-                      {ListHistory&&(
+                  <tbody>
+                    {ListHistory && (
                       ListHistory.map((x, y) =>
                         <tr className="body_active">
-                        <td>{AllLookpdata.listPollutents.filter(z=>z.id==x.parameterID)[0].parameterName}</td>
-                        <td>{x.parametervalue}</td>
-                        <td>{x.modifiedBy}</td>
-                        <td>{x.modifiedOn !=null?generateDatabaseDateTime(x.modifiedOn):x.modifiedOn}</td>
-                      </tr>
+                          <td>{AllLookpdata.listPollutents.filter(z => z.id == x.parameterID)[0].parameterName}</td>
+                          <td>{x.parametervalue}</td>
+                          <td>{x.modifiedBy}</td>
+                          <td>{x.modifiedOn != null ? generateDatabaseDateTime(x.modifiedOn) : x.modifiedOn}</td>
+                        </tr>
                       )
-                     )}
-                    </tbody>
+                    )}
+                  </tbody>
                 </table>
               </div>
             </div>
@@ -625,14 +648,14 @@ function DataProcessing() {
             </div>
             {ListReportData.length > 0 && (
               <div>
-            <div className="row">
-              <div className="col-md-12 mb-3">
-              <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
-                <button type="button" className="btn btn-primary mx-1" title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
-              </div>
-              </div>
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
+                    <button type="button" className="btn btn-primary mx-1" title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                  </div>
+                </div>
 
-              <div className="jsGrid" ref={jspreadRef} />
+                <div className="jsGrid" ref={jspreadRef} />
               </div>
             )}
             {ListReportData.length > 0 && ChartData && (
