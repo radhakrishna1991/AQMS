@@ -31,6 +31,7 @@ function Dashboard() {
   const [Infodevices, setInfodevices] = useState([]);
   const [InfoParameters, setInfoParameters] = useState([]);
   const [LiveChartStatus, setLiveChartStatus] = useState([]);
+  const [LiveCharticons, setLiveCharticons] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
@@ -46,10 +47,12 @@ function Dashboard() {
           setListAllData(data);
           GenerateChart(data);
           for(var i=0;i<data.listPollutents.length;i++){
-            parameterChartStatus.push({paramaterID:data.listPollutents[i].id,paramaterName:data.listPollutents[i].parameterName,ChartStatus:false})
             //sessionStorage.setItem(data.listPollutents[i].id + "_ChartStatus", false);
-            if(!Cookies.get(data.listPollutents[i].id + "_ChartStatus")){
+            if(Cookies.get(data.listPollutents[i].id + "_ChartStatus")  != 'true'){
                Cookies.set(data.listPollutents[i].id + "_ChartStatus", false, { expires: 7 });
+               parameterChartStatus.push({paramaterID:data.listPollutents[i].id,paramaterName:data.listPollutents[i].parameterName,ChartStatus:false})
+            }else{
+              parameterChartStatus.push({paramaterID:data.listPollutents[i].id,paramaterName:data.listPollutents[i].parameterName,ChartStatus:true})
             }
           }
           setLiveChartStatus(parameterChartStatus);
@@ -147,10 +150,12 @@ function Dashboard() {
       if(data.parameterName==LiveChartStatus[i].paramaterName && data.id==LiveChartStatus[i].paramaterID){
         if(Cookies.get(data.id + "_ChartStatus") == 'true'){
            Cookies.set(data.id + "_ChartStatus", false, { expires: 7 });
+           LiveChartStatus[i].ChartStatus=false;
           // GenerateChart(ListAllData.listPollutents,LiveChartStatus[i].paramaterID);
         }
         else{
            Cookies.set(data.id + "_ChartStatus", true, { expires: 7 });
+           LiveChartStatus[i].ChartStatus=true;
         }
       }
     }
@@ -1700,7 +1705,12 @@ function Dashboard() {
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
                               <div className="values"><button className="btn1" onClick={Codesinformation} >A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
+                              {LiveChartStatus[j].ChartStatus && (
                               <div className="icons" title="Graph" onClick={() => DeviceGraph(x,i)}><i className="bi bi-graph-up"></i></div>
+                              )}
+                              {!LiveChartStatus[j].ChartStatus && (
+                              <div className="icons" title="Graph" onClick={() => DeviceGraph(x,i)}><i className="bi bi-alt"></i></div>
+                              )}
                             </div>
                           )
                         )}
