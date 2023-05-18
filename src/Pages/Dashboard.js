@@ -198,22 +198,16 @@ function Dashboard() {
           for (let k = 0; k < Parametervalues.length; k++) {
             if(Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName){
                 let temp = generateDatabaseDateTime(Parametervalues[k].createdTime);
-                let pTime=temp.split(" ");
-                //let index = labels.indexOf(pTime[1]);
-                let index = labels.indexOf(temp);
-                if (index == -1) {
-                  //labels.push(pTime[1]);
-                  labels.push(temp);
-                }
+                // let index = labels.indexOf(temp);
+                // if (index == -1) {
+                //   labels.push(temp);
+                // }
                 chartdata.push({x:temp,y:Parametervalues[k].parametervalue});
             }
           }
           datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
       }
-      else{
-
-      }
-      
+            
     }
     setChartOptions({
       responsive: true,
@@ -228,41 +222,14 @@ function Dashboard() {
             tooltipFormat: 'D MMM YYYY - HH:mm:ss'
       }   
     }       
-        // xAxes:[{
-        //     Type: 'time',
-        //     time: {
-        //         parser: 'HH:mm:ss',   
-        //         unit: 'second',   
-        //         displayFormats: {
-        //             'millisecond': 'HH:mm:ss a',
-        //             'second': 'HH:mm:ss a',
-        //             'minute': 'HH:mm:ss a',
-        //             'hour': 'HH:mm:ss a',
-        //             'day': 'HH:mm:ss a',
-        //             'week': 'HH:mm:ss a',
-        //             'month': 'HH:mm:ss a',
-        //             'quarter': 'HH:mm:ss a',
-        //             'year': 'HH:mm:ss a',
-        //         }
-        //     },
-        //     ticks: {
-        //         source: 'auto'
-        //     },
-            
-        // }]
+        
     },
       maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
-          // labels: {
-          //   filter: item => item.text == 'SO2'
-          // }
         },
-        title: {
-          display: true,
-          text: 'Live Data',
-        },
+        
       },
     });
     setTimeout(() => {
