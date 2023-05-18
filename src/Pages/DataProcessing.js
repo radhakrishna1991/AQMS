@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import { Line } from 'react-chartjs-2';
+import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -17,7 +18,7 @@ import {
   Legend,
   defaults
 } from 'chart.js';
-import 'chartjs-plugin-dragdata'
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -49,6 +50,9 @@ function DataProcessing() {
   const [ChartOptions, setChartOptions] = useState();
   const [ListHistory, setListHistory] = useState([]);
   const [SelectedCells, setSelectedCells] = useState([]);
+  const [revert, setrevert] = useState(false);
+  const revertRef = useRef();
+  revertRef.current = revert;
   let jsptable = null;
   var lastSelectedRow;
   let cellnames = [];
@@ -143,7 +147,11 @@ function DataProcessing() {
   }
   const changed = function (instance, cell, x, y, value) {
     let changearr = dataForGrid[y];
-    cell.classList.add('updated');
+    if (revertRef.current) {
+      cell.classList.remove('updated');
+    } else {
+      cell.classList.add('updated');
+    }
     let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
@@ -155,12 +163,13 @@ function DataProcessing() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy }),
+      body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy, Corrected: revertRef.current ? false : true }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
           chartdata.datasets[x - 1].data[y] = value;
           chart.update();
+          revertRef.current = false;
         }
       }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
   }
@@ -170,7 +179,6 @@ function DataProcessing() {
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
-          console.log(index);
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
           cell.classList.add('updated');
         }
@@ -179,7 +187,6 @@ function DataProcessing() {
   }
 
   const gethistory = function () {
-    console.log(dataForGridcopy);
     let changearr = dataForGridcopy[selectedgrid[1]];
     let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let params = new URLSearchParams({ id: filtered[0].id });
@@ -196,18 +203,18 @@ function DataProcessing() {
   }
 
   const reverttoprevious = function () {
+    revertRef.current = true;
     let changearr = dataForGridcopy[selectedgrid[1]];
     let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[selectedgrid[0] - 1]);
     let params = new URLSearchParams({ id: filtered[0].id });
-
     fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/OriginalData?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((originaldata) => {
         if (originaldata) {
-          //setListHistory(historydata);
+          jspreadRef.current.jexcel.updateCell(selectedgrid[0], selectedgrid[1], originaldata.parameterValueOld, true);
         }
-      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+      });
   }
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
@@ -516,11 +523,18 @@ function DataProcessing() {
         pointRadius.push(2);
       }
       if (charttype == 'line') {
-        datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius })
+        datasets.push({ label: pollutent[i], data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]), pointRadius: pointRadius, spanGaps: false, })
       }
     }
     setChartOptions({
       responsive: true,
+      dragData: true,
+      onDragStart: function (e) {
+        console.log(e)
+      },
+      onDrag: function (e, datasetIndex, index, value) {
+        console.log(datasetIndex, index, value)
+      },
       /* interaction: {
         mode: 'index',
         intersect: false,
@@ -534,17 +548,6 @@ function DataProcessing() {
           display: true,
           //text: 'Chart.js Bar Chart',
         },
-        dragData: {
-          onDragStart: function (e) {
-            console.log(e)
-          },
-          onDrag: function (e, datasetIndex, index, value) {
-            console.log(datasetIndex, index, value)
-          },
-          onDragEnd: function (e, datasetIndex, index, value) {
-            console.log(datasetIndex, index, value)
-          }
-        }
       },
     });
     if (criteria == 'MeanTimeseries') {
@@ -576,7 +579,8 @@ function DataProcessing() {
                   <thead>
                     <tr className="header_active">
                       <th>Parameter Name</th>
-                      <th>Value</th>
+                      <th>Old Value </th>
+                      <th>New Value</th>
                       <th>Modified By</th>
                       <th>Modified On</th>
                     </tr>
@@ -586,7 +590,8 @@ function DataProcessing() {
                       ListHistory.map((x, y) =>
                         <tr className="body_active">
                           <td>{AllLookpdata.listPollutents.filter(z => z.id == x.parameterID)[0].parameterName}</td>
-                          <td>{x.parametervalue}</td>
+                          <td>{x.parameterValueOld}</td>
+                          <td>{x.parameterValueNew}</td>
                           <td>{x.modifiedBy}</td>
                           <td>{x.modifiedOn != null ? generateDatabaseDateTime(x.modifiedOn) : x.modifiedOn}</td>
                         </tr>

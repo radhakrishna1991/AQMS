@@ -9,7 +9,7 @@
     "@testing-library/user-event": "^13.5.0",
     "ag-grid-community": "^29.0.0",
     "bootstrap": "^5.2.3",
-    "chart.js": "^4.2.1",
+    "chart.js": "^4.3.0",
     "chartjs-adapter-moment": "^1.0.1",
     "chartjs-plugin-dragdata": "^2.2.5",
     "dotenv": "^16.0.3",
