@@ -1,7 +1,7 @@
 import React, { useEffect, useState,useRef } from "react";
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
-
+import 'chartjs-adapter-moment';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -171,7 +171,11 @@ function Dashboard() {
     $('#calibrationmodal').modal('show');
   }
 
-  
+  const generateDatabaseDateTime = function (date) {
+
+   return date.replace("T", " ").substring(0, 19);
+    
+  }
   const GenerateChart = function (data) {
     if (chartRef.current != null) {
       chartRef.current.data = {};
@@ -185,26 +189,22 @@ function Dashboard() {
     let chartdata = [];
     let labels = [];
     
+    
     for (let i = 0; i < pollutents.length; i++) {
       if(Cookies.get(pollutents[i].id + "_ChartStatus") == 'true'){
           chartdata = [];
           for (let k = 0; k < Parametervalues.length; k++) {
-            
             if(Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName){
-            
-                chartdata.push(Parametervalues[k].parametervalue);
-                let cTime = Parametervalues[k].createdTime.split("T");
-                let pTime=Parametervalues[k].createdTime.replace("T",' ');
-                //let index = labels.indexOf(Parametervalues[k].createdTime);
-                let index = labels.indexOf(cTime[1]);
-                //let index = labels.indexOf(pTime);
+                let temp = generateDatabaseDateTime(Parametervalues[k].createdTime);
+                let pTime=temp.split(" ");
+                let index = labels.indexOf(pTime[1]);
+                //let index = labels.indexOf(temp);
                 if (index == -1) {
-                  //labels.push(Parametervalues[k].createdTime);
-                  labels.push(cTime[1]);
+                  labels.push(pTime[1]);
+                  //labels.push(temp);
                 }
-                
+                chartdata.push({x:pTime[1],y:Parametervalues[k].parametervalue});
             }
-            //datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
           }
           datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
       }
@@ -219,16 +219,15 @@ function Dashboard() {
         xAxes: [{
           type: 'time',
           time: {
-              parser: 'YYYY-MM-DD HH:mm:ss a',
               unit: 'minute',
               displayFormats: {
                   'minute': 'HH:mm:ss',
-                  'hour': 'HH:mm:ss'
               }
           },
-          ticks: {
-              source: 'data'
-          }
+          bounds: 'ticks',
+          // ticks: {
+          //     source: 'data'
+          // }
       }]          
         // xAxes:[{
         //     Type: 'time',
