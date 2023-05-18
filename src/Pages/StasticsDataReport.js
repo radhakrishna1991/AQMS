@@ -88,6 +88,16 @@ const selectRowsBetweenIndexes=function(indexes,trs) {
     }
 }
 
+const UpdateColPos=function (cols) {
+  var left = $('.jsgrid-grid-body').scrollLeft() < $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16
+      ? $('.jsgrid-grid-body').scrollLeft() : $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16;
+  $('.jsgrid-header-row th:nth-child(-n+' + cols + '), .jsgrid-filter-row td:nth-child(-n+' + cols + '), .jsgrid-insert-row td:nth-child(-n+' + cols + '), .jsgrid-grid-body tr td:nth-child(-n+' + cols + ')')
+      .css({
+          "position": "relative",
+          "left": left
+      });
+}
+
 const clearAll=function(trs) {
     for (var i = 0; i < trs.length; i++) {
       trs[i].classList.remove('highlight');
@@ -127,7 +137,7 @@ const clearAll=function(trs) {
       paging: true,
       autoload: true,
       pageSize: 100,
-      pageButtonCount: 5,
+      pageButtonCount: 5,      
       controller: {
         data: dataForGrid,
         loadData: function (filter) {
@@ -187,6 +197,10 @@ var trs = this._body[0].getElementsByTagName('tr')
     //     //{ name: "type", title: "Interval", type: "text" },
     //     { type: "control", width: 100, editButton: false, deleteButton: false },
     //   ]
+    });
+
+    $('.jsgrid-grid-body').scroll(function () {
+      UpdateColPos(1);
     });
   }
   const hexToRgbA = function (hex) {
