@@ -261,6 +261,7 @@ function DataProcessing() {
   }
   const getdatareport = function () {
     setListReportData([]);
+    document.getElementById('loader').style.display = "block";
     console.log(new Date());
     // if (chartRef.current != null) {
     //     chartRef.current.data = {};
@@ -294,7 +295,9 @@ function DataProcessing() {
           setListReportData(data1);
           // GenarateChart(Station, Pollutent, Fromdate, Todate, Interval);
           getchartdata(data1, Pollutent, "line", "Raw");
+          //document.getElementById('loader').style.display = "none";
         }
+        document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
 
 
@@ -645,6 +648,12 @@ function DataProcessing() {
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
+              <div className="col-md-4">
+                <div className="row">
+                  <div id="loader" className="loader"></div>
+                </div>
+              </div>
+              
             </div>
             {ListReportData.length > 0 && (
               <div>
