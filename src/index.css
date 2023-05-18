@@ -574,7 +574,9 @@ tr.highlight td.jsgrid-cell {
   background-color: green !important;
   color: #fff;
 }
-/* .jexcel_row, .jexcel_selectall{
- width: 10px;
- display: block;
-} */
+.jexcel_row, .jexcel_selectall,table.jexcel colgroup col:nth-child(1){
+ display: none;
+}
+.jexcel .cellhelight{
+  background-color: #0dcaf075 !important;
+}
