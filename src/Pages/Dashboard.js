@@ -11,6 +11,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  TimeScale,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 ChartJS.register(
@@ -20,7 +21,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  TimeScale
 );
 
 function Dashboard() {
@@ -197,13 +199,13 @@ function Dashboard() {
             if(Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName){
                 let temp = generateDatabaseDateTime(Parametervalues[k].createdTime);
                 let pTime=temp.split(" ");
-                let index = labels.indexOf(pTime[1]);
-                //let index = labels.indexOf(temp);
+                //let index = labels.indexOf(pTime[1]);
+                let index = labels.indexOf(temp);
                 if (index == -1) {
-                  labels.push(pTime[1]);
-                  //labels.push(temp);
+                  //labels.push(pTime[1]);
+                  labels.push(temp);
                 }
-                chartdata.push({x:pTime[1],y:Parametervalues[k].parametervalue});
+                chartdata.push({x:temp,y:Parametervalues[k].parametervalue});
             }
           }
           datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
@@ -216,19 +218,16 @@ function Dashboard() {
     setChartOptions({
       responsive: true,
        scales:{
-        xAxes: [{
+        xAxes: {
           type: 'time',
           time: {
-              unit: 'minute',
-              displayFormats: {
-                  'minute': 'HH:mm:ss',
-              }
-          },
-          bounds: 'ticks',
-          // ticks: {
-          //     source: 'data'
-          // }
-      }]          
+            unit: 'second',
+            displayFormats: {
+              second: 'HH:mm:ss'
+            },
+            tooltipFormat: 'D MMM YYYY - HH:mm:ss'
+      }   
+    }       
         // xAxes:[{
         //     Type: 'time',
         //     time: {
@@ -268,7 +267,7 @@ function Dashboard() {
     });
     setTimeout(() => {
       setChartData({
-        labels,
+        //labels,
         datasets: datasets
       })
     }, 10);
