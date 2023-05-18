@@ -98,10 +98,11 @@ const clearAll=function(trs) {
   const initializeJsGrid = function () {
         var dataForGrid = [];
         var layout = [];
+        layout.push({ name: "Date", title: "Date", type: "text" });
         for(var i=0; i< SelectedPollutents.length;i++){
             layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - ppb" , type: "text" });
         }
-        layout.push({ name: "Date", title: "Date", type: "text" });
+        
         layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
         for (var k = 0; k < ListReportData.length; k++) {
             var obj = {};
@@ -110,15 +111,15 @@ const clearAll=function(trs) {
             {
                 dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
             }else{
-                obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
                 obj["Date"] = ListReportData[k].interval;
+                obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
                 dataForGrid.push(obj);
             }
         }
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
-      height: "auto",
+      height: "300px",
       filtering: true,
       editing: false,
       inserting: false,
@@ -661,27 +662,21 @@ var trs = this._body[0].getElementsByTagName('tr')
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
-              
-              {/* {ListReportData.length>0 &&(
-              <div className="col-md-6">
-                <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
-              </div>
-              )} */}
-               {ChartData && (
-                 <div >
-                     <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120}/>
-                 </div>    
-                )}
-
-                {ListReportData.length>0 &&(
-                    <div className="col-md-12">
-                        <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
-                    </div>
-                 )}
-            </div>
-            
-            {ListReportData.length>0 &&(
+          </div>
+          {ListReportData.length > 0 && (
+              <div>
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                      <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
+                  </div>
+                </div>
                 <div className="jsGrid" ref={gridRefjsgridreport} />
+              </div>
+            )}
+            {ListReportData.length > 0 && ChartData && (
+              <div >
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
+              </div>
             )}
           </div>
         </div>
