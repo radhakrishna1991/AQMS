@@ -40,13 +40,23 @@ function DataReport() {
     initializeJsGrid();
   });
   /* reported data start */
+
+  const UpdateColPos=function (cols) {
+    var left = $('.jsgrid-grid-body').scrollLeft() < $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16
+        ? $('.jsgrid-grid-body').scrollLeft() : $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16;
+    $('.jsgrid-header-row th:nth-child(-n+' + cols + '), .jsgrid-filter-row td:nth-child(-n+' + cols + '), .jsgrid-insert-row td:nth-child(-n+' + cols + '), .jsgrid-grid-body tr td:nth-child(-n+' + cols + ')')
+        .css({
+            "position": "relative",
+            "left": left
+        });
+  }
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
+    layout.push({ name: "Date", title: "Date", type: "text" });
     for(var i=0; i< SelectedPollutents.length;i++){
         layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - ppb" , type: "text" });
-    }
-    layout.push({ name: "Date", title: "Date", type: "text" });
+    }    
     layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
         var obj = {};
@@ -63,7 +73,7 @@ function DataReport() {
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
-      height: "auto",
+      height: "400px",
       filtering: true,
       editing: false,
       inserting: false,
@@ -96,6 +106,9 @@ function DataReport() {
         { name: "type", title: "Interval", type: "text" },
         { type: "control", width: 100, editButton: false, deleteButton: false },
       ] */
+    });
+    $('.jsgrid-grid-body').scroll(function () {
+      UpdateColPos(1);
     });
   }
   const getdtareport = function () {
