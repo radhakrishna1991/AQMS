@@ -102,14 +102,14 @@ function DataProcessing() {
       for (var k = startcolindex; k <= endcolindex; k++) {
         var cellName1 = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
         cellnames1.push(cellName1);
-        }
       }
-      for(var p=0; p< cellnames.length;p++){
-        let index=cellnames1.indexOf(cellnames[p]);
-        if(index==-1){
-          jsptable.getCell(cellnames[p]).classList.remove('cellhelight');
-         }        
-       }
+    }
+    for (var p = 0; p < cellnames.length; p++) {
+      let index = cellnames1.indexOf(cellnames[p]);
+      if (index == -1) {
+        jsptable.getCell(cellnames[p]).classList.remove('cellhelight');
+      }
+    }
 
 
     cellnames = [];
@@ -658,7 +658,7 @@ function DataProcessing() {
                   <div id="loader" className="loader"></div>
                 </div>
               </div>
-              
+
             </div>
             {ListReportData.length > 0 && (
               <div>
