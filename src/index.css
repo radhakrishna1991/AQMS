@@ -580,3 +580,10 @@ tr.highlight td.jsgrid-cell {
 .jexcel .cellhelight{
   background-color: #0dcaf075 !important;
 }
+.jexcel > tbody > tr > td.readonly{
+  pointer-events: none;
+}
+
+.jexcel > tbody > tr > td.readonly, .jexcel > thead > tr > td:nth-child(2),.jexcel > thead > tr > td:nth-child(1), table.jexcel colgroup col:nth-child(2) {
+  pointer-events: none;
+}
