@@ -203,6 +203,12 @@ function Sidenavbar() {
                 <span>Users Log</span>
               </NavLink >
             </li>
+            <li>
+              <NavLink to="/AppLogHistory" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Application Log</span>
+              </NavLink >
+            </li>
           </ul>
         </li>
       {/*   <li className="nav-item">

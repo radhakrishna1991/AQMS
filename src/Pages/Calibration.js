@@ -19,7 +19,15 @@ function Calibration() {
   const [PhaseList, setPhaseList] = useState(true);
   const [PhaseId, setPhaseId] = useState(true);
   const [ListPhase, setListPhase] = useState([]);
-  const [PhaseAddbtn, setPhaseAddbtn] = useState(true)
+  const [PhaseAddbtn, setPhaseAddbtn] = useState(true);
+
+  const [Alarmgridlist, setAlarmgridlist]=useState(true);
+  const [AlarmList, setAlarmList]=useState(true);
+  const [AlarmId, setAlarmId]=useState(0);
+  const [AlarmAddbtn, setAlarmAddbtn]=useState(true);
+  const [ListAlarm, setListAlarm]=useState([]);
+
+
 
 
 
@@ -40,7 +48,16 @@ function Calibration() {
       setPhasegridlist(true);
     } else {
       setPhasegridlist(false);
-      //setDigitalAddbtn(true)
+      setPhaseAddbtn(true);
+    }
+  }
+
+  const AddAlarmchange=function(param){
+    if (param == 'Alarmlistdetails') {
+      setAlarmgridlist(true);
+    } else {
+      setAlarmgridlist(false);
+      setAlarmAddbtn(true);
     }
   }
 
@@ -72,17 +89,17 @@ function Calibration() {
   }
 
   const AddPhase = function () {
+    let phaseformCalibarionSequenceId = sequenceId;
     let phaseformname = document.getElementById("phasename").value;
     let phaseformnumber = document.getElementById("phasenumber").value;
-    let phaseformduration = document.getElementById("durationtime").value;
-    let phaseformresponsetime = document.getElementById("responsetime").value;
     let phaseformenable = document.getElementById("enabledstatus").checked;
-    let phaseformstatuspattern = document.getElementById("statuspattern").value;
-    let phaseformlevel = document.getElementById("levelstatus").value;
-    let phaseformCalibarionSequenceId = sequenceId;
     let CreatedBy = "";
     let ModifiedBy = "";
-    let confirminginputpattern = '00000';
+    let phaseformlevel = document.getElementById("levelstatus").value;
+    let phaseformduration = document.getElementById("durationtime").value;
+    let phaseformresponsetime = document.getElementById("responsetime").value;
+    let confirminginputpattern = '00000';    
+    let phaseformstatuspattern = document.getElementById("statuspattern").value;
     let phaseformseekflag = "";
 
     // let phaseformname='Span';
@@ -127,30 +144,29 @@ function Calibration() {
 
   const AddSequence = function () {
     let CalibrationSeqName = document.getElementById("sequencename").value;
-    let SourceId = "1";
-    //let EnableStatus = document.getElementById("enablecalibration").checked;
-    let EnableStatus = "1";
-    //let CalibrationTypeEnum = document.getElementById("sequencetype").value;
-
-    let CalibrationTypeEnum="2"
-    //let StartTime = document.getElementById("starttime").value;
-    let StartTime = "";
-    let RepeatedInterval = document.getElementById("repeatedinterval").value + document.getElementById("repeatedintervalrole").value[0];
-    let StartPattern = "patt";
-    let RecoveryTime = document.getElementById("recoverytime").value + document.getElementById("recoverytimerole").value[0];
-    let NumberOfCalibrationRecords = "4";
-    let NumberOfRuns = "3";
-    let RunInterval = "2";
-    let StartupDelay = "a";
-    let StartupMinute = "4";
-    let OfflineOutOfControlCheck = "0";
-    let CentralOutOfControlCheck = "0";
-    let KeepOtherCalibrationsInStartup = "0";
-    let RecoveryOutputPattern = "r";
-    let CalibrationSequenceTypeEnum = "3";
-    let SeekFlag = "d";
+    let SourceId = "";
+    let EnableStatus = document.getElementById("enablecalibration").checked;
     let CreatedBy = "";
     let ModifiedBy = "";
+    let CalibrationTypeEnum = document.getElementById("sequencetype").value;
+    let dateval=document.getElementById("starttime").value;
+    let valuedate=dateval.split('T');
+    let StartTime = valuedate[0] +' ' + valuedate[1];
+    let RepeatedInterval = document.getElementById("repeatedinterval").value + document.getElementById("repeatedintervalrole").value[0];
+    let StartPattern = "";
+    let RecoveryTime = document.getElementById("recoverytime").value + document.getElementById("recoverytimerole").value[0];
+    let NumberOfCalibrationRecords = "";
+    let NumberOfRuns = "";
+    let RunInterval = "";
+    let StartupDelay = "";
+    let StartupMinute = "";
+    let OfflineOutOfControlCheck = false;
+    let CentralOutOfControlCheck = false;
+    let KeepOtherCalibrationsInStartup = false;
+    let RecoveryOutputPattern = "";
+    let CalibrationSequenceTypeEnum = "";
+    let SeekFlag = "";
+    
     
     let validation = SequenceAddValidation(CalibrationTypeEnum, CalibrationSeqName);
     if (!validation) {
@@ -226,7 +242,7 @@ function Calibration() {
   }
 
 
-  const EditUser = function (param) {
+  const EditSequence = function (param) {
     setSequenceList(false);
     setSequenceId(param.calibrationSequenceID);
     setSequenceAddbtn(false);
@@ -237,7 +253,7 @@ function Calibration() {
       //setStatus(param.status==1?true:false)
     }, 1);
   }
-  const DeleteUser = function (item) {
+  const DeleteSequence = function (item) {
     Swal.fire({
       title: "Are you sure?",
       text: ("You want to delete this Station !"),
@@ -323,14 +339,14 @@ function Calibration() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
-                EditUser(item);
+                EditSequence(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
             var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
               .click(function (e) {
-                DeleteUser(item);
+                DeleteSequence(item);
                 e.stopPropagation();
               });
 
@@ -395,9 +411,63 @@ function Calibration() {
     });
   }
 
+  const initializeAlarmJsGrid = function () {
+    window.jQuery(AlarmgridRef.current).jsGrid({
+      width: "100%",
+      height: "auto",
+      filtering: true,
+      editing: false,
+      inserting: false,
+      sorting: true,
+      paging: true,
+      autoload: true,
+      pageSize: 100,
+      pageButtonCount: 5,
+      controller: {
+        data: ListAlarm,
+        loadData: function (filter) {
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          return $.grep(this.data, function (item) {
+            return ((!filter.PhaseNumber || item.PhaseNumber.toUpperCase().indexOf(filter.PhaseNumber.toUpperCase()) >= 0)
+              && (!filter.PhaseName || item.PhaseName.toUpperCase().indexOf(filter.PhaseName.toUpperCase()) >= 0)
+
+            );
+          });
+        }
+      },
+      fields: [
+        { name: "AlarmID", title: "Alarm ID", type: "text" },
+        { name: "AlarmName", title: "Alarm Name", type: "text" },
+        {
+          type: "control", width: 100, editButton: false, deleteButton: false,
+          itemTemplate: function (value, item) {
+            // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
+
+            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
+              .click(function (e) {
+                //EditUser(item);
+                /* alert("ID: " + item.id); */
+                //e.stopPropagation();
+              });
+
+            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
+              .click(function (e) {
+                //DeleteUser(item);
+                //e.stopPropagation();
+              });
+
+            return $("<div>").append($customEditButton).append($customDeleteButton);
+          }
+        },
+      ]
+    });
+  }
+
   useEffect(() => {
     initializeSequenceJsGrid();
     initializePhaseJsGrid();
+    initializeAlarmJsGrid();
   });
   useEffect(() => {
     GetSequence();
@@ -878,15 +948,22 @@ function Calibration() {
 
             <div className="tab-pane fade" id="Alarm-tab-pane" role="tabpanel" aria-labelledby="alaram-tab" tabIndex="0">
               <div className="me-2 mb-2 float-end">
+                {Alarmgridlist && (
+                  <span className="operation_class mx-2" onClick={() => AddAlarmchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                )}
+                {!Alarmgridlist && (
+                  <span className="operation_class mx-2" onClick={() => AddAlarmchange('Alarmlistdetails')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                )}
 
-                <span className="operation_class mx-2" onClick={() => AddSequencechange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                {/* <span className="operation_class mx-2" onClick={() => AddSequencechange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span> */}
 
                 {/*   {!Sequencegridlist && (
                                     <span className="operation_class mx-2" onClick={() => AddSequencechange('sequencelistTab')}><i className="bi bi-card-list"></i> <span>List</span></span>
                                 )} */}
               </div>
 
-              <form id="alaramform" className="row w100 px-0 mx-0" noValidate>
+              {!Alarmgridlist && (
+                <form id="alaramform" className="row w100 px-0 mx-0" noValidate>
                 <div className="accordion px-0" id="accordionsequence">
                   <div className="accordion-item">
                     <h2 className="accordion-header" id="headingTwo">
@@ -1002,6 +1079,15 @@ function Calibration() {
                   )} */}
                 </div>
               </form>
+
+              )}
+              {Alarmgridlist && (
+                <div>
+                  <div className="jsGrid" ref={AlarmgridRef} />
+                </div>
+              )}
+
+              
 
 
             </div>

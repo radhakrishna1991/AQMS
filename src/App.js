@@ -7,6 +7,7 @@ import './App.css';
 import Header from './Layouts/Header';
 import Sidenavbar from "./Layouts/Sidenavbar";
 import Pagination from "./Pagination";
+import { LayoutCssClasses } from "ag-grid-community";
 const Login =lazy(() => import("./Pages/Login"));
 const Dashboard =lazy(() => import("./Pages/Dashboard"));
 const Profile =lazy(() => import("./Pages/Profile"));
@@ -26,6 +27,7 @@ const GsiModbusDrivers=lazy(() => import("./Pages/GsiModbusDrivers"));
 const Calibration=lazy(()=> import("./Pages/Calibration"));
 const AverageAlarm=lazy(()=> import("./Pages/AverageAlarm"));
 const DataProcessing=lazy(()=> import("./Pages/DataProcessing"));
+const AppLogHistory=lazy(() => import("./Pages/AppLogHistory"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
@@ -57,6 +59,7 @@ function App() {
       <Route   path="/Calibrations"  exact element={<Calibration />}/>
       <Route   path="/AverageAlarm"  exact element={<AverageAlarm />}/>
       <Route   path="/DataProcessing"  exact element={<DataProcessing />}/>
+      <Route   path="/AppLogHistory" exact element={<AppLogHistory />} />
       </Routes>
       </Suspense>
   </BrowserRouter>
