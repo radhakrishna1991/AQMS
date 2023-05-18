@@ -100,6 +100,7 @@ function DataReport() {
   }
   const getdtareport = function () {
     console.log(new Date());
+    document.getElementById('loader').style.display = "block";
     let Station = $("#stationid").val();
     if (Station.length > 0) {
       Station.join(',')
@@ -127,6 +128,7 @@ function DataReport() {
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
         }
+        document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
   }
   const DownloadExcel = function () {
@@ -356,6 +358,11 @@ function DataReport() {
               <div className="col-md-2 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+              </div>
+              <div className="col-md-4">
+                <div className="row">
+                  <div id="loader" className="loader"></div>
+                </div>
               </div>
               {ListReportData.length>0 &&(
               <div className="col-md-12 my-2">

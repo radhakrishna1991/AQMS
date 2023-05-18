@@ -203,6 +203,7 @@ var trs = this._body[0].getElementsByTagName('tr')
   }
   const getdatareport = function () {
     console.log(new Date());
+    document.getElementById('loader').style.display = "block";
     // if (chartRef.current != null) {
     //     chartRef.current.data = {};
     //   }
@@ -236,6 +237,7 @@ var trs = this._body[0].getElementsByTagName('tr')
           GenarateChart(Station,Pollutent,Fromdate,Todate,Interval);
           //getchartdata(Chart_data, Pollutent, "Raw")
         }
+        document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
     
 
@@ -661,6 +663,11 @@ var trs = this._body[0].getElementsByTagName('tr')
               <div className="col-md-2 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdatareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+              </div>
+              <div className="col-md-4">
+                <div className="row">
+                  <div id="loader" className="loader"></div>
+                </div>
               </div>
           </div>
           {ListReportData.length > 0 && (
