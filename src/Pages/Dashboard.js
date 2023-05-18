@@ -1687,7 +1687,7 @@ function Dashboard() {
                 )}
               </div>
               <div className="row">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={100}/>;
+                <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={100}/>
               </div>
               
             </div>

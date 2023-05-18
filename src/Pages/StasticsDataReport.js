@@ -160,32 +160,32 @@ const clearAll=function(trs) {
         }
       },
     //  rowSelection: 'multiple',
-      rowClick: function(args) {
-var trs = this._body[0].getElementsByTagName('tr')
-        var $row1 = args.event.target;
-        var currenttr = this.rowByItem(args.item)[0],
-            selectedRow = $(".jsGrid").find('table tr.highlight');
-            if (window.event.ctrlKey) {
-              lastSelectedRow=toggleRow(currenttr,lastSelectedRow);
-          }
+//       rowClick: function(args) {
+// var trs = this._body[0].getElementsByTagName('tr')
+//         var $row1 = args.event.target;
+//         var currenttr = this.rowByItem(args.item)[0],
+//             selectedRow = $(".jsGrid").find('table tr.highlight');
+//             if (window.event.ctrlKey) {
+//               lastSelectedRow=toggleRow(currenttr,lastSelectedRow);
+//           }
           
-          if (window.event.button === 0) {
-              if (!window.event.ctrlKey && !window.event.shiftKey) {
-                  clearAll(trs);
-                  lastSelectedRow=toggleRow(currenttr,lastSelectedRow);
-              }
+//           if (window.event.button === 0) {
+//               if (!window.event.ctrlKey && !window.event.shiftKey) {
+//                   clearAll(trs);
+//                   lastSelectedRow=toggleRow(currenttr,lastSelectedRow);
+//               }
           
-              if (window.event.shiftKey) {
-                  selectRowsBetweenIndexes([lastSelectedRow.rowIndex+1, args.itemIndex+1],trs)
-              }
-          }
+//               if (window.event.shiftKey) {
+//                   selectRowsBetweenIndexes([lastSelectedRow.rowIndex+1, args.itemIndex+1],trs)
+//               }
+//           }
         
-       /*  if (selectedRow.length) {
-            selectedRow.toggleClass('highlight');
-        }; */
-        $row1.classList.toggle('highlight');
-        //$row.toggleClass("highlight");
-      },
+//        /*  if (selectedRow.length) {
+//             selectedRow.toggleClass('highlight');
+//         }; */
+//         $row1.classList.toggle('highlight');
+//         //$row.toggleClass("highlight");
+//       },
       fields: layout
     //   fields: [
     //     //{ name: "stationID", title: "Station Name", type: "select", items: Stations, valueField: "id", textField: "stationName", width: 200 },
