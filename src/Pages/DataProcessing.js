@@ -101,12 +101,19 @@ function DataProcessing() {
     var data1 = jsptable.getSelectedRows(true);
     setselectedgrid([startcolindex, stratrowindex])
     setdataForGridcopy(dataForGrid)
-
-    //   for(var p=0; p< cellnames.length;p++){
-    //     //if(cName!=cellnames[p]){
-    //       jsptable.setStyle(cellnames[p], 'background-color', 'white');
-    //     //}        
-    //   }
+    let cellnames1 = [];
+    for (var i = stratrowindex; i <= endrowidex; i++) {
+      for (var k = startcolindex; k <= endcolindex; k++) {
+        var cellName1 = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
+        cellnames1.push(cellName1);
+        }
+      }
+      for(var p=0; p< cellnames.length;p++){
+        let index=cellnames1.indexOf(cellnames[p]);
+        if(index==-1){
+          jsptable.getCell(cellnames[p]).classList.remove('cellhelight');
+         }        
+       }
 
 
     cellnames = [];
@@ -115,10 +122,7 @@ function DataProcessing() {
         var cellName = jspreadsheet.helpers.getColumnNameFromCoords(k, i);
         cellnames.push(cellName);
         if (cellName) {
-          if (jsptable.getStyle(cellName) == 'text-align: center;') {
-            //jsptable.setStyle(cellName, 'background-color', 'white');
-            jsptable.setStyle(cellName, 'background-color', '#0dcaf075');
-          }
+          jsptable.getCell(cellName).classList.add('cellhelight');
         }
       }
     }
