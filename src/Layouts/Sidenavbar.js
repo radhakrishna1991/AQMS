@@ -658,7 +658,7 @@ function Sidenavbar() {
         <li className="nav-item">
           <NavLink to="/DataProcessingClient" className="nav-link animation-forwards animate-delay-5" >
             <i className="bi bi-grid"></i>
-            <span>Data Processing Client</span>
+            <span>Logger Channel Data Processing</span>
           </NavLink >
         </li>
         <li className="nav-item">
