@@ -94,6 +94,7 @@ function DataProcessingClient() {
 
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
+    jsptable.options.editable=false;
     var data1 = jsptable.getSelectedRows(true);
     setselectedgrid([startcolindex, stratrowindex])
     setdataForGridcopy(dataForGrid)
@@ -145,41 +146,68 @@ function DataProcessingClient() {
     }
     chart.update();
   }
-  const changed = function (instance, cell, x, y, value) {
-    let changearr = dataForGrid[y];
-    if (revertRef.current) {
-      cell.classList.remove('updated');
-    } else {
-      cell.classList.add('updated');
+
+  const SetFlagColor=function(flagcode){    
+    if(flagcode === "R"){            
+      return 'estimated';
+    } 
+    else if(flagcode==='A'){
+      return 'correct';
     }
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
-    let chart = chartRef.current;
-    let chartdata = chart != null ? chart.data : [];
-    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    let ModifiedBy = currentUser.userName;
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy, Corrected: revertRef.current ? false : true }),
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson == 1) {
-          chartdata.datasets[x - 1].data[y] = value;
-          chart.update();
-          revertRef.current = false;
-        }
-      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+    else if(flagcode==='O'){
+      return "corrected";
+    }
+    else if(flagcode==='P'){
+      return "drift";
+    }
+    else if(flagcode==='D'){
+      return "failure";
+    }
+    else if(flagcode==='I'){
+      return "invalidated";
+    }
+    else if(flagcode==='M'){
+      return "maintenance";
+    }
+    else if(flagcode==='Z'){
+      return "zero";
+    }
+    else if(flagcode==='C'){
+      return "span";
+    }
+    else if(flagcode==='N'){
+      return "nonobtained";
+    }
+    else if(flagcode==='W'){
+      return "warning";
+    }
+    else if(flagcode==='B'){
+      return "anomaly";
+    }
+    else if(flagcode==='X'){
+      return "stop";
+    }
+    else if(flagcode==='S'){
+      return "substitute";
+    }
+    else if(flagcode==='G'){
+      return "outofrange";
+    }
+    else if(flagcode==='H'){
+      return "outoffield";
+    }
   }
+  
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.corrected == 1);
+      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
+
+          let classname=SetFlagColor(filnallist[0].flagStatus);
+          cell.classList.add(classname);
           cell.classList.add('updated');
         }
       }
@@ -219,6 +247,7 @@ function DataProcessingClient() {
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
   }
+ 
   /* reported data start */
   const initializeJsGrid = function () {
     dataForGrid = [];
@@ -233,7 +262,7 @@ function DataProcessingClient() {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === ListReportData[k].interval)
       if (temp >= 0) {
-        dataForGrid[temp][ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+        dataForGrid[temp][ListReportData[k].parameterName] = ListReportData[k].parametervalue;        
       } else {
         obj["Date"] = ListReportData[k].interval;
         obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
@@ -249,8 +278,7 @@ function DataProcessingClient() {
       tableOverflow: true,
       columns: layout,
       onselection: selectionActive,
-      onchange: changed,
-      onload: loadtable,
+      onload: loadtable
     });
     // }
   }
@@ -666,6 +694,27 @@ function DataProcessingClient() {
                   <div className="col-md-12 mb-3">
                     <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
                     <button type="button" className="btn btn-primary mx-1" title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                  </div>
+                </div>
+                
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Correct" >A</button>
+                    <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
+                    <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Corrected" >O</button>
+                    <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Drift" >P</button>
+                    <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Failure" >D</button>
+                    <button type="button" className="btn btn-primary flag mx-1 invalidated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Invalidated" >I</button>
+                    <button type="button" className="btn btn-primary flag mx-1 maintenance" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Maintenance" >M</button>
+                    <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Zero" >Z</button>
+                    <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Span" >C</button>
+                    <button type="button" className="btn btn-primary flag mx-1 nonobtained" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Non-obtained" >N</button>
+                    <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Warning" >W</button>
+                    <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Anomaly" >B</button>
+                    <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Stop" >X</button>
+                    <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of range" >G</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
                   </div>
                 </div>
 
