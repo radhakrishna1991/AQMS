@@ -37,6 +37,7 @@ function Dashboard() {
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const ListAllDataCopy=useRef();
+  const Interval=useRef();
   ListAllDataCopy.current=ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
@@ -79,7 +80,7 @@ function Dashboard() {
         }).catch((error) => 
         toast.error('Unable to get the data. Please contact adminstrator')
         );
-    }, Minute);
+    }, Interval.current.value);
 
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
@@ -1328,8 +1329,16 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="pagetitle">
+      <div className="pagetitle d-flex justify-content-between">
         <h1>Dashboard</h1>
+        <div className="col-md-2 mb-3 d-inline-flex">
+                  <label for="Interval" className="form-label me-3 mt-2">Interval:</label>
+                  <select className="form-select" id="Interval" ref={Interval} >
+                    <option value="15000">15 Seconds</option>
+                    <option value="30000">30 Seconds</option>
+                    <option value="60000">1 Minuts</option>
+                  </select>
+                </div>
         {/* <nav>
     <ol className="breadcrumb">
       <li className="breadcrumb-item"><a href="index.html">Home</a></li>
