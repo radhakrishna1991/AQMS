@@ -225,7 +225,7 @@ function HistoricalData() {
     var layout = [];
     layout.push({ name: "Date", title: "Date", type: "text", readOnly: true });
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "numaric" });
+      layout.push({ name: SelectedPollutents[i], title: SelectedPollutents[i] + " - ppb", type: "numaric",readOnly:true });
     }
 
     //  layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
