@@ -5,7 +5,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
-import * as bootstrap from 'bootstrap'
+import * as bootstrap from 'bootstrap';
 import {
   Chart as ChartJS,
   CategoryScale,

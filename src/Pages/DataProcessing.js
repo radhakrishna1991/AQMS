@@ -5,6 +5,8 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import * as bootstrap from 'bootstrap';
+import Swal from "sweetalert2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -49,14 +51,16 @@ function DataProcessing() {
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const [ChartOptions, setChartOptions] = useState();
   const [ListHistory, setListHistory] = useState([]);
-  const [SelectedCells, setSelectedCells] = useState([]);
+  const [OldData, setOldData] = useState([]);
+  const [NewData, setNewData] = useState([]);
   const [revert, setrevert] = useState(false);
   const revertRef = useRef();
   revertRef.current = revert;
   let jsptable = null;
-  var lastSelectedRow;
   let cellnames = [];
-  var dataForGrid = [];
+  let dataForGrid = [];
+  let olddata = [];
+  let newdata = [];
 
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
@@ -89,9 +93,17 @@ function DataProcessing() {
       jsptable.refresh();
     }
     initializeJsGrid();
+    initializeTooltip();
     // }
   }, [ListReportData]);
 
+  const initializeTooltip = function () {
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    return () => {
+      tooltipList.map(t => t.dispose())
+    }
+  }
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
@@ -152,30 +164,86 @@ function DataProcessing() {
     } else {
       cell.classList.add('updated');
     }
-    let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
+    if (!revertRef.current) {
+      let filtered = ListReportData.filter(row => row.interval === changearr["Date"] && row.parameterName == SelectedPollutents[x - 1]);
+      olddata.push({ Parametervalue: filtered[0].parametervalue, col: x, row: y });
+      const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+      let ModifiedBy = currentUser.userName;
+      newdata.push({ ID: filtered[0].id, Parametervalue: value, ModifiedBy: ModifiedBy, FlagStatus: 'E' });
+      setOldData(olddata);
+      setNewData(newdata);
+    }
     let chart = chartRef.current;
     let chartdata = chart != null ? chart.data : [];
-    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    let ModifiedBy = currentUser.userName;
-    fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
-      method: 'PUT',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy, Corrected: revertRef.current ? false : true }),
-    }).then((response) => response.json())
-      .then((responseJson) => {
-        if (responseJson == 1) {
-          chartdata.datasets[x - 1].data[y] = value;
-          chart.update();
+    chartdata.datasets[x - 1].data[y] = value;
+    chart.update();
+    revertRef.current = false;
+    /*          revertRef.current = false;
+       fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing/' + filtered[0].id, {
+         method: 'PUT',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ Parametervalue: value, ModifiedBy: ModifiedBy, Corrected: revertRef.current ? false : true }),
+       }).then((response) => response.json())
+         .then((responseJson) => {
+           if (responseJson == 1) {
+             chartdata.datasets[x - 1].data[y] = value;
+             chart.update();
+             revertRef.current = false;
+           }
+         }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator')); */
+  }
+
+  const SaveEditedData = function () {
+    Swal.fire({
+      title: "Are you sure?",
+      text: ("You want to save this !"),
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#5cb85c",
+      confirmButtonText: "Yes",
+      closeOnConfirm: false
+    })
+      .then(function (isConfirm) {
+        if (isConfirm.isConfirmed) {
           revertRef.current = false;
+          fetch(process.env.REACT_APP_WSurl + 'api/DataProcessing', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(NewData),
+          }).then((response) => response.json())
+            .then((responseJson) => {
+              if (responseJson == 1) {
+                revertRef.current = false;
+                olddata = [];
+                newdata = [];
+                setNewData([]);
+                setOldData([]);
+              }
+            }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+        } else {
+          for (let i = 0; i < OldData.length; i++) {
+            revertRef.current = true;
+            jspreadRef.current.jexcel.updateCell(OldData[i].col, OldData[i].row, OldData[i].Parametervalue, true);
+            if (i == (OldData.length - 1)) {
+              olddata = [];
+              newdata = [];
+              setNewData([]);
+              setOldData([]);
+              revertRef.current = false;
+            }
+          }
         }
-      }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
+      })
   }
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.corrected == 1);
+      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.flagStatus == 'E');
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
@@ -268,6 +336,10 @@ function DataProcessing() {
   }
   const getdatareport = function () {
     setListReportData([]);
+    olddata = [];
+    newdata = [];
+    setNewData([]);
+    setOldData([]);
     document.getElementById('loader').style.display = "block";
     console.log(new Date());
     // if (chartRef.current != null) {
@@ -664,8 +736,29 @@ function DataProcessing() {
               <div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
-                    <button type="button" className="btn btn-primary mx-1" title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                    <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Correct" >A</button>
+                    <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Estimated" >R</button>
+                    <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Corrected" >O</button>
+                    <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Drift" >P</button>
+                    <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Failure" >D</button>
+                    <button type="button" className="btn btn-primary flag mx-1 invalidated" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Invalidated" >I</button>
+                    <button type="button" className="btn btn-primary flag mx-1 maintenance" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Maintenance" >M</button>
+                    <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Zero" >Z</button>
+                    <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Span" >C</button>
+                    <button type="button" className="btn btn-primary flag mx-1 nonobtained" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Non-obtained" >N</button>
+                    <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Warning" >W</button>
+                    <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Anomaly" >B</button>
+                    <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Stop" >X</button>
+                    <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Substitute" >S</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Out of range" >G</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Out of field" >H</button>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    <button type="button" className="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
+                    <button type="button" className="btn btn-primary mx-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                    <button type="button" className={OldData.length > 0 ? "btn btn-primary mx-1" : "btn btn-primary mx-1 disable"} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Save" onClick={SaveEditedData}>Save</button>
                   </div>
                 </div>
 
