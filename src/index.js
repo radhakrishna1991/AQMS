@@ -1,7 +1,7 @@
 import React,{Suspense} from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import  'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './bootstrap-icons/bootstrap-icons.css'
 import 'font-awesome/css/font-awesome.min.css';

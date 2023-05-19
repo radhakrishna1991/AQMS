@@ -5,6 +5,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import * as bootstrap from 'bootstrap'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -77,11 +78,9 @@ function HistoricalData() {
             search: true
           });
         }, 100);
-
         //setcriteria(data.listPollutentsConfig);
       })
       .catch((error) => console.log(error));
-    // initializeJsGrid();
   }, []);
   useEffect(() => {
     // if (!jspreadRef.current) {
@@ -89,6 +88,12 @@ function HistoricalData() {
       jsptable.refresh();
     }
     initializeJsGrid();
+    
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    return () => {
+      tooltipList.map(t => t.dispose())
+    }
     // }
   }, [ListReportData]);
 
@@ -664,8 +669,22 @@ function HistoricalData() {
               <div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    <button type="button" className="btn btn-primary" title="History" onClick={gethistory}><i class="bi bi-clock-history"></i></button>
-                    <button type="button" className="btn btn-primary mx-1" title="Revert" onClick={reverttoprevious}><i class="bi bi-back"></i></button>
+                    <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Correct" >A</button>
+                    <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
+                    <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Corrected" >O</button>
+                    <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Drift" >P</button>
+                    <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Failure" >D</button>
+                    <button type="button" className="btn btn-primary flag mx-1 invalidated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Invalidated" >I</button>
+                    <button type="button" className="btn btn-primary flag mx-1 maintenance" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Maintenance" >M</button>
+                    <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Zero" >Z</button>
+                    <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Span" >C</button>
+                    <button type="button" className="btn btn-primary flag mx-1 nonobtained" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Non-obtained" >N</button>
+                    <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Warning" >W</button>
+                    <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Anomaly" >B</button>
+                    <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Stop" >X</button>
+                    <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of range" >G</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
                   </div>
                 </div>
 

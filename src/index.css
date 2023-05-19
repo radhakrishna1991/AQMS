@@ -584,3 +584,73 @@ tr.highlight td.jsgrid-cell {
 .jexcel > tbody > tr > td:nth-child(1).readonly, .jexcel > tbody > tr > td:nth-child(2).readonly, .jexcel > thead > tr > td:nth-child(2),.jexcel > thead > tr > td:nth-child(1), table.jexcel colgroup col:nth-child(2),table.jexcel colgroup col:nth-child(1) {
   pointer-events: none;
 }
+.btn.flag{
+  width:5%;
+  color: #000 !important;
+  cursor: default !important;
+  margin-bottom: 0.5rem;
+}
+.correct{
+  background-color: #cbfdcb !important;
+  border-color:  #cbfdcb !important;
+}
+.estimated{
+  background-color: #00fe00!important;
+  border-color:  #00fe00 !important;
+}
+.corrected{
+  background-color: #008000 !important;
+  border-color:  #008000 !important;
+}
+.drift{
+  background-color: #00ffff !important;
+  border-color:  #00ffff !important;
+}
+.failure{
+  background-color: #c000c0 !important;
+  border-color:  #c000c0 !important;
+}
+.invalidated{
+  background-color: #fe0000 !important;
+  border-color:  #fe0000 !important;
+}
+.maintenance{
+  background-color: #fe7f80 !important;
+  border-color:  #fe7f80 !important;
+}
+.zero{
+  background-color: #feff00 !important;
+  border-color:  #feff00 !important;
+}
+.span{
+  background-color: #fe7f00 !important;
+  border-color:  #fe7f00 !important;
+}
+.nonobtained{
+  background-color: #ffffff !important;
+  border-color:  #ffffff !important;
+}
+.warning{
+  background-color: #8080c0 !important;
+  border-color:  #8080c0 !important;
+}
+.anomaly{
+  background-color: #744000 !important;
+  border-color:  #744000 !important;
+}
+.stop{
+  background-color: #6c6a00 !important;
+  border-color:  #6c6a00 !important;
+}
+.substitute{
+  background-color: #d46c00 !important;
+  border-color:  #d46c00 !important;
+}
+.outofrange{
+  background-color: #c26900 !important;
+  border-color:  #c26900 !important;
+}
+.outoffield{
+  background-color: #7c9200 !important;
+  border-color:  #7c9200 !important;
+}
