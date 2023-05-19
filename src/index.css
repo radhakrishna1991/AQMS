@@ -558,99 +558,147 @@ h6 {
 tr.highlight td.jsgrid-cell {
   background-color: green;
 }
- td.jsgrid-cell.highlight {
+
+td.jsgrid-cell.highlight {
   background-color: green;
 }
-.jcontextmenu{
+
+.jcontextmenu {
   display: none;
 }
-.jexcel{
+
+.jexcel {
   width: 100% !important;
 }
-.jexcel .highlight, .jexcel .highlight-selected {
+
+.jexcel .highlight,
+.jexcel .highlight-selected {
   background-color: #0dcaf075;
 }
-.updated{
+
+.updated {
   background-color: green !important;
   color: #fff;
 }
-.jexcel_row, .jexcel_selectall,table.jexcel colgroup col:nth-child(1){
- display: none;
+
+.jexcel_row,
+.jexcel_selectall,
+table.jexcel colgroup col:nth-child(1) {
+  display: none;
 }
-.jexcel .cellhelight{
+
+.jexcel .cellhelight {
   background-color: #0dcaf075 !important;
 }
 
-.jexcel > tbody > tr > td:nth-child(1).readonly, .jexcel > tbody > tr > td:nth-child(2).readonly, .jexcel > thead > tr > td:nth-child(2),.jexcel > thead > tr > td:nth-child(1), table.jexcel colgroup col:nth-child(2),table.jexcel colgroup col:nth-child(1) {
+.jexcel>tbody>tr>td:nth-child(1).readonly,
+.jexcel>tbody>tr>td:nth-child(2).readonly,
+.jexcel>thead>tr>td:nth-child(2),
+.jexcel>thead>tr>td:nth-child(1),
+table.jexcel colgroup col:nth-child(2),
+table.jexcel colgroup col:nth-child(1) {
   pointer-events: none;
 }
-.btn.flag{
-  width:5%;
+
+.btn.flag {
+  width: 5%;
   color: #000 !important;
   cursor: default !important;
   margin-bottom: 0.5rem;
 }
-.correct{
+
+.correct {
   background-color: #cbfdcb !important;
-  border-color:  #cbfdcb !important;
+  border-color: #cbfdcb !important;
 }
-.estimated{
-  background-color: #00fe00!important;
-  border-color:  #00fe00 !important;
+
+.estimated {
+  background-color: #00fe00 !important;
+  border-color: #00fe00 !important;
 }
-.corrected{
+
+.corrected {
   background-color: #008000 !important;
-  border-color:  #008000 !important;
+  border-color: #008000 !important;
 }
-.drift{
+
+.drift {
   background-color: #00ffff !important;
-  border-color:  #00ffff !important;
+  border-color: #00ffff !important;
 }
-.failure{
+
+.failure {
   background-color: #c000c0 !important;
-  border-color:  #c000c0 !important;
+  border-color: #c000c0 !important;
 }
-.invalidated{
+
+.invalidated {
   background-color: #fe0000 !important;
-  border-color:  #fe0000 !important;
+  border-color: #fe0000 !important;
 }
-.maintenance{
+
+.maintenance {
   background-color: #fe7f80 !important;
-  border-color:  #fe7f80 !important;
+  border-color: #fe7f80 !important;
 }
-.zero{
+
+.zero {
   background-color: #feff00 !important;
-  border-color:  #feff00 !important;
+  border-color: #feff00 !important;
 }
-.span{
+
+.span {
   background-color: #fe7f00 !important;
-  border-color:  #fe7f00 !important;
+  border-color: #fe7f00 !important;
 }
-.nonobtained{
+
+.nonobtained {
   background-color: #ffffff !important;
-  border-color:  #ffffff !important;
+  border-color: #ffffff !important;
 }
-.warning{
+
+.warning {
   background-color: #8080c0 !important;
-  border-color:  #8080c0 !important;
+  border-color: #8080c0 !important;
 }
-.anomaly{
+
+.anomaly {
   background-color: #744000 !important;
-  border-color:  #744000 !important;
+  border-color: #744000 !important;
 }
-.stop{
+
+.stop {
   background-color: #6c6a00 !important;
-  border-color:  #6c6a00 !important;
+  border-color: #6c6a00 !important;
 }
-.substitute{
+
+.substitute {
   background-color: #d46c00 !important;
-  border-color:  #d46c00 !important;
+  border-color: #d46c00 !important;
 }
-.outofrange{
+
+.outofrange {
   background-color: #c26900 !important;
-  border-color:  #c26900 !important;
+  border-color: #c26900 !important;
 }
-.outoffield{
+
+.outoffield {
   background-color: #7c9200 !important;
-  border-color:  #7c9200 !important;
+  border-color: #7c9200 !important;
+}
+
+.swal2-title {
+  font-size: 1.5rem !important;
+}
+
+.swal2-html-container {
+  font-size: 1.125rem !important;
+  margin-top: 0.5rem !important;
+}
+.swal2-styled{
+  padding: 0.375rem 0.875rem !important;
+  font-size:0.875rem !important;
+}
+.swal2-actions{
+  margin: 1em auto 0 !important;
 }

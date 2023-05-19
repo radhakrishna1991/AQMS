@@ -108,7 +108,7 @@ function AddStation() {
       closeOnConfirm: false
     })
       .then(function (isConfirm) {
-        if (isConfirm) {
+        if (isConfirm.isConfirmed) {
           let id = item.id;
           fetch(process.env.REACT_APP_WSurl + 'api/Stations/' + id, {
             method: 'DELETE'
