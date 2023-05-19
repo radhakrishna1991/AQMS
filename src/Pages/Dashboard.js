@@ -73,7 +73,7 @@ function Dashboard() {
         .then((data) => {
           if (data) {
             ListAllDataCopy.current.listParametervalues=data;
-            GenerateChart(ListAllData);
+            GenerateChart(ListAllDataCopy.current);
           }
         }).catch((error) => 
         toast.error('Unable to get the data. Please contact adminstrator')
