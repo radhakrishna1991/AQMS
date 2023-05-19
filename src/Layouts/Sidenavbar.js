@@ -655,6 +655,24 @@ function Sidenavbar() {
             <span>Data Processing</span>
           </NavLink >
         </li>
+        <li className="nav-item">
+          <NavLink to="/DataProcessingClient" className="nav-link animation-forwards animate-delay-5" >
+            <i className="bi bi-grid"></i>
+            <span>Data Processing Client</span>
+          </NavLink >
+        </li>
+        <li className="nav-item">
+          <NavLink to="/LiveData" className="nav-link animation-forwards animate-delay-6" >
+            <i className="bi bi-grid"></i>
+            <span>Live Data</span>
+          </NavLink >
+        </li>
+        <li className="nav-item">
+          <NavLink to="/HistoricalData" className="nav-link animation-forwards animate-delay-7" >
+            <i className="bi bi-grid"></i>
+            <span>Historical Data</span>
+          </NavLink >
+        </li>
        {/*  <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-5 disable" data-bs-target="#utilities-nav" data-bs-toggle="collapse" href="#">
             <i className="bi bi-bar-chart"></i><span>Utilities</span><i className="bi bi-chevron-down ms-auto"></i>

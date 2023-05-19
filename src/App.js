@@ -28,6 +28,9 @@ const Calibration=lazy(()=> import("./Pages/Calibration"));
 const AverageAlarm=lazy(()=> import("./Pages/AverageAlarm"));
 const DataProcessing=lazy(()=> import("./Pages/DataProcessing"));
 const AppLogHistory=lazy(() => import("./Pages/AppLogHistory"));
+const LiveData=lazy(()=> import("./Pages/LiveData"));
+const DataProcessingClient=lazy(() => import("./Pages/DataProcessingClient"));
+const HistoricalData=lazy(() => import("./Pages/HistoricalData"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
@@ -60,6 +63,9 @@ function App() {
       <Route   path="/AverageAlarm"  exact element={<AverageAlarm />}/>
       <Route   path="/DataProcessing"  exact element={<DataProcessing />}/>
       <Route   path="/AppLogHistory" exact element={<AppLogHistory />} />
+      <Route   path="/LiveData"  exact element={<LiveData />}/>
+      <Route   path="/DataProcessingClient" exact element={<DataProcessingClient />} />
+      <Route   path="/HistoricalData"  exact element={<HistoricalData />}/>
       </Routes>
       </Suspense>
   </BrowserRouter>
