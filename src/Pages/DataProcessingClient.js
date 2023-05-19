@@ -196,6 +196,7 @@ function DataProcessingClient() {
     else if(flagcode==='H'){
       return "outoffield";
     }
+    
   }
   
   const loadtable = function (instance) {
@@ -205,9 +206,10 @@ function DataProcessingClient() {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
-
-          let classname=SetFlagColor(filnallist[0].flagStatus);
-          cell.classList.add(classname);
+          if(filnallist[j].flagStatus!=null){
+            let classname=SetFlagColor(filnallist[j].flagStatus);
+            cell.classList.add(classname);
+          }          
           cell.classList.add('updated');
         }
       }
