@@ -88,15 +88,17 @@ function HistoricalData() {
       jsptable.refresh();
     }
     initializeJsGrid();
-    
+    initializeTooltip();
+    // }
+  }, [ListReportData]);
+
+  const initializeTooltip=function(){
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     return () => {
       tooltipList.map(t => t.dispose())
     }
-    // }
-  }, [ListReportData]);
-
+  }
   const selectionActive = function (a, startcolindex, stratrowindex, endcolindex, endrowidex) { //a-enire value,b-1stcolumn index, c-start row index, d-last column index
     var data = jsptable.getData(true);
     var data1 = jsptable.getSelectedRows(true);
