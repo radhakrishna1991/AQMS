@@ -12,6 +12,7 @@ function AddDevice() {
   const [DeviceId, setDeviceId] = useState(0);
   const [Status, setStatus] = useState(true);
   const [Type, setType] = useState(true);
+  const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
   const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number) {
     let isvalid = true;
@@ -35,8 +36,8 @@ function AddDevice() {
       Number = document.getElementById("number").value;
     }
     let Port = document.getElementById("port").value;
-    let CreatedBy = "";
-    let ModifiedBy = "";
+    let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
     let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number);
     if (!validation) {
@@ -96,8 +97,8 @@ function AddDevice() {
       Number = document.getElementById("number").value;
     }
     let Port = document.getElementById("port").value;
-    let CreatedBy = "";
-    let ModifiedBy = "";
+    let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
     let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number);
     if (!validation) {
@@ -310,14 +311,14 @@ function AddDevice() {
                   </select>
                   <div class="invalid-feedback">Please select type</div>
                 </div>
-                {Type == 'serial' && (
+                {Type == 'Serial' && (
                   <div className="col-md-12 mb-3">
                     <label for="number" className="form-label">Number:</label>
                     <input type="number" className="form-control" id="number" placeholder="Enter number" required />
                     <div class="invalid-feedback">Please enter number</div>
                   </div>
                 )}
-                {Type == 'tcp/ip' && (
+                {Type == 'Tcp/IP' && (
                   <div className="col-md-12 mb-3">
                     <label for="ipaddress" className="form-label">IP Address:</label>
                     <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />

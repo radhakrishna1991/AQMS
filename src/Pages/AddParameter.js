@@ -14,6 +14,7 @@ function AddParameter() {
   const [parameterList, setparameterList] = useState(true);
   const [parameterId, setparameterId] = useState(0);
   const [Status,setStatus]=useState(true);
+  const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
     let isvalid = true;
@@ -61,9 +62,9 @@ function AddParameter() {
     let ScaleFactor = document.getElementById("scalefactor").value;
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
-    let UnitID = document.getElementById("unit").ariaValueMin;    
-    let CreatedBy = "";
-    let ModifiedBy = "";
+    let UnitID = document.getElementById("unit").value;    
+    let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
     let status = Status?1:0;
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, ScaleFactor);
     if (!validation) {
@@ -117,8 +118,8 @@ function AddParameter() {
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
     let UnitID = document.getElementById("unit").value;
-    let CreatedBy = "";
-    let ModifiedBy = "";
+    let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
     let status = Status?1:0;
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID);
     if (!validation) {

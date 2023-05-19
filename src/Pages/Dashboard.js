@@ -35,6 +35,7 @@ function Dashboard() {
   const [LiveCharticons, setLiveCharticons] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
+  const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const ListAllDataCopy=useRef();
   ListAllDataCopy.current=ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
@@ -1640,7 +1641,7 @@ function Dashboard() {
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1" onClick={Codesinformation} >A</button> <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].parametervalue:0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
+                              <div className="values"><button className="btn1" onClick={Codesinformation} >A</button> <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].parametervalue:0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length>0?ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase():""}</sub></div>
                               {LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraph(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}

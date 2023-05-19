@@ -9,6 +9,8 @@ function AddStation() {
   const [StationList, setStationList] = useState(true);
   const [StationId, setStationId] = useState(0);
   const [Status, setStatus] = useState(true);
+  const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+
   const Stationaddvalidation = function (StationName, Description) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddStationform')[0];
@@ -26,8 +28,8 @@ function AddStation() {
   const Stationadd = function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
-    let CreatedBy = "";
-    let ModifiedBy = "";
+   let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
     let status = Status?1:0;
     let validation = Stationaddvalidation(StationName, Description);
     if (!validation) {
@@ -69,8 +71,8 @@ function AddStation() {
   const UpdateStation = function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
-    let CreatedBy = "";
-    let ModifiedBy = "";
+    let CreatedBy = currentUser.id;
+    let ModifiedBy = currentUser.id;
     let status = Status?1:0;
     let validation = Stationaddvalidation(StationName, Description);
     if (!validation) {
