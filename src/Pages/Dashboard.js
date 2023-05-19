@@ -1,4 +1,4 @@
-import React, { useEffect, useState,useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import 'chartjs-adapter-moment';
@@ -26,7 +26,6 @@ ChartJS.register(
 );
 
 function Dashboard() {
-
   const $ = window.jQuery;
   const chartRef = useRef();
   const [ListAllData, setListAllData] = useState();
@@ -36,9 +35,12 @@ function Dashboard() {
   const [LiveCharticons, setLiveCharticons] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
+  const ListAllDataCopy=useRef();
+  ListAllDataCopy.current=ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-  "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
-  let parameterChartStatus=[];
+    "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+  let parameterChartStatus = [];
+  const Minute = 60000;
 
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/Dashboard", {
@@ -48,13 +50,13 @@ function Dashboard() {
         if (data) {
           setListAllData(data);
           GenerateChart(data);
-          for(var i=0;i<data.listPollutents.length;i++){
+          for (var i = 0; i < data.listPollutents.length; i++) {
             //sessionStorage.setItem(data.listPollutents[i].id + "_ChartStatus", false);
-            if(Cookies.get(data.listPollutents[i].id + "_ChartStatus")  != 'true'){
-               Cookies.set(data.listPollutents[i].id + "_ChartStatus", false, { expires: 7 });
-               parameterChartStatus.push({paramaterID:data.listPollutents[i].id,paramaterName:data.listPollutents[i].parameterName,ChartStatus:false})
-            }else{
-              parameterChartStatus.push({paramaterID:data.listPollutents[i].id,paramaterName:data.listPollutents[i].parameterName,ChartStatus:true})
+            if (Cookies.get(data.listPollutents[i].id + "_ChartStatus") != 'true') {
+              Cookies.set(data.listPollutents[i].id + "_ChartStatus", false, { expires: 7 });
+              parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: false })
+            } else {
+              parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: true })
             }
           }
           setLiveChartStatus(parameterChartStatus);
@@ -62,55 +64,24 @@ function Dashboard() {
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
   }, []);
 
-  // const options = {
-  //   responsive: true,
-  //   scales: {
-  //     y: {
-  //       beginAtZero: true,
-  //      // steps: 1,
-  //      // stepValue: 10,
-  //       max: 15
-  //     },
-  //   },
-  //   /* scales: {
-  //     scales: {
-  //       y: {
-  //         beginAtZero: true,
-  //       },
-  //     },
-  //     yAxes: [{
-  //             display: true,
-  //             ticks: {
-  //                 beginAtZero: true,
-  //                 steps: 10,
-  //                 stepValue: 5,
-  //                 max: 100
-  //             }
-  //         }]
-  // }, */
-  //   plugins: {
-  //     legend: {
-  //       position: 'top',
-  //     },
-  //     title: {
-  //       display: true,
-  //       text: 'Line Chart',
-  //     },
-  //   },
-  // };
-  
-  // const labels = ['20:30:30', '20:31:30', '20:32:30', '20:33:30', '20:34:30', '20:35:30', '20:36:30'];
-  // const data = {
-  //   labels,
-  //   datasets: [
-  //     {
-  //       label: 'SO2',
-  //       data: [10.5, 10.8, 10.5, 10, 10.4, 10,10.3],
-  //       borderColor: 'rgb(95, 158, 160)',
-  //       backgroundColor: 'rgb(95, 158, 160, 0.5)',
-  //     }
-  //   ],
-  // };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      console.log('Logs every minute');
+      fetch(process.env.REACT_APP_WSurl + "api/Livedata", {
+        method: 'GET',
+      }).then((response) => response.json())
+        .then((data) => {
+          if (data) {
+            ListAllDataCopy.current.listParametervalues=data;
+            GenerateChart(ListAllData);
+          }
+        }).catch((error) => 
+        toast.error('Unable to get the data. Please contact adminstrator')
+        );
+    }, Minute);
+
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  }, [])
 
   const hexToRgbA = function (hex) {
     var c;
@@ -144,20 +115,20 @@ function Dashboard() {
     $('#alarmmodal').modal('show');
   }
 
-  const DeviceGraph = function (param,data) {
+  const DeviceGraph = function (param, data) {
     setInfodevices(param);
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
     setInfoParameters(parameters);
-    for(var i=0; i<LiveChartStatus.length;i++){
-      if(data.parameterName==LiveChartStatus[i].paramaterName && data.id==LiveChartStatus[i].paramaterID){
-        if(Cookies.get(data.id + "_ChartStatus") == 'true'){
-           Cookies.set(data.id + "_ChartStatus", false, { expires: 7 });
-           LiveChartStatus[i].ChartStatus=false;
+    for (var i = 0; i < LiveChartStatus.length; i++) {
+      if (data.parameterName == LiveChartStatus[i].paramaterName && data.id == LiveChartStatus[i].paramaterID) {
+        if (Cookies.get(data.id + "_ChartStatus") == 'true') {
+          Cookies.set(data.id + "_ChartStatus", false, { expires: 7 });
+          LiveChartStatus[i].ChartStatus = false;
           // GenerateChart(ListAllData.listPollutents,LiveChartStatus[i].paramaterID);
         }
-        else{
-           Cookies.set(data.id + "_ChartStatus", true, { expires: 7 });
-           LiveChartStatus[i].ChartStatus=true;
+        else {
+          Cookies.set(data.id + "_ChartStatus", true, { expires: 7 });
+          LiveChartStatus[i].ChartStatus = true;
         }
       }
     }
@@ -175,14 +146,14 @@ function Dashboard() {
 
   const generateDatabaseDateTime = function (date) {
 
-   return date.replace("T", " ").substring(0, 19);
-    
+    return date.replace("T", " ").substring(0, 19);
+
   }
   const GenerateChart = function (data) {
     if (chartRef.current != null) {
       chartRef.current.data = {};
     }
-    let Parametervalues=data.listParametervalues;
+    let Parametervalues = data.listParametervalues;
     let pollutents = data.listPollutents;
 
     setChartData({ labels: [], datasets: [] });
@@ -190,28 +161,28 @@ function Dashboard() {
     let datasets = [];
     let chartdata = [];
     let labels = [];
-    
-    
+
+
     for (let i = 0; i < pollutents.length; i++) {
-      if(Cookies.get(pollutents[i].id + "_ChartStatus") == 'true'){
-          chartdata = [];
-          for (let k = 0; k < Parametervalues.length; k++) {
-            if(Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName){
-                let temp = generateDatabaseDateTime(Parametervalues[k].createdTime);
-                // let index = labels.indexOf(temp);
-                // if (index == -1) {
-                //   labels.push(temp);
-                // }
-                chartdata.push({x:temp,y:Parametervalues[k].parametervalue});
-            }
+      if (Cookies.get(pollutents[i].id + "_ChartStatus") == 'true') {
+        chartdata = [];
+        for (let k = 0; k < Parametervalues.length; k++) {
+          if (Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName) {
+            let temp = generateDatabaseDateTime(Parametervalues[k].createdTime);
+            // let index = labels.indexOf(temp);
+            // if (index == -1) {
+            //   labels.push(temp);
+            // }
+            chartdata.push({ x: temp, y: Parametervalues[k].parametervalue });
           }
-          datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
+        }
+        datasets.push({ label: pollutents[i].parameterName, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
       }
-            
+
     }
     setChartOptions({
       responsive: true,
-       scales:{
+      scales: {
         xAxes: {
           type: 'time',
           time: {
@@ -220,16 +191,16 @@ function Dashboard() {
               second: 'HH:mm:ss'
             },
             tooltipFormat: 'D MMM YYYY - HH:mm:ss'
-      }   
-    }       
-        
-    },
+          }
+        }
+
+      },
       maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
         },
-        
+
       },
     });
     setTimeout(() => {
@@ -240,7 +211,7 @@ function Dashboard() {
     }, 10);
   }
 
- 
+
   return (
     <main id="main" className="main">
       <div className="modal fade zoom dashboard_dmodal" id="infomodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -1350,7 +1321,7 @@ function Dashboard() {
               </div>
             </div>
             <div className="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
             </div>
           </div>
@@ -1669,12 +1640,12 @@ function Dashboard() {
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1" onClick={Codesinformation} >A</button> <button className="btn2">24</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter( x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
+                              <div className="values"><button className="btn1" onClick={Codesinformation} >A</button> <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].parametervalue:0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase()}</sub></div>
                               {LiveChartStatus[j].ChartStatus && (
-                              <div className="icons" title="Graph" onClick={() => DeviceGraph(x,i)}><i className="bi bi-graph-up"></i></div>
+                                <div className="icons" title="Graph" onClick={() => DeviceGraph(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}
                               {!LiveChartStatus[j].ChartStatus && (
-                              <div className="icons" title="Graph" onClick={() => DeviceGraph(x,i)}><i className="bi bi-alt"></i></div>
+                                <div className="icons" title="Graph" onClick={() => DeviceGraph(x, i)}><i className="bi bi-alt"></i></div>
                               )}
                             </div>
                           )
@@ -1687,9 +1658,9 @@ function Dashboard() {
                 )}
               </div>
               <div className="row">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={100}/>
+                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={100} />
               </div>
-              
+
             </div>
 
             {/* 
