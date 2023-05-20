@@ -31,6 +31,7 @@ const AppLogHistory=lazy(() => import("./Pages/AppLogHistory"));
 const LiveData=lazy(()=> import("./Pages/LiveData"));
 const DataProcessingClient=lazy(() => import("./Pages/DataProcessingClient"));
 const HistoricalData=lazy(() => import("./Pages/HistoricalData"));
+const LiveDataReports=lazy(() => import("./Pages/LiveDataReports"));
 
 function App() {
     const [location, setlocation] = useState(window.location.pathname);
@@ -66,6 +67,7 @@ function App() {
       <Route   path="/LiveData"  exact element={<LiveData />}/>
       <Route   path="/DataProcessingClient" exact element={<DataProcessingClient />} />
       <Route   path="/HistoricalData"  exact element={<HistoricalData />}/>
+      <Route   path="/LiveDataReports" exact element={<LiveDataReports />} />
       </Routes>
       </Suspense>
   </BrowserRouter>
