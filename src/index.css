@@ -369,6 +369,13 @@ h6 {
   font-size: 1rem;
   font-weight: 600;
 }
+.dashboard .card .parameter{
+  width: 20%;
+}
+.dashboard .card .values{
+  width: 60%;
+  text-align: center;
+}
 
 .dashboard .card .parameter span {
   font-size: 0.875rem;
