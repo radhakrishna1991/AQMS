@@ -13,7 +13,7 @@ const Dashboard =lazy(() => import("./Pages/Dashboard"));
 const Profile =lazy(() => import("./Pages/Profile"));
 const Parameters =lazy(() => import("./Pages/Parameters"));
 const AirQuality =lazy(() => import("./Pages/AirQuality"));
-const DataReport=lazy(() => import("./Pages/DataReport"));
+const AverageDataReport=lazy(() => import("./Pages/AverageDataReport"));
 const StasticsReport=lazy(() => import("./Pages/StasticsReport"));
 const StasticsDataReport=lazy(() => import("./Pages/StasticsDataReport"));
 const Adduser=lazy(() => import("./Pages/Adduser"));
@@ -49,7 +49,7 @@ function App() {
       <Route   path="/Profile" exact element={<Profile />} />
       <Route   path="/Parameters" exact element={<Parameters />} />
       <Route   path="/AirQuality" exact element={<AirQuality />} />
-      <Route   path="/DataReport" exact element={<DataReport />} />
+      <Route   path="/AverageDataReport" exact element={<AverageDataReport />} />
       <Route   path="/StatisticalReport" exact element={<StasticsReport />} />
       <Route   path="/StasticsDataReport" exact element={<StasticsDataReport />} />
       <Route   path="/Adduser" exact element={<Adduser />} />

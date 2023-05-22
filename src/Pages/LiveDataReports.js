@@ -15,22 +15,34 @@ function LiveDataReports() {
   const [Criteria, setcriteria] = useState([]);
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    let params = new URLSearchParams({ Pollutent: "", Fromdate: null, Todate: null });
+    fetch(process.env.REACT_APP_WSurl + "api/LiveDataLookup?" + params)
       .then((response) => response.json())
       .then((data) => {
-        setAllLookpdata(data);
-        setStations(data.listStations);
-        setTimeout(function () {
-          $('#stationid').SumoSelect({
-            triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
-            search: true
+        if (data != null) {
+          setAllLookpdata(data);
+          setListReportData(data.listParametervalues);
+          // let parameterslist=[...new Set(data.listPollutents.map(item => item.parameterName))]
+          let parameterslist = [];
+          data.listPollutents.filter(function (item) {
+            var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
+            if (i <= -1) {
+              parameterslist.push(item);
+            }
+            return null;
           });
-          $('#pollutentid').SumoSelect({
-            triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
-            search: true
-          });
-        }, 100);
+          setPollutents(parameterslist);
+          setSelectedPollutents(parameterslist);
 
+          setTimeout(function () {
+            $('#pollutentid').SumoSelect({
+              triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
+              search: true
+            });
+
+          }, 100);
+          // initializeJsGrid();
+        }
         //setcriteria(data.listPollutentsConfig);
       })
       .catch((error) => console.log(error));
@@ -40,35 +52,40 @@ function LiveDataReports() {
     initializeJsGrid();
   });
   /* reported data start */
-
-  const UpdateColPos=function (cols) {
+  const generateDatabaseDateTime = function (date) {
+    return date.replace("T", " ").substring(0, 19);
+  }
+  const UpdateColPos = function (cols) {
     var left = $('.jsgrid-grid-body').scrollLeft() < $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16
-        ? $('.jsgrid-grid-body').scrollLeft() : $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16;
+      ? $('.jsgrid-grid-body').scrollLeft() : $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16;
     $('.jsgrid-header-row th:nth-child(-n+' + cols + '), .jsgrid-filter-row td:nth-child(-n+' + cols + '), .jsgrid-insert-row td:nth-child(-n+' + cols + '), .jsgrid-grid-body tr td:nth-child(-n+' + cols + ')')
-        .css({
-            "position": "relative",
-            "left": left
-        });
+      .css({
+        "position": "relative",
+        "left": left
+      });
   }
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
     layout.push({ name: "Date", title: "Date", type: "text" });
-    for(var i=0; i< SelectedPollutents.length;i++){
-        layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - ppb" , type: "text" });
-    }    
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID)
+      layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - " + unitname[0].unitName, type: "text" });
+    }
     layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
-        var obj = {};
-        var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
-        if(temp >= 0)
-        {
-            dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
-        }else{
-            obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
-            obj["Date"] = ListReportData[k].interval;
-            dataForGrid.push(obj);
-        }
+      var obj = {};
+      var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
+      let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
+      if(paramater.length>0){
+      if (temp >= 0) {
+        dataForGrid[temp][paramater[0].parameterName] = ListReportData[k].parametervalue;
+      } else {
+        obj[paramater[0].parameterName] = ListReportData[k].parametervalue;
+        obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
+        dataForGrid.push(obj);
+      }
+    }
     }
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
@@ -85,16 +102,22 @@ function LiveDataReports() {
       controller: {
         data: dataForGrid,
         loadData: function (filter) {
+          let resultData = this.data;
+          var d = $.Deferred();
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
-          return $.grep(this.data, function (item) {
-            return ((!filter.parameterName || item.parameterName.toUpperCase().indexOf(filter.parameterName.toUpperCase()) >= 0)
-              && (!filter.parametervalue || item.parametervalue.toUpperCase().indexOf(filter.parametervalue.toUpperCase()) >= 0)
-              && (!filter.stationID || item.stationID === filter.stationID)
-              && (!filter.type || item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
-              && (!filter.interval || item.interval.toUpperCase().indexOf(filter.interval.toUpperCase()) >= 0)
-            );
-          });
+          for (var prop in filter) {
+            if (filter[prop].length > 0) {
+              resultData = $.grep(resultData, function (item) {
+                if (!filter[prop] || item[prop].toString().indexOf(filter[prop]) >= 0) {
+                  return item;
+                }
+              });
+              break;
+            }
+          }
+          d.resolve(resultData);
+          return d.promise();
         }
       },
       fields: layout
@@ -111,79 +134,69 @@ function LiveDataReports() {
       UpdateColPos(1);
     });
   }
-  const getdtareport = function () {
-    console.log(new Date());
-    document.getElementById('loader').style.display = "block";
-    let Station = $("#stationid").val();
-    if (Station.length > 0) {
-      Station.join(',')
+  const getdtareport = function (param) {
+    setListReportData([]);
+   let Pollutent = $("#pollutentid").val();
+    let finalpollutent = [];
+    for (let i = 0; i < Pollutent.length; i++) {
+      let filter=Pollutents.filter(x=>x.parameterName==Pollutent[i]);
+      finalpollutent.push(filter[0]);
     }
-    let Pollutent = $("#pollutentid").val();
-    setSelectedPollutents(Pollutent);
+    if(param=='reset' || Pollutent.length==0){
+      setSelectedPollutents(Pollutents);
+    }else{
+      setSelectedPollutents(finalpollutent);
+    }
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
     //let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate);
+    if(param!='reset'){
+    let valid = ReportValidations(Pollutent, Fromdate, Todate);
     if (!valid) {
       return false;
     }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+  }
+    document.getElementById('loader').style.display = "block";
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate });
+    let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
     fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
           console.log(new Date());
-          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+          let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
           setListReportData(data1);
         }
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
   }
-  const DownloadExcel = function () {
-    let Station = $("#stationid").val();
-    if (Station.length > 0) {
-      Station.join(',')
-    }
-    let Pollutent = $("#pollutentid").val();
-    if (Pollutent.length > 0) {
-      Pollutent.join(',')
-    }
-    let Fromdate = document.getElementById("fromdateid").value;
-    let Todate = document.getElementById("todateid").value;
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
-    if (!valid) {
-      return false;
-    }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
-    /*  fetch(url + params, {
-       method: 'GET',
-     }).then((response) => response.json())
-       .then((data) => {
-       }).catch((error) => console.log(error)); */
-  }
+  /*  const DownloadExcel = function () {
+     let Station = $("#stationid").val();
+     if (Station.length > 0) {
+       Station.join(',')
+     }
+     let Pollutent = $("#pollutentid").val();
+     if (Pollutent.length > 0) {
+       Pollutent.join(',')
+     }
+     let Fromdate = document.getElementById("fromdateid").value;
+     let Todate = document.getElementById("todateid").value;
+     let Interval = document.getElementById("criteriaid").value;
+     let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
+     if (!valid) {
+       return false;
+     }
+     let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+     window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
+   } */
 
-  const ReportValidations = function (Station, Pollutent, Fromdate, Todate) {
+  const ReportValidations = function (Pollutent, Fromdate, Todate) {
     let isvalid = true;
-    if (Station == "") {
-      toast.error('Please select station', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      isvalid = false;
-    } else if (Pollutent == "") {
+    if (Pollutent == "") {
       toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
@@ -219,98 +232,21 @@ function LiveDataReports() {
         theme: "colored",
       });
       isvalid = false;
-    }     
+    }
     return isvalid;
   }
   /* reported data end */
-
-  const ChangeStation = function (e) {
-    setPollutents([]);
-    setcriteria([]);
-    let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
-    setPollutents(finaldata);
-  }
-  $('#stationid').change(function (event) {
-    setPollutents([]);
-    setcriteria([]);
-    let filter = $(this).val();
-    setselectedStations(filter);
-    let finaldata = AllLookpdata.listPollutents.filter(function (item) {
-      for (var i = 0; i < filter.length; i++) {
-        if (item['stationID'] == filter[i])
-          return true;
-      }
-    });
-    var finaldata1 = [];
-    if (filter.length >= 2) {
-      finaldata1 = finaldata.reduce((unique, o) => {
-        if (!unique.some(obj => obj.stationID != o.stationID && obj.pollutentName === o.pollutentName)) {
-          unique.push(o);
-        }
-        return unique;
-      }, []);
-    } else {
-      finaldata1 = finaldata;
-    }
-    setPollutents(finaldata1);
-    setTimeout(function () {
-     // $('.pollutentid')[0].sumo.unSelectAll(); 
-      $('.pollutentid')[0].sumo.reload();
-    }, 10);
-  })
-  const Changepollutent = function (e) {
-    setcriteria([]);
-    console.log(selectedStations);
-    let stationID = document.getElementById("stationid").val();
-    let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
-    if (finaldata.length > 0) {
-      let finalinterval = [];
-      let intervalarr = finaldata[0].avgInterval.split(',');
-      for (let i = 0; i < intervalarr.length; i++) {
-        let intervalsplitarr = intervalarr[i].split('-');
-        finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
-      }
-      let finalinterval1 = finalinterval.reduce((unique, o) => {
-        if (!unique.some(obj => obj.value != o.value && obj.type === o.type)) {
-          unique.push(o);
-        }
-        return unique;
-      }, []);
-      setcriteria(finalinterval1);
-    }
-  }
-  $('#pollutentid').change(function (e) {
-    setcriteria([]);
-    let stationID = $("#stationid").val();
-    let filter1 = $(this).val();
-   
-    // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
-    let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => stationID.includes(obj.stationID) || filter1.includes(obj.parameterName));
-    if (finaldata.length > 0) {
-      let finalinterval = [];
-      for (let j = 0; j < finaldata.length; j++) {
-        let intervalarr = finaldata[j].interval.split(',');
-        for (let i = 0; i < intervalarr.length; i++) {
-          let intervalsplitarr = intervalarr[i].split('-');
-          let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
-          if (index == -1) {
-            finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
-          }
-        }
-      }
-      setcriteria(finalinterval);
-    }
-  })
-  const Resetfilters=function(){
+  const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
-    $('.stationid')[0].sumo.reload();
-    $('.stationid')[0].sumo.unSelectAll();
-    setcriteria([]);
-    setToDate(new Date());
-    setFromDate(new Date());
-    setListReportData([]);
-    setSelectedPollutents([]);
+    getdtareport('reset');
+    /*  $('.stationid')[0].sumo.reload();
+     $('.stationid')[0].sumo.unSelectAll(); */
+   // setcriteria([]);
+   // setToDate(new Date());
+    //setFromDate(new Date());
+    //setListReportData([]);
+   // setSelectedPollutents([]);
   }
   return (
     <main id="main" className="main" >
@@ -321,29 +257,29 @@ function LiveDataReports() {
         <div>
           <div>
             <div className="row">
-              <div className="col-md-2">
+              {/* <div className="col-md-2">
                 <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid" multiple="multiple" onChange={ChangeStation}>
+                <select className="form-select stationid" id="stationid" multiple="multiple" >
 
                   {Stations.map((x, y) =>
                     <option value={x.id} key={y} >{x.stationName}</option>
                   )}
                 </select>
-              </div>
-              <div className="col-md-2">
+              </div> */}
+              <div className="col-md-3">
                 <label className="form-label">Parameters</label>
-                <select className="form-select pollutentid" id="pollutentid" multiple="multiple" onChange={Changepollutent}>
+                <select className="form-select pollutentid" id="pollutentid" multiple="multiple">
                   {/* <option selected> Select Pollutents</option> */}
                   {Pollutents.map((x, y) =>
                     <option value={x.parameterName} key={y} >{x.parameterName}</option>
                   )}
                 </select>
               </div>
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <label className="form-label">From Date</label>
                 <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
               </div>
-              <div className="col-md-2">
+              <div className="col-md-3">
                 <label className="form-label">To Date</label>
                 <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
               </div>
@@ -356,7 +292,7 @@ function LiveDataReports() {
                   )}
                 </select>
               </div> */}
-              <div className="col-md-2 my-4">
+              <div className="col-md-3 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
               </div>
@@ -365,14 +301,14 @@ function LiveDataReports() {
                   <div id="loader" className="loader"></div>
                 </div>
               </div>
-              {ListReportData.length>0 &&(
+              {/* {ListReportData.length>0 &&(
               <div className="col-md-12 my-2">
                 <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
               </div>
-              )}
+              )} */}
             </div>
-            {ListReportData.length>0 &&(
-            <div className="jsGrid" ref={gridRefjsgridreport} />
+            {ListReportData.length > 0 && (
+              <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
         </div>

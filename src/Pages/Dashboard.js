@@ -169,7 +169,7 @@ function Dashboard() {
       if (Cookies.get(pollutents[i].id + "_ChartStatus") == 'true') {
         chartdata = [];
         for (let k = 0; k < Parametervalues.length; k++) {
-          if (Parametervalues[k].parameterID == pollutents[i].id && Parametervalues[k].parameterName == pollutents[i].parameterName) {
+          if (Parametervalues[k].parameterID == pollutents[i].id) {
             let temp = generateDatabaseDateTime(Parametervalues[k].createdTime);
             // let index = labels.indexOf(temp);
             // if (index == -1) {
@@ -197,7 +197,7 @@ function Dashboard() {
         }
 
       },
-      maintainAspectRatio: true,
+     // maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
