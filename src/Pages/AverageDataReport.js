@@ -57,13 +57,13 @@ function AverageDataReport() {
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
-    layout.push({ name: "Date", title: "Date", type: "text" });
+    layout.push({ name: "Date", title: "Date", type: "text",width:"140px" });
     for(var i=0; i< SelectedPollutents.length;i++){
       let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
       let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
-        layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - "+unitname[0].unitName , type: "text" });
+        layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - "+unitname[0].unitName , type: "text",width:"100px" });
     }    
-    layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
+    // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
         var obj = {};
         var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
@@ -79,8 +79,8 @@ function AverageDataReport() {
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
-      height: "400px",
-      filtering: true,
+      height: "auto",
+      filtering: false,
       editing: false,
       inserting: false,
       sorting: true,
@@ -139,10 +139,7 @@ function AverageDataReport() {
       }).catch((error) => console.log(error));
   }
   const DownloadExcel = function () {
-    let Station = $("#stationid").val();
-    if (Station.length > 0) {
-      Station.join(',')
-    }
+    
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -150,17 +147,13 @@ function AverageDataReport() {
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
+    let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
     if (!valid) {
       return false;
     }
-    let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
-    /*  fetch(url + params, {
-       method: 'GET',
-     }).then((response) => response.json())
-       .then((data) => {
-       }).catch((error) => console.log(error)); */
+    let params = new URLSearchParams({Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params,"_blank");
+    
   }
 
   const ReportValidations = function (Pollutent, Fromdate, Todate, Interval) {
@@ -330,11 +323,11 @@ function AverageDataReport() {
                   <div id="loader" className="loader"></div>
                 </div>
               </div>
-             {/*  {ListReportData.length>0 &&(
+              {ListReportData.length>0 &&(
               <div className="col-md-12 my-2">
                 <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
               </div>
-              )} */}
+              )}
             </div>
             {ListReportData.length>0 &&(
             <div className="jsGrid" ref={gridRefjsgridreport} />

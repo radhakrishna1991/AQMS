@@ -51,6 +51,14 @@ function LiveDataReports() {
   useEffect(() => {
     initializeJsGrid();
   });
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     initializeJsGrid()
+  //   }, 60000);
+  //   return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  // }, [])
+
   /* reported data start */
   const generateDatabaseDateTime = function (date) {
     return date.replace("T", " ").substring(0, 19);
@@ -67,12 +75,19 @@ function LiveDataReports() {
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
-    layout.push({ name: "Date", title: "Date", type: "text" });
+    layout.push({ name: "Date", title: "Date", type: "text", width:"140px"});
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID)
-      layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - " + unitname[0].unitName, type: "text" });
+      layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - " + unitname[0].unitName, type: "text",width:"100px" });
     }
-    layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
+    // let dummycolumns =0 ;
+    // if(SelectedPollutents.length<10){
+    //   dummycolumns = 10 - SelectedPollutents.length;
+    // }
+    // for(var p = 0; p < dummycolumns.length; p++){
+    //   layout.push({ name: "CO_" + p, title: "CO" + " - " + "Ppb", type: "text",width:"100px" });
+    // }
+    // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
@@ -83,15 +98,19 @@ function LiveDataReports() {
       } else {
         obj[paramater[0].parameterName] = ListReportData[k].parametervalue;
         obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
+        
         dataForGrid.push(obj);
       }
     }
+    // for(var p = 0; p < dummycolumns.length; p++){
+    //   dataForGrid[ "CO_" + p] = "0.00";
+    // }
     }
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
-      height: "400px",
-      filtering: true,
+      height: "auto",
+      filtering: false,
       editing: false,
       inserting: false,
       sorting: true,
@@ -150,17 +169,18 @@ function LiveDataReports() {
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
-    let Fromdate = document.getElementById("fromdateid").value;
-    let Todate = document.getElementById("todateid").value;
+    // let Fromdate = document.getElementById("fromdateid").value;
+    // let Todate = document.getElementById("todateid").value;
     //let Interval = document.getElementById("criteriaid").value;
     if(param!='reset'){
-    let valid = ReportValidations(Pollutent, Fromdate, Todate);
+    let valid = ReportValidations(Pollutent);
     if (!valid) {
       return false;
     }
   }
     document.getElementById('loader').style.display = "block";
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate });
+    //let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate });
+    let params = new URLSearchParams({ Pollutent: Pollutent });
     let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
     fetch(url + params, {
       method: 'GET',
@@ -194,7 +214,7 @@ function LiveDataReports() {
      window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
    } */
 
-  const ReportValidations = function (Pollutent, Fromdate, Todate) {
+  const ReportValidations = function (Pollutent) {
     let isvalid = true;
     if (Pollutent == "") {
       toast.error('Please select parameter', {
@@ -208,31 +228,32 @@ function LiveDataReports() {
         theme: "colored",
       });
       isvalid = false;
-    } else if (Fromdate == "") {
-      toast.error('Please select from date', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      isvalid = false;
-    } else if (Todate == "") {
-      toast.error('Please select to date', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      isvalid = false;
-    }
+    } 
+    // else if (Fromdate == "") {
+    //   toast.error('Please select from date', {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "colored",
+    //   });
+    //   isvalid = false;
+    // } else if (Todate == "") {
+    //   toast.error('Please select to date', {
+    //     position: "top-right",
+    //     autoClose: 5000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: true,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "colored",
+    //   });
+    //   isvalid = false;
+    // }
     return isvalid;
   }
   /* reported data end */
@@ -275,14 +296,14 @@ function LiveDataReports() {
                   )}
                 </select>
               </div>
-              <div className="col-md-3">
+              {/* <div className="col-md-3">
                 <label className="form-label">From Date</label>
                 <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
               </div>
               <div className="col-md-3">
                 <label className="form-label">To Date</label>
                 <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
-              </div>
+              </div> */}
               {/* <div className="col-md-2">
                 <label className="form-label">Interval</label>
                 <select className="form-select" id="criteriaid">

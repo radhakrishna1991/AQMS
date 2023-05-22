@@ -1336,7 +1336,7 @@ function Dashboard() {
                   <select className="form-select" id="Interval" ref={Interval} >
                     <option value="15000">15 Seconds</option>
                     <option value="30000">30 Seconds</option>
-                    <option value="60000">1 Minuts</option>
+                    <option value="60000">1 Minute</option>
                   </select>
                 </div>
         {/* <nav>
