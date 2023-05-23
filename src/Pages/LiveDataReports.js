@@ -193,7 +193,7 @@ function LiveDataReports() {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
           if(param=='refresh'){
-            ListAllDataCopy.current=param;
+            ListAllDataCopy.current=data1;
           }else{
             setListReportData(data1);
           }
