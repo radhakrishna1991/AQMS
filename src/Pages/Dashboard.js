@@ -1688,7 +1688,7 @@ function Dashboard() {
                 <div className="col-md-11">
                   <Line ref={chartRef} options={ChartOptions} data={ChartData} height={100} />
                 </div>
-                <div className="col-md-1 mt-4">
+                <div className="col-md-1 mt-5">
                 {ListAllData.listPollutents.map((i, j) =>
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" value={i.id} defaultChecked={LiveChartStatus[j].ChartStatus}  onChange={() => DeviceGraph(i)}/>

@@ -425,7 +425,6 @@ h6 {
   /*  display: inline-block; */
   padding: 0rem 0.5rem;
 }
-
 .dashboard_row::-webkit-scrollbar {
   height: 8px;
   width: 4px;
@@ -515,7 +514,19 @@ h6 {
     visibility: hidden;
   }
 }
-
+@media (min-width: 1700px) {
+  .dashboard_col {
+    width: 20%;
+  }
+}
+@media (min-width: 2000px) {
+  .dashboard .card .parameter span {
+    font-size: 1.2rem;
+  }
+  .dashboard .card .device {
+    font-size: 1.5rem;
+  }
+}
 @media (max-width: 991px) {
   .dashboard_col {
     width: 33.33%;
