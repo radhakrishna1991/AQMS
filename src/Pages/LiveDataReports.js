@@ -57,7 +57,7 @@ function LiveDataReports() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      getdtareport()
+      getdtareport('refresh')
     }, 60000);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
@@ -157,7 +157,7 @@ function LiveDataReports() {
     });
   }
   const getdtareport = function (param) {
-    setListReportData([]);
+    //setListReportData([]);
    let Pollutent = $("#pollutentid").val();
     let finalpollutent = [];
     for (let i = 0; i < Pollutent.length; i++) {
@@ -192,7 +192,6 @@ function LiveDataReports() {
         if (data) {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
-          ListAllDataCopy.current=data1;
           setListReportData(data1);
         }
         document.getElementById('loader').style.display = "none";

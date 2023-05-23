@@ -68,7 +68,7 @@ function Dashboard() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      console.log('Logs every minute');
+    //  console.log('Logs every minute');
       fetch(process.env.REACT_APP_WSurl + "api/Livedata", {
         method: 'GET',
       }).then((response) => response.json())
@@ -152,13 +152,13 @@ function Dashboard() {
 
   }
   const GenerateChart = function (data) {
-    if (chartRef.current != null) {
+   /*  if (chartRef.current != null) {
       chartRef.current.data = {};
-    }
+    } */
     let Parametervalues = data.listParametervalues;
     let pollutents = data.listPollutents;
 
-    setChartData({ labels: [], datasets: [] });
+    //setChartData({ labels: [], datasets: [] });
     setChartOptions();
     let datasets = [];
     let chartdata = [];
