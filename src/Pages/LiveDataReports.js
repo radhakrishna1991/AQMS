@@ -13,6 +13,9 @@ function LiveDataReports() {
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
+  const ListAllDataCopy=useRef();
+  const Interval=useRef();
+  ListAllDataCopy.current=ListReportData;
 
   useEffect(() => {
     let params = new URLSearchParams({ Pollutent: "", Fromdate: null, Todate: null });
@@ -189,6 +192,7 @@ function LiveDataReports() {
         if (data) {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
+          ListAllDataCopy.current=data1;
           setListReportData(data1);
         }
         document.getElementById('loader').style.display = "none";
