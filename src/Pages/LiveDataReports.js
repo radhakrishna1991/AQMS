@@ -77,12 +77,7 @@ function LiveDataReports() {
         "left": left
       });
   }
-  // const truncateNumber= function(number,digits) {
-        
-  //   var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
-  //       m = number.toString().match(re);
-  //   return m ? parseFloat(m[1]) : number.valueOf();
-  // }
+  
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
@@ -102,17 +97,16 @@ function LiveDataReports() {
       var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
       let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
       if(paramater.length>0){
-            //const roundedNumber=ListReportData[k].parametervalue.toFixed(3);
-            let roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,3);
-            
-            // let temp= process.env.TruncateorRound;
-            // if(process.env.TruncateorRound=="RoundOff"){
-            //   const number = ListReportData[k].parametervalue;
-            //   roundedNumber = number.toFixed(process.env.DecimalNumberRound);
+            let roundedNumber=0;
+            //let temp =process.env.REACT_APP_TruncateorRound;
+            //let temp= window['getConfig'].TruncateorRound;
+            let num =ListReportData[k].parametervalue;
+            roundedNumber=num.toFixed(3);
+            // if(process.env.REACT_APP_TruncateorRound=="RoundOff"){
+            //   roundedNumber=ListReportData[k].parametervalue.toFixed(3);
             // }
             // else {
-            //   const number = ListReportData[k].parametervalue;
-            //   roundedNumber = number.toFixed(2);
+            //   roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,3);
             // }
             if (temp >= 0) {
               //dataForGrid[temp][paramater[0].parameterName] = ListReportData[k].parametervalue;
