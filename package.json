@@ -32,7 +32,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "env-cmd -f .env set INLINE_RUNTIME_CHUNK=false && react-scripts build && copy Web.config build",
+    "build": "env-cmd -f .env set INLINE_RUNTIME_CHUNK=false && react-scripts build && copy Web.config build && copy public/Config.js build",
     "build:staging": "env-cmd -f .env.staging react-scripts build && copy Web.config build",
     "build:production": "env-cmd -f .env.production react-scripts build && copy Web.config build",
     "test": "react-scripts test",

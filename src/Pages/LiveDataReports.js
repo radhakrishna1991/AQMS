@@ -98,21 +98,17 @@ function LiveDataReports() {
       let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
       if(paramater.length>0){
             let roundedNumber=0;
-            //let temp =process.env.REACT_APP_TruncateorRound;
-            //let temp= window['getConfig'].TruncateorRound;
-            let num =ListReportData[k].parametervalue;
-            roundedNumber=num.toFixed(3);
-            // if(process.env.REACT_APP_TruncateorRound=="RoundOff"){
-            //   roundedNumber=ListReportData[k].parametervalue.toFixed(3);
-            // }
-            // else {
-            //   roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,3);
-            // }
+            let digit = window.decimalDigit
+            if(window.TruncateorRound=="RoundOff"){
+              let num =ListReportData[k].parametervalue;
+               roundedNumber=num.toFixed(digit);
+            }
+            else {
+              roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+            }
             if (temp >= 0) {
-              //dataForGrid[temp][paramater[0].parameterName] = ListReportData[k].parametervalue;
               dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
             } else {
-              //obj[paramater[0].parameterName] = ListReportData[k].parametervalue;
               obj[paramater[0].parameterName] = roundedNumber;
               obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
               
