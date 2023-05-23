@@ -15,7 +15,7 @@ function LiveDataReports() {
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
-  const ListAllDataCopy=useRef();
+  const ListAllDataCopy=useRef([]);
   const Interval=useRef();
   ListAllDataCopy.current=ListReportData;
 

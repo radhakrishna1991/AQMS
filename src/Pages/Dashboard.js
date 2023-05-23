@@ -34,15 +34,15 @@ function Dashboard() {
   const [LiveChartStatus, setLiveChartStatus] = useState([]);
   const [LiveCharticons, setLiveCharticons] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
+  const [currentdatetime, setcurrentdatetime] = useState(new Date().toLocaleString());
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const ListAllDataCopy = useRef();
-  const Interval = useRef();
   ListAllDataCopy.current = ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   let parameterChartStatus = [];
-  const Minute = 60000;
+  const Minute = window.DashboardRefreshtime;
 
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/Dashboard", {
@@ -66,7 +66,7 @@ function Dashboard() {
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
   }, []);
 
-  /* useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
       //  console.log('Logs every minute');
       fetch(process.env.REACT_APP_WSurl + "api/Livedata", {
@@ -80,10 +80,18 @@ function Dashboard() {
         }).catch((error) =>
           toast.error('Unable to get the data. Please contact adminstrator')
         );
-    }, Interval.current.value);
+    }, Minute);
 
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }, []) */
+  }, [])
+
+  useEffect(() => {
+    const interval1 = setInterval(() => {
+      setcurrentdatetime(new Date().toLocaleString());
+    }, window.Dashboarddatetime);
+
+    return () => clearInterval(interval1); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  }, [])
 
   const hexToRgbA = function (hex) {
     var c;
@@ -1347,13 +1355,14 @@ function Dashboard() {
       </div>
       <div className="pagetitle d-flex justify-content-between">
         <h1>Dashboard</h1>
-        <div className="col-md-2 mb-3 d-inline-flex">
-          <label for="Interval" className="form-label me-3 mt-2">Interval:</label>
-          <select className="form-select" id="Interval" ref={Interval} >
+        <div className="col-md-3 mb-3 d-inline-flex">
+          <label for="Interval" className="form-label me-3">Date & Time:</label>
+          <span>  {currentdatetime} </span>
+          {/* <select className="form-select" id="Interval" ref={Interval} >
             <option value="15000">15 Seconds</option>
             <option value="30000">30 Seconds</option>
             <option value="60000">1 Minute</option>
-          </select>
+          </select> */}
         </div>
         {/* <nav>
     <ol className="breadcrumb">
@@ -1655,12 +1664,10 @@ function Dashboard() {
                           <div className="icons" title="Service Mode"> <i class="bi bi-modem"></i>&nbsp;</div>
                           <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
                           <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
-                          {y == 0 && (
-                            <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
-                          )}
-                          {y != 0 && (
+              
+                       {/*      <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
+           */}
                             <div className="icons"><i className="bi bi-lightbulb"></i></div>
-                          )}
                         </div>
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (

@@ -256,12 +256,12 @@ function Sidenavbar() {
             <i className="bi bi-bar-chart"></i><span>Reports</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
           <ul id="report-nav" className="nav-content collapse " data-bs-parent="#sidebar-nav">
-            <li>
+         {/*    <li>
               <NavLink to="/AirQuality" className="nav-item animation-forwards animate-delay-1" >
                 <i className="bi bi-circle"></i>
                 <span>AirQuality-Legacy</span>
               </NavLink >
-            </li>
+            </li> */}
             <li>
               <NavLink to="/StatisticalReport" className="nav-item animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
@@ -659,7 +659,7 @@ function Sidenavbar() {
           </ul>
         </li>
 
-        <li className="nav-item">
+       {/*  <li className="nav-item">
           <NavLink to="/DataProcessing" className="nav-link animation-forwards animate-delay-4" >
             <i className="bi bi-grid"></i>
             <span>Data Processing</span>
@@ -682,7 +682,7 @@ function Sidenavbar() {
             <i className="bi bi-grid"></i>
             <span>Historical Data</span>
           </NavLink >
-        </li>
+        </li> */}
        {/*  <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-5 disable" data-bs-target="#utilities-nav" data-bs-toggle="collapse" href="#">
             <i className="bi bi-bar-chart"></i><span>Utilities</span><i className="bi bi-chevron-down ms-auto"></i>
