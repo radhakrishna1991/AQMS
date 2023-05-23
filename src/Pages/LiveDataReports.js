@@ -41,23 +41,23 @@ function LiveDataReports() {
             });
 
           }, 100);
-          // initializeJsGrid();
+          
         }
-        //setcriteria(data.listPollutentsConfig);
+        
       })
       .catch((error) => console.log(error));
-    // initializeJsGrid();
+    
   }, []);
   useEffect(() => {
     initializeJsGrid();
   });
 
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     initializeJsGrid()
-  //   }, 60000);
-  //   return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  // }, [])
+  useEffect(() => {
+    const interval = setInterval(() => {
+      getdtareport()
+    }, 60000);
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  }, [])
 
   /* reported data start */
   const generateDatabaseDateTime = function (date) {
@@ -80,31 +80,39 @@ function LiveDataReports() {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID)
       layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - " + unitname[0].unitName, type: "text",width:"100px" });
     }
-    // let dummycolumns =0 ;
-    // if(SelectedPollutents.length<10){
-    //   dummycolumns = 10 - SelectedPollutents.length;
-    // }
-    // for(var p = 0; p < dummycolumns.length; p++){
-    //   layout.push({ name: "CO_" + p, title: "CO" + " - " + "Ppb", type: "text",width:"100px" });
-    // }
+    if(SelectedPollutents.length<10){
+       for(var p = SelectedPollutents.length; p < 10; p++){
+          layout.push({ name: "CO_" + p, title: "CO" + " - " + "PPM", type: "text",width:"100px" });
+        }
+    }
     // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
     for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
       let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
       if(paramater.length>0){
-      if (temp >= 0) {
-        dataForGrid[temp][paramater[0].parameterName] = ListReportData[k].parametervalue;
-      } else {
-        obj[paramater[0].parameterName] = ListReportData[k].parametervalue;
-        obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
-        
-        dataForGrid.push(obj);
+            const roundedNumber=ListReportData[k].parametervalue.toFixed(3);
+            // let temp= process.env.TruncateorRound;
+            // if(process.env.TruncateorRound=="RoundOff"){
+            //   const number = ListReportData[k].parametervalue;
+            //   roundedNumber = number.toFixed(process.env.DecimalNumberRound);
+            // }
+            // else {
+            //   const number = ListReportData[k].parametervalue;
+            //   roundedNumber = number.toFixed(2);
+            // }
+            if (temp >= 0) {
+              //dataForGrid[temp][paramater[0].parameterName] = ListReportData[k].parametervalue;
+              dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+            } else {
+              //obj[paramater[0].parameterName] = ListReportData[k].parametervalue;
+              obj[paramater[0].parameterName] = roundedNumber;
+              obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
+              
+              dataForGrid.push(obj);
+            }
       }
-    }
-    // for(var p = 0; p < dummycolumns.length; p++){
-    //   dataForGrid[ "CO_" + p] = "0.00";
-    // }
+    
     }
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
@@ -140,14 +148,6 @@ function LiveDataReports() {
         }
       },
       fields: layout
-      /* fields: [
-        { name: "stationID", title: "Station Name", type: "select", items: Stations, valueField: "id", textField: "stationName", width: 200 },
-        { name: "interval", title: "Date", type: "text" },
-        { name: "parameterName", title: "Parameter Name", type: "text" },
-        { name: "parametervalue", title: "Value", type: "text", },
-        { name: "type", title: "Interval", type: "text" },
-        { type: "control", width: 100, editButton: false, deleteButton: false },
-      ] */
     });
     $('.jsgrid-grid-body').scroll(function () {
       UpdateColPos(1);
@@ -172,12 +172,12 @@ function LiveDataReports() {
     // let Fromdate = document.getElementById("fromdateid").value;
     // let Todate = document.getElementById("todateid").value;
     //let Interval = document.getElementById("criteriaid").value;
-    if(param!='reset'){
-    let valid = ReportValidations(Pollutent);
-    if (!valid) {
-      return false;
-    }
-  }
+  //   if(param!='reset'){
+  //   let valid = ReportValidations(Pollutent);
+  //   if (!valid) {
+  //     return false;
+  //   }
+  // }
     document.getElementById('loader').style.display = "block";
     //let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate });
     let params = new URLSearchParams({ Pollutent: Pollutent });
