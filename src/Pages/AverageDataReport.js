@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import CommonFunctions from "../utils/CommonFunctions";
+
 function AverageDataReport() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -72,11 +74,20 @@ function AverageDataReport() {
     for (var k = 0; k < ListReportData.length; k++) {
         var obj = {};
         var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
+        let roundedNumber=0;
+        let digit = window.decimalDigit;
+        if(window.TruncateorRound=="RoundOff"){
+           let num =ListReportData[k].parametervalue;
+           roundedNumber=num.toFixed(digit);
+        }
+        else {
+          roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+        }
         if(temp >= 0)
         {
-            dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
+            dataForGrid[temp][ListReportData[k].parameterName]=roundedNumber;
         }else{
-            obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+            obj[ListReportData[k].parameterName] = roundedNumber;
             obj["Date"] = ListReportData[k].interval;
             dataForGrid.push(obj);
         }
