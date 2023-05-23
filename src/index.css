@@ -725,3 +725,7 @@ table.jexcel colgroup col:nth-child(1) {
 .swal2-actions{
   margin: 1em auto 0 !important;
 }
+.dashboard_date{
+  font-size: 0.75rem;
+  font-weight: 600;
+}

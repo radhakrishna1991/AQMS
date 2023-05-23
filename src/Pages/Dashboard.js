@@ -1357,7 +1357,7 @@ function Dashboard() {
         <h1>Dashboard</h1>
         <div className="col-md-3 mb-3 d-inline-flex">
           <label for="Interval" className="form-label me-3">Date & Time:</label>
-          <span>  {currentdatetime} </span>
+          <span className="dashboard_date">  {currentdatetime} </span>
           {/* <select className="form-select" id="Interval" ref={Interval} >
             <option value="15000">15 Seconds</option>
             <option value="30000">30 Seconds</option>
