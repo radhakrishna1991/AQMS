@@ -319,20 +319,23 @@ function AverageDataReport() {
                   )}
                 </select>
               </div>
-              <div className="col-md-2 my-4">
+              <div className="col-md-4 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                {ListReportData.length>0 &&(
+                    <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
+                )}
               </div>
               <div className="col-md-4">
                 <div className="row">
                   <div id="loader" className="loader"></div>
                 </div>
               </div>
-              {ListReportData.length>0 &&(
+              {/* {ListReportData.length>0 &&(
               <div className="col-md-12 my-2">
                 <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
               </div>
-              )}
+              )} */}
             </div>
             {ListReportData.length>0 &&(
             <div className="jsGrid" ref={gridRefjsgridreport} />
