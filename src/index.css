@@ -370,7 +370,8 @@ h6 {
   font-weight: 600;
 }
 .dashboard .card .parameter{
-  width: 20%;
+  width: 40%;
+  display:flex;
 }
 .dashboard .card .values{
   width: 60%;
@@ -380,6 +381,13 @@ h6 {
 .dashboard .card .parameter span {
   font-size: 0.875rem;
   font-weight: 600;
+}
+
+.dashboard .card .parametername{
+  font-size: 0.875rem;
+  font-weight: 600;
+  word-break: break-word;
+  white-space: break-spaces;
 }
 
 .dashboard .card .icons,

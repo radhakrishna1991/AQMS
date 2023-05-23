@@ -1649,7 +1649,7 @@ function Dashboard() {
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
-                              <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
+                              <div className="parameter"><i className="bi bi-check2"></i> <div className="parametername">{i.parameterName}</div></div>
                               <div className="values"><button className="btn1" onClick={Codesinformation} >{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].loggerFlags:"A"}</button>
                                <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].parametervalue:0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length>0?ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase():""}</sub></div>
                               {LiveChartStatus[j].ChartStatus && (
