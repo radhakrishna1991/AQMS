@@ -40,7 +40,7 @@ function Dashboard() {
   const ListAllDataCopy = useRef();
   ListAllDataCopy.current = ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   let parameterChartStatus = [];
   const Minute = window.DashboardRefreshtime;
 
@@ -1672,9 +1672,9 @@ function Dashboard() {
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
-                              <div className="parameter"><i className="bi bi-check2"></i> <div className="parametername">{i.parameterName}</div></div>
-                              <div className="values"><button className="btn1" onClick={Codesinformation} >{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].loggerFlags:"A"}</button>
-                               <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].parametervalue:0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length>0?ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase():""}</sub></div>
+                              <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
+                              <div className="values"><button className="btn1" onClick={Codesinformation} >{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID).length > 0 ? ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID)[0].loggerFlags : "A"}</button>
+                                <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID).length > 0 ? ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID)[0].parametervalue : 0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
                               {LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}
