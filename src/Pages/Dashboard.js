@@ -36,9 +36,9 @@ function Dashboard() {
   const [ChartOptions, setChartOptions] = useState();
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-  const ListAllDataCopy=useRef();
-  const Interval=useRef();
-  ListAllDataCopy.current=ListAllData;
+  const ListAllDataCopy = useRef();
+  const Interval = useRef();
+  ListAllDataCopy.current = ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   let parameterChartStatus = [];
@@ -51,39 +51,39 @@ function Dashboard() {
       .then((data) => {
         if (data) {
           setListAllData(data);
-          GenerateChart(data);
           for (var i = 0; i < data.listPollutents.length; i++) {
             //sessionStorage.setItem(data.listPollutents[i].id + "_ChartStatus", false);
-            if (Cookies.get(data.listPollutents[i].id + "_ChartStatus") != 'true') {
-              Cookies.set(data.listPollutents[i].id + "_ChartStatus", false, { expires: 7 });
-              parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: false })
-            } else {
+            if (Cookies.get(data.listPollutents[i].id + "_ChartStatus") != 'false') {
+              Cookies.set(data.listPollutents[i].id + "_ChartStatus", true, { expires: 7 });
               parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: true })
+            }else {
+              parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: false })
             }
           }
           setLiveChartStatus(parameterChartStatus);
+          GenerateChart(data);
         }
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     const interval = setInterval(() => {
-    //  console.log('Logs every minute');
+      //  console.log('Logs every minute');
       fetch(process.env.REACT_APP_WSurl + "api/Livedata", {
         method: 'GET',
       }).then((response) => response.json())
         .then((data) => {
           if (data) {
-            ListAllDataCopy.current.listParametervalues=data;
+            ListAllDataCopy.current.listParametervalues = data;
             GenerateChart(ListAllDataCopy.current);
           }
-        }).catch((error) => 
-        toast.error('Unable to get the data. Please contact adminstrator')
+        }).catch((error) =>
+          toast.error('Unable to get the data. Please contact adminstrator')
         );
     }, Interval.current.value);
 
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }, [])
+  }, []) */
 
   const hexToRgbA = function (hex) {
     var c;
@@ -117,10 +117,26 @@ function Dashboard() {
     $('#alarmmodal').modal('show');
   }
 
-  const DeviceGraph = function (param, data) {
+  const DeviceGraphold = function (param, data) {
     setInfodevices(param);
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
     setInfoParameters(parameters);
+    for (var i = 0; i < LiveChartStatus.length; i++) {
+      if (data.parameterName == LiveChartStatus[i].paramaterName && data.id == LiveChartStatus[i].paramaterID) {
+        if (Cookies.get(data.id + "_ChartStatus") == 'true') {
+          Cookies.set(data.id + "_ChartStatus", false, { expires: 7 });
+          LiveChartStatus[i].ChartStatus = false;
+          // GenerateChart(ListAllData.listPollutents,LiveChartStatus[i].paramaterID);
+        }
+        else {
+          Cookies.set(data.id + "_ChartStatus", true, { expires: 7 });
+          LiveChartStatus[i].ChartStatus = true;
+        }
+      }
+    }
+    GenerateChart(ListAllData);
+  }
+  const DeviceGraph = function (data) {
     for (var i = 0; i < LiveChartStatus.length; i++) {
       if (data.parameterName == LiveChartStatus[i].paramaterName && data.id == LiveChartStatus[i].paramaterID) {
         if (Cookies.get(data.id + "_ChartStatus") == 'true') {
@@ -152,9 +168,9 @@ function Dashboard() {
 
   }
   const GenerateChart = function (data) {
-   /*  if (chartRef.current != null) {
-      chartRef.current.data = {};
-    } */
+    /*  if (chartRef.current != null) {
+       chartRef.current.data = {};
+     } */
     let Parametervalues = data.listParametervalues;
     let pollutents = data.listPollutents;
 
@@ -197,7 +213,7 @@ function Dashboard() {
         }
 
       },
-     // maintainAspectRatio: true,
+      // maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
@@ -1332,13 +1348,13 @@ function Dashboard() {
       <div className="pagetitle d-flex justify-content-between">
         <h1>Dashboard</h1>
         <div className="col-md-2 mb-3 d-inline-flex">
-                  <label for="Interval" className="form-label me-3 mt-2">Interval:</label>
-                  <select className="form-select" id="Interval" ref={Interval} >
-                    <option value="15000">15 Seconds</option>
-                    <option value="30000">30 Seconds</option>
-                    <option value="60000">1 Minute</option>
-                  </select>
-                </div>
+          <label for="Interval" className="form-label me-3 mt-2">Interval:</label>
+          <select className="form-select" id="Interval" ref={Interval} >
+            <option value="15000">15 Seconds</option>
+            <option value="30000">30 Seconds</option>
+            <option value="60000">1 Minute</option>
+          </select>
+        </div>
         {/* <nav>
     <ol className="breadcrumb">
       <li className="breadcrumb-item"><a href="index.html">Home</a></li>
@@ -1650,13 +1666,13 @@ function Dashboard() {
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1" onClick={Codesinformation} >{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].loggerFlags:"A"}</button>
-                               <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID).length>0?ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID===i.deviceID)[0].parametervalue:0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length>0?ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase():""}</sub></div>
+                              <div className="values"><button className="btn1" onClick={Codesinformation} >{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID).length > 0 ? ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID)[0].loggerFlags : "A"}</button>
+                                <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID).length > 0 ? ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID)[0].parametervalue : 0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
                               {LiveChartStatus[j].ChartStatus && (
-                                <div className="icons" title="Graph" onClick={() => DeviceGraph(x, i)}><i className="bi bi-graph-up"></i></div>
+                                <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}
                               {!LiveChartStatus[j].ChartStatus && (
-                                <div className="icons" title="Graph" onClick={() => DeviceGraph(x, i)}><i className="bi bi-alt"></i></div>
+                                <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-alt"></i></div>
                               )}
                             </div>
                           )
@@ -1669,7 +1685,19 @@ function Dashboard() {
                 )}
               </div>
               <div className="row">
-                <Line ref={chartRef} options={ChartOptions} data={ChartData} height={100} />
+                <div className="col-md-11">
+                  <Line ref={chartRef} options={ChartOptions} data={ChartData} height={100} />
+                </div>
+                <div className="col-md-1 mt-4">
+                {ListAllData.listPollutents.map((i, j) =>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value={i.id} defaultChecked={LiveChartStatus[j].ChartStatus}  onChange={() => DeviceGraph(i)}/>
+                      <label class="form-check-label" htmlFor="flexCheckDefault">
+                      {i.parameterName}
+                      </label>
+                  </div>
+                )}
+                </div>
               </div>
 
             </div>
