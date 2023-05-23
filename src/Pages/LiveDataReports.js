@@ -15,9 +15,10 @@ function LiveDataReports() {
   const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
-  const ListAllDataCopy=useRef();
+  const ListAllDataCopy=useRef([]);
   const Interval=useRef();
   ListAllDataCopy.current=ListReportData;
+  const getDuration= window.LiveDataDuration;
 
   useEffect(() => {
     let params = new URLSearchParams({ Pollutent: "", Fromdate: null, Todate: null });
@@ -59,8 +60,10 @@ function LiveDataReports() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      getdtareport('refresh')
-    }, 60000);
+      //getdtareport('refresh')
+      getdtareport();
+      initializeJsGrid();
+    }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
 
@@ -77,12 +80,7 @@ function LiveDataReports() {
         "left": left
       });
   }
-  // const truncateNumber= function(number,digits) {
-        
-  //   var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
-  //       m = number.toString().match(re);
-  //   return m ? parseFloat(m[1]) : number.valueOf();
-  // }
+  
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
@@ -102,23 +100,18 @@ function LiveDataReports() {
       var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
       let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
       if(paramater.length>0){
-            //const roundedNumber=ListReportData[k].parametervalue.toFixed(3);
-            let roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,3);
-            
-            // let temp= process.env.TruncateorRound;
-            // if(process.env.TruncateorRound=="RoundOff"){
-            //   const number = ListReportData[k].parametervalue;
-            //   roundedNumber = number.toFixed(process.env.DecimalNumberRound);
-            // }
-            // else {
-            //   const number = ListReportData[k].parametervalue;
-            //   roundedNumber = number.toFixed(2);
-            // }
+            let roundedNumber=0;
+            let digit = window.decimalDigit
+            if(window.TruncateorRound=="RoundOff"){
+              let num =ListReportData[k].parametervalue;
+               roundedNumber=num.toFixed(digit);
+            }
+            else {
+              roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+            }
             if (temp >= 0) {
-              //dataForGrid[temp][paramater[0].parameterName] = ListReportData[k].parametervalue;
               dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
             } else {
-              //obj[paramater[0].parameterName] = ListReportData[k].parametervalue;
               obj[paramater[0].parameterName] = roundedNumber;
               obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
               

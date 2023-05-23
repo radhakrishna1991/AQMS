@@ -1390,11 +1390,13 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
   left: 50%;
   border: 8px solid #f3f3f3;
   border-radius: 50%;
-  border-top: 8px solid #3498db;
+  border-top: 8px solid #e0470ae8;
   width: 40px;
   height: 40px;
   -webkit-animation: spin 2s linear infinite; /* Safari */
   animation: spin 2s linear infinite;
+  top: 50%;
+  z-index: 99999;
 }
 
 @-webkit-keyframes spin {

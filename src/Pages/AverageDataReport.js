@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import CommonFunctions from "../utils/CommonFunctions";
+
 function AverageDataReport() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -72,11 +74,20 @@ function AverageDataReport() {
     for (var k = 0; k < ListReportData.length; k++) {
         var obj = {};
         var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
+        let roundedNumber=0;
+        let digit = window.decimalDigit;
+        if(window.TruncateorRound=="RoundOff"){
+           let num =ListReportData[k].parametervalue;
+           roundedNumber=num.toFixed(digit);
+        }
+        else {
+          roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+        }
         if(temp >= 0)
         {
-            dataForGrid[temp][ListReportData[k].parameterName]=ListReportData[k].parametervalue;
+            dataForGrid[temp][ListReportData[k].parameterName]=roundedNumber;
         }else{
-            obj[ListReportData[k].parameterName] = ListReportData[k].parametervalue;
+            obj[ListReportData[k].parameterName] = roundedNumber;
             obj["Date"] = ListReportData[k].interval;
             dataForGrid.push(obj);
         }
@@ -319,20 +330,23 @@ function AverageDataReport() {
                   )}
                 </select>
               </div>
-              <div className="col-md-2 my-4">
+              <div className="col-md-4 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                {ListReportData.length>0 &&(
+                    <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
+                )}
               </div>
               <div className="col-md-4">
                 <div className="row">
                   <div id="loader" className="loader"></div>
                 </div>
               </div>
-              {ListReportData.length>0 &&(
+              {/* {ListReportData.length>0 &&(
               <div className="col-md-12 my-2">
                 <button type="button" className="btn btn-primary float-end" onClick={DownloadExcel}>Download Excel</button>
               </div>
-              )}
+              )} */}
             </div>
             {ListReportData.length>0 &&(
             <div className="jsGrid" ref={gridRefjsgridreport} />
