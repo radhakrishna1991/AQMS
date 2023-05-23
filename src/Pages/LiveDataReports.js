@@ -18,6 +18,7 @@ function LiveDataReports() {
   const ListAllDataCopy=useRef([]);
   const Interval=useRef();
   ListAllDataCopy.current=ListReportData;
+  const getDuration= window.LiveDataDuration;
 
   useEffect(() => {
     let params = new URLSearchParams({ Pollutent: "", Fromdate: null, Todate: null });
@@ -60,7 +61,7 @@ function LiveDataReports() {
   useEffect(() => {
     const interval = setInterval(() => {
       getdtareport('refresh')
-    }, 60000);
+    }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
 
