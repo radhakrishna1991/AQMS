@@ -60,12 +60,10 @@ function LiveDataReports() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      //getdtareport('refresh')
-      getdtareport();
-      initializeJsGrid();
+      getdtareport('refresh');
     }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
-  }, [])
+  })
 
   /* reported data start */
   const generateDatabaseDateTime = function (date) {
