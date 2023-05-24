@@ -13,6 +13,16 @@ const CommonFunctions = {
  
      },
 
+    SetFlagColor(flagcode,flaglist){  
+      for(var i=0; i<flaglist.length;i++){      
+        if(flaglist[i].id ==flagcode){   
+          //var msgname = flaglist[i].message.toLocaleLowerCase().replaceAll(' ','');
+          return flaglist[i].message.toLocaleLowerCase().replaceAll(' ','');
+        }      
+      }
+      
+    },
+
      
 }
 

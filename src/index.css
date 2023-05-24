@@ -643,7 +643,7 @@ table.jexcel colgroup col:nth-child(1) {
   border-color: #cbfdcb !important;
 }
 
-.estimated {
+.rebuild {
   background-color: #00fe00 !important;
   border-color: #00fe00 !important;
 }
@@ -658,17 +658,17 @@ table.jexcel colgroup col:nth-child(1) {
   border-color: #00ffff !important;
 }
 
-.failure {
+.failed {
   background-color: #c000c0 !important;
   border-color: #c000c0 !important;
 }
 
-.invalidated {
+.invalid {
   background-color: #fe0000 !important;
   border-color: #fe0000 !important;
 }
 
-.maintenance {
+.maint {
   background-color: #fe7f80 !important;
   border-color: #fe7f80 !important;
 }
@@ -683,9 +683,9 @@ table.jexcel colgroup col:nth-child(1) {
   border-color: #fe7f00 !important;
 }
 
-.nonobtained {
-  background-color: #ffffff !important;
-  border-color: #ffffff !important;
+.outofrangebutvalid {
+  background-color: #993974 !important;
+  border-color: #993974 !important;
 }
 
 .warning {
@@ -703,7 +703,7 @@ table.jexcel colgroup col:nth-child(1) {
   border-color: #6c6a00 !important;
 }
 
-.substitute {
+.alternativevalue {
   background-color: #d46c00 !important;
   border-color: #d46c00 !important;
 }
@@ -713,10 +713,12 @@ table.jexcel colgroup col:nth-child(1) {
   border-color: #c26900 !important;
 }
 
-.outoffield {
+.outofdomain {
   background-color: #7c9200 !important;
   border-color: #7c9200 !important;
 }
+
+
 
 .swal2-title {
   font-size: 1.5rem !important;
@@ -736,4 +738,7 @@ table.jexcel colgroup col:nth-child(1) {
 .dashboard_date{
   font-size: 0.75rem;
   font-weight: 600;
+}
+.serialrtumode{
+  margin-top: 2rem !important;
 }
