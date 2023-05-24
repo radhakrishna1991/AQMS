@@ -5,6 +5,7 @@ import { Line } from 'react-chartjs-2';
 import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -50,6 +51,7 @@ function DataProcessingClient() {
   const [ChartOptions, setChartOptions] = useState();
   const [ListHistory, setListHistory] = useState([]);
   const [SelectedCells, setSelectedCells] = useState([]);
+  const [Flagcodelist,SetFlagcodelist]=useState([]);
   const [revert, setrevert] = useState(false);
   const revertRef = useRef();
   revertRef.current = revert;
@@ -67,6 +69,7 @@ function DataProcessingClient() {
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
+        SetFlagcodelist(data.listFlagCodes);
         setTimeout(function () {
           $('#stationid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
@@ -145,59 +148,7 @@ function DataProcessingClient() {
       }
     }
     chart.update();
-  }
-
-  const SetFlagColor=function(flagcode){    
-    if(flagcode === "R"){            
-      return 'estimated';
-    } 
-    else if(flagcode==='A'){
-      return 'correct';
-    }
-    else if(flagcode==='O'){
-      return "corrected";
-    }
-    else if(flagcode==='P'){
-      return "drift";
-    }
-    else if(flagcode==='D'){
-      return "failure";
-    }
-    else if(flagcode==='I'){
-      return "invalidated";
-    }
-    else if(flagcode==='M'){
-      return "maintenance";
-    }
-    else if(flagcode==='Z'){
-      return "zero";
-    }
-    else if(flagcode==='C'){
-      return "span";
-    }
-    else if(flagcode==='N'){
-      return "nonobtained";
-    }
-    else if(flagcode==='W'){
-      return "warning";
-    }
-    else if(flagcode==='B'){
-      return "anomaly";
-    }
-    else if(flagcode==='X'){
-      return "stop";
-    }
-    else if(flagcode==='S'){
-      return "substitute";
-    }
-    else if(flagcode==='G'){
-      return "outofrange";
-    }
-    else if(flagcode==='H'){
-      return "outoffield";
-    }
-    
-  }
+  }  
   
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
@@ -207,10 +158,10 @@ function DataProcessingClient() {
         if (index > -1) {
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
           if(filnallist[j].flagStatus!=null){
-            let classname=SetFlagColor(filnallist[j].flagStatus);
+            let classname=CommonFunctions.SetFlagColor(filnallist[j].flagStatus,Flagcodelist);
             cell.classList.add(classname);
           }          
-          cell.classList.add('updated');
+          //cell.classList.add('updated');
         }
       }
     }
@@ -702,21 +653,21 @@ function DataProcessingClient() {
                 <div className="row">
                   <div className="col-md-12 mb-3">
                     <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Correct" >A</button>
-                    <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
+                    <button type="button" className="btn btn-primary flag mx-1 rebuild" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
                     <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Corrected" >O</button>
                     <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Drift" >P</button>
-                    <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Failure" >D</button>
-                    <button type="button" className="btn btn-primary flag mx-1 invalidated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Invalidated" >I</button>
-                    <button type="button" className="btn btn-primary flag mx-1 maintenance" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Maintenance" >M</button>
+                    <button type="button" className="btn btn-primary flag mx-1 failed" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Failure" >D</button>
+                    <button type="button" className="btn btn-primary flag mx-1 invalid" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Invalidated" >I</button>
+                    <button type="button" className="btn btn-primary flag mx-1 maint" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Maintenance" >M</button>
                     <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Zero" >Z</button>
                     <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Span" >C</button>
-                    <button type="button" className="btn btn-primary flag mx-1 nonobtained" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Non-obtained" >N</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outofrangebutvalid" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Non-obtained" >g</button>
                     <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Warning" >W</button>
                     <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Anomaly" >B</button>
                     <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Stop" >X</button>
-                    <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
+                    <button type="button" className="btn btn-primary flag mx-1 alternativevalue" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
                     <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of range" >G</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
+                    <button type="button" className="btn btn-primary flag mx-1 outofdomain" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
                   </div>
                 </div>
 
