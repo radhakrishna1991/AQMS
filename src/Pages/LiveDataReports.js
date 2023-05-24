@@ -193,11 +193,11 @@ function LiveDataReports() {
         if (data) {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
-          if(param=='refresh'){
+          /* if(param=='refresh'){
             ListAllDataCopy.current=data1;
-          }else{
+          }else{ */
             setListReportData(data1);
-          }
+          //}
         }
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
