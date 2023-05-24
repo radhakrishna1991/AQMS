@@ -9,7 +9,7 @@ function AddDevice() {
   const [ListDevices, setListDevices] = useState([]);
   const [DeviceList, setDeviceList] = useState(true);
   const [ListDeviceModels, setListDeviceModels] = useState([]);
-  const [DeviceId, setDeviceId] = useState(0);
+  const [Deviceid, setDeviceid] = useState(0);
   const [Status, setStatus] = useState(true);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
@@ -19,7 +19,7 @@ function AddDevice() {
     let form = document.querySelectorAll('#AddDeviceform')[0];
     if (!form.checkValidity()) {
       form.classList.add('was-validated');
-      isvalid=false;
+      isvalid = false;
     }
     return isvalid;
   }
@@ -27,19 +27,31 @@ function AddDevice() {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
+    let deviceId = document.getElementById("deviceid").value;
     let IPAddress = "";
-    let Number = "";
+    let Port = "";
+    let CommPort = "";
+    let BaudRate = "";
+    let Parity = "";
+    let StopBits = "";
+    let DataBits = "";
+    let SerialRtuMode = "";
     let Type = document.getElementById("type").value;
     if (Type == 'Tcp/IP') {
       IPAddress = document.getElementById("ipaddress").value;
+      Port = document.getElementById("port").value;
     } else if (Type == 'Serial') {
-      Number = document.getElementById("number").value;
+      CommPort = document.getElementById("commport").value;
+      BaudRate = document.getElementById("baudrate").value;
+      Parity = document.getElementById("parity").value;
+      StopBits = document.getElementById("stopbits").value;
+      DataBits = document.getElementById("databits").value;
+      SerialRtuMode = document.getElementById("serialrtumode").checked;
     }
-    let Port = document.getElementById("port").value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
-    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number);
+    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type);
     if (!validation) {
       return false;
     }
@@ -49,7 +61,11 @@ function AddDevice() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, Number: Number, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy }),
+      body: JSON.stringify({
+        StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, DeviceId: deviceId, IPAddress: IPAddress, Port: Port, Type: Type,
+        CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
+        SerialRtuMode: SerialRtuMode, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+      }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Deviceadd") {
@@ -66,7 +82,7 @@ function AddDevice() {
 
   const EditStation = function (param) {
     setDeviceList(false);
-    setDeviceId(param.id);
+    setDeviceid(param.id);
     setType(param.type);
     setStatus(param.status == 1 ? true : false)
     setTimeout(() => {
@@ -74,12 +90,18 @@ function AddDevice() {
       document.getElementById("devicename").value = param.deviceName;
       document.getElementById("devicemodel").value = param.deviceModel;
       document.getElementById("type").value = param.type;
+      document.getElementById("deviceid").value = param.deviceId;
       if (param.type == 'Tcp/IP') {
         document.getElementById("ipaddress").value = param.ipAddress;
+        document.getElementById("port").value = param.port;
       } else if (param.type == 'Serial') {
-        document.getElementById("number").value = param.number;
+        document.getElementById("commport").value=param.commPort;
+        document.getElementById("baudrate").value=param.baudRate;
+        document.getElementById("parity").value=param.parity;
+        document.getElementById("stopbits").value=param.stopBits;
+        document.getElementById("databits").value=param.dataBits;
+        document.getElementById("serialrtumode").checked=param.serialRtuMode;
       }
-      document.getElementById("port").value = param.port;
     }, 10);
 
   }
@@ -88,29 +110,45 @@ function AddDevice() {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
+    let deviceId = document.getElementById("deviceid").value;
     let IPAddress = "";
-    let Number = "";
+    let Port = "";
+    let CommPort = "";
+    let BaudRate = "";
+    let Parity = "";
+    let StopBits = "";
+    let DataBits = "";
+    let SerialRtuMode = "";
     let Type = document.getElementById("type").value;
     if (Type == 'Tcp/IP') {
       IPAddress = document.getElementById("ipaddress").value;
-    } else if(Type=='Serial') {
-      Number = document.getElementById("number").value;
+       Port = document.getElementById("port").value;
+    } else if (Type == 'Serial') {
+      CommPort = document.getElementById("commport").value;
+      BaudRate = document.getElementById("baudrate").value;
+      Parity = document.getElementById("parity").value;
+      StopBits = document.getElementById("stopbits").value;
+      DataBits = document.getElementById("databits").value;
+      SerialRtuMode = document.getElementById("serialrtumode").checked;
     }
-    let Port = document.getElementById("port").value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
-    let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number);
+    let validation = Deviceaddvalidation();
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Devices/' + DeviceId, {
+    fetch(process.env.REACT_APP_WSurl + 'api/Devices/' + Deviceid, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, IPAddress: IPAddress, Port: Port, Type: Type, Number: Number, ID: DeviceId, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy }),
+      body: JSON.stringify({
+        StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, DeviceId: deviceId, IPAddress: IPAddress, Port: Port,
+        Type: Type, ID: Deviceid, Status: status, CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
+        SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+      }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -246,17 +284,17 @@ function AddDevice() {
       setDeviceList(true);
     } else {
       setDeviceList(false);
-      setDeviceId(0);
+      setDeviceid(0);
     }
   }
   return (
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {!DeviceList && DeviceId == 0 && (
+          {!DeviceList && Deviceid == 0 && (
             <h1>Add Device</h1>
           )}
-          {!DeviceList && DeviceId != 0 && (
+          {!DeviceList && Deviceid != 0 && (
             <h1>Update Device</h1>
           )}
           {DeviceList && (
@@ -291,6 +329,11 @@ function AddDevice() {
                   <div class="invalid-feedback">Please enter device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
+                  <label for="deviceid" className="form-label">Device ID:</label>
+                  <input type="number" className="form-control" id="deviceid" placeholder="Enter device id" required />
+                  <div class="invalid-feedback">Please enter id</div>
+                </div>
+                <div className="col-md-12 mb-3">
                   <label for="devicemodel" className="form-label">Device Model:</label>
                   <select className="form-select" id="devicemodel" required>
                     <option selected value="">Select device model</option>
@@ -312,24 +355,70 @@ function AddDevice() {
                   <div class="invalid-feedback">Please select type</div>
                 </div>
                 {Type == 'Serial' && (
-                  <div className="col-md-12 mb-3">
-                    <label for="number" className="form-label">Number:</label>
-                    <input type="number" className="form-control" id="number" placeholder="Enter number" required />
-                    <div class="invalid-feedback">Please enter number</div>
+                  <div className="row mx-0 px-0">
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="commport" className="form-label">Comm Port:</label>
+                      <select className="form-select" id="commport" required>
+                        {window.CommPort.map((x, y) =>
+                          <option value={x}  >{x}</option>
+                        )}
+                      </select>
+                      <div class="invalid-feedback">Please select comm port</div>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="baudrate" className="form-label">Baud Rate:</label>
+                      <select className="form-select" id="baudrate" required>
+                        {window.BaudRate.map((x, y) =>
+                          <option value={x}  >{x}</option>
+                        )}
+                      </select>
+                      <div class="invalid-feedback">Please select Baud Rate</div>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="parity" className="form-label">Parity:</label>
+                      <select className="form-select" id="parity" required>
+                        {window.Parity.map((x, y) =>
+                          <option value={x}  >{x}</option>
+                        )}
+                      </select>
+                      <div class="invalid-feedback">Please select parity</div>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="stopbits" className="form-label">Stop Bits:</label>
+                      <select className="form-select" id="stopbits" required>
+                        {window.StopBits.map((x, y) =>
+                          <option value={x}  >{x}</option>
+                        )}
+                      </select>
+                      <div class="invalid-feedback">Please select stop bits</div>
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label htmlFor="databits" className="form-label">Data Bits:</label>
+                      <input type="number" className="form-control" id="databits" placeholder="Enter IP Data Bits" required />
+                      <div class="invalid-feedback">Please enter data bits</div>
+                    </div>
+                    <div className="col-md-6 serialrtumode mb-3 form-check">
+                      <input className="form-check-input" type="checkbox" id="serialrtumode" defaultChecked={false} />
+                      <label className="form-check-label" htmlFor="serialrtumode">
+                        Serial RTU Mode
+                      </label>
+                    </div>
                   </div>
                 )}
                 {Type == 'Tcp/IP' && (
-                  <div className="col-md-12 mb-3">
-                    <label for="ipaddress" className="form-label">IP Address:</label>
-                    <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
-                    <div class="invalid-feedback">Please enter IP address</div>
+                  <div>
+                    <div className="col-md-12 mb-3">
+                      <label for="ipaddress" className="form-label">IP Address:</label>
+                      <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
+                      <div class="invalid-feedback">Please enter IP address</div>
+                    </div>
+                    <div className="col-md-12 mb-3">
+                      <label for="port" className="form-label">Port:</label>
+                      <input type="text" className="form-control" id="port" placeholder="Enter port" required />
+                      <div class="invalid-feedback">Please enter port</div>
+                    </div>
                   </div>
                 )}
-                <div className="col-md-12 mb-3">
-                  <label for="port" className="form-label">Port:</label>
-                  <input type="text" className="form-control" id="port" placeholder="Enter port" required />
-                  <div class="invalid-feedback">Please enter port</div>
-                </div>
                 <div className="col-md-12 mb-3">
                   <label for="Status" className="form-label">Status: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
@@ -343,10 +432,10 @@ function AddDevice() {
                   </div>
                 </div>
                 <div className="col-md-12 text-center">
-                  {!DeviceList && DeviceId == 0 && (
+                  {!DeviceList && Deviceid == 0 && (
                     <button className="btn btn-primary" onClick={Deviceadd} type="button">Add Device</button>
                   )}
-                  {!DeviceList && DeviceId != 0 && (
+                  {!DeviceList && Deviceid != 0 && (
                     <button className="btn btn-primary" onClick={UpdateStation} type="button">Update Device</button>
                   )}
                 </div>
