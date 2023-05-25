@@ -165,11 +165,11 @@ function AverageDataReport() {
     //     pdf.save("download.pdf");  
     //   });
 
-    const pdf = new jsPDF("portrait", "pt", "a4");
-    const data = document.querySelector("#pdf");
-    pdf.html(data).then(() => {
-      pdf.save("sample.pdf");
-    });
+    // const pdf = new jsPDF("portrait", "pt", "a4");
+    // const data = document.querySelector("#pdf");
+    // pdf.html(data).then(() => {
+    //   pdf.save("sample.pdf");
+    // });
   }
   const DownloadExcel = function () {
     
@@ -384,12 +384,7 @@ function AverageDataReport() {
             {ListReportData.length>0 &&(
             <div id="jsGridData" className="jsGrid" ref={gridRefjsgridreport} />
             )}
-            <div id="pdf">
-        <p>TO: John Citizen</p>
-        <p>123 Random Street</p>
-        <p>Oak Creek, Colorado (CO), 80467</p>
-        
-    </div>
+           
           </div>
         </div>
       </section>
