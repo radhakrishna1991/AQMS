@@ -51,15 +51,22 @@ function Dashboard() {
       .then((data) => {
         if (data) {
           setListAllData(data);
+          var checkedcnt=0;
           for (var i = 0; i < data.listPollutents.length; i++) {
+            
             //sessionStorage.setItem(data.listPollutents[i].id + "_ChartStatus", false);
             if (Cookies.get(data.listPollutents[i].id + "_ChartStatus") != 'false') {
+              checkedcnt++;
               Cookies.set(data.listPollutents[i].id + "_ChartStatus", true, { expires: 7 });
               parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: true })
             }else {
               parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: false })
             }
           }
+          // if(checkedcnt==data.listPollutents.length){
+          //     var ele=document.getElementById("selectall");
+          //     ele.checked=true;
+          // }
           setLiveChartStatus(parameterChartStatus);
           GenerateChart(data);
         }
@@ -150,6 +157,8 @@ function Dashboard() {
         if (Cookies.get(data.id + "_ChartStatus") == 'true') {
           Cookies.set(data.id + "_ChartStatus", false, { expires: 7 });
           LiveChartStatus[i].ChartStatus = false;
+          var ele=document.getElementById('selectall');
+          ele.checked=false;
           // GenerateChart(ListAllData.listPollutents,LiveChartStatus[i].paramaterID);
         }
         else {
@@ -236,6 +245,41 @@ function Dashboard() {
       })
     }, 10);
   }
+
+  const selects=function (data){  
+    var ele=document.getElementById('selectall');
+    if(ele.checked==true){    
+      for (var i = 0; i < LiveChartStatus.length; i++) {
+        Cookies.set(LiveChartStatus[i].paramaterID + "_ChartStatus", true, { expires: 7 });
+        LiveChartStatus[i].ChartStatus = true;
+        var checkallvalues=document.getElementById(LiveChartStatus[i].paramaterID);
+        checkallvalues.checked=true;
+      }
+    }
+    else{
+      for (var i = 0; i < LiveChartStatus.length; i++) {
+        Cookies.set(LiveChartStatus[i].paramaterID + "_ChartStatus", false, { expires: 7 });
+        LiveChartStatus[i].ChartStatus = false;
+        var checkallvalues=document.getElementById(LiveChartStatus[i].paramaterID);
+        checkallvalues.checked=false;
+      }
+    }
+    GenerateChart(ListAllData)
+
+    // var ele=document.getElementById('paramtername');
+    // if(e.target.checked==true){       
+    //   for(var i=0; i<ele.length; i++){  
+    //     if(ele[i].type=='checkbox')  
+    //         ele[i].checked=true;  
+    //   }  
+    // }
+    // else{      
+    //   for(var i=0; i<ele.length; i++){  
+    //     if(ele[i].type=='checkbox')  
+    //         ele[i].checked=false;  
+    //   }
+    // } 
+  }  
 
 
   return (
@@ -1675,12 +1719,12 @@ function Dashboard() {
                               <div className="parameter"><i className="bi bi-check2"></i> <span>{i.parameterName}</span></div>
                               <div className="values"><button className="btn1" onClick={Codesinformation} >{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID).length > 0 ? ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID)[0].loggerFlags : "A"}</button>
                                 <button className="btn2">{ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID).length > 0 ? ListAllData.listParametervalues.filter(z => z.parameterID === i.id && z.deviceID === i.deviceID)[0].parametervalue : 0}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
-                              {LiveChartStatus[j].ChartStatus && (
+                              {/* {LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}
                               {!LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-alt"></i></div>
-                              )}
+                              )} */}
                             </div>
                           )
                         )}
@@ -1696,9 +1740,15 @@ function Dashboard() {
                   <Line ref={chartRef} options={ChartOptions} data={ChartData} height={100} />
                 </div>
                 <div className="col-md-1 mt-5">
-                {ListAllData.listPollutents.map((i, j) =>
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value={i.id} defaultChecked={LiveChartStatus[j].ChartStatus}  onChange={() => DeviceGraph(i)}/>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="selectall" onChange={()=>selects(ListAllData.listPollutents)} ></input>
+                    <label class="form-check-label">Select All</label>
+                </div>
+                {ListAllData.listPollutents.map((i, j) =>                
+                  
+                  <div class="form-check">                    
+                    <input class="form-check-input" type="checkbox" id={i.id} value={i.id} defaultChecked={LiveChartStatus[j].ChartStatus}  onChange={() => DeviceGraph(i)}/>
+                    {/* <input class="form-check-input" type="checkbox" name="paramtername" value={i.id}  onChange={() => DeviceGraph(i)}/> */}
                       <label class="form-check-label" htmlFor="flexCheckDefault">
                       {i.parameterName}
                       </label>

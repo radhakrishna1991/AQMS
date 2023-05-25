@@ -40,7 +40,7 @@ function Sidenavbar() {
        
             <li className="nav-item" id="Configuration-Panel">
               <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#configuration-nav" data-bs-toggle="collapse" href="#">
-                <i className="bi bi-menu-button-wide"></i><span>Configuration Editors</span><i className="bi bi-chevron-down ms-auto"></i>
+                <i className="bi bi-menu-button-wide"></i><span>Configuration</span><i className="bi bi-chevron-down ms-auto"></i>
               </a>
               <ul id="configuration-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
                 {/* <li>
@@ -98,6 +98,22 @@ function Sidenavbar() {
                 <span>Parameters</span>
               </NavLink >
             </li>
+            <li>
+                  <NavLink to="/AverageAlarm" className="animation-forwards animate-delay-2" >
+                    <i className="bi bi-circle"></i>
+                    <span>Average Alarms</span>
+                  </NavLink >
+                </li>
+                <li>
+                  <NavLink to="/Channels" className="animation-forwards animate-delay-3">
+                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Channels</span>
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink to="/Calibrations" className="animation-forwards animate-delay-3">
+                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Calibrations</span>
+                  </NavLink>
+                </li>
                 {/* <li>
                   <a className="animation-forwards animate-delay-8 disable" href="components-buttons.html">
                     <i className="bi bi-circle"></i><span>PC Configuration</span>
@@ -160,7 +176,7 @@ function Sidenavbar() {
               </ul>
             </li>
 
-            <li className="nav-item">
+            {/* <li className="nav-item">
               <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#loggerchannels-nav" data-bs-toggle="collapse" href="#">
                 <i className="bi bi-menu-button-wide"></i><span>Logger Channels</span><i className="bi bi-chevron-down ms-auto"></i>
               </a>
@@ -184,7 +200,7 @@ function Sidenavbar() {
 
               </ul>
 
-            </li>
+            </li> */}
        
         <li className="nav-item">
           <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">

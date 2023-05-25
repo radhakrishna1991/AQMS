@@ -137,7 +137,7 @@ function DataProcessingClient() {
     for (let j = 0; j < SelectedPollutents.length; j++) {
       chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 2; return x });
     }
-    for (let k = startcolindex; k <= endcolindex; k++) {
+    for (let k = startcolindex; k < endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
         const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
         if (index > -1) {
@@ -650,7 +650,7 @@ function DataProcessingClient() {
                   </div>
                 </div>
                 
-                <div className="row">
+                {/* <div className="row">
                   <div className="col-md-12 mb-3">
                     <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Correct" >A</button>
                     <button type="button" className="btn btn-primary flag mx-1 rebuild" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
@@ -668,6 +668,14 @@ function DataProcessingClient() {
                     <button type="button" className="btn btn-primary flag mx-1 alternativevalue" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
                     <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of range" >G</button>
                     <button type="button" className="btn btn-primary flag mx-1 outofdomain" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
+                  </div>
+                </div> */}
+
+                <div className="row">
+                  <div className="col-md-12 mb-3">
+                    {AllLookpdata.listFlagCodes.map((i) =>
+                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                    )}
                   </div>
                 </div>
 
