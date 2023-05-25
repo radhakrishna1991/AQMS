@@ -136,7 +136,7 @@ function LiveDataReports() {
       controller: {
         data: dataForGrid,
         loadData: function (filter) {
-          let resultData = this.data;
+          /* let resultData = this.data;
           var d = $.Deferred();
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
@@ -151,7 +151,7 @@ function LiveDataReports() {
             }
           }
           d.resolve(resultData);
-          return d.promise();
+          return d.promise(); */
         }
       },
       fields: layout
