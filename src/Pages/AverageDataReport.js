@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
 
 function AverageDataReport() {
   const $ = window.jQuery;
