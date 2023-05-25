@@ -152,6 +152,7 @@ function Dashboard() {
     GenerateChart(ListAllData);
   }
   const DeviceGraph = function (data) {
+    let checkedCount=0;
     for (var i = 0; i < LiveChartStatus.length; i++) {
       if (data.parameterName == LiveChartStatus[i].paramaterName && data.id == LiveChartStatus[i].paramaterID) {
         if (Cookies.get(data.id + "_ChartStatus") == 'true') {
@@ -166,6 +167,15 @@ function Dashboard() {
           LiveChartStatus[i].ChartStatus = true;
         }
       }
+    }
+    for (var k = 0; k < LiveChartStatus.length; k++) {
+      if (Cookies.get(LiveChartStatus[k].paramaterID + "_ChartStatus") == 'true') {
+        checkedCount++;
+      }
+    }
+    if(checkedCount==LiveChartStatus.length){
+      var ele=document.getElementById('selectall');
+          ele.checked=true;
     }
     GenerateChart(ListAllData);
   }
