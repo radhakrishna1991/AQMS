@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
+import { jsPDF } from "jspdf";
 
 function AverageDataReport() {
   const $ = window.jQuery;
@@ -154,6 +155,22 @@ function AverageDataReport() {
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
   }
+  const DownloadPDF=function(){
+    const input = document.getElementById('jsGridData');
+    // html2canvas(input)
+    //   .then((canvas) => {
+    //     //const imgData = canvas.toDataURL('image/png');
+    //     const pdf = new jsPDF();
+    //     //pdf.addImage(imgData, 'PNG', 0, 0);
+    //     pdf.save("download.pdf");  
+    //   });
+
+    const pdf = new jsPDF("portrait", "pt", "a4");
+    const data = document.querySelector("#pdf");
+    pdf.html(data).then(() => {
+      pdf.save("sample.pdf");
+    });
+  }
   const DownloadExcel = function () {
     
     let Pollutent = $("#pollutentid").val();
@@ -167,7 +184,20 @@ function AverageDataReport() {
     if (!valid) {
       return false;
     }
-    let params = new URLSearchParams({Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+    let paramUnitnames;
+    for(var i=0; i< SelectedPollutents.length;i++){
+      let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
+      let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
+      if(paramUnitnames==undefined){
+        paramUnitnames =  filter[0].parameterName + "-"+ unitname[0].unitName + "," ;
+      }
+      else{
+        paramUnitnames +=  filter[0].parameterName + "-"+ unitname[0].unitName + "," ;
+      }
+      
+    }
+    
+    let params = new URLSearchParams({Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval,Units: paramUnitnames });
     window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params,"_blank");
     
   }
@@ -334,7 +364,10 @@ function AverageDataReport() {
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
                 {ListReportData.length>0 &&(
+                  <div>
                     <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
+                    <button type="button" className="btn btn-primary" onClick={DownloadPDF}>Download PDF</button>
+                  </div>
                 )}
               </div>
               <div className="col-md-4">
@@ -349,8 +382,14 @@ function AverageDataReport() {
               )} */}
             </div>
             {ListReportData.length>0 &&(
-            <div className="jsGrid" ref={gridRefjsgridreport} />
+            <div id="jsGridData" className="jsGrid" ref={gridRefjsgridreport} />
             )}
+            <div id="pdf">
+        <p>TO: John Citizen</p>
+        <p>123 Random Street</p>
+        <p>Oak Creek, Colorado (CO), 80467</p>
+        
+    </div>
           </div>
         </div>
       </section>
