@@ -60,11 +60,13 @@ function AverageDataReport() {
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
+    var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text",width:"140px" });
     for(var i=0; i< SelectedPollutents.length;i++){
       let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
       let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
-        layout.push({ name:SelectedPollutents[i] , title:  SelectedPollutents[i] + " - "+unitname[0].unitName , type: "text",width:"100px" });
+      gridheadertitle=SelectedPollutents[i] + "<br>" + unitname[0].unitName
+        layout.push({ name:SelectedPollutents[i] , title:  gridheadertitle , type: "text",width:"100px" });
     }
     if(SelectedPollutents.length<10){
       for(var p = SelectedPollutents.length; p < 10; p++){
