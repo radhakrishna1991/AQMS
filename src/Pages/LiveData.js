@@ -145,7 +145,8 @@ function LiveData() {
           if(filnallist[j].flagStatus!=null){
             let classname=CommonFunctions.SetFlagColor(filnallist[j].flagStatus,Flagcodelist);
             if(cell!= undefined){
-              cell.classList.add(classname);
+              cell.style.backgroundColor=classname;
+              //cell.classList.add(classname);
             }
           }
         }
@@ -481,22 +482,9 @@ function LiveData() {
                 </div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Correct" >A</button>
-                    <button type="button" className="btn btn-primary flag mx-1 rebuild" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
-                    <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Corrected" >O</button>
-                    <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Drift" >P</button>
-                    <button type="button" className="btn btn-primary flag mx-1 failed" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Failure" >D</button>
-                    <button type="button" className="btn btn-primary flag mx-1 invalid" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Invalidated" >I</button>
-                    <button type="button" className="btn btn-primary flag mx-1 maint" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Maintenance" >M</button>
-                    <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Zero" >Z</button>
-                    <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Span" >C</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outofrangebutvalid" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Non-obtained" >g</button>
-                    <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Warning" >W</button>
-                    <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Anomaly" >B</button>
-                    <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Stop" >X</button>
-                    <button type="button" className="btn btn-primary flag mx-1 alternativevalue" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of range" >G</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outofdomain" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
+                    {AllLookpdata.listFlagCodes.map((i) =>
+                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                    )}                    
                   </div>
                 </div>
                 <div className="jsGrid" ref={jspreadRef} />
