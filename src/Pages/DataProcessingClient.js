@@ -159,9 +159,9 @@ function DataProcessingClient() {
           let cell = instance.jexcel.getCellFromCoords(i + 1, index);
           if(filnallist[j].flagStatus!=null){
             let classname=CommonFunctions.SetFlagColor(filnallist[j].flagStatus,Flagcodelist);
-            cell.classList.add(classname);
-          }          
-          //cell.classList.add('updated');
+            cell.style.backgroundColor=classname;
+            //cell.classList.add(classname);
+          }
         }
       }
     }

@@ -6,6 +6,7 @@ import 'chartjs-plugin-dragdata'
 import jspreadsheet from "jspreadsheet-ce";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
 import * as bootstrap from 'bootstrap';
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -51,6 +52,7 @@ function HistoricalData() {
   const [ChartOptions, setChartOptions] = useState();
   const [ListHistory, setListHistory] = useState([]);
   const [SelectedCells, setSelectedCells] = useState([]);
+  const [Flagcodelist,SetFlagcodelist]=useState([]);
   const [revert, setrevert] = useState(false);
   const revertRef = useRef();
   revertRef.current = revert;
@@ -68,6 +70,7 @@ function HistoricalData() {
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
+        SetFlagcodelist(data.listFlagCodes);
         setTimeout(function () {
           $('#stationid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
@@ -140,7 +143,7 @@ function HistoricalData() {
     for (let j = 0; j < SelectedPollutents.length; j++) {
       chartdata.datasets[j].pointRadius = chartdata.datasets[j].pointRadius.map(function (x) { x = 2; return x });
     }
-    for (let k = startcolindex; k <= endcolindex; k++) {
+    for (let k = startcolindex; k < endcolindex; k++) {
       for (var i = 0; i < chartdata.datasets[k - 1].data.length; i++) {
         const index = finalarr.findIndex(data => data.Date == chartdata.labels[i]);
         if (index > -1) {
@@ -180,14 +183,21 @@ function HistoricalData() {
         }
       }).catch((error) => toast.error('Unable to update the parameter. Please contact adminstrator'));
   }
+  
   const loadtable = function (instance) {
     for (let i = 0; i < SelectedPollutents.length; i++) {
-      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase() && x.corrected == 1);
+      let filnallist = ListReportData.filter(x => x.parameterName.toLowerCase() === SelectedPollutents[i].toLowerCase());
       for (let j = 0; j < filnallist.length; j++) {
         let index = dataForGrid.findIndex(y => y.Date === filnallist[j].interval);
         if (index > -1) {
-          let cell = instance.jexcel.getCellFromCoords(i + 1, index);
-          cell.classList.add('updated');
+          let cell = instance.jexcel.getCellFromCoords(i+ 1, index);
+          if(filnallist[j].flagStatus!=null){
+            let classname=CommonFunctions.SetFlagColor(filnallist[j].flagStatus,Flagcodelist);
+            if(cell!= undefined){
+              cell.style.backgroundColor=classname;
+              //cell.classList.add(classname);
+            }
+          }
         }
       }
     }
@@ -671,22 +681,9 @@ function HistoricalData() {
               <div>
                 <div className="row">
                   <div className="col-md-12 mb-3">
-                    <button type="button" className="btn btn-primary flag correct" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Correct" >A</button>
-                    <button type="button" className="btn btn-primary flag mx-1 estimated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Estimated" >R</button>
-                    <button type="button" className="btn btn-primary flag mx-1 corrected" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Corrected" >O</button>
-                    <button type="button" className="btn btn-primary flag mx-1 drift" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Drift" >P</button>
-                    <button type="button" className="btn btn-primary flag mx-1 failure" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Failure" >D</button>
-                    <button type="button" className="btn btn-primary flag mx-1 invalidated" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Invalidated" >I</button>
-                    <button type="button" className="btn btn-primary flag mx-1 maintenance" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Maintenance" >M</button>
-                    <button type="button" className="btn btn-primary flag mx-1 zero" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Zero" >Z</button>
-                    <button type="button" className="btn btn-primary flag mx-1 span" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Span" >C</button>
-                    <button type="button" className="btn btn-primary flag mx-1 nonobtained" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Non-obtained" >N</button>
-                    <button type="button" className="btn btn-primary flag mx-1 warning" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Warning" >W</button>
-                    <button type="button" className="btn btn-primary flag mx-1 anomaly" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Anomaly" >B</button>
-                    <button type="button" className="btn btn-primary flag mx-1 stop" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Stop" >X</button>
-                    <button type="button" className="btn btn-primary flag mx-1 substitute" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Substitute" >S</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outofrange" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of range" >G</button>
-                    <button type="button" className="btn btn-primary flag mx-1 outoffield" data-bs-toggle="tooltip" data-bs-placement="top"  data-bs-title="Out of field" >H</button>
+                    {AllLookpdata.listFlagCodes.map((i) =>
+                      <button type="button" className="btn btn-primary flag mx-1" style={{ backgroundColor: i.colorCode }} data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title={i.name}>{i.code}</button>
+                    )}                    
                   </div>
                 </div>
 

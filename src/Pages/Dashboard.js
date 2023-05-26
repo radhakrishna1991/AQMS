@@ -31,6 +31,7 @@ function Dashboard() {
   const [ListAllData, setListAllData] = useState();
   const [Infodevices, setInfodevices] = useState([]);
   const [InfoParameters, setInfoParameters] = useState([]);
+  const [Commands, setCommands] = useState([]);
   const [LiveChartStatus, setLiveChartStatus] = useState([]);
   const [LiveCharticons, setLiveCharticons] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
@@ -43,7 +44,7 @@ function Dashboard() {
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   let parameterChartStatus = [];
   const Minute = window.DashboardRefreshtime;
-
+  
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/Dashboard", {
       method: 'GET',
@@ -59,7 +60,7 @@ function Dashboard() {
               checkedcnt++;
               Cookies.set(data.listPollutents[i].id + "_ChartStatus", true, { expires: 7 });
               parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: true })
-            }else {
+            } else {
               parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: false })
             }
           }
@@ -185,7 +186,9 @@ function Dashboard() {
 
   const Devicecalibration = function (param) {
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
+    let listcommands = ListAllData.listCommands.filter(x => x.deviceModelId == param.deviceModel);
     setInfoParameters(parameters);
+    setCommands(listcommands);
     $('#calibrationmodal').modal('show');
   }
 
@@ -255,7 +258,56 @@ function Dashboard() {
       })
     }, 10);
   }
+  const SaveCalibrationSequence = function () {
+    Getformvalues();
+    fetch(process.env.REACT_APP_WSurl + 'api/Stations', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+ /*      body: JSON.stringify({ StationName: StationName, Description: Description, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy }),
+  */   }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson == "Stationadd") {
+          toast.success('Station added successfully');
+        } else if (responseJson == "Stationexist") {
+          toast.error('Station already exist with given Station Name. Please try with another Station Name.');
+        } else {
+          toast.error('Unable to add the Station. Please contact adminstrator');
+        }
+      }).catch((error) => toast.error('Unable to add the Station. Please contact adminstrator'));
+  }
 
+  const Getformvalues=function(param){
+    let parameter=$("#parameter").val();
+    let profile=1;
+   let typeofsequence= $("#typeofsequence"+param).val();
+   let totaltime= $("#totaltime"+param).val();
+   let risingtime= $("#risingtime"+param).val();
+   let fallingtime= $("#fallingtime"+param).val();
+   let highdrift= $("#highdrift"+param).val();
+   let lowdrift= $("#lowdrift"+param).val();
+   let signalvalue= $("#signalvalue"+param).val();
+   let command1= $("#command"+param+"1").val();
+   let command2= $("#command"+param+"2").val();
+   let command3= $("#typeofsequence"+param+"3").val();
+   let command4= $("#typeofsequence"+param+"4").val();
+   let command5= $("#typeofsequence"+param+"5").val();
+   let command6= $("#typeofsequence"+param)+"6".val();
+   let command7= $("#typeofsequence"+param+"7").val();
+   let command8= $("#typeofsequence"+param+"8").val();
+   let command9= $("#typeofsequence"+param+"9").val();
+   let command10= $("#typeofsequence"+param+"0").val();
+   let CreatedBy = currentUser.id;
+   let ModifiedBy = "";
+   let finalobject={ParameterId:parameter,ProfileId:profile,SequenceNumber:param,TypeofSequence:typeofsequence,
+    TotalTime:totaltime,RisingTime:risingtime,FallingTime:fallingtime,HighDrift:highdrift,LowDrift:lowdrift,SignalValue:signalvalue,
+    Command1:command1,Command2:command2,Command3:command3,Command4:command4,Command5:command5,Command6:command6,Command7:command7,Command8:command8,
+    Command9:command9,Command10:command10,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy
+  }
+  return finalobject;
+  }
   const selects=function (data){  
     var ele=document.getElementById('selectall');
     if(ele.checked==true){    
@@ -699,14 +751,14 @@ function Dashboard() {
                     <label for="formGroupExampleInput" class="form-label">Measure</label>
                   </div>
                   <div className="col-md-4">
-                    <select className="form-select">
+                    <select className="form-select" id="parameter">
                       {InfoParameters.map((x, y) =>
-                        <option value={x.parameterName}>{x.parameterName}</option>
+                        <option value={x.id}>{x.parameterName}</option>
                       )}
                     </select>
                   </div>
                   <div className="col-md-4">
-                    <select className="form-select">
+                    <select className="form-select" id="userprofile">
                       <option value="User Profile">User Profile</option>
                     </select>
                   </div>
@@ -730,137 +782,156 @@ function Dashboard() {
                 </ul>
                 <div className="tab-content" id="calibrationTabContent">
                   <div className="tab-pane fade show active" id="sequence1-tab-pane" role="tabpanel" aria-labelledby="sequence1-tab" >
-                    <div className="dashboard_row">
-                      <div className="col-md-9">
-                        <fieldset>
-                          <legend>Configuration</legend>
-                          <div className="row">
-                            <div className="col-md-6">
-                            </div>
-                            <div className="col-md-6">
-                              <div className="row mb-3">
-                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
-                                <div className="col-md-8">
-                                  <select id="typeofsequence" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
-                                </div>
+                    <form id="Sequenceform1">
+                      <div className="dashboard_row">
+                        <div className="col-md-9">
+                          <fieldset>
+                            <legend>Configuration</legend>
+                            <div className="row">
+                              <div className="col-md-6">
                               </div>
-                              <div className="row mb-3">
-                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
-                                <div className="col-md-8">
-                                  <select id="totaltime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                              <div className="col-md-6">
+                                <div className="row mb-3">
+                                  <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                  <div className="col-md-8">
+                                    <select id="typeofsequence1" className="form-select">
+                                      <option value="" selected>Select Type of the sequence</option>
+                                      {window.Typeofsequence.map((x, y) =>
+                                        <option value={x}>{x}</option>
+                                      )}
+                                    </select>
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
-                                <div className="col-md-8">
-                                  <select id="risingtime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                <div className="row mb-3">
+                                  <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                  <div className="col-md-8">
+                                    <input type="number" className="form-control" id="totaltime1" />
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="fallingtime" />
+                                <div className="row mb-3">
+                                  <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                  <div className="col-md-8">
+                                    <input type="number" className="form-control" id="risingtime" />
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="highdrift" />
+                                <div className="row mb-3">
+                                  <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                  <div className="col-md-8">
+                                    <input type="number" className="form-control" id="fallingtime1" />
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="lowdrift" />
+                                <div className="row mb-3">
+                                  <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                  <div className="col-md-8">
+                                    <input type="number" className="form-control" id="highdrift1" />
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="signalvalue" />
+                                <div className="row mb-3">
+                                  <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                  <div className="col-md-8">
+                                    <input type="number" className="form-control" id="lowdrift1" />
+                                  </div>
+                                </div>
+                                <div className="row mb-3">
+                                  <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                  <div className="col-md-8">
+                                    <input type="number" className="form-control" id="signalvalue1" />
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </fieldset>
+                          </fieldset>
+                        </div>
+                        <div className="col-md-3">
+                          <fieldset>
+                            <legend>Commands</legend>
+                            <div className="row">
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command11">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command12">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command13">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command14">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command15">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command16">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command17">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command18">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command19">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                              <div className="col-md-12 mb-2">
+                                <select className="form-select" id="command10">
+                                  <option value="" selected>Select Commands</option>
+                                  {Commands.map((x, y) =>
+                                    <option value={x.id}>{x.description}</option>
+                                  )}
+                                </select>
+                              </div>
+                            </div>
+                          </fieldset>
+                        </div>
+
                       </div>
-                      <div className="col-md-3">
-                        <fieldset>
-                          <legend>Commands</legend>
-                          <div className="row">
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
-                              </select>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-                    </div>
+                    </form>
                   </div>
                   <div className="tab-pane fade" id="sequence2-tab-pane" role="tabpanel" aria-labelledby="sequence2-tab" >
                     <div className="dashboard_row">
@@ -875,27 +946,22 @@ function Dashboard() {
                                 <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
                                 <div className="col-md-8">
                                   <select id="typeofsequence" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
+                                    {window.Typeofsequence.map((x, y) =>
+                                      <option value={x}>{x}</option>
+                                    )}
                                   </select>
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                 <div className="col-md-8">
-                                  <select id="totaltime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="totaltime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
                                 <div className="col-md-8">
-                                  <select id="risingtime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="risingtime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
@@ -932,62 +998,72 @@ function Dashboard() {
                           <div className="row">
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                           </div>
@@ -1008,27 +1084,22 @@ function Dashboard() {
                                 <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
                                 <div className="col-md-8">
                                   <select id="typeofsequence" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
+                                    {window.Typeofsequence.map((x, y) =>
+                                      <option value={x}>{x}</option>
+                                    )}
                                   </select>
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                 <div className="col-md-8">
-                                  <select id="totaltime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="totaltime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
                                 <div className="col-md-8">
-                                  <select id="risingtime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="risingtime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
@@ -1065,62 +1136,72 @@ function Dashboard() {
                           <div className="row">
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                           </div>
@@ -1141,27 +1222,22 @@ function Dashboard() {
                                 <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
                                 <div className="col-md-8">
                                   <select id="typeofsequence" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
+                                    {window.Typeofsequence.map((x, y) =>
+                                      <option value={x}>{x}</option>
+                                    )}
                                   </select>
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                 <div className="col-md-8">
-                                  <select id="totaltime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="totaltime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
                                 <div className="col-md-8">
-                                  <select id="risingtime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="risingtime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
@@ -1198,62 +1274,72 @@ function Dashboard() {
                           <div className="row">
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                           </div>
@@ -1274,36 +1360,28 @@ function Dashboard() {
                                 <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
                                 <div className="col-md-8">
                                   <select id="typeofsequence" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
+                                    {window.Typeofsequence.map((x, y) =>
+                                      <option value={x}>{x}</option>
+                                    )}
                                   </select>
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                 <div className="col-md-8">
-                                  <select id="totaltime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="totaltime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
                                 <div className="col-md-8">
-                                  <select id="risingtime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="risingtime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
                                 <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
                                 <div className="col-md-8">
-                                  <select id="fallingtime" className="form-select">
-                                    <option selected>Choose...</option>
-                                    <option>...</option>
-                                  </select>
+                                  <input type="number" className="form-control" id="fallingtime" />
                                 </div>
                               </div>
                               <div className="row mb-3">
@@ -1334,62 +1412,72 @@ function Dashboard() {
                           <div className="row">
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                             <div className="col-md-12 mb-2">
                               <select className="form-select">
-                                <option selected>Nothing</option>
-                                <option>...</option>
+                                {Commands.map((x, y) =>
+                                  <option value={x.id}>{x.description}</option>
+                                )}
                               </select>
                             </div>
                           </div>
@@ -1397,12 +1485,13 @@ function Dashboard() {
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
             <div className="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+              <button type="button" className="btn btn-primary" onClick={SaveCalibrationSequence} >Save</button>
             </div>
           </div>
         </div>
@@ -1718,10 +1807,10 @@ function Dashboard() {
                           <div className="icons" title="Service Mode"> <i class="bi bi-modem"></i>&nbsp;</div>
                           <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
                           <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
-              
-                       {/*      <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
+
+                          {/*      <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
            */}
-                            <div className="icons"><i className="bi bi-lightbulb"></i></div>
+                          <div className="icons"><i className="bi bi-lightbulb"></i></div>
                         </div>
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (
@@ -1760,10 +1849,10 @@ function Dashboard() {
                     <input class="form-check-input" type="checkbox" id={i.id} value={i.id} defaultChecked={LiveChartStatus[j].ChartStatus}  onChange={() => DeviceGraph(i)}/>
                     {/* <input class="form-check-input" type="checkbox" name="paramtername" value={i.id}  onChange={() => DeviceGraph(i)}/> */}
                       <label class="form-check-label" htmlFor="flexCheckDefault">
-                      {i.parameterName}
+                        {i.parameterName}
                       </label>
-                  </div>
-                )}
+                    </div>
+                  )}
                 </div>
               </div>
 

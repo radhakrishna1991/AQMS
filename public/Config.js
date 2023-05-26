@@ -16,4 +16,5 @@ var CommPort = ["COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", 
 var BaudRate = ["9600", "14400", "19200", "38400", "57600", "115200", "128000", "256000"];
 var Parity =["None","Odd","Even","Mark","Space"];
 var StopBits=[1,1.5,2];
+var Typeofsequence=['Zero','Span']
 
