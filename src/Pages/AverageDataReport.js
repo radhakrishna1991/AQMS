@@ -70,7 +70,7 @@ function AverageDataReport() {
     }
     if(SelectedPollutents.length<10){
       for(var p = SelectedPollutents.length; p < 10; p++){
-         layout.push({ name: "CO_" + p, title: "CO" + " - " + "PPM", type: "text",width:"100px" });
+         layout.push({ name: " " + p, title: " ", type: "text",width:"100px" });
        }
     }    
     // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
