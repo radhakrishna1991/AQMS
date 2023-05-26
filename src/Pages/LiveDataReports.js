@@ -136,22 +136,22 @@ function LiveDataReports() {
       controller: {
         data: dataForGrid,
         loadData: function (filter) {
-          /* let resultData = this.data;
+           let resultData = this.data;
           var d = $.Deferred();
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
-          for (var prop in filter) {
-            if (filter[prop].length > 0) {
-              resultData = $.grep(resultData, function (item) {
-                if (!filter[prop] || item[prop].toString().indexOf(filter[prop]) >= 0) {
-                  return item;
-                }
-              });
-              break;
-            }
-          }
+          // $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+          // $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          // for (var prop in filter) {
+          //   if (filter[prop].length > 0) {
+          //     resultData = $.grep(resultData, function (item) {
+          //       if (!filter[prop] || item[prop].toString().indexOf(filter[prop]) >= 0) {
+          //         return item;
+          //       }
+          //     });
+          //     break;
+          //   }
+          // }
           d.resolve(resultData);
-          return d.promise(); */
+          return d.promise(); 
         }
       },
       fields: layout
