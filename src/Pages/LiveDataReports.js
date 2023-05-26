@@ -82,14 +82,17 @@ function LiveDataReports() {
   const initializeJsGrid = function () {
     var dataForGrid = [];
     var layout = [];
+    var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width:"140px"});
     for (var i = 0; i < SelectedPollutents.length; i++) {
-      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID)
-      layout.push({ name: SelectedPollutents[i].parameterName, title: SelectedPollutents[i].parameterName + " - " + unitname[0].unitName, type: "text",width:"100px" });
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
+      gridheadertitle=SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName
+      layout.push({ name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text",width:"100px" });
     }
     if(SelectedPollutents.length<10){
        for(var p = SelectedPollutents.length; p < 10; p++){
-          layout.push({ name: "CO_" + p, title: "CO" + " - " + "PPM", type: "text",width:"100px" });
+          //layout.push({ name: "CO_" + p, title: "CO" + " - " + "PPM", type: "text",width:"100px" });
+          layout.push({ name: "", title: "", type: "text",width:"100px" });
         }
     }
     // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
