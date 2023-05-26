@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
-import { jsPDF } from "jspdf";
+// import { jsPDF } from "jspdf";
 
 function AverageDataReport() {
   const $ = window.jQuery;
@@ -155,22 +155,22 @@ function AverageDataReport() {
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
   }
-  const DownloadPDF=function(){
-    const input = document.getElementById('jsGridData');
-    // html2canvas(input)
-    //   .then((canvas) => {
-    //     //const imgData = canvas.toDataURL('image/png');
-    //     const pdf = new jsPDF();
-    //     //pdf.addImage(imgData, 'PNG', 0, 0);
-    //     pdf.save("download.pdf");  
-    //   });
+  // const DownloadPDF=function(){
+  //   const input = document.getElementById('jsGridData');
+  //   // html2canvas(input)
+  //   //   .then((canvas) => {
+  //   //     //const imgData = canvas.toDataURL('image/png');
+  //   //     const pdf = new jsPDF();
+  //   //     //pdf.addImage(imgData, 'PNG', 0, 0);
+  //   //     pdf.save("download.pdf");  
+  //   //   });
 
-    const pdf = new jsPDF("portrait", "pt", "a4");
-    const data = document.querySelector("#pdf");
-    pdf.html(data).then(() => {
-      pdf.save("sample.pdf");
-    });
-  }
+  //   // const pdf = new jsPDF("portrait", "pt", "a4");
+  //   // const data = document.querySelector("#pdf");
+  //   // pdf.html(data).then(() => {
+  //   //   pdf.save("sample.pdf");
+  //   // });
+  // }
   const DownloadExcel = function () {
     
     let Pollutent = $("#pollutentid").val();
@@ -364,10 +364,11 @@ function AverageDataReport() {
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
                 {ListReportData.length>0 &&(
-                  <div>
-                    <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
-                    <button type="button" className="btn btn-primary" onClick={DownloadPDF}>Download PDF</button>
-                  </div>
+                  <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
+                  // <div>
+                  //   <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
+                  //   {/* <button type="button" className="btn btn-primary" onClick={DownloadPDF}>Download PDF</button> */}
+                  // </div>
                 )}
               </div>
               <div className="col-md-4">
@@ -384,12 +385,7 @@ function AverageDataReport() {
             {ListReportData.length>0 &&(
             <div id="jsGridData" className="jsGrid" ref={gridRefjsgridreport} />
             )}
-            <div id="pdf">
-        <p>TO: John Citizen</p>
-        <p>123 Random Street</p>
-        <p>Oak Creek, Colorado (CO), 80467</p>
-        
-    </div>
+           
           </div>
         </div>
       </section>
