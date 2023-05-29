@@ -335,7 +335,8 @@ h6 {
 }
 
 .form-switch .form-check-input {
-  padding: 10px 24px;
+  padding: 5px 12px;
+  margin-top: 0.5rem!important;
 }
 
 .form-switch .form-check-label {
@@ -399,7 +400,8 @@ h6 {
 .dashboard .card .values .btn1 {
   border: 2px solid #1e40afb0 !important;
   border-radius: 4px;
-  color: #1e40afb0 !important;
+  color: #0b0404 !important;
+  font-weight: 600;
   background-color: #fff;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
@@ -411,6 +413,7 @@ h6 {
   border-left: none !important;
   border-radius: 4px;
   color: #fff !important;
+  font-weight: 600;
   background-color: #1e40afb0;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
