@@ -1,6 +1,7 @@
 var TruncateorRound = "RoundOff";
 var decimalDigit = 3;
-var DashboardRefreshtime = 60000;
+var DashboardRefreshtime = 10000;
+var DashboardChartRefreshtime = 60000;
 var Dashboarddatetime = 100;
 var LiveDataDuration = "60000";
 var CommPort = ["COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "COM10",

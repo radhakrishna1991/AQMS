@@ -90,7 +90,27 @@ function Dashboard() {
         }).catch((error) =>
           toast.error('Unable to get the data. Please contact adminstrator')
         );
-    }, Minute);
+    }, window.DashboardChartRefreshtime);
+
+    return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      //  console.log('Logs every minute');
+      fetch(process.env.REACT_APP_WSurl + "api/LiveDashboard", {
+        method: 'GET',
+      }).then((response) => response.json())
+        .then((data) => {
+          if (data) {
+            ListAllDataCopy.current.listDevices=data.listDevices;
+            ListAllDataCopy.current.listAlarms=data.listAlarms;
+            ListAllDataCopy.current.listPollutents=data.listPollutents;
+          }
+        }).catch((error) =>
+          toast.error('Unable to get the data. Please contact adminstrator')
+        );
+    }, window.DashboardRefreshtime);
 
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])

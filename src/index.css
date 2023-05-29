@@ -375,8 +375,8 @@ h6 {
   display:flex;
 }
 .dashboard .card .values{
-  width: 60%;
-  text-align: center;
+  width: 50%;
+  /* text-align: center; */
 }
 
 .dashboard .card .parameter span {
