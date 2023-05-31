@@ -1889,10 +1889,12 @@ function Dashboard() {
                           )}
                           <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
                           <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
-
-                          {/*      <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
-           */}
+                          {ListAllData.listAlarms.filter(z=>z.deviceModelId==x.deviceModel && z.status==1).length>0 && ( 
+                            <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
+                          )}
+                         {!ListAllData.listAlarms.filter(z=>z.deviceModelId==x.deviceModel && z.status==1).length>0 && ( 
                           <div className="icons"><i className="bi bi-lightbulb" onClick={() => Devicealert(x)}></i></div>
+                          )}
                         </div>
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (
