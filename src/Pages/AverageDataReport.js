@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
-// import { jsPDF } from "jspdf";
+import { jsPDF } from "jspdf";
+import "jspdf-autotable";
 
 function AverageDataReport() {
   const $ = window.jQuery;
@@ -155,22 +156,107 @@ function AverageDataReport() {
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
   }
-  // const DownloadPDF=function(){
-  //   const input = document.getElementById('jsGridData');
-  //   // html2canvas(input)
-  //   //   .then((canvas) => {
-  //   //     //const imgData = canvas.toDataURL('image/png');
-  //   //     const pdf = new jsPDF();
-  //   //     //pdf.addImage(imgData, 'PNG', 0, 0);
-  //   //     pdf.save("download.pdf");  
-  //   //   });
 
-  //   // const pdf = new jsPDF("portrait", "pt", "a4");
-  //   // const data = document.querySelector("#pdf");
-  //   // pdf.html(data).then(() => {
-  //   //   pdf.save("sample.pdf");
-  //   // });
-  // }
+
+  
+  const DownloadPDF=function(){
+    var input = document.getElementById('jsGridData');
+    var tableheading=[];   
+    
+    const styles = {
+      fontFamily: "sans-serif",
+      textAlign: "center"
+    };
+    const colstyle = {
+      width: "30%"
+    };
+    const tableStyle = {
+      width: "100%"
+    };    
+    var layout="";
+    layout="Date";
+    tableheading.push(layout);
+    for(var i=0; i< SelectedPollutents.length;i++){
+      let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
+      let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
+      //layout= SelectedPollutents[i] + " - "+unitname[0].unitName;
+      layout=SelectedPollutents[i];
+      tableheading.push(layout);
+    }  
+    var rows = [];
+    var b=0;
+    for (var k = 0; k < ListReportData.length; k++) {      
+      var temp= rows.findIndex(x => x[0] ===ListReportData[k].interval);
+      let roundedNumber=0;
+      let digit = window.decimalDigit;
+      if(window.TruncateorRound=="RoundOff"){
+         let num =ListReportData[k].parametervalue;
+         roundedNumber=num.toFixed(digit);
+      }
+      else {
+        roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+      }
+      
+      if(temp >= 0)
+      {    
+        var n=1;
+        for(var e=0;e<SelectedPollutents.length;e++){
+          if(ListReportData[k].parameterName==SelectedPollutents[e]){
+            rows[temp][n]=roundedNumber;           
+          }
+          n++;
+        }
+      }
+      else{
+        var d=1;
+        rows.push([ListReportData[k].interval]);
+        for(var e=0;e<SelectedPollutents.length;e++){            
+          if(ListReportData[k].parameterName==SelectedPollutents[e]){
+            //Columnfields.push([ListReportData[k].interval ,roundedNumber]);                              
+            rows[b][d]=roundedNumber;  
+          }
+          d++;  
+        }
+        b++;
+      }
+    
+    }
+    var pdf = new jsPDF("p", "pt", "a4");    
+    const columns=tableheading;
+    pdf.text(235, 40, "Average Data Report");
+    pdf.autoTable(columns, rows, {
+      startY: 65,
+      theme: "grid",
+      styles: {
+        font: "times",
+        halign: "center",
+        cellPadding: 3.5,
+        lineWidth: 0.5,
+       lineColor: [0, 0, 0],
+        textColor: [0, 0, 0]
+      },
+      headStyles: {
+        textColor: [0, 0, 0],
+        fontStyle: "normal",
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0],
+        fillColor: [166, 204, 247]
+      },
+      alternateRowStyles: {
+        fillColor: [212, 212, 212],
+        textColor: [0, 0, 0],
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0]
+      },
+      rowStyles: {
+        lineWidth: 0.5,
+        lineColor: [0, 0, 0]
+      },
+      tableLineColor: [0, 0, 0]
+    });
+    console.log(pdf.output("datauristring"));
+    pdf.save("Average Data Report");
+  }
   const DownloadExcel = function () {
     
     let Pollutent = $("#pollutentid").val();
@@ -361,15 +447,14 @@ function AverageDataReport() {
                 </select>
               </div>
               <div className="col-md-4 my-4">
-                <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                <button type="button" className="btn btn-primary datashow" onClick={getdtareport}>GetData</button>
+                <button type="button" className="btn btn-primary mx-1 datashow" onClick={Resetfilters}>Reset</button>                
                 {ListReportData.length>0 &&(
-                  <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
-                  // <div>
-                  //   <button type="button" className="btn btn-primary" onClick={DownloadExcel}>Download Excel</button>
-                  //   {/* <button type="button" className="btn btn-primary" onClick={DownloadPDF}>Download PDF</button> */}
-                  // </div>
-                )}
+                   <span> 
+                     <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
+                     <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button>
+                   </span>
+                )}  
               </div>
               <div className="col-md-4">
                 <div className="row">

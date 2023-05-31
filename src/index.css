@@ -742,3 +742,8 @@ table.jexcel colgroup col:nth-child(1) {
 .serialrtumode{
   margin-top: 2rem !important;
 }
+
+.datashow{
+  font-size: 0.855rem !important;
+  font-weight: 600;
+}
