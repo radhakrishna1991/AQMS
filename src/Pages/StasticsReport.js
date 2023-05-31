@@ -42,7 +42,7 @@ function StasticsReport() {
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733 ", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
@@ -440,9 +440,9 @@ function StasticsReport() {
                   <option value="MeanTimeseries">Mean by Timeseries</option>
                   <option value="Raw">Raw</option>
                   <option value="Max">Maximum</option>
-                  <option value="Compliance">Compliance Percentage</option>
+                 {/*  <option value="Compliance">Compliance Percentage</option>
                   <option value="Max %">Concentrations in % limit values</option>
-                  <option value="AQL Exceed">Exceedences Numbers</option>
+                  <option value="AQL Exceed">Exceedences Numbers</option> */}
                   <option value="Percentile">98 &amp; 50 Percentile </option>
                 </select>
               </div>

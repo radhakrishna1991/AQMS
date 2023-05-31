@@ -54,7 +54,7 @@ function DetailedAnalysisReports() {
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+    "#CD5C5C", "#FF5733","#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   useEffect(() => {
     var d = new Date();
     var currentyear = d.getFullYear();

@@ -11,6 +11,8 @@ function AddDevice() {
   const [ListDeviceModels, setListDeviceModels] = useState([]);
   const [Deviceid, setDeviceid] = useState(0);
   const [Status, setStatus] = useState(true);
+  const [ServiceMode, setServiceMode] = useState(true);
+  const [Enable, setEnable] = useState(true);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
@@ -51,6 +53,8 @@ function AddDevice() {
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
+    let servicemode=ServiceMode?1:0;
+    let enable=Enable?1:0;
     let validation = Deviceaddvalidation(StationID, DeviceName, DeviceModel, IPAddress, Port, Type);
     if (!validation) {
       return false;
@@ -63,8 +67,8 @@ function AddDevice() {
       },
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, DeviceId: deviceId, IPAddress: IPAddress, Port: Port, Type: Type,
-        CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
-        SerialRtuMode: SerialRtuMode, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+        CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,ServiceMode:servicemode,
+        SerialRtuMode: SerialRtuMode, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -80,11 +84,13 @@ function AddDevice() {
       }).catch((error) => toast.error('Unable to add the Device. Please contact adminstrator'));
   }
 
-  const EditStation = function (param) {
+  const EditDevice = function (param) {
     setDeviceList(false);
     setDeviceid(param.id);
     setType(param.type);
-    setStatus(param.status == 1 ? true : false)
+    setStatus(param.status == 1 ? true : false);
+    setServiceMode(param.serviceMode == 1 ? true : false);
+    setEnable(param.isEnable == 1 ? true : false);
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceName;
@@ -106,7 +112,7 @@ function AddDevice() {
 
   }
 
-  const UpdateStation = function () {
+  const UpdateDevice= function () {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
@@ -134,6 +140,8 @@ function AddDevice() {
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
+    let servicemode=ServiceMode?1:0;
+    let enable=Enable?1:0;
     let validation = Deviceaddvalidation();
     if (!validation) {
       return false;
@@ -147,7 +155,7 @@ function AddDevice() {
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, DeviceId: deviceId, IPAddress: IPAddress, Port: Port,
         Type: Type, ID: Deviceid, Status: status, CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
-        SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+        ServiceMode:servicemode,SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -163,7 +171,7 @@ function AddDevice() {
       }).catch((error) => toast.error('Unable to update the Device. Please contact adminstrator'));
   }
 
-  const DeleteStation = function (item) {
+  const DeleteDevice = function (item) {
     Swal.fire({
       title: "Are you sure?",
       text: ("You want to delete this Device !"),
@@ -261,14 +269,14 @@ function AddDevice() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
-                EditStation(item);
+                EditDevice(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
             var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
               .click(function (e) {
-                DeleteStation(item);
+                DeleteDevice(item);
                 e.stopPropagation();
               });
 
@@ -419,7 +427,31 @@ function AddDevice() {
                     </div>
                   </div>
                 )}
-                <div className="col-md-12 mb-3">
+                 <div className="col-md-4 mb-3">
+                  <label for="Status" className="form-label">Service Mode: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="servicemode" onChange={(e) => setServiceMode(e.target.checked)} defaultChecked={ServiceMode} />
+                    {ServiceMode && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
+                    )}
+                    {!ServiceMode && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label for="Status" className="form-label">Enabled: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="enabled" onChange={(e) => setEnable(e.target.checked)} defaultChecked={Enable} />
+                    {Enable && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Yes</label>
+                    )}
+                    {!Enable && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">No</label>
+                    )}
+                  </div>
+                </div>
+                <div className="col-md-4 mb-3">
                   <label for="Status" className="form-label">Status: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
@@ -436,7 +468,7 @@ function AddDevice() {
                     <button className="btn btn-primary" onClick={Deviceadd} type="button">Add Device</button>
                   )}
                   {!DeviceList && Deviceid != 0 && (
-                    <button className="btn btn-primary" onClick={UpdateStation} type="button">Update Device</button>
+                    <button className="btn btn-primary" onClick={UpdateDevice} type="button">Update Device</button>
                   )}
                 </div>
               </form>
