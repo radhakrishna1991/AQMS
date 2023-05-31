@@ -33,6 +33,7 @@ function Dashboard() {
   const [Infodevices, setInfodevices] = useState([]);
   const [InfoParameters, setInfoParameters] = useState([]);
   const [Infoalarms, setInfoalarms] = useState([]);
+  const [InfoParameteralarms, setInfoParameteralarms] = useState([]);
   const [Commands, setCommands] = useState([]);
   const [LiveChartStatus, setLiveChartStatus] = useState([]);
   const [LiveCharticons, setLiveCharticons] = useState([]);
@@ -571,89 +572,27 @@ function Dashboard() {
                   {Infodevices && (
                     <tbody>
                       {InfoParameters.map((x, y) =>
-                        <React.Fragment>
+                             <React.Fragment>
                           <tr>
-                            <td rowSpan={21}>{x.parameterName}</td>
-                            <td>Low threshold 1 sample</td>
+                            <td rowSpan={ListAllData.parameterAlarmsList.filter(z=>z.parameterID==x.id).length+1}>{x.parameterName}</td>
+                          </tr>
+                          {ListAllData.parameterAlarmsList.filter(z=>z.parameterID==x.id).map((k, l) =>
+                           <React.Fragment>
+                          {!k.status==1 && (
+                          <tr>
+                            <td>{k.flag}</td>
                             <td>Inactive</td>
                           </tr>
-                          <tr>
-                            <td>Low threshold 2 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 3 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 4 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 5 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 1 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 2 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 3 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 4 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 5 sample</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 1 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr></tr>
-                          <tr>
-                            <td>Low threshold 2 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 3 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 4 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Low threshold 5 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 1 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 2 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 3 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 4 mean</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>High threshold 5 mean</td>
-                            <td>Inactive</td>
-                          </tr>
+                          )}
+
+                          {k.status==1 && (
+                            <tr className="text-danger">
+                              <td>{k.flag}</td>
+                              <td>Active</td>
+                            </tr>
+                            )}
+                          </React.Fragment>
+                           )}
                         </React.Fragment>
                       )}
                     </tbody>
