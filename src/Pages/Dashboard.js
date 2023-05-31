@@ -456,21 +456,19 @@ function Dashboard() {
                       {Infodevices.type == 'Serial' && (
                         <tr className="body_active">
                           <td>Physcical Channel</td>
-                          <td>Number</td>
-                          <td>{Infodevices.number}</td>
+                          <td>Comm Port</td>
+                          <td>{Infodevices.commPort}</td>
                         </tr>
                       )}
                       <tr className="body_active">
                         <td>Protocol</td>
                         <td>Type</td>
-                        <td>APIIP</td>
+                        <td>{Infodevices.type == 'Serial'?'Serial':'Modbus'}</td>
                       </tr>
                       {InfoParameters.map((x, y) =>
                         <React.Fragment>
                           <tr>
                             <td rowSpan={3}>{x.parameterName}</td>
-                            <td>Number</td>
-                            <td>2</td>
                           </tr>
                           <tr>
                             <td>COEF A</td>
@@ -521,7 +519,7 @@ function Dashboard() {
                         <td >{i.status==1?"Active":"Inactive"}</td>
                       </tr>
                       )}
-                      {InfoParameters.map((x, y) =>
+                    {/*   {InfoParameters.map((x, y) =>
                         <React.Fragment>
                           <tr>
                             <td rowSpan={4}>{x.parameterName}</td>
@@ -541,7 +539,7 @@ function Dashboard() {
                             <td>Inactive</td>
                           </tr>
                         </React.Fragment>
-                      )}
+                      )} */}
                     </tbody>
                   )}
                 </table>
@@ -688,9 +686,9 @@ function Dashboard() {
                   {ListAllData && (
                     <tbody>
                       {ListAllData.listFlagCodes.map((x, y) =>
-                        <tr style={{ backgroundColor: x.colorCode }}>
+                        <tr>
                           <td>{x.code}</td>
-                          <td>{x.name}</td>
+                          <td style={{ backgroundColor: x.colorCode }}>{x.name}</td>
                         </tr>
                       )}
                       {/* <tr>
@@ -1874,7 +1872,7 @@ function Dashboard() {
                     <div className="card info-card revenue-card">
                       <div className="card-body ">
                         <div className="d-flex justify-content-between">
-                          <div className="icons"><i className="bi bi-sliders2-vertical"></i></div>
+                      {/*     <div className="icons"><i className="bi bi-sliders2-vertical"></i></div> */}
                           <div className="device">{x.deviceName}</div>
                           <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
                         </div>
@@ -1901,7 +1899,7 @@ function Dashboard() {
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className="bi bi-check2"></i>)} {!i.isEnable && (<i className="bi bi-x-lg text-danger"></i>)}</span> <span>{i.parameterName}</span></div>
                               <div className="values"><button className="btn1" style={{backgroundColor:i.flag==null?"#FFFFF":ListAllData.listFlagCodes.filter(y=>y.id==i.flag)[0].colorCode}} onClick={Codesinformation} >{i.flag==null?"A":ListAllData.listFlagCodes.filter(y=>y.id==i.flag)[0].code}</button>
-                                <button className="btn2">{i.parameterValue==null?0:CommonFunctions.truncateNumber(i.parameterValue,2)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
+                                <button className="btn2">{i.parameterValue==null?0:i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
                               {/* {LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}

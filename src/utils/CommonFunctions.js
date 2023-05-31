@@ -5,10 +5,11 @@ const CommonFunctions = {
    
   truncateNumber(number,digits) {
         
-    var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
+   /*  var re = new RegExp("(\\d+\\.\\d{" + digits + "})(\\d)"),
         m = number.toString().match(re);
-    return m ? parseFloat(m[1]) : number.valueOf();
+    return m ? parseFloat(m[1]) : number.valueOf(); */
 
+    return Math.trunc(number * Math.pow(10, digits)) / Math.pow(10, digits)
     //return with2Decimals = value.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0]
  
      },

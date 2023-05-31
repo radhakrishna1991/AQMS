@@ -17,17 +17,20 @@ function LiveDataReports() {
   const [Criteria, setcriteria] = useState([]);
   const ListAllDataCopy=useRef([]);
   const Interval=useRef();
-  ListAllDataCopy.current=ListReportData;
   const getDuration= window.LiveDataDuration;
-
+  var dataForGrid=[]; 
+ // const [dataForGrid1,setdataForGrid1]=useState([]);
+ // ListAllDataCopy.current=dataForGrid1;
   useEffect(() => {
-    let params = new URLSearchParams({ Pollutent: "", Fromdate: null, Todate: null });
+    let params = new URLSearchParams({ Pollutent: "", StartIndex:0 });
     fetch(process.env.REACT_APP_WSurl + "api/LiveDataLookup?" + params)
       .then((response) => response.json())
       .then((data) => {
         if (data != null) {
           setAllLookpdata(data);
-          setListReportData(data.listParametervalues);
+         setListReportData(data.listLivedata);
+        // getdtareport();
+          //setListReportData(data.listParametervalues);
           // let parameterslist=[...new Set(data.listPollutents.map(item => item.parameterName))]
           let parameterslist = [];
           data.listPollutents.filter(function (item) {
@@ -56,7 +59,7 @@ function LiveDataReports() {
   }, []);
   useEffect(() => {
     initializeJsGrid();
-  });
+  },[ListReportData]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -78,16 +81,23 @@ function LiveDataReports() {
         "left": left
       });
   }
-  
+
+  const Codesinformation = function () {
+    $('#alertcode').modal('show');
+  }
   const initializeJsGrid = function () {
-    var dataForGrid = [];
+     dataForGrid = [];
     var layout = [];
     var gridheadertitle;
     layout.push({ name: "Date", title: "Date", type: "text", width:"140px"});
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
       gridheadertitle=SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName
-      layout.push({ name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text",width:"100px" });
+      layout.push({ name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text",width:"100px", cellRenderer: function(item, value){
+        let flag=AllLookpdata.listFlagCodes.filter(x=>x.id==value[Object.keys(value).find(key => value[key] === item)+"flag"]);
+       let bgcolor=flag.length>0?flag[0].colorCode:"#FFFFF"
+        return $("<td>").css("background-color", bgcolor).append(item); 
+      }});
     }
     if(SelectedPollutents.length<10){
        for(var p = SelectedPollutents.length; p < 10; p++){
@@ -96,7 +106,7 @@ function LiveDataReports() {
         }
     }
     // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
-    for (var k = 0; k < ListReportData.length; k++) {
+    /* for (var k = 0; k < ListReportData.length; k++) {
       var obj = {};
       var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
       let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
@@ -112,15 +122,17 @@ function LiveDataReports() {
             }
             if (temp >= 0) {
               dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+              dataForGrid[temp][paramater[0].parameterName+"flag"] = ListReportData[k].loggerFlags;
             } else {
               obj[paramater[0].parameterName] = roundedNumber;
+              obj[paramater[0].parameterName+"flag"] = ListReportData[k].loggerFlags;
               obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
               
               dataForGrid.push(obj);
             }
       }
     
-    }
+    } */
 
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
@@ -131,27 +143,39 @@ function LiveDataReports() {
       sorting: true,
       paging: true,
       autoload: true,
-      pageSize: 100,
+      pageLoading: true,
       pageButtonCount: 5,
-      controller: {
+      pageSize: 100,
+      pageIndex: 1,
+      /* controller: {
         data: dataForGrid,
         loadData: function (filter) {
            let resultData = this.data;
           var d = $.Deferred();
-          // $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          // $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
-          // for (var prop in filter) {
-          //   if (filter[prop].length > 0) {
-          //     resultData = $.grep(resultData, function (item) {
-          //       if (!filter[prop] || item[prop].toString().indexOf(filter[prop]) >= 0) {
-          //         return item;
-          //       }
-          //     });
-          //     break;
-          //   }
-          // }
+          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
+           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+           for (var prop in filter) {
+             if (filter[prop].length > 0) {
+               resultData = $.grep(resultData, function (item) {
+                 if (!filter[prop] || item[prop].toString().indexOf(filter[prop]) >= 0) {
+                   return item;
+                 }
+               });
+               break;
+             }
+           }
           d.resolve(resultData);
           return d.promise(); 
+        }
+      }, */
+      controller: {
+        loadData:  async function (filter) {
+          var startIndex = (filter.pageIndex - 1) * filter.pageSize;
+         // let livedata=  LiveData(startIndex, startIndex + filter.pageSize);
+          return {
+            data: await LiveData(startIndex, startIndex + filter.pageSize),
+            itemsCount: ListReportData.length>0?ListReportData[0].count:0
+          };
         }
       },
       fields: layout
@@ -160,7 +184,102 @@ function LiveDataReports() {
       UpdateColPos(1);
     });
   }
+  const LiveData= async function(startIndex,lastIndex){
+   /*  if(startIndex==0){
+      for (var k = 0; k < ListReportData.length; k++) {
+        var obj = {};
+        var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(ListReportData[k].createdTime));
+        let paramater = SelectedPollutents.filter(x => x.id == ListReportData[k].parameterID);
+        if(paramater.length>0){
+              let roundedNumber=0;
+              let digit = window.decimalDigit
+              if(window.TruncateorRound=="RoundOff"){
+                let num =ListReportData[k].parametervalue;
+                 roundedNumber=num.toFixed(digit);
+              }
+              else {
+                roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+              }
+              if (temp >= 0) {
+                dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                dataForGrid[temp][paramater[0].parameterName+"flag"] = ListReportData[k].loggerFlags;
+              } else {
+                obj[paramater[0].parameterName] = roundedNumber;
+                obj[paramater[0].parameterName+"flag"] = ListReportData[k].loggerFlags;
+                obj["Date"] = generateDatabaseDateTime(ListReportData[k].createdTime);
+                
+                dataForGrid.push(obj);
+              }
+        }
+      
+      }
+      //setdataForGrid1(dataForGrid);
+     // ListAllDataCopy.current=dataForGrid;
+    return dataForGrid;
+    }else{ */
+      dataForGrid=[];
+      let Pollutent = $("#pollutentid").val();
+      let finalpollutent = [];
+      for (let i = 0; i < Pollutent.length; i++) {
+        let filter=Pollutents.filter(x=>x.parameterName==Pollutent[i]);
+        finalpollutent.push(filter[0]);
+      }
+      if(Pollutent.length==0){
+        setSelectedPollutents(Pollutents);
+      }else{
+        setSelectedPollutents(finalpollutent);
+      }
+      if (Pollutent.length > 0) {
+        Pollutent.join(',')
+      }
+      document.getElementById('loader').style.display = "block";
+      let params = new URLSearchParams({ Pollutent: Pollutent,StartIndex:startIndex });
+      let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
+      return await fetch(url + params, {
+        method: 'GET',
+      }).then((response) => response.json())
+        .then((data) => {
+          if (data) {
+            console.log(new Date());
+            let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
+           
+              for (var k = 0; k < data1.length; k++) {
+                var obj = {};
+                var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(data1[k].createdTime));
+                let paramater = SelectedPollutents.filter(x => x.id == data1[k].parameterID);
+                if(paramater.length>0){
+                      let roundedNumber=0;
+                      let digit = window.decimalDigit
+                      if(window.TruncateorRound=="RoundOff"){
+                        let num =data1[k].parametervalue;
+                         roundedNumber=num.toFixed(digit);
+                      }
+                      else {
+                        roundedNumber = CommonFunctions.truncateNumber(data1[k].parametervalue,digit);
+                      }
+                      if (temp >= 0) {
+                        dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                        dataForGrid[temp][paramater[0].parameterName+"flag"] = data1[k].loggerFlags;
+                      } else {
+                        obj[paramater[0].parameterName] = roundedNumber;
+                        obj[paramater[0].parameterName+"flag"] = data1[k].loggerFlags;
+                        obj["Date"] = generateDatabaseDateTime(data1[k].createdTime);
+                        
+                        dataForGrid.push(obj);
+                      }
+                }
+              
+              }
+              document.getElementById('loader').style.display = "none";
+              return  dataForGrid;
+          }
+          document.getElementById('loader').style.display = "none";
+        }).catch((error) => console.log(error));
+   // }
+   // return dataForGrid;
+  }
   const getdtareport = function (param) {
+    initializeJsGrid();
     //setListReportData([]);
    let Pollutent = $("#pollutentid").val();
     let finalpollutent = [];
@@ -173,37 +292,6 @@ function LiveDataReports() {
     }else{
       setSelectedPollutents(finalpollutent);
     }
-    if (Pollutent.length > 0) {
-      Pollutent.join(',')
-    }
-    // let Fromdate = document.getElementById("fromdateid").value;
-    // let Todate = document.getElementById("todateid").value;
-    //let Interval = document.getElementById("criteriaid").value;
-  //   if(param!='reset'){
-  //   let valid = ReportValidations(Pollutent);
-  //   if (!valid) {
-  //     return false;
-  //   }
-  // }
-    document.getElementById('loader').style.display = "block";
-    //let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate });
-    let params = new URLSearchParams({ Pollutent: Pollutent });
-    let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
-    fetch(url + params, {
-      method: 'GET',
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          console.log(new Date());
-          let data1 = data.map((x) => { x.interval = x.createdTime.replace('T', ' '); return x; });
-          /* if(param=='refresh'){
-            ListAllDataCopy.current=data1;
-          }else{ */
-            setListReportData(data1);
-          //}
-        }
-        document.getElementById('loader').style.display = "none";
-      }).catch((error) => console.log(error));
   }
   /*  const DownloadExcel = function () {
      let Station = $("#stationid").val();
@@ -282,6 +370,41 @@ function LiveDataReports() {
   }
   return (
     <main id="main" className="main" >
+      <div className="modal fade zoom dashboard_dmodal" id="alertcode" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Codes Information</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>Code</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  {AllLookpdata && (
+                    <tbody>
+                      {AllLookpdata.listFlagCodes.map((x, y) =>
+                        <tr>
+                          <td>{x.code}</td>
+                          <td style={{ backgroundColor: x.colorCode }}>{x.name}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Same as */}
       {/* <section className="section grid_section h100 w100">
         <div className="h100 w100"> */}
@@ -327,6 +450,7 @@ function LiveDataReports() {
               <div className="col-md-3 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>GetData</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                <button type="button" className="btn btn-primary mx-1" onClick={Codesinformation}>Flags</button>
               </div>
               <div className="col-md-4">
                 <div className="row">

@@ -1,5 +1,6 @@
 var TruncateorRound = "RoundOff";
 var decimalDigit = 3;
+var DashboardLivenumberround = 2;
 var DashboardRefreshtime = 10000;
 var DashboardChartRefreshtime = 60000;
 var Dashboarddatetime = 100;
