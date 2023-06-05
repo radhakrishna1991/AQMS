@@ -360,6 +360,16 @@ function AddParameter() {
                   <div class="invalid-feedback">Please enter scale factor</div>
                 </div>
                 <div className="col-md-12 mb-3">
+                  <label for="coefa" className="form-label">COEF A:</label>
+                  <input type="number" className="form-control" id="coefa" placeholder="Enter COEF A" required />
+                  <div class="invalid-feedback">Please enter COEF A</div>
+                </div>
+                <div className="col-md-12 mb-3">
+                  <label for="coefb" className="form-label">COEF B:</label>
+                  <input type="number" className="form-control" id="coefb" placeholder="Enter COEF B" required />
+                  <div class="invalid-feedback">Please enter COEF B</div>
+                </div>
+                <div className="col-md-12 mb-3">
                   <label for="pollinginterval" className="form-label">Polling Interval:</label>
                   <input type="text" className="form-control" id="pollinginterval" placeholder="Enter polling interval" required />
                   <div class="invalid-feedback">Please enter polling interval</div>

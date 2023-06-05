@@ -2,7 +2,10 @@ import React, { useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Cookies from 'js-cookie';
 import 'chartjs-adapter-moment';
-import CommonFunctions from "../utils/CommonFunctions";
+import DateTimePicker from 'react-datetime-picker';
+import 'react-datetime-picker/dist/DateTimePicker.css';
+import 'react-calendar/dist/Calendar.css';
+import 'react-clock/dist/Clock.css';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -42,6 +45,13 @@ function Dashboard() {
   const [ChartData, setChartData] = useState({ labels: [], datasets: [] });
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const ListAllDataCopy = useRef();
+  const [StartDatetime1, onChange1] = useState(new Date());
+  const [StartDatetime2, onChange2] = useState(new Date());
+  const [StartDatetime3, onChange3] = useState(new Date());
+  const [StartDatetime4, onChange4] = useState(new Date());
+  const [StartDatetime5, onChange5] = useState(new Date());
+  const [CalibrationSequence, setCalibrationSequence] = useState([]);
+  const [ListCalibration, setListCalibration] = useState([]);
   ListAllDataCopy.current = ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
@@ -104,9 +114,9 @@ function Dashboard() {
       }).then((response) => response.json())
         .then((data) => {
           if (data) {
-            ListAllDataCopy.current.listDevices=data.listDevices;
-            ListAllDataCopy.current.listAlarms=data.listAlarms;
-            ListAllDataCopy.current.listPollutents=data.listPollutents;
+            ListAllDataCopy.current.listDevices = data.listDevices;
+            ListAllDataCopy.current.listAlarms = data.listAlarms;
+            ListAllDataCopy.current.listPollutents = data.listPollutents;
           }
         }).catch((error) =>
           toast.error('Unable to get the data. Please contact adminstrator')
@@ -146,7 +156,7 @@ function Dashboard() {
   const Devicealert = function (param) {
     setInfodevices(param);
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
-    let alarms=ListAllData.listAlarms.filter(x=>x.deviceModelId==param.deviceModel);
+    let alarms = ListAllData.listAlarms.filter(x => x.deviceModelId == param.deviceModel);
     setInfoParameters(parameters);
     setInfoalarms(alarms);
     $('#alertmodal').modal('show');
@@ -214,7 +224,21 @@ function Dashboard() {
     let listcommands = ListAllData.listCommands.filter(x => x.deviceModelId == param.deviceModel);
     setInfoParameters(parameters);
     setCommands(listcommands);
-    $('#calibrationmodal').modal('show');
+    fetch(process.env.REACT_APP_WSurl + "api/Calibration?Deviceid=" + param.id, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setCalibrationSequence(data);
+          let listcalibration = data.filter(x => x.parameterId == parameters[0].id);
+          setListCalibration(listcalibration);
+          $('#calibrationmodal').modal('show');
+          $("#sequence1-tab").tab('show');
+          Setformvalues(listcalibration);
+        }
+      }).catch((error) =>
+        toast.error('Unable to get the data. Please contact adminstrator')
+      );
   }
 
   const generateDatabaseDateTime = function (date) {
@@ -283,17 +307,30 @@ function Dashboard() {
       })
     }, 10);
   }
-  const SaveCalibrationSequence = function () {
-    let finaldata = [];
-   /*  let isvalid = true;
-    let form = document.querySelectorAll('#Sequenceform1')[0];
-    if (!form.checkValidity()) {
-      form.classList.add('was-validated');
+  const SequenceValidation = function (param) {
+    let isvalid = true;
+    let form1 = document.querySelectorAll('#Sequenceform' + param)[0];
+    if (!form1.checkValidity()) {
+      form1.classList.add('was-validated');
       isvalid = false;
     }
-    return isvalid; */
-    let data = Getformvalues(1);
-    finaldata.push(data);
+    return isvalid;
+  }
+  const SaveCalibrationSequence = function () {
+    let finaldata = [];
+    for (let i = 1; i <= 5; i++) {
+      let data = Getformvalues(i);
+      let status = $("#enable" + i).is(':checked') ? 1 : 0;
+      if (data == false) {
+        return false;
+      }else if (status == 1){
+        if(data.Command1=="" && data.Command2=="" && data.Command3=="" && data.Command4=="" && data.Command5=="" && data.Command6=="" && data.Command7 == "" && data.Command8=="" && data.Command9=="" && data.Command10==""){
+          toast.error('Please select at least one command in sequence'+i);
+          return false;
+        }
+      }
+      finaldata.push(data);
+    }
     fetch(process.env.REACT_APP_WSurl + 'api/Calibration', {
       method: 'POST',
       headers: {
@@ -304,14 +341,29 @@ function Dashboard() {
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-          toast.success('Calibration sequence added successfully');
+          toast.success('Calibration sequence updated successfully');
+          $('#calibrationmodal').modal('hide');
         } else {
           toast.error('Unable to add the Calibration sequence. Please contact adminstrator');
         }
       }).catch((error) => toast.error('Unable to add the Calibration sequence. Please contact adminstrator'));
   }
 
+  const Parameterchange = function (e) {
+    let listcalibration = CalibrationSequence.filter(x => x.parameterId == e.target.value);
+    Setformvalues(listcalibration);
+  }
   const Getformvalues = function (param) {
+    let status = $("#enable" + param).is(':checked') ? 1 : 0;
+    if (status == 1) {
+      let isvalid = SequenceValidation(param);
+      if (!isvalid) {
+        return false;
+      }
+    }
+    let form1 = document.querySelectorAll('#Sequenceform' + param)[0];
+    form1.classList.remove('was-validated');
+    let recid = $("#recid" + param).text();
     let parameter = $("#parameter").val();
     let profile = 1;
     let typeofsequence = $("#typeofsequence" + param).val();
@@ -321,6 +373,18 @@ function Dashboard() {
     let highdrift = $("#highdrift" + param).val();
     let lowdrift = $("#lowdrift" + param).val();
     let signalvalue = $("#signalvalue" + param).val();
+    let startdatetime = window.moment(StartDatetime1).format("YYYY-MM-DD HH:mm:ss");
+    if (param == 2) {
+      startdatetime = window.moment(StartDatetime2).format("YYYY-MM-DD HH:mm:ss");
+    } else if (param == 3) {
+      startdatetime = window.moment(StartDatetime3).format("YYYY-MM-DD HH:mm:ss");
+    } else if (param == 4) {
+      startdatetime = window.moment(StartDatetime4).format("YYYY-MM-DD HH:mm:ss");
+    } else if (param == 5) {
+      startdatetime = window.moment(StartDatetime4).format("YYYY-MM-DD HH:mm:ss");
+    }
+    let repeatedinterval = $("#repeatedinterval" + param).val();
+    let repeatedintervaltype = $("#repeatedintervaltype" + param).val();
     let command1 = $("#command" + param + "1").val();
     let command2 = $("#command" + param + "2").val();
     let command3 = $("#command" + param + "3").val();
@@ -332,15 +396,96 @@ function Dashboard() {
     let command9 = $("#command" + param + "9").val();
     let command10 = $("#command" + param + "0").val();
     let CreatedBy = currentUser.id;
-    let ModifiedBy = "";
+    let ModifiedBy = currentUser.id;
     let finalobject = {
-      ParameterId: parameter, ProfileId: profile, SequenceNumber: param, TypeofSequence: typeofsequence,
+      ParameterId: parameter, ProfileId: profile, SequenceNumber: param, RepeatedInterval: repeatedinterval, RepeatedIntervalType: repeatedintervaltype, StartTime: startdatetime, TypeofSequence: typeofsequence,
       TotalTime: totaltime, RisingTime: risingtime, FallingTime: fallingtime, HighDrift: highdrift, LowDrift: lowdrift, SignalValue: signalvalue,
       Command1: command1, Command2: command2, Command3: command3, Command4: command4, Command5: command5, Command6: command6, Command7: command7, Command8: command8,
-      Command9: command9, Command10: command10, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+      Command9: command9, Command10: command10, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, ID: recid, Status: status
     }
     return finalobject;
   }
+
+  const Setformvalues = function (list) {
+    // $("#parameter").val("1");
+    for (let i = 0; i < list.length; i++) {
+      let param = i + 1;
+      let form1 = document.querySelectorAll('#Sequenceform' + param)[0];
+      form1.classList.remove('was-validated');
+      $("#recid" + param).text(list[i].id);
+      $("#enable" + param).prop('checked', list[i].status == 1 ? true : false);
+      $("#typeofsequence" + param).val(list[i].typeofSequence);
+      $("#totaltime" + param).val(list[i].totalTime);
+      $("#risingtime" + param).val(list[i].risingTime);
+      $("#fallingtime" + param).val(list[i].fallingTime);
+      $("#highdrift" + param).val(list[i].highDrift);
+      $("#lowdrift" + param).val(list[i].lowDrift);
+      $("#signalvalue" + param).val(list[i].signalValue);
+      let starttime=list[i].startTime==null?new Date():list[i].startTime;
+      if (param == 1) {
+        onChange1(starttime);
+      } else if (param == 2) {
+        onChange2(starttime);
+      } else if (param == 3) {
+        onChange3(starttime);
+      } else if (param == 4) {
+        onChange4(starttime);
+      } else if (param == 5) {
+        onChange5(starttime);
+      }
+      $("#repeatedinterval" + param).val(list[i].repeatedInterval);
+      $("#repeatedintervaltype" + param).val(list[i].repeatedIntervalType);
+      $("#command" + param + "1").val(list[i].command1);
+      $("#command" + param + "2").val(list[i].command2);
+      $("#command" + param + "3").val(list[i].command3);
+      $("#command" + param + "4").val(list[i].command4);
+      $("#command" + param + "5").val(list[i].command5);
+      $("#command" + param + "6").val(list[i].command6);
+      $("#command" + param + "7").val(list[i].command7);
+      $("#command" + param + "8").val(list[i].command8);
+      $("#command" + param + "9").val(list[i].command9);
+      $("#command" + param + "0").val(list[i].command10);
+    }
+  }
+
+  const Clearformvalues = function (param) {
+    let form1 = document.querySelectorAll('#Sequenceform' + param)[0];
+    form1.classList.remove('was-validated');
+    $("#enable" + param).prop('checked', false);
+    $("#typeofsequence" + param).val("");
+    $("#totaltime" + param).val("");
+    $("#risingtime" + param).val("");
+    $("#fallingtime" + param).val("");
+    $("#highdrift" + param).val("");
+    $("#lowdrift" + param).val("");
+    $("#signalvalue" + param).val("");
+    //  let startdatetime = window.moment(StartDatetime).format("YYYY-MM-DD HH:mm:ss");
+    let starttime=new Date();
+      if (param == 1) {
+        onChange1(starttime);
+      } else if (param == 2) {
+        onChange2(starttime);
+      } else if (param == 3) {
+        onChange3(starttime);
+      } else if (param == 4) {
+        onChange4(starttime);
+      } else if (param == 5) {
+        onChange5(starttime);
+      }
+    $("#repeatedinterval" + param).val("");
+    $("#repeatedintervaltype" + param).val("M");
+    $("#command" + param + "1").val("");
+    $("#command" + param + "2").val("");
+    $("#command" + param + "3").val("");
+    $("#command" + param + "4").val("");
+    $("#command" + param + "5").val("");
+    $("#command" + param + "6").val("");
+    $("#command" + param + "7").val("");
+    $("#command" + param + "8").val("");
+    $("#command" + param + "9").val("");
+    $("#command" + param + "0").val("");
+  }
+
   const selects = function (data) {
     var ele = document.getElementById('selectall');
     if (ele.checked == true) {
@@ -377,41 +522,41 @@ function Dashboard() {
   }
 
   const DeviceServiceMode = function (param) {
-    let servicemode=!param.serviceMode;
+    let servicemode = !param.serviceMode;
     fetch(process.env.REACT_APP_WSurl + 'api/Devices/ServiceMode/' + param.id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ServiceMode:servicemode}),
+      body: JSON.stringify({ ServiceMode: servicemode }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-        //  toast.success('Device Updated successfully');
-        param.serviceMode=!param.serviceMode;
-        }else {
+          //  toast.success('Device Updated successfully');
+          param.serviceMode = !param.serviceMode;
+        } else {
           toast.error('Unable to change the service mode. Please contact adminstrator');
         }
       }).catch((error) => toast.error('Unable to change the service mode. Please contact adminstrator'));
 
   }
-  const ParameterEnable=function(param){
-   let isEnable=!param.isEnable;
+  const ParameterEnable = function (param) {
+    let isEnable = !param.isEnable;
     fetch(process.env.REACT_APP_WSurl + 'api/Parametres/IsEnable/' + param.id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({IsEnable:isEnable}),
+      body: JSON.stringify({ IsEnable: isEnable }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-        //  toast.success('Device Updated successfully');
-        param.isEnable=!param.isEnable;
-        param.flag=!param.isEnable?5:1;
-        }else {
+          //  toast.success('Device Updated successfully');
+          param.isEnable = !param.isEnable;
+          param.flag = !param.isEnable ? 5 : 1;
+        } else {
           toast.error('Unable to change the parameter status. Please contact adminstrator');
         }
       }).catch((error) => toast.error('Unable to change the parameter status. Please contact adminstrator'));
@@ -464,7 +609,7 @@ function Dashboard() {
                       <tr className="body_active">
                         <td>Protocol</td>
                         <td>Type</td>
-                        <td>{Infodevices.type == 'Serial'?'Serial':'Modbus'}</td>
+                        <td>{Infodevices.type == 'Serial' ? 'Serial' : 'Modbus'}</td>
                       </tr>
                       {InfoParameters.map((x, y) =>
                         <React.Fragment>
@@ -512,35 +657,14 @@ function Dashboard() {
                   {Infodevices && (
                     <tbody>
                       <tr>
-                        <td rowSpan={Infoalarms.length+1}>{Infodevices.deviceName}</td>
+                        <td rowSpan={Infoalarms.length + 1}>{Infodevices.deviceName}</td>
                       </tr>
-                      {Infoalarms.map((i,j)=>
-                      <tr className={i.status==1?"text-danger":""}>
-                        <td >{i.description}</td>
-                        <td >{i.status==1?"Active":"Inactive"}</td>
-                      </tr>
+                      {Infoalarms.map((i, j) =>
+                        <tr className={i.status == 1 ? "text-danger" : ""}>
+                          <td >{i.description}</td>
+                          <td >{i.status == 1 ? "Active" : "Inactive"}</td>
+                        </tr>
                       )}
-                    {/*   {InfoParameters.map((x, y) =>
-                        <React.Fragment>
-                          <tr>
-                            <td rowSpan={4}>{x.parameterName}</td>
-                            <td>Overrange under a signal value threshold</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Overrange above a signal value threshold</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Overrange of signal slope</td>
-                            <td>Inactive</td>
-                          </tr>
-                          <tr>
-                            <td>Overrange of immobile signal</td>
-                            <td>Inactive</td>
-                          </tr>
-                        </React.Fragment>
-                      )} */}
                     </tbody>
                   )}
                 </table>
@@ -572,27 +696,27 @@ function Dashboard() {
                   {Infodevices && (
                     <tbody>
                       {InfoParameters.map((x, y) =>
-                             <React.Fragment>
+                        <React.Fragment>
                           <tr>
-                            <td rowSpan={ListAllData.parameterAlarmsList.filter(z=>z.parameterID==x.id).length+1}>{x.parameterName}</td>
+                            <td rowSpan={ListAllData.parameterAlarmsList.filter(z => z.parameterID == x.id).length + 1}>{x.parameterName}</td>
                           </tr>
-                          {ListAllData.parameterAlarmsList.filter(z=>z.parameterID==x.id).map((k, l) =>
-                           <React.Fragment>
-                          {!k.status==1 && (
-                          <tr>
-                            <td>{k.flag}</td>
-                            <td>Inactive</td>
-                          </tr>
-                          )}
+                          {ListAllData.parameterAlarmsList.filter(z => z.parameterID == x.id).map((k, l) =>
+                            <React.Fragment>
+                              {!k.status == 1 && (
+                                <tr>
+                                  <td>{k.flag}</td>
+                                  <td>Inactive</td>
+                                </tr>
+                              )}
 
-                          {k.status==1 && (
-                            <tr className="text-danger">
-                              <td>{k.flag}</td>
-                              <td>Active</td>
-                            </tr>
-                            )}
-                          </React.Fragment>
-                           )}
+                              {k.status == 1 && (
+                                <tr className="text-danger">
+                                  <td>{k.flag}</td>
+                                  <td>Active</td>
+                                </tr>
+                              )}
+                            </React.Fragment>
+                          )}
                         </React.Fragment>
                       )}
                     </tbody>
@@ -715,7 +839,7 @@ function Dashboard() {
                     <label for="formGroupExampleInput" class="form-label">Measure</label>
                   </div>
                   <div className="col-md-4">
-                    <select className="form-select" id="parameter">
+                    <select className="form-select" id="parameter" onChange={(e) => Parameterchange(e)}>
                       {InfoParameters.map((x, y) =>
                         <option value={x.id}>{x.parameterName}</option>
                       )}
@@ -745,758 +869,207 @@ function Dashboard() {
                   </li>
                 </ul>
                 <div className="tab-content" id="calibrationTabContent">
-                  <div className="tab-pane fade show active" id="sequence1-tab-pane" role="tabpanel" aria-labelledby="sequence1-tab" >
-                    <form id="Sequenceform1" noValidate>
-                      <div className="dashboard_row">
-                        <div className="col-md-9">
-                          <fieldset>
-                            <legend>Configuration</legend>
-                            <div className="row">
-                              <div className="col-md-6">
-                              </div>
-                              <div className="col-md-6">
-                                <div className="row mb-3">
-                                  <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
-                                  <div className="col-md-8">
-                                    <select id="typeofsequence1" className="form-select" required>
-                                      <option value="" selected>Select Type of the sequence</option>
-                                      {window.Typeofsequence.map((x, y) =>
-                                        <option value={x}>{x}</option>
+                  {(() => {
+                    let calibration = [];
+                    for (let i = 1; i <= 5; i++) {
+                      calibration.push(<div className={i == 1 ? "tab-pane fade show active" : "tab-pane fade"} id={"sequence" + i + "-tab-pane"} role="tabpanel" aria-labelledby={"sequence" + i + "-tab"} >
+                        <form id={"Sequenceform" + i} noValidate>
+                          <div className="dashboard_row">
+                            <div className="col-md-9">
+                              <fieldset>
+                                <legend>Configuration</legend>
+                                <div className="row">
+                                  <div className="col-md-6">
+                                  </div>
+                                  <div className="col-md-6">
+                                    <div className="row mb-3 form-check">
+                                      <div className="col align-self-center form-check">
+                                        <input type="checkbox" className="form-check-input px-0" id={"enable" + i} />
+                                        <label className="form-check-label" for="enable">Enable</label>
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <span style={{ "visibility": "hidden", "height": "0px" }} id={"recid" + i} ></span>
+                                      <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
+                                      <div className="col-md-8">
+                                        <select id={"typeofsequence" + i} className="form-select" required>
+                                          <option value="" selected>Select Type of the sequence</option>
+                                          {window.Typeofsequence.map((x, y) =>
+                                            <option value={x}>{x}</option>
+                                          )}
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="totaltime" className="col-md-4 col-form-label">Repeated Interval</label>
+                                      <div className="col-md-8 repeatedinterval">
+                                        <input type="number" className="form-control" id={"repeatedinterval" + i} placeholder="Enter Interval" required />
+                                        <select className="form-select" id={"repeatedintervaltype" + i}>
+                                          <option value="S">Seconds</option>
+                                          <option value="M" selected>Minutes</option>
+                                          <option value="H">Hours</option>
+                                          <option value="D">Days</option>
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="starttime" className="col-md-4 col-form-label">Start Time</label>
+                                      <div className="col-md-8">
+                                        {i == 1 && (
+                                          <DateTimePicker id={"starttime" + i} onChange={onChange1} value={StartDatetime1} required />
+                                        )}
+                                        {i == 2 && (
+                                          <DateTimePicker id={"starttime" + i} onChange={onChange2} value={StartDatetime2} required />
+                                        )}
+                                        {i == 3 && (
+                                          <DateTimePicker id={"starttime" + i} onChange={onChange3} value={StartDatetime3} required />
+                                        )}
+                                        {i == 4 && (
+                                          <DateTimePicker id={"starttime" + i} onChange={onChange4} value={StartDatetime4} required />
+                                        )}
+                                        {i == 5 && (
+                                          <DateTimePicker id={"starttime" + i} onChange={onChange5} value={StartDatetime5} required />
+                                        )}
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"totaltime" + i} required />
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"risingtime" + i} required />
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"fallingtime" + i} required />
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"highdrift" + i} required />
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"lowdrift" + i} required />
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"signalvalue" + i} required />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </fieldset>
+                            </div>
+                            <div className="col-md-3">
+                              <fieldset>
+                                <legend>Commands</legend>
+                                <div className="row">
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command1" + i}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "2"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "3"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "4"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "5"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "6"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "7"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "8"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "9"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div className="col-md-12 mb-2">
+                                    <select className="form-select" id={"command" + i + "0"}>
+                                      <option value="" selected>Select Commands</option>
+                                      {Commands.map((x, y) =>
+                                        <option value={x.id}>{x.description}</option>
                                       )}
                                     </select>
                                   </div>
                                 </div>
-                                <div className="row mb-3">
-                                  <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
-                                  <div className="col-md-8">
-                                    <input type="number" className="form-control" id="totaltime1" />
-                                  </div>
-                                </div>
-                                <div className="row mb-3">
-                                  <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
-                                  <div className="col-md-8">
-                                    <input type="number" className="form-control" id="risingtime1" />
-                                  </div>
-                                </div>
-                                <div className="row mb-3">
-                                  <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
-                                  <div className="col-md-8">
-                                    <input type="number" className="form-control" id="fallingtime1" />
-                                  </div>
-                                </div>
-                                <div className="row mb-3">
-                                  <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
-                                  <div className="col-md-8">
-                                    <input type="number" className="form-control" id="highdrift1" />
-                                  </div>
-                                </div>
-                                <div className="row mb-3">
-                                  <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
-                                  <div className="col-md-8">
-                                    <input type="number" className="form-control" id="lowdrift1" />
-                                  </div>
-                                </div>
-                                <div className="row mb-3">
-                                  <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
-                                  <div className="col-md-8">
-                                    <input type="number" className="form-control" id="signalvalue1" />
-                                  </div>
-                                </div>
-                              </div>
+                              </fieldset>
                             </div>
-                          </fieldset>
-                        </div>
-                        <div className="col-md-3">
-                          <fieldset>
-                            <legend>Commands</legend>
-                            <div className="row">
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command11">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command12">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command13">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command14">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command15">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command16">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command17">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command18">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command19">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                              <div className="col-md-12 mb-2">
-                                <select className="form-select" id="command10">
-                                  <option value="" selected>Select Commands</option>
-                                  {Commands.map((x, y) =>
-                                    <option value={x.id}>{x.description}</option>
-                                  )}
-                                </select>
-                              </div>
-                            </div>
-                          </fieldset>
-                        </div>
 
-                      </div>
-                    </form>
-                  </div>
-                  <div className="tab-pane fade" id="sequence2-tab-pane" role="tabpanel" aria-labelledby="sequence2-tab" >
-                    <div className="dashboard_row">
-                      <div className="col-md-9">
-                        <fieldset>
-                          <legend>Configuration</legend>
-                          <div className="row">
-                            <div className="col-md-6">
-                            </div>
-                            <div className="col-md-6">
-                              <div className="row mb-3">
-                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
-                                <div className="col-md-8">
-                                  <select id="typeofsequence2" className="form-select">
-                                    <option value="" selected>Select Type of the sequence</option>
-                                    {window.Typeofsequence.map((x, y) =>
-                                      <option value={x}>{x}</option>
-                                    )}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="totaltime2" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="risingtime2" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="fallingtime2" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="highdrift2" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="lowdrift2" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="signalvalue2" />
-                                </div>
-                              </div>
-                            </div>
                           </div>
-                        </fieldset>
-                      </div>
-                      <div className="col-md-3">
-                        <fieldset>
-                          <legend>Commands</legend>
-                          <div className="row">
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command21">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command22">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command23">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command24">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command25">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command26">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command27">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command28">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command29">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command20">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
+                          <div className="float-end ">
+                            <button type="button" className="btn btn-primary px-3 py-1 my-1" onClick={() => Clearformvalues(i)} >Clear</button>
                           </div>
-                        </fieldset>
-                      </div>
+                        </form>
+                      </div>);
+                    }
+                    return calibration;
+                  })()}
 
-                    </div>
-                  </div>
-                  <div className="tab-pane fade" id="sequence3-tab-pane" role="tabpanel" aria-labelledby="sequence3-tab" >
-                    <div className="dashboard_row">
-                      <div className="col-md-9">
-                        <fieldset>
-                          <legend>Configuration</legend>
-                          <div className="row">
-                            <div className="col-md-6">
-                            </div>
-                            <div className="col-md-6">
-                              <div className="row mb-3">
-                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
-                                <div className="col-md-8">
-                                  <select id="typeofsequence3" className="form-select">
-                                    <option value="" selected>Select Type of the sequence</option>
-                                    {window.Typeofsequence.map((x, y) =>
-                                      <option value={x}>{x}</option>
-                                    )}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="totaltime3" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="risingtime3" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="fallingtime3" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="highdrift3" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="lowdrift3" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="signalvalue3" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-                      <div className="col-md-3">
-                        <fieldset>
-                          <legend>Commands</legend>
-                          <div className="row">
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command31">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command32">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command33">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command34">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command35">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command36">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command37">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command38">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command39">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command40">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-
-                    </div>
-                  </div>
-                  <div className="tab-pane fade" id="sequence4-tab-pane" role="tabpanel" aria-labelledby="sequence4-tab" >
-                    <div className="dashboard_row">
-                      <div className="col-md-9">
-                        <fieldset>
-                          <legend>Configuration</legend>
-                          <div className="row">
-                            <div className="col-md-6">
-                            </div>
-                            <div className="col-md-6">
-                              <div className="row mb-3">
-                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
-                                <div className="col-md-8">
-                                  <select id="typeofsequence4" className="form-select">
-                                    <option value="" selected>Select Type of the sequence</option>
-                                    {window.Typeofsequence.map((x, y) =>
-                                      <option value={x}>{x}</option>
-                                    )}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="totaltime4" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="risingtime4" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="fallingtime4" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="highdrift4" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="lowdrift4" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="signalvalue4" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-                      <div className="col-md-3">
-                        <fieldset>
-                          <legend>Commands</legend>
-                          <div className="row">
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command41">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command42">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command43">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command44">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command45">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command46">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command47">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command48">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command49">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command40">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-
-                    </div>
-                  </div>
-                  <div className="tab-pane fade" id="sequence5-tab-pane" role="tabpanel" aria-labelledby="sequence5-tab" >
-                    <div className="dashboard_row">
-                      <div className="col-md-9">
-                        <fieldset>
-                          <legend>Configuration</legend>
-                          <div className="row">
-                            <div className="col-md-6">
-                            </div>
-                            <div className="col-md-6">
-                              <div className="row mb-3">
-                                <label htmlFor="typeofsequence" className="col-md-4 col-form-label">Type of the sequence</label>
-                                <div className="col-md-8">
-                                  <select id="typeofsequence5" className="form-select">
-                                    <option value="" selected>Select Type of the sequence</option>
-                                    {window.Typeofsequence.map((x, y) =>
-                                      <option value={x}>{x}</option>
-                                    )}
-                                  </select>
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="totaltime5" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="risingtime5" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="fallingtime5" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="highdrift5" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="lowdrift5" />
-                                </div>
-                              </div>
-                              <div className="row mb-3">
-                                <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
-                                <div className="col-md-8">
-                                  <input type="number" className="form-control" id="signalvalue5" />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-                      <div className="col-md-3">
-                        <fieldset>
-                          <legend>Commands</legend>
-                          <div className="row">
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command51">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command52">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command53">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command54">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command55">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command56">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command57">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command58">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command59">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                            <div className="col-md-12 mb-2">
-                              <select className="form-select" id="command50">
-                                <option value="" selected>Select Commands</option>
-                                {Commands.map((x, y) =>
-                                  <option value={x.id}>{x.description}</option>
-                                )}
-                              </select>
-                            </div>
-                          </div>
-                        </fieldset>
-                      </div>
-
-                    </div>
-                  </div>
 
                 </div>
               </div>
@@ -1811,7 +1384,7 @@ function Dashboard() {
                     <div className="card info-card revenue-card">
                       <div className="card-body ">
                         <div className="d-flex justify-content-between">
-                      {/*     <div className="icons"><i className="bi bi-sliders2-vertical"></i></div> */}
+                          {/*     <div className="icons"><i className="bi bi-sliders2-vertical"></i></div> */}
                           <div className="device">{x.deviceName}</div>
                           <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
                         </div>
@@ -1828,19 +1401,19 @@ function Dashboard() {
                           )}
                           <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
                           <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
-                          {ListAllData.listAlarms.filter(z=>z.deviceModelId==x.deviceModel && z.status==1).length>0 && ( 
+                          {ListAllData.listAlarms.filter(z => z.deviceModelId == x.deviceModel && z.status == 1).length > 0 && (
                             <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
                           )}
-                         {!ListAllData.listAlarms.filter(z=>z.deviceModelId==x.deviceModel && z.status==1).length>0 && ( 
-                          <div className="icons"><i className="bi bi-lightbulb" onClick={() => Devicealert(x)}></i></div>
+                          {!ListAllData.listAlarms.filter(z => z.deviceModelId == x.deviceModel && z.status == 1).length > 0 && (
+                            <div className="icons"><i className="bi bi-lightbulb" onClick={() => Devicealert(x)}></i></div>
                           )}
                         </div>
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className="bi bi-check2"></i>)} {!i.isEnable && (<i className="bi bi-x-lg text-danger"></i>)}</span> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1" style={{backgroundColor:i.flag==null?"#FFFFF":ListAllData.listFlagCodes.filter(y=>y.id==i.flag)[0].colorCode}} onClick={Codesinformation} >{i.flag==null?"A":ListAllData.listFlagCodes.filter(y=>y.id==i.flag)[0].code}</button>
-                                <button className="btn2">{i.parameterValue==null?0:i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
+                              <div className="values"><button className="btn1" style={{ backgroundColor: i.flag == null ? "#FFFFF" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode }} onClick={Codesinformation} >{i.flag == null ? "A" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
+                                <button className="btn2">{i.parameterValue == null ? 0 : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
                               {/* {LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}

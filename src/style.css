@@ -1409,4 +1409,20 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
   100% { transform: rotate(360deg); }
 }
 
-
+.repeatedinterval .form-control,.repeatedinterval .form-select{
+  display: inline-block;
+  width: 50%;
+  margin-left:2px
+  }
+  .react-datetime-picker__wrapper {
+    border: 1px solid #ced4da !important;
+    border-radius: 4px;
+    font-family: 'Roboto Light';
+    font-size: 0.75rem !important;
+  }
+.react-calendar{
+  font-family: 'Roboto Light';
+}
+.form-check-label{
+  font-size: 0.75rem;
+}
