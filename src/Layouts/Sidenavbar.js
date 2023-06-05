@@ -9,13 +9,13 @@ function Sidenavbar() {
 
   const getUserRole = function ()  {
     const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
-    // if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase())
-    //   {
-    //     document.getElementById("Configuration-Panel").style.display="block";
-    //   }
-    //   else{
-    //     document.getElementById("Configuration-Panel").style.display="none";
-    //   }
+    if(currentUser.role.toUpperCase()==Roles.ADMIN.toUpperCase()){
+      document.getElementById("Configuration-Panel").style.display="block";
+    }
+    else{
+      document.getElementById("Configuration-Panel").style.display="none";
+      document.getElementById("User-subpannel").style.display="none";
+    }
   }
   useEffect(() => {
     getUserRole();
@@ -207,7 +207,7 @@ function Sidenavbar() {
             <i className="bi bi-menu-button-wide"></i><span>Admin</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
           <ul id="admin-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-            <li>
+            <li id="User-subpannel">
               <NavLink to="/Adduser" className="animation-forwards animate-delay-1" >
                 <i className="bi bi-circle"></i>
                 <span>Users</span>
