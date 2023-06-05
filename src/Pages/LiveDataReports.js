@@ -80,12 +80,12 @@ function LiveDataReports() {
     dataForGrid = [];
     var layout = [];
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px" });
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
       gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName
       layout.push({
-        name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text", width: "100px", cellRenderer: function (item, value) {
+        name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
           return $("<td>").css("background-color", bgcolor).append(item);
@@ -114,7 +114,7 @@ function LiveDataReports() {
         loadData: async function (filter) {
           var startIndex = (filter.pageIndex - 1) * filter.pageSize;
           return {
-            data: await LiveData(startIndex, startIndex + filter.pageSize),
+            data: await LiveData(startIndex, startIndex + filter.pageSize,filter.sortOrder),
             itemsCount: ItemCount
           };
         }
@@ -125,7 +125,7 @@ function LiveDataReports() {
       UpdateColPos(1);
     });
   }
-  const LiveData = async function (startIndex, lastIndex) {
+  const LiveData = async function (startIndex, lastIndex,sortorder) {
     dataForGrid = [];
     let Pollutent = $("#pollutentid").val();
     let finalpollutent = [];
@@ -144,7 +144,7 @@ function LiveDataReports() {
       Pollutent.join(',')
     }
     document.getElementById('loader').style.display = "block";
-    let params = new URLSearchParams({ Pollutent: Pollutent, StartIndex: startIndex });
+    let params = new URLSearchParams({ Pollutent: Pollutent, StartIndex: startIndex,SortOrder: sortorder });
     let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
     return await fetch(url + params, {
       method: 'GET',

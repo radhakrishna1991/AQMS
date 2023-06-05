@@ -11,27 +11,33 @@ function AverageDataReport() {
   const [selectedStations, setselectedStations] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
-  const [ListReportData, setListReportData] = useState([]);
+  const [ListReportData, setListReportData] = useState(0);
+  const [ReportData, setReportData] = useState([]);
+  const [sortOrder, setsortOrder] = useState('asc');
+  const [ItemCount, setItemCount] = useState(0);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
-  const [Stations, setStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
+  var dataForGrid = [];
+  const RefsortOrder = useRef("");
+  const Itemcount = useRef();
+  Itemcount.current = ItemCount;
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAverageLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
         let parameterslist = [];
-          data.listPollutents.filter(function (item) {
-            var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
-            if (i <= -1) {
-              parameterslist.push(item);
-            }
-            return null;
-          });
-          setPollutents(parameterslist);
+        data.listPollutents.filter(function (item) {
+          var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
+          if (i <= -1) {
+            parameterslist.push(item);
+          }
+          return null;
+        });
+        setPollutents(parameterslist);
         setTimeout(function () {
           $('#pollutentid').SumoSelect({
             triggerChangeCombined: true, placeholder: 'Select Parameter', floatWidth: 200, selectAll: true,
@@ -46,57 +52,47 @@ function AverageDataReport() {
   }, []);
   useEffect(() => {
     initializeJsGrid();
-  });
+  }, [ListReportData]);
   /* reported data start */
 
-  const UpdateColPos=function (cols) {
+  const UpdateColPos = function (cols) {
     var left = $('.jsgrid-grid-body').scrollLeft() < $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16
-        ? $('.jsgrid-grid-body').scrollLeft() : $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16;
+      ? $('.jsgrid-grid-body').scrollLeft() : $('.jsgrid-grid-body .jsgrid-table').width() - $('.jsgrid-grid-body').width() + 16;
     $('.jsgrid-header-row th:nth-child(-n+' + cols + '), .jsgrid-filter-row td:nth-child(-n+' + cols + '), .jsgrid-insert-row td:nth-child(-n+' + cols + '), .jsgrid-grid-body tr td:nth-child(-n+' + cols + ')')
-        .css({
-            "position": "relative",
-            "left": left
-        });
+      .css({
+        "position": "relative",
+        "left": left
+      });
   }
+
+  const Codesinformation = function () {
+    $('#alertcode').modal('show');
+  }
+
   const initializeJsGrid = function () {
-    var dataForGrid = [];
+    dataForGrid = [];
     var layout = [];
     var gridheadertitle;
-    layout.push({ name: "Date", title: "Date", type: "text",width:"140px" });
-    for(var i=0; i< SelectedPollutents.length;i++){
-      let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
-      let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
-      gridheadertitle=SelectedPollutents[i] + "<br>" + unitname[0].unitName
-        layout.push({ name:SelectedPollutents[i] , title:  gridheadertitle , type: "text",width:"100px" });
-    }
-    if(SelectedPollutents.length<10){
-      for(var p = SelectedPollutents.length; p < 10; p++){
-         layout.push({ name: " " + p, title: " ", type: "text",width:"100px" });
-       }
-    }    
-    // layout.push({ type: "control", width: 100, editButton: false, deleteButton: false });
-    for (var k = 0; k < ListReportData.length; k++) {
-        var obj = {};
-        var temp= dataForGrid.findIndex(x => x.Date ===ListReportData[k].interval) 
-        let roundedNumber=0;
-        let digit = window.decimalDigit;
-        if(window.TruncateorRound=="RoundOff"){
-           let num =ListReportData[k].parametervalue;
-           roundedNumber=num.toFixed(digit);
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px",sorting: true });
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
+      gridheadertitle = SelectedPollutents[i] + "<br>" + unitname[0].unitName
+      layout.push({
+        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+          let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
+          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
+          return $("<td>").css("background-color", bgcolor).append(item);
         }
-        else {
-          roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
-        }
-        if(temp >= 0)
-        {
-            dataForGrid[temp][ListReportData[k].parameterName]=roundedNumber;
-        }else{
-            obj[ListReportData[k].parameterName] = roundedNumber;
-            obj["Date"] = ListReportData[k].interval;
-            dataForGrid.push(obj);
-        }
-    }
+      });
 
+      // layout.push({ name:SelectedPollutents[i] , title:  gridheadertitle , type: "text",width:"100px" });
+    }
+    if (SelectedPollutents.length < 10) {
+      for (var p = SelectedPollutents.length; p < 10; p++) {
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px" });
+      }
+    }
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
       height: "auto",
@@ -106,21 +102,21 @@ function AverageDataReport() {
       sorting: true,
       paging: true,
       autoload: true,
-      pageSize: 100,
+      pageLoading: true,
       pageButtonCount: 5,
+      pageSize: 100,
+      pageIndex: 1,
       controller: {
-        data: dataForGrid,
-        loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
-          return $.grep(this.data, function (item) {
-            return ((!filter.parameterName || item.parameterName.toUpperCase().indexOf(filter.parameterName.toUpperCase()) >= 0)
-              && (!filter.parametervalue || item.parametervalue.toUpperCase().indexOf(filter.parametervalue.toUpperCase()) >= 0)
-              && (!filter.stationID || item.stationID === filter.stationID)
-              && (!filter.type || item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
-              && (!filter.interval || item.interval.toUpperCase().indexOf(filter.interval.toUpperCase()) >= 0)
-            );
-          });
+        loadData: async function (filter) {
+          var startIndex = (filter.pageIndex - 1) * filter.pageSize;
+          // console.log(filter);
+         // RefsortOrder.current = sortOrder;
+          // now the oldText.current holds the old value
+         // setsortOrder(filter.sortOrder);
+          return {
+            data: await AvgDataReport(startIndex, startIndex + filter.pageSize, filter.sortOrder),
+            itemsCount: await Itemcount.current
+          };
         }
       },
       fields: layout
@@ -129,8 +125,12 @@ function AverageDataReport() {
       UpdateColPos(1);
     });
   }
-  const getdtareport = function () {
-    console.log(new Date());
+
+  const generateDatabaseDateTime = function (date) {
+    return date.replace("T", " ").substring(0, 19);
+  }
+
+  const AvgDataReport = async function (startIndex, lastIndex, sortorder) {
     let Pollutent = $("#pollutentid").val();
     setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
@@ -144,9 +144,9 @@ function AverageDataReport() {
       return false;
     }
     document.getElementById('loader').style.display = "block";
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: sortorder });
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/AvergaeDataReport?"
-    fetch(url + params, {
+    /* fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -154,17 +154,77 @@ function AverageDataReport() {
           console.log(new Date());
           let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
           setListReportData(data1);
+        } */
+    return await fetch(url + params, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          dataForGrid = [];
+          let data1 = data.map((x) => { x.interval = x.interval.replace('T', ' '); return x; });
+          for (var k = 0; k < data1.length; k++) {
+            if (k == 0) {
+              // setItemCount(data1[0].count);
+              Itemcount.current = data1[0].count;
+            }
+            var obj = {};
+            var temp = dataForGrid.findIndex(x => x.Date === data1[k].interval);
+            let tempparameter = AllLookpdata.listPollutents
+            let paramater = AllLookpdata.listPollutents.filter(x => x.id == data1[k].parameterID);
+            if (paramater.length > 0) {
+              let roundedNumber = 0;
+              let digit = window.decimalDigit
+              if (window.TruncateorRound == "RoundOff") {
+                let num = data1[k].parametervalue;
+                roundedNumber = num.toFixed(digit);
+              }
+              else {
+                roundedNumber = CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+              }
+              if (temp >= 0) {
+                dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                dataForGrid[temp][paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+              } else {
+                obj[paramater[0].parameterName] = roundedNumber;
+                obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+                obj["Date"] = data1[k].interval;
+
+                dataForGrid.push(obj);
+              }
+            }
+
+          }
+          document.getElementById('loader').style.display = "none";
+          setReportData(dataForGrid);
+          return dataForGrid;
         }
         document.getElementById('loader').style.display = "none";
       }).catch((error) => console.log(error));
   }
 
+  const getdtareport = function () {
+    let Pollutent = $("#pollutentid").val();
+    setSelectedPollutents(Pollutent);
+    if (Pollutent.length > 0) {
+      Pollutent.join(',')
+    }
+    let Fromdate = document.getElementById("fromdateid").value;
+    let Todate = document.getElementById("todateid").value;
+    let Interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
+    if (!valid) {
+      return false;
+    }
+    setListReportData(1);
+    initializeJsGrid();
+    // AvgDataReport();
+  }
 
-  
-  const DownloadPDF=function(){
+
+  const DownloadPDF = function () {
     var input = document.getElementById('jsGridData');
-    var tableheading=[];   
-    
+    var tableheading = [];
+
     const styles = {
       fontFamily: "sans-serif",
       textAlign: "center"
@@ -174,57 +234,56 @@ function AverageDataReport() {
     };
     const tableStyle = {
       width: "100%"
-    };    
-    var layout="";
-    layout="Date";
+    };
+    var layout = "";
+    layout = "Date";
     tableheading.push(layout);
-    for(var i=0; i< SelectedPollutents.length;i++){
-      let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
-      let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
       //layout= SelectedPollutents[i] + " - "+unitname[0].unitName;
-      layout=SelectedPollutents[i];
+      layout = SelectedPollutents[i];
       tableheading.push(layout);
-    }  
+    }
     var rows = [];
-    var b=0;
-    for (var k = 0; k < ListReportData.length; k++) {      
-      var temp= rows.findIndex(x => x[0] ===ListReportData[k].interval);
-      let roundedNumber=0;
+    var b = 0;
+    for (var k = 0; k < ListReportData.length; k++) {
+      var temp = rows.findIndex(x => x[0] === ListReportData[k].interval);
+      let roundedNumber = 0;
       let digit = window.decimalDigit;
-      if(window.TruncateorRound=="RoundOff"){
-         let num =ListReportData[k].parametervalue;
-         roundedNumber=num.toFixed(digit);
+      if (window.TruncateorRound == "RoundOff") {
+        let num = ListReportData[k].parametervalue;
+        roundedNumber = num.toFixed(digit);
       }
       else {
-        roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue,digit);
+        roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
       }
-      
-      if(temp >= 0)
-      {    
-        var n=1;
-        for(var e=0;e<SelectedPollutents.length;e++){
-          if(ListReportData[k].parameterName==SelectedPollutents[e]){
-            rows[temp][n]=roundedNumber;           
+
+      if (temp >= 0) {
+        var n = 1;
+        for (var e = 0; e < SelectedPollutents.length; e++) {
+          if (ListReportData[k].parameterName == SelectedPollutents[e]) {
+            rows[temp][n] = roundedNumber;
           }
           n++;
         }
       }
-      else{
-        var d=1;
+      else {
+        var d = 1;
         rows.push([ListReportData[k].interval]);
-        for(var e=0;e<SelectedPollutents.length;e++){            
-          if(ListReportData[k].parameterName==SelectedPollutents[e]){
+        for (var e = 0; e < SelectedPollutents.length; e++) {
+          if (ListReportData[k].parameterName == SelectedPollutents[e]) {
             //Columnfields.push([ListReportData[k].interval ,roundedNumber]);                              
-            rows[b][d]=roundedNumber;  
+            rows[b][d] = roundedNumber;
           }
-          d++;  
+          d++;
         }
         b++;
       }
-    
+
     }
-    var pdf = new jsPDF("p", "pt", "a4");    
-    const columns=tableheading;
+    var pdf = new jsPDF("p", "pt", "a4");
+    const columns = tableheading;
     pdf.text(235, 40, "Average Data Report");
     pdf.autoTable(columns, rows, {
       startY: 65,
@@ -234,7 +293,7 @@ function AverageDataReport() {
         halign: "center",
         cellPadding: 3.5,
         lineWidth: 0.5,
-       lineColor: [0, 0, 0],
+        lineColor: [0, 0, 0],
         textColor: [0, 0, 0]
       },
       headStyles: {
@@ -260,7 +319,7 @@ function AverageDataReport() {
     pdf.save("Average Data Report");
   }
   const DownloadExcel = function () {
-    
+
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -273,26 +332,26 @@ function AverageDataReport() {
       return false;
     }
     let paramUnitnames;
-    for(var i=0; i< SelectedPollutents.length;i++){
-      let filter=AllLookpdata.listPollutents.filter(x=>x.parameterName==SelectedPollutents[i]);
-      let unitname=AllLookpdata.listReportedUnits.filter(x=>x.id==filter[0].unitID);
-      if(paramUnitnames==undefined){
-        paramUnitnames =  filter[0].parameterName + "-"+ unitname[0].unitName + "," ;
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+      let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
+      if (paramUnitnames == undefined) {
+        paramUnitnames = filter[0].parameterName + "-" + unitname[0].unitName + ",";
       }
-      else{
-        paramUnitnames +=  filter[0].parameterName + "-"+ unitname[0].unitName + "," ;
+      else {
+        paramUnitnames += filter[0].parameterName + "-" + unitname[0].unitName + ",";
       }
-      
+
     }
-    
-    let params = new URLSearchParams({Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval,Units: paramUnitnames });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params,"_blank");
-    
+
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames });
+    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+
   }
 
   const ReportValidations = function (Pollutent, Fromdate, Todate, Interval) {
     let isvalid = true;
-     if (Pollutent == "") {
+    if (Pollutent == "") {
       toast.error('Please select parameter', {
         position: "top-right",
         autoClose: 5000,
@@ -351,7 +410,7 @@ function AverageDataReport() {
     let finaldata = AllLookpdata.listPollutents.filter(obj => obj.stationID == e.target.value);
     setPollutents(finaldata);
   }
- 
+
   const Changepollutent = function (e) {
     setcriteria([]);
     console.log(selectedStations);
@@ -377,7 +436,7 @@ function AverageDataReport() {
     setcriteria([]);
     let stationID = $("#stationid").val();
     let filter1 = $(this).val();
-   
+
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
     let finaldata = AllLookpdata.listPollutents.filter(obj => filter1.includes(obj.parameterName));
     if (finaldata.length > 0) {
@@ -395,25 +454,57 @@ function AverageDataReport() {
       setcriteria(finalinterval);
     }
   })
-  const Resetfilters=function(){
+  const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
     setcriteria([]);
     setToDate(new Date());
     setFromDate(new Date());
-    setListReportData([]);
+    setListReportData(0);
     setSelectedPollutents([]);
   }
   return (
     <main id="main" className="main" >
-      {/* Same as */}
-      {/* <section className="section grid_section h100 w100">
-        <div className="h100 w100"> */}
+      <div className="modal fade zoom dashboard_dmodal" id="alertcode" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h1 className="modal-title fs-5" id="staticBackdropLabel">Codes Information</h1>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div className="modal-body">
+              <div className="table-responsive">
+                <table className="table align-middle table-bordered">
+                  <thead>
+                    <tr className="header_active">
+                      <th>Code</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  {AllLookpdata && (
+                    <tbody>
+                      {AllLookpdata.listFlagCodes.map((x, y) =>
+                        <tr>
+                          <td>{x.code}</td>
+                          <td style={{ backgroundColor: x.colorCode }}>{x.name}</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  )}
+                </table>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button type="button" className="btn btn-primary" data-bs-dismiss="modal">Ok</button>
+            </div>
+          </div>
+        </div>
+      </div>
       <section>
         <div>
           <div>
             <div className="row">
-             {/*  <div className="col-md-2">
+              {/*  <div className="col-md-2">
                 <label className="form-label">Station Name</label>
                 <select className="form-select stationid" id="stationid" multiple="multiple" onChange={ChangeStation}>
 
@@ -450,13 +541,14 @@ function AverageDataReport() {
               </div>
               <div className="col-md-4 my-4">
                 <button type="button" className="btn btn-primary datashow" onClick={getdtareport}>GetData</button>
-                <button type="button" className="btn btn-primary mx-1 datashow" onClick={Resetfilters}>Reset</button>                
-                {ListReportData.length>0 &&(
-                   <span> 
-                     <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
-                     <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button>
-                   </span>
-                )}  
+                <button type="button" className="btn btn-primary mx-1 datashow" onClick={Resetfilters}>Reset</button>
+                {ListReportData != 0 && (
+                  <span>
+                    <button type="button" className="btn btn-primary mx-1" onClick={Codesinformation}>Flags</button>
+                    <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
+                    {/* <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button> */}
+                  </span>
+                )}
               </div>
               <div className="col-md-4">
                 <div className="row">
@@ -469,10 +561,10 @@ function AverageDataReport() {
               </div>
               )} */}
             </div>
-            {ListReportData.length>0 &&(
-            <div id="jsGridData" className="jsGrid" ref={gridRefjsgridreport} />
+            {ListReportData != 0 && (
+              <div id="jsGridData" className="jsGrid" ref={gridRefjsgridreport} />
             )}
-           
+
           </div>
         </div>
       </section>

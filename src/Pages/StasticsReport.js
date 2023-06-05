@@ -203,16 +203,16 @@ function StasticsReport() {
       }
     });
     var finaldata1 = [];
-    if (filter.length >= 2) {
+   // if (filter.length >= 2) {
       finaldata1 = finaldata.reduce((unique, o) => {
-        if (!unique.some(obj => obj.stationID != o.stationID && obj.parameterName === o.parameterName)) {
+        if (!unique.some(obj => obj.stationID == o.stationID && obj.parameterName === o.parameterName)) {
           unique.push(o);
         }
         return unique;
       }, []);
-    } else {
+    /* } else {
       finaldata1 = finaldata;
-    }
+    } */
     setPollutents(finaldata1);
     setTimeout(function () {
       //$('.pollutentid')[0].sumo.unSelectAll();
