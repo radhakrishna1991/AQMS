@@ -12,11 +12,13 @@ function Sidenavbar() {
     
     if(currentUser.role.toUpperCase()==window.UserRoles[0].ADMIN.toUpperCase()){
       document.getElementById("Configuration-Panel").style.display="block";
-      document.getElementById("User-subpannel").style.display="block";
+      //document.getElementById("User-subpannel").style.display="block";
+      document.getElementById("Admin-Pannel").style.display="block";
     }
     else if(currentUser.role.toUpperCase()==window.UserRoles[0].GUEST.toUpperCase()){      
       document.getElementById("Configuration-Panel").style.display="none";
-      document.getElementById("User-subpannel").style.display="none";
+      //document.getElementById("User-subpannel").style.display="none";
+      document.getElementById("Admin-Pannel").style.display="none";
     }
   }
   useEffect(() => {
@@ -204,7 +206,7 @@ function Sidenavbar() {
 
             </li> */}
        
-        <li className="nav-item">
+        <li className="nav-item" id="Admin-Pannel">
           <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#admin-nav" data-bs-toggle="collapse" href="#">
             <i className="bi bi-menu-button-wide"></i><span>Admin</span><i className="bi bi-chevron-down ms-auto"></i>
           </a>
