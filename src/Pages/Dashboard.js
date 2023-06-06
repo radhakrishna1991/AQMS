@@ -661,11 +661,11 @@ function Dashboard() {
                           </tr>
                           <tr>
                             <td>COEF A</td>
-                            <td>1</td>
+                            <td>{x.coefA}</td>
                           </tr>
                           <tr>
                             <td>COEF B</td>
-                            <td>0</td>
+                            <td>{x.coefB}</td>
                           </tr>
                         </React.Fragment>
                       )}

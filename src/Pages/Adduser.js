@@ -242,8 +242,8 @@ function Adduser() {
                   <select className="form-select" id="userrole" required>
                     <option value="" selected>select user role</option>
                     <option value="admin">Admin</option>
-                    <option value="supervisor">Supervisor</option>
-                    <option value="dataentry">Data Entry</option>
+                    <option value="guest">Guest</option>
+                   {/*  <option value="dataentry">Data Entry</option> */}
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>
                 </div>
