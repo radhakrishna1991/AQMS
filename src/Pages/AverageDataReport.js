@@ -150,7 +150,7 @@ function AverageDataReport() {
 
     var gridheadertitle;
 
-    layout.push({ name: "Date", title: "Date", type: "text", width: "140px",sorting: true });
+    layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
 
     for (var i = 0; i < SelectedPollutents.length; i++) {
 
@@ -223,11 +223,11 @@ function AverageDataReport() {
 
           // console.log(filter);
 
-         // RefsortOrder.current = sortOrder;
+          // RefsortOrder.current = sortOrder;
 
           // now the oldText.current holds the old value
 
-         // setsortOrder(filter.sortOrder);
+          // setsortOrder(filter.sortOrder);
 
           return {
 
@@ -268,7 +268,7 @@ function AverageDataReport() {
   const AvgDataReport = async function (startIndex, lastIndex, sortorder) {
 
     let Pollutent = $("#pollutentid").val();
-    setSelectedPollutents(Pollutent);
+   // setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
 
       Pollutent.join(',')
@@ -278,19 +278,19 @@ function AverageDataReport() {
     let Fromdate = document.getElementById("fromdateid").value;
 
     let Todate = document.getElementById("todateid").value;
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
+    let interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Pollutent, Fromdate, Todate, interval);
     if (!valid) {
 
       return false;
 
     }
-    let type=interval.substr(interval.length - 1);
+    let type = interval.substr(interval.length - 1);
     let Interval;
-    if(type=='H'){
-     Interval= interval.substr(0,interval.length - 1)*60;
-    }else{
-      Interval= interval.substr(0,interval.length - 1)
+    if (type == 'H') {
+      Interval = interval.substr(0, interval.length - 1) * 60;
+    } else {
+      Interval = interval.substr(0, interval.length - 1);
     }
     document.getElementById('loader').style.display = "block";
 
@@ -665,6 +665,13 @@ function AverageDataReport() {
 
       return false;
 
+    }
+    let type = interval.substr(interval.length - 1);
+    let Interval;
+    if (type == 'H') {
+      Interval = interval.substr(0, interval.length - 1) * 60;
+    } else {
+      Interval = interval.substr(0, interval.length - 1);
     }
     let paramUnitnames;
 
