@@ -19,4 +19,4 @@ var BaudRate = ["9600", "14400", "19200", "38400", "57600", "115200", "128000", 
 var Parity =["None","Odd","Even","Mark","Space"];
 var StopBits=[1,1.5,2];
 var Typeofsequence=['Zero','Span']
-
+var UserRoles =[{SUPER_ADMIN: 'SUPER_ADMIN',ADMIN: 'ADMIN',MANAGER: 'MANAGER',CUSTOMER: 'CUSTOMER',GUEST: 'GUEST'}]

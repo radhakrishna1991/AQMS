@@ -358,6 +358,8 @@ function Dashboard() {
     if (status == 1) {
       let isvalid = SequenceValidation(param);
       if (!isvalid) {
+        var sequencetab="sequence"+param+"-tab";
+        $("#"+sequencetab).tab('show');
         return false;
       }
     }
@@ -561,6 +563,34 @@ function Dashboard() {
         }
       }).catch((error) => toast.error('Unable to change the parameter status. Please contact adminstrator'));
   }
+
+  const GetLowDriftValue=function(){
+    for (let i = 1; i <= 5; i++) {
+      var totaltime = document.getElementById("totaltime" + i).value;
+      var raisingtime=document.getElementById("risingtime" + i).value;
+      var fallingTime=document.getElementById("fallingtime" + i).value;
+      var highdrift=document.getElementById("highdrift" + i).value;
+      
+      var totaltime = document.getElementById("totaltime" + i).value;
+      var lowdriftValue = Number(totaltime) - Number(raisingtime) - Number(fallingTime) - Number(highdrift) ;
+      document.getElementById("lowdrift" + i).value = lowdriftValue;
+    }
+  }
+
+  const GetTotalTime=function(){
+    for (let i = 1; i <= 5; i++) {
+      var raisingtime=document.getElementById("risingtime" + i).value;
+      var fallingTime=document.getElementById("fallingtime" + i).value;
+      var highdrift=document.getElementById("highdrift" + i).value;
+      var lowdrift=document.getElementById("lowdrift" + i).value;  
+      
+      var addValue=Number(raisingtime) + Number(fallingTime) + Number(highdrift) + Number(lowdrift);
+      document.getElementById("totaltime" + i).value=addValue;
+    }
+  }
+
+
+
   return (
     <main id="main" className="main">
       <div className="modal fade zoom dashboard_dmodal" id="infomodal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
@@ -935,31 +965,31 @@ function Dashboard() {
                                     <div className="row mb-3">
                                       <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"totaltime" + i} required />
+                                        <input type="number" className="form-control" id={"totaltime" + i} onChange={GetLowDriftValue} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"risingtime" + i} required />
+                                        <input type="number" className="form-control" id={"risingtime" + i} onChange={GetTotalTime} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"fallingtime" + i} required />
+                                        <input type="number" className="form-control" id={"fallingtime" + i} onChange={GetTotalTime} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"highdrift" + i} required />
+                                        <input type="number" className="form-control" id={"highdrift" + i} onChange={GetTotalTime} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"lowdrift" + i} required />
+                                        <input type="number" className="form-control" id={"lowdrift" + i} onChange={GetTotalTime} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
