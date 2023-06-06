@@ -280,13 +280,13 @@ function Sidenavbar() {
                 <span>AirQuality-Legacy</span>
               </NavLink >
             </li> */}
-            <li>
+            {/* <li>
               <NavLink to="/StatisticalReport" className="nav-item animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
                 <span>Statistical Reports</span>
               </NavLink >
-            </li>
-            <li>
+            </li> */}
+            {/* <li>
               <NavLink to="/PredefinedCharts" className="nav-item animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Pre-Defned Charts</span>
@@ -296,19 +296,19 @@ function Sidenavbar() {
                 <i className="bi bi-circle"></i>
                 <span>Detailed Analysis Reports</span>
               </NavLink >
-            </li>
+            </li> */}
             <li>
               <NavLink to="/AverageDataReport" className="nav-item animation-forwards animate-delay-5" >
                 <i className="bi bi-circle"></i>
                 <span>Average Data Reports</span>
               </NavLink >
             </li>
-            <li>
+           {/*  <li>
               <NavLink to="/StasticsDataReport" className="nav-item animation-forwards animate-delay-6" >
                 <i className="bi bi-circle"></i>
                 <span>Statistical Data Reports</span>
               </NavLink >
-            </li>
+            </li> */}
 
             <li>
               <NavLink to="/LiveDataReports" className="nav-item animation-forwards animate-delay-6" >
