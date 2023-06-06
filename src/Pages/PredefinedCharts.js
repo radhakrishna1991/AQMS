@@ -49,7 +49,7 @@ function PredefinedCharts() {
   const GenarateChart = function () {
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/getPredefinedchartData";
     let Pollutent = $("input[type='radio'][name='parametersradio']:checked").val();
-    let DataFilter = '24H';
+    let DataFilter = 1440;
     fetch(url, {
       method: 'POST',
       headers: {

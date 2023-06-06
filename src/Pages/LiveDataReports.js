@@ -94,7 +94,7 @@ function LiveDataReports() {
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
-        layout.push({ name: "", title: "", type: "text", width: "100px" });
+        layout.push({ name: "", title: "", type: "text", width: "100px", sorting: false });
       }
     }
     window.jQuery(gridRefjsgridreport.current).jsGrid({

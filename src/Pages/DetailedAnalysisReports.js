@@ -95,7 +95,7 @@ function DetailedAnalysisReports() {
     let Pollutent = $("#pollutentid").val();
     let FromYear = fromDate;
     let ToYear = toDate;
-    let Interval = '24H,1H';
+    let Interval = '1440,60';
     let Interval1=Interval.split(',');
     let valid = ReportValidations(Station, Pollutent, FromYear, ToYear, Interval);
     if (!valid) {

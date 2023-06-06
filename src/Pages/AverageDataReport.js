@@ -19,10 +19,11 @@ function AverageDataReport() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
-  var dataForGrid = [];
-  const RefsortOrder = useRef("");
+  const PollutentsRef = useRef([]);
+  PollutentsRef.current = SelectedPollutents;
   const Itemcount = useRef();
   Itemcount.current = ItemCount;
+  var dataForGrid = [];
 
   useEffect(() => {
     fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAverageLookupData")
@@ -52,7 +53,7 @@ function AverageDataReport() {
   }, []);
   useEffect(() => {
     initializeJsGrid();
-  }, [ListReportData]);
+  }, [SelectedPollutents]);
   /* reported data start */
 
   const UpdateColPos = function (cols) {
@@ -90,7 +91,7 @@ function AverageDataReport() {
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
-        layout.push({ name: " " + p, title: " ", type: "text", width: "100px" });
+        layout.push({ name: " " + p, title: " ", type: "text", width: "100px", sorting: false });
       }
     }
     window.jQuery(gridRefjsgridreport.current).jsGrid({
@@ -132,16 +133,24 @@ function AverageDataReport() {
 
   const AvgDataReport = async function (startIndex, lastIndex, sortorder) {
     let Pollutent = $("#pollutentid").val();
-    setSelectedPollutents(Pollutent);
+   // setSelectedPollutents(Pollutent);
+   // PollutentsRef.current=Pollutent;
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
+    let interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Pollutent, Fromdate, Todate, interval);
     if (!valid) {
       return false;
+    }
+    let type=interval.substr(interval.length - 1);
+    let Interval;
+    if(type=='H'){
+     Interval= interval.substr(0,interval.length - 1)*60;
+    }else{
+      Interval= interval.substr(0,interval.length - 1)
     }
     document.getElementById('loader').style.display = "block";
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: sortorder });
@@ -176,10 +185,10 @@ function AverageDataReport() {
               let digit = window.decimalDigit
               if (window.TruncateorRound == "RoundOff") {
                 let num = data1[k].parametervalue;
-                roundedNumber = num.toFixed(digit);
+                roundedNumber = num==null?num:num.toFixed(digit);
               }
               else {
-                roundedNumber = CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                roundedNumber = data1[k].parametervalue==null?data1[k].parametervalue: CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
               }
               if (temp >= 0) {
                 dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
@@ -205,6 +214,7 @@ function AverageDataReport() {
   const getdtareport = function () {
     let Pollutent = $("#pollutentid").val();
     setSelectedPollutents(Pollutent);
+ // PollutentsRef.current=Pollutent;
     if (Pollutent.length > 0) {
       Pollutent.join(',')
     }
@@ -216,7 +226,7 @@ function AverageDataReport() {
       return false;
     }
     setListReportData(1);
-    initializeJsGrid();
+    initializeJsGrid(Pollutent);
     // AvgDataReport();
   }
 
@@ -326,10 +336,17 @@ function AverageDataReport() {
     }
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
-    let Interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
+    let interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Pollutent, Fromdate, Todate, interval);
     if (!valid) {
       return false;
+    }
+    let type=interval.substr(interval.length - 1);
+    let Interval;
+    if(type=='H'){
+     Interval= interval.substr(0,interval.length - 1)*60;
+    }else{
+      Interval= interval.substr(0,interval.length - 1)
     }
     let paramUnitnames;
     for (var i = 0; i < SelectedPollutents.length; i++) {
