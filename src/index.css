@@ -322,6 +322,7 @@ table.table .avatar {
 
 .sequencedisable {
   pointer-events: none;
+  background-color: #dddddd24;
 }
 
 .disable i {
