@@ -268,7 +268,7 @@ function AverageDataReport() {
   const AvgDataReport = async function (startIndex, lastIndex, sortorder) {
 
     let Pollutent = $("#pollutentid").val();
-   // setSelectedPollutents(Pollutent);
+    // setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
 
       Pollutent.join(',')
@@ -644,27 +644,17 @@ function AverageDataReport() {
   }
 
   const DownloadExcel = function () {
-
-
-
-
     let Pollutent = $("#pollutentid").val();
-
     if (Pollutent.length > 0) {
-
       Pollutent.join(',')
-
     }
-
     let Fromdate = document.getElementById("fromdateid").value;
 
     let Todate = document.getElementById("todateid").value;
     let interval = document.getElementById("criteriaid").value;
     let valid = ReportValidations(Pollutent, Fromdate, Todate, interval);
     if (!valid) {
-
       return false;
-
     }
     let type = interval.substr(interval.length - 1);
     let Interval;
@@ -692,22 +682,10 @@ function AverageDataReport() {
         paramUnitnames += filter[0].parameterName + "-" + unitname[0].unitName + ",";
 
       }
-
-
-
-
     }
-
-
-
-
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames });
 
     window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
-
-
-
-
   }
 
 
