@@ -51,7 +51,10 @@ function LiveDataReports() {
   useEffect(() => {
     initializeJsGrid();
   }, [ListReportData]);
-
+  useEffect(() => {
+    initializeJsGrid();
+  }, [SelectedPollutents]);
+  
   useEffect(() => {
     const interval = setInterval(() => {
       getdtareport('refresh');
@@ -134,10 +137,10 @@ function LiveDataReports() {
       finalpollutent.push(filter[0]);
     }
     if (Pollutent.length == 0) {
-      // setSelectedPollutents(Pollutents);
-      ListPollutents.current = Pollutents;
+      //setSelectedPollutents(Pollutents);
+      //ListPollutents.current = Pollutents;
     } else {
-      ListPollutents.current = finalpollutent;
+      //ListPollutents.current = finalpollutent;
       //setSelectedPollutents(finalpollutent);
     }
     if (Pollutent.length > 0) {
@@ -199,13 +202,13 @@ function LiveDataReports() {
       finalpollutent.push(filter[0]);
     }
     if (param == 'reset' || Pollutent.length == 0) {
-      ListPollutents.current = Pollutents;
-      //setSelectedPollutents(Pollutents);
+      //ListPollutents.current = Pollutents;
+      setSelectedPollutents(Pollutents);
     } else {
-      ListPollutents.current = finalpollutent;
-      //setSelectedPollutents(finalpollutent);
+      //ListPollutents.current = finalpollutent;
+      setSelectedPollutents(finalpollutent);
     }
-    initializeJsGrid();
+   // initializeJsGrid();
   }
 
 

@@ -6,7 +6,7 @@ function Header() {
     document.querySelector('body').classList.toggle('toggle-sidebar')
   }
   const Signout = function () {
-    fetch('https://localhost:44317/api/Users/Logout', {
+    fetch(process.env.REACT_APP_WSurl +'api/Users/Logout', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
