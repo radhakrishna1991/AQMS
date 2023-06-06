@@ -357,11 +357,11 @@ function AverageDataReport() {
               if (window.TruncateorRound == "RoundOff") {
 
                 let num = data1[k].parametervalue;
-                roundedNumber = num.toFixed(digit);
+                roundedNumber = num==null?num:num.toFixed(digit);
               }
 
               else {
-                roundedNumber = CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                roundedNumber = data1[k].parametervalue==null?data1[k].parametervalue:CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
               }
 
               if (temp >= 0) {
@@ -499,13 +499,13 @@ function AverageDataReport() {
 
         let num = ListReportData[k].parametervalue;
 
-        roundedNumber = num.toFixed(digit);
+        roundedNumber = num==null?num:num.toFixed(digit);
 
       }
 
       else {
 
-        roundedNumber = CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
+        roundedNumber = ListReportData[k].parametervalue==null?ListReportData[k].parametervalue:CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
 
       }
 

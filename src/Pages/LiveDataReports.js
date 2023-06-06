@@ -166,10 +166,10 @@ function LiveDataReports() {
               let digit = window.decimalDigit
               if (window.TruncateorRound == "RoundOff") {
                 let num = data1[k].parametervalue;
-                roundedNumber = num.toFixed(digit);
+                roundedNumber = num==null?num:num.toFixed(digit);
               }
               else {
-                roundedNumber = CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                roundedNumber = data1[k].parametervalue==null?data1[k].parametervalue:CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
               }
               if (temp >= 0) {
                 dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
