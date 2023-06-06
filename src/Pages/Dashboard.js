@@ -52,6 +52,7 @@ function Dashboard() {
   const [StartDatetime5, onChange5] = useState(new Date());
   const [CalibrationSequence, setCalibrationSequence] = useState([]);
   const [ListCalibration, setListCalibration] = useState([]);
+  const [UserRole, setUserRole]=useState(true);
   ListAllDataCopy.current = ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
@@ -83,6 +84,7 @@ function Dashboard() {
           // }
           setLiveChartStatus(parameterChartStatus);
           GenerateChart(data);
+          getUserRole();
         }
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
   }, []);
@@ -589,6 +591,17 @@ function Dashboard() {
     }
   }
 
+  const getUserRole = function ()  {
+    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));  
+    
+    if(currentUser.role.toUpperCase()==window.UserRoles[0].ADMIN.toUpperCase()){
+      setUserRole(true);
+    }
+    else if(currentUser.role.toUpperCase()==window.UserRoles[0].GUEST.toUpperCase()){ 
+      setUserRole(false);
+    }
+  }
+
 
 
   return (
@@ -898,7 +911,7 @@ function Dashboard() {
                     <button className="nav-link " id="sequence5-tab" data-bs-toggle="tab" data-bs-target="#sequence5-tab-pane" type="button" role="tab" aria-controls="sequence5-tab-pane" aria-selected="false" >Sequence5</button>
                   </li>
                 </ul>
-                <div className="tab-content" id="calibrationTabContent">
+                <div className={"tab-content "+ (UserRole?"":"sequencedisable")} id="calibrationTabContent">
                   {(() => {
                     let calibration = [];
                     for (let i = 1; i <= 5; i++) {
@@ -1092,7 +1105,7 @@ function Dashboard() {
 
                           </div>
                           <div className="float-end ">
-                            <button type="button" className="btn btn-primary px-3 py-1 my-1" onClick={() => Clearformvalues(i)} >Clear</button>
+                            <button type="button" className={"btn btn-primary px-3 py-1 my-1 "+ (UserRole?"":"disable")} onClick={() => Clearformvalues(i)} >Clear</button>
                           </div>
                         </form>
                       </div>);
@@ -1106,7 +1119,7 @@ function Dashboard() {
             </div>
             <div className="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" className="btn btn-primary" onClick={SaveCalibrationSequence} >Save</button>
+              <button type="button" className={"btn btn-primary "+ (UserRole?"":"disable")} onClick={SaveCalibrationSequence} >Save</button>
             </div>
           </div>
         </div>
@@ -1419,14 +1432,14 @@ function Dashboard() {
                           <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
                         </div>
                         <div className="d-flex justify-content-start mt-2">
-                          {x.serviceMode && (
-                            <div className="icons" title="Service Mode" onClick={() => DeviceServiceMode(x)}>
+                          {x.serviceMode && (                           
+                            <div className={"icons "+ (UserRole?"":"disable")}  title="Service Mode" onClick={() => DeviceServiceMode(x)}>
                               <i class="bi bi-modem"></i>&nbsp;
                             </div>
                           )}
                           {!x.serviceMode && (
-                            <div className="icons" title="Service Mode" onClick={() => DeviceServiceMode(x)}>
-                              <i class="bi bi-modem text-danger"></i>&nbsp;
+                            <div className={"icons "+ (UserRole?"":"disable")} title="Service Mode" onClick={() => DeviceServiceMode(x)}>
+                              <i class="bi bi-modem text-danger" ></i>&nbsp;
                             </div>
                           )}
                           <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
@@ -1441,7 +1454,7 @@ function Dashboard() {
                         {ListAllData.listPollutents.map((i, j) =>
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
-                              <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className="bi bi-check2"></i>)} {!i.isEnable && (<i className="bi bi-x-lg text-danger"></i>)}</span> <span>{i.parameterName}</span></div>
+                              <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 "+ (UserRole?"":"disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg "+ (UserRole?" text-danger":"disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
                               <div className="values"><button className="btn1" style={{ backgroundColor: i.flag == null ? "#FFFFF" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode }} onClick={Codesinformation} >{i.flag == null ? "A" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
                                 <button className="btn2">{i.parameterValue == null ? 0 : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
                               {/* {LiveChartStatus[j].ChartStatus && (

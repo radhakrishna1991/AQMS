@@ -63,10 +63,12 @@ function AddParameter() {
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
     let UnitID = document.getElementById("unit").value;    
+    let CoefA=document.getElementById('coefa').value;
+    let CoefB=document.getElementById('coefb').value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status?1:0;
-    let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, ScaleFactor);
+    let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, ScaleFactor, CoefA, CoefB);
     if (!validation) {
       return false;
     }
@@ -76,7 +78,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, UnitID: UnitID, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -105,6 +107,8 @@ function AddParameter() {
       document.getElementById("avginterval").value = param.avgInterval;
       document.getElementById("unit").value = param.unitID;
       document.getElementById("scalefactor").value=param.scaleFactor;
+      document.getElementById("coefa").value=param.coefA;
+      document.getElementById("coefb").value=param.coefB;
     }, 10);
 
   }
@@ -118,10 +122,12 @@ function AddParameter() {
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
     let UnitID = document.getElementById("unit").value;
+    let CoefA=document.getElementById('coefa').value;
+    let CoefB=document.getElementById('coefb').value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status?1:0;
-    let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID);
+    let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, CoefA, CoefB);
     if (!validation) {
       return false;
     }
@@ -131,7 +137,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
