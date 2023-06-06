@@ -377,19 +377,11 @@ function AverageDataReport() {
                 obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
 
                 obj["Date"] = data1[k].interval;
-
-
-
-
                 dataForGrid.push(obj);
 
               }
 
             }
-
-
-
-
           }
 
           document.getElementById('loader').style.display = "none";
@@ -436,15 +428,11 @@ function AverageDataReport() {
 
     setListReportData(1);
 
-    initializeJsGrid();
+    //initializeJsGrid();
 
     // AvgDataReport();
 
   }
-
-
-
-
 
   const DownloadPDF = function () {
 
@@ -683,7 +671,7 @@ function AverageDataReport() {
 
       }
     }
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames });
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
 
     window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
   }
