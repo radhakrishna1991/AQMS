@@ -98,6 +98,18 @@ function StasticsReport() {
     if (!valid) {
       return false;
     }
+
+    let type = Interval.substr(Interval.length - 1);
+    let Intervaltype;
+    if (type == 'H') {
+      Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
+    } else {
+      Intervaltype = Interval.substr(0, Interval.length - 1);
+    }
+
+
+
+
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
     let suburl = "getAnnualAverages";
     if (Criteria == 'Max') {
@@ -115,7 +127,7 @@ function StasticsReport() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationName: Station.toString(), FromDate: Fromdate, ToDate: Todate, Criteria: Criteria, DataFilter: Interval, Pollutant: Pollutent.toString() }),
+      body: JSON.stringify({ StationName: Station.toString(), FromDate: Fromdate, ToDate: Todate, Criteria: Criteria, DataFilter: Interval, Pollutant: Pollutent.toString(), DataFilterID:Intervaltype }),
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
