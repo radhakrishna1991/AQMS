@@ -440,9 +440,6 @@ function AverageDataReport() {
 
     var tableheading = [];
 
-
-
-
     const styles = {
 
       fontFamily: "sans-serif",
@@ -508,9 +505,6 @@ function AverageDataReport() {
         roundedNumber = ListReportData[k].parametervalue==null?ListReportData[k].parametervalue:CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
 
       }
-
-
-
 
       if (temp >= 0) {
 
