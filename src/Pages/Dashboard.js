@@ -1456,7 +1456,7 @@ function Dashboard() {
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 "+ (UserRole?"":"disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg "+ (UserRole?" text-danger":"disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
                               <div className="values"><button className="btn1" style={{ backgroundColor: i.flag == null ? "#FFFFF" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode }} onClick={Codesinformation} >{i.flag == null ? "A" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
-                                <button className="btn2">{i.parameterValue == null ? 0 : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
+                                <button className="btn2">{i.parameterValue == null ? '-' : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
                               {/* {LiveChartStatus[j].ChartStatus && (
                                 <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
                               )}
