@@ -253,26 +253,18 @@ function AverageDataReport() {
 
   }
 
-
-
-
   const generateDatabaseDateTime = function (date) {
 
     return date.replace("T", " ").substring(0, 19);
 
   }
 
-
-
-
   const AvgDataReport = async function (startIndex, lastIndex, sortorder) {
 
     let Pollutent = $("#pollutentid").val();
     // setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
-
       Pollutent.join(',')
-
     }
 
     let Fromdate = document.getElementById("fromdateid").value;
@@ -281,9 +273,7 @@ function AverageDataReport() {
     let interval = document.getElementById("criteriaid").value;
     let valid = ReportValidations(Pollutent, Fromdate, Todate, interval);
     if (!valid) {
-
       return false;
-
     }
     let type = interval.substr(interval.length - 1);
     let Interval;
@@ -357,11 +347,11 @@ function AverageDataReport() {
               if (window.TruncateorRound == "RoundOff") {
 
                 let num = data1[k].parametervalue;
-                roundedNumber = num==null?num:num.toFixed(digit);
+                roundedNumber = num == null ? num : num.toFixed(digit);
               }
 
               else {
-                roundedNumber = data1[k].parametervalue==null?data1[k].parametervalue:CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                roundedNumber = data1[k].parametervalue == null ? data1[k].parametervalue : CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
               }
 
               if (temp >= 0) {
@@ -496,13 +486,13 @@ function AverageDataReport() {
 
         let num = ListReportData[k].parametervalue;
 
-        roundedNumber = num==null?num:num.toFixed(digit);
+        roundedNumber = num == null ? num : num.toFixed(digit);
 
       }
 
       else {
 
-        roundedNumber = ListReportData[k].parametervalue==null?ListReportData[k].parametervalue:CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
+        roundedNumber = ListReportData[k].parametervalue == null ? ListReportData[k].parametervalue : CommonFunctions.truncateNumber(ListReportData[k].parametervalue, digit);
 
       }
 
@@ -665,7 +655,7 @@ function AverageDataReport() {
 
       }
     }
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound });
 
     window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
   }

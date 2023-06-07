@@ -107,9 +107,6 @@ function StasticsReport() {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
 
-
-
-
     let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
     let suburl = "getAnnualAverages";
     if (Criteria == 'Max') {
