@@ -282,12 +282,12 @@ function Sidenavbar() {
                 <span>AirQuality-Legacy</span>
               </NavLink >
             </li> */}
-            {/* <li>
+            <li>
               <NavLink to="/StatisticalReport" className="nav-item animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
                 <span>Statistical Reports</span>
               </NavLink >
-            </li> */}
+            </li>
             {/* <li>
               <NavLink to="/PredefinedCharts" className="nav-item animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
