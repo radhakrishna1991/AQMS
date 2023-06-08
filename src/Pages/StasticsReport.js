@@ -426,7 +426,7 @@ function StasticsReport() {
               <div className="col">
                 <label className="form-label">Criteria</label>
                 <select className="form-select" id="criteriaid">
-                  <option value="Mean">Mean by Station Name</option>
+                  <option value="Mean">Mean by Station</option>
                   <option value="MeanTimeseries">Mean by Timeseries</option>
                   <option value="Raw">Raw</option>
                   <option value="Max">Maximum</option>

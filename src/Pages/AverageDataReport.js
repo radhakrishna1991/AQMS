@@ -203,9 +203,9 @@ function AverageDataReport() {
 
       sorting: true,
 
-      paging: true,
-
       autoload: true,
+
+      paging: true,
 
       pageLoading: true,
 
