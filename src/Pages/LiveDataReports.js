@@ -16,6 +16,8 @@ function LiveDataReports() {
   const ListPollutents = useRef([]);
   ListPollutents.current = SelectedPollutents;
   const getDuration = window.LiveDataDuration;
+  const Itemcount = useRef();
+  Itemcount.current = ItemCount;
   var dataForGrid = [];
   useEffect(() => {
     let params = new URLSearchParams({ Pollutent: "", StartIndex: 0 });
@@ -27,7 +29,7 @@ function LiveDataReports() {
           setListReportData(data.count);
           setGridcall(true);
           setRefreshGrid(true);
-          setItemCount(data.count);
+         // setItemCount(data.count);
           let parameterslist = [];
           data.listPollutents.filter(function (item) {
             var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
@@ -122,7 +124,7 @@ function LiveDataReports() {
           var startIndex = (filter.pageIndex - 1) * filter.pageSize;
           return {
             data: await LiveData(startIndex, startIndex + filter.pageSize,filter.sortOrder),
-            itemsCount: ItemCount
+            itemsCount: await Itemcount.current
           };
         }
       },
@@ -163,7 +165,8 @@ function LiveDataReports() {
 
           for (var k = 0; k < data1.length; k++) {
             if (k == 0) {
-              setItemCount(data1[0].count);
+              //setItemCount(data1[0].count);
+              Itemcount.current = data1[0].count;
             }
             var obj = {};
             var temp = dataForGrid.findIndex(x => x.Date === generateDatabaseDateTime(data1[k].createdTime));
