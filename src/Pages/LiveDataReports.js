@@ -11,6 +11,8 @@ function LiveDataReports() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Pollutents, setPollutents] = useState([]);
   const [ItemCount, setItemCount] = useState(0);
+  const [Gridcall, setGridcall] = useState(false);
+  const [RefreshGrid, setRefreshGrid] = useState(false);
   const ListPollutents = useRef([]);
   ListPollutents.current = SelectedPollutents;
   const getDuration = window.LiveDataDuration;
@@ -23,6 +25,8 @@ function LiveDataReports() {
         if (data != null) {
           setAllLookpdata(data);
           setListReportData(data.count);
+          setGridcall(true);
+          setRefreshGrid(true);
           setItemCount(data.count);
           let parameterslist = [];
           data.listPollutents.filter(function (item) {
@@ -50,11 +54,11 @@ function LiveDataReports() {
   }, []);
   useEffect(() => {
     initializeJsGrid();
-  }, [ListReportData]);
-  useEffect(() => {
+  }, [RefreshGrid,SelectedPollutents]);
+  /* useEffect(() => {
     initializeJsGrid();
   }, [SelectedPollutents]);
-  
+   */
   useEffect(() => {
     const interval = setInterval(() => {
       getdtareport('refresh');
@@ -208,6 +212,7 @@ function LiveDataReports() {
       //ListPollutents.current = finalpollutent;
       setSelectedPollutents(finalpollutent);
     }
+    setRefreshGrid(RefreshGrid?false:true);
    // initializeJsGrid();
   }
 
@@ -216,6 +221,7 @@ function LiveDataReports() {
   const Resetfilters = function () {
     $('.pollutentid')[0].sumo.reload();
     $('.pollutentid')[0].sumo.unSelectAll();
+    //setGridcall(false);
     getdtareport('reset');
   }
   return (
@@ -278,7 +284,7 @@ function LiveDataReports() {
                 </div>
               </div>
             </div>
-            {ListReportData != 0 && (
+            {Gridcall && (
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
