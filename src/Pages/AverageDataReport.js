@@ -787,13 +787,10 @@ function AverageDataReport() {
 
     let filter1 = $(this).val();
 
-
-
-
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
 
     let finaldata = AllLookpdata.listPollutents.filter(obj => filter1.includes(obj.parameterName));
-
+ 
     if (finaldata.length > 0) {
 
       let finalinterval = [];
