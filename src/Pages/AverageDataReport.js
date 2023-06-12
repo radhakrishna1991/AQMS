@@ -1006,7 +1006,7 @@ function AverageDataReport() {
 
                     <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
 
-                    <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button>
+                   {/*  <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button> */}
 
                   </span>
 
@@ -1041,19 +1041,11 @@ function AverageDataReport() {
               <div id="jsGridData" className="jsGrid" ref={gridRefjsgridreport} />
 
             )}
-
-
-
-
           </div>
 
         </div>
 
       </section>
-
-
-
-
     </main>
 
   );
