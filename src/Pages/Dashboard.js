@@ -1426,7 +1426,7 @@ function Dashboard() {
 
               <div className="dashboard_row">
                 {ListAllData.listDevices.map((x, y) =>
-
+                  x.status==1 &&(
                   <div className="dashboard_col">
                     <div className="card info-card revenue-card">
                       <div className="card-body ">
@@ -1456,7 +1456,7 @@ function Dashboard() {
                           )}
                         </div>
                         {ListAllData.listPollutents.map((i, j) =>
-                          i.deviceID == x.id && (
+                          (i.deviceID == x.id &&  i.status==1) && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 "+ (UserRole?"":"disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg "+ (UserRole?" text-danger":"disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
                               <div className="values"><button className="btn1"  style={{ backgroundColor: i.flag != null ? ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode:"#FFFFFF" }} onClick={Codesinformation} >{i.flag == null ? "-" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
@@ -1468,6 +1468,7 @@ function Dashboard() {
 
                     </div>
                   </div>
+                  )
 
                 )}
               </div>

@@ -32,10 +32,12 @@ function LiveDataReports() {
          // setItemCount(data.count);
           let parameterslist = [];
           data.listPollutents.filter(function (item) {
+            if(item.status==1){
             var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
             if (i <= -1) {
               parameterslist.push(item);
             }
+          }
             return null;
           });
           setPollutents(parameterslist);
