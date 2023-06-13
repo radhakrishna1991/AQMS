@@ -53,12 +53,12 @@ function Header() {
             <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li className="dropdown-header">
                 <h6>{user.userName}</h6>
-                <span>Web Designer</span>
+                <span>( {user.role} )</span>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
-              <li>
+              {/* <li>
                 <a className="dropdown-item d-flex align-items-center" href="users-profile.html">
                   <i className="bi bi-person"></i>
                   <span>My Profile</span>
@@ -84,7 +84,7 @@ function Header() {
               </li>
               <li>
                 <hr className="dropdown-divider" />
-              </li>
+              </li> */}
               <li>
                 <a className="dropdown-item d-flex align-items-center" onClick={Signout}>
                   <i className="bi bi-box-arrow-right"></i>

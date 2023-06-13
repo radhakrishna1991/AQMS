@@ -1,4 +1,5 @@
 
+import { id } from "chartjs-plugin-dragdata";
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
@@ -11,7 +12,7 @@ function AddDevice() {
   const [ListDeviceModels, setListDeviceModels] = useState([]);
   const [Deviceid, setDeviceid] = useState(0);
   const [Status, setStatus] = useState(true);
-  const [ServiceMode, setServiceMode] = useState(true);
+  const [ServiceMode, setServiceMode] = useState(false);
   const [Enable, setEnable] = useState(false);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
@@ -210,6 +211,7 @@ function AddDevice() {
         }
       }).catch((error) => toast.error('Unable to get the Devices lookup list. Please contact adminstrator'));
   }
+  
   const GetDevices = function () {
     fetch(process.env.REACT_APP_WSurl + "api/Devices", {
       method: 'GET',
@@ -225,6 +227,7 @@ function AddDevice() {
   });
   useEffect(() => {
     GetLookupdata();
+    
   }, [])
   const initializeJsGrid = function () {
     window.jQuery(gridRefjsgridreport.current).jsGrid({
@@ -402,7 +405,7 @@ function AddDevice() {
                     </div>
                     <div className="col-md-6 mb-3">
                       <label htmlFor="databits" className="form-label">Data Bits:</label>
-                      <input type="number" className="form-control" id="databits" placeholder="Enter IP Data Bits" required />
+                      <input type="number" className="form-control" id="databits" placeholder="Enter IP Data Bits" defaultValue="8" required />
                       <div class="invalid-feedback">Please enter data bits</div>
                     </div>
                     <div className="col-md-6 serialrtumode mb-3 form-check">
