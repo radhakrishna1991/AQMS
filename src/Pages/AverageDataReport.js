@@ -295,8 +295,13 @@ function AverageDataReport() {
     document.getElementById('loader').style.display = "block";
 
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: sortorder });
-
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/AvergaeDataReport?"
+    let url="";
+    if(interval=="1M"){
+      url = process.env.REACT_APP_WSurl + "api/AirQuality/RawDataReport?"
+    }
+    else{
+      url = process.env.REACT_APP_WSurl + "api/AirQuality/AvergaeDataReport?"
+    }
 
     /* fetch(url + params, {
 
@@ -981,7 +986,7 @@ function AverageDataReport() {
                 <select className="form-select" id="criteriaid">
 
                   <option value="" selected>Select Interval</option>
-
+                  <option value="1M" selected>1-M</option>
                   {Criteria.map((x, y) =>
 
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
