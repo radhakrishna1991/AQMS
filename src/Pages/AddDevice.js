@@ -12,7 +12,7 @@ function AddDevice() {
   const [Deviceid, setDeviceid] = useState(0);
   const [Status, setStatus] = useState(true);
   const [ServiceMode, setServiceMode] = useState(true);
-  const [Enable, setEnable] = useState(true);
+  const [Enable, setEnable] = useState(false);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
@@ -439,7 +439,7 @@ function AddDevice() {
                     )}
                   </div>
                 </div>
-                <div className="col-md-4 mb-3">
+               {/*  <div className="col-md-4 mb-3">
                   <label for="Status" className="form-label">Enabled: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="enabled" onChange={(e) => setEnable(e.target.checked)} defaultChecked={Enable} />
@@ -450,7 +450,7 @@ function AddDevice() {
                       <label className="form-check-label" for="flexSwitchCheckChecked">No</label>
                     )}
                   </div>
-                </div>
+                </div> */}
                 <div className="col-md-4 mb-3">
                   <label for="Status" className="form-label">Status: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
