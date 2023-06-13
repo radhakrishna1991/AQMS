@@ -539,6 +539,9 @@ function Dashboard() {
         if (responseJson == 1) {
           //  toast.success('Device Updated successfully');
           param.serviceMode = !param.serviceMode;
+          ListAllDataCopy.current.listPollutents.filter(x => x.deviceID == param.id)
+          .forEach(x => x.flag = !x.isEnable?null:param.serviceMode?5:1);
+
         } else {
           toast.error('Unable to change the service mode. Please contact adminstrator');
         }
@@ -559,7 +562,8 @@ function Dashboard() {
         if (responseJson == 1) {
           //  toast.success('Device Updated successfully');
           param.isEnable = !param.isEnable;
-          param.flag = !param.isEnable ? 5 : 1;
+          param.parameterValue=null;
+          param.flag = !param.isEnable ? null : 1;
         } else {
           toast.error('Unable to change the parameter status. Please contact adminstrator');
         }
@@ -1432,12 +1436,12 @@ function Dashboard() {
                           <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
                         </div>
                         <div className="d-flex justify-content-start mt-2">
-                          {x.serviceMode && (                           
+                          {!x.serviceMode && (                           
                             <div className={"icons "+ (UserRole?"":"disable")}  title="Service Mode" onClick={() => DeviceServiceMode(x)}>
                               <i class="bi bi-modem"></i>&nbsp;
                             </div>
                           )}
-                          {!x.serviceMode && (
+                          {x.serviceMode && (
                             <div className={"icons "+ (UserRole?"":"disable")} title="Service Mode" onClick={() => DeviceServiceMode(x)}>
                               <i class="bi bi-modem text-danger" ></i>&nbsp;
                             </div>
@@ -1455,14 +1459,8 @@ function Dashboard() {
                           i.deviceID == x.id && (
                             <div className="d-flex justify-content-between mt-2">
                               <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 "+ (UserRole?"":"disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg "+ (UserRole?" text-danger":"disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1" style={{ backgroundColor: i.flag == null ? "#FFFFF" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode }} onClick={Codesinformation} >{i.flag == null ? "A" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
+                              <div className="values"><button className="btn1"  style={{ backgroundColor: i.flag != null ? ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode:"#FFFFFF" }} onClick={Codesinformation} >{i.flag == null ? "-" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
                                 <button className="btn2">{i.parameterValue == null ? '-' : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
-                              {/* {LiveChartStatus[j].ChartStatus && (
-                                <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-graph-up"></i></div>
-                              )}
-                              {!LiveChartStatus[j].ChartStatus && (
-                                <div className="icons" title="Graph" onClick={() => DeviceGraphold(x, i)}><i className="bi bi-alt"></i></div>
-                              )} */}
                             </div>
                           )
                         )}
