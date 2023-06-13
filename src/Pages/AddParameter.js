@@ -367,12 +367,12 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="coefa" className="form-label">COEF A:</label>
-                  <input type="number" className="form-control" id="coefa" placeholder="Enter COEF A" required />
+                  <input type="number" className="form-control" id="coefa" placeholder="Enter COEF A" defaultValue="0" required />
                   <div class="invalid-feedback">Please enter COEF A</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="coefb" className="form-label">COEF B:</label>
-                  <input type="number" className="form-control" id="coefb" placeholder="Enter COEF B" required />
+                  <input type="number" className="form-control" id="coefb" placeholder="Enter COEF B" defaultValue="1" required />
                   <div class="invalid-feedback">Please enter COEF B</div>
                 </div>
                 <div className="col-md-12 mb-3">
