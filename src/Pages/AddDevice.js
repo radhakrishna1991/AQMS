@@ -67,7 +67,7 @@ function AddDevice() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, DeviceId: deviceId, IPAddress: IPAddress, Port: Port, Type: Type,
+        StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port, Type: Type,
         CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,ServiceMode:servicemode,
         SerialRtuMode: SerialRtuMode, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable
       }),
@@ -97,7 +97,7 @@ function AddDevice() {
       document.getElementById("devicename").value = param.deviceName;
       document.getElementById("devicemodel").value = param.deviceModel;
       document.getElementById("type").value = param.type;
-      document.getElementById("deviceid").value = param.deviceId;
+      document.getElementById("deviceid").value = param.instrumentID;
       if (param.type == 'Tcp/IP') {
         document.getElementById("ipaddress").value = param.ipAddress;
         document.getElementById("port").value = param.port;
@@ -154,7 +154,7 @@ function AddDevice() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, DeviceId: deviceId, IPAddress: IPAddress, Port: Port,
+        StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port,
         Type: Type, ID: Deviceid, Status: status, CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
         ServiceMode:servicemode,SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable
       }),
@@ -340,7 +340,7 @@ function AddDevice() {
                   <div class="invalid-feedback">Please enter device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="deviceid" className="form-label">Device ID:</label>
+                  <label for="deviceid" className="form-label">Instrument ID:</label>
                   <input type="number" className="form-control" id="deviceid" placeholder="Enter device id" required />
                   <div class="invalid-feedback">Please enter id</div>
                 </div>
