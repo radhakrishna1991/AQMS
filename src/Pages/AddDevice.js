@@ -341,7 +341,7 @@ function AddDevice() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="deviceid" className="form-label">Instrument ID:</label>
-                  <input type="number" className="form-control" id="deviceid" placeholder="Enter device id" required />
+                  <input type="number" className="form-control" id="deviceid" placeholder="Enter instrument id" required />
                   <div class="invalid-feedback">Please enter id</div>
                 </div>
                 <div className="col-md-12 mb-3">
