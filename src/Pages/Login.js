@@ -2,13 +2,15 @@
 import React from "react";
 //import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
+import bcrypt from 'bcryptjs';
 //function Login() {
   const Login = ({ handleAuthentication }) => {
   //const Navigate = useNavigate();
-  const handleLogin = (event) => {
+  const handleLogin = async(event) => {
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
     let Password = document.getElementById("Password").value;
+    Password=await handleEncrypt(Password);
     if (!form.checkValidity()) {
       form.classNameList.add('was-validated');
     } else {
@@ -43,7 +45,17 @@ import { toast } from 'react-toastify';
           );
     }
   }
+  const handleEncrypt = async (password) => {
 
+    // Generate a salt (number of rounds determines the complexity)
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+
+    // Hash the password with the salt
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    return encryptedPassword ;
+  }
   return (
     <main>
       <div className="container">
