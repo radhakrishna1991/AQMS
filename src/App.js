@@ -93,6 +93,9 @@ currentUser !=null ? (
       {/* </BrowserRouter> */}
     </div>
   );
-}
+};
 
 export default App;
+
+
+

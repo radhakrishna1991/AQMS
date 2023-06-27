@@ -1,10 +1,10 @@
 
-import React, { Component } from "react";
-import { useNavigate, redirect } from "react-router-dom";
+import React from "react";
+//import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
-function Login() {
-
-  const Navigate = useNavigate();
+//function Login() {
+  const Login = ({ handleAuthentication }) => {
+  //const Navigate = useNavigate();
   const handleLogin = (event) => {
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
@@ -23,8 +23,9 @@ function Login() {
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
+            handleAuthentication(true)
           //  window.location.href = "/Dashboard";
-          window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+          //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
             toast.error('User name or password is incorrect. Please try again', {
               position: "top-right",
@@ -38,7 +39,10 @@ function Login() {
             });
             return false;
           }
-        }).catch((error) => toast.error('User name or password is incorrect. Please try again'));
+        }).catch((error) => 
+          toast.error('User name or password is incorrect. Please try again')
+          //console.log(error)
+          );
     }
   }
 
