@@ -1,5 +1,5 @@
 import React, { useEffect, useState, Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
@@ -32,22 +32,41 @@ const LiveData = lazy(() => import("./Pages/LiveData"));
 const DataProcessingClient = lazy(() => import("./Pages/DataProcessingClient"));
 const HistoricalData = lazy(() => import("./Pages/HistoricalData"));
 const LiveDataReports = lazy(() => import("./Pages/LiveDataReports"));
+const DeviceAlarams = lazy(() => import("./Pages/DeviceAlarams"));
 
 function App() {
   //const [location, setlocation] = useState(window.location.pathname);
+  const navigate = useNavigate();
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   return (
     <div>
-      <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
-        <ToastContainer />
+      {/* <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
+        <ToastContainer /> */}
         {currentUser != null ? <Header /> : ""}
         {currentUser != null ? <Sidenavbar /> : ""}
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
             <Route path="/" exact element={<Login />} />
-            <Route path="/Dashboard" exact element={<Dashboard />} />
+            <Route path="/Dashboard" exact element={
+currentUser !=null ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Dashboard />
+        </Suspense>
+      ) : (
+        <Navigate to="/Login" />
+      )
+            
+            } />
             <Route path="/Profile" exact element={<Profile />} />
-            <Route path="/Parameters" exact element={<Parameters />} />
+            <Route path="/AddParameter" exact element={
+            currentUser != null ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <AddParameter />
+        </Suspense>
+      ) : (
+        <Navigate to="/Login" />
+      )
+            } />
             <Route path="/AirQuality" exact element={<AirQuality />} />
             <Route path="/AverageDataReport" exact element={<AverageDataReport />} />
             <Route path="/StatisticalReport" exact element={<StasticsReport />} />
@@ -55,7 +74,7 @@ function App() {
             <Route path="/Adduser" exact element={<Adduser />} />
             <Route path="/AddStation" exact element={<AddStation />} />
             <Route path="/AddDevice" exact element={<AddDevice />} />
-            <Route path="/AddParameter" exact element={<AddParameter />} />
+            <Route path="/Parameters" exact element={<Parameters />} />
             <Route path="/UserLogHistory" exact element={<UserLogHistory />} />
             <Route path="/PredefinedCharts" exact element={<PredefinedCharts />} />
             <Route path="/DetailedAnalysisReports" exact element={<DetailedAnalysisReports />} />
@@ -68,9 +87,10 @@ function App() {
             <Route path="/DataProcessingClient" exact element={<DataProcessingClient />} />
             <Route path="/HistoricalData" exact element={<HistoricalData />} />
             <Route path="/LiveDataReports" exact element={<LiveDataReports />} />
+            <Route path="/DeviceAlarams" exact element={<DeviceAlarams />} />
           </Routes>
         </Suspense>
-      </BrowserRouter>
+      {/* </BrowserRouter> */}
     </div>
   );
 }
