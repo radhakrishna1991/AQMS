@@ -1,4 +1,4 @@
-import React,{Suspense} from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import  'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -8,10 +8,15 @@ import 'font-awesome/css/font-awesome.min.css';
 import './style.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { BrowserRouter as Router } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+    <Router basename={process.env.REACT_APP_BASE_URL}>
+    <ToastContainer />
     <App />
+  </Router>
 );
 
 // If you want to start measuring performance in your app, pass a function
