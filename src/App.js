@@ -1,6 +1,5 @@
-import React, { useEffect, useState, Suspense, lazy } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ToastContainer } from 'react-toastify';
+import React, {  useState, Suspense, lazy } from "react";
+import { Navigate,useNavigate, useRoutes } from "react-router-dom"
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
 import './App.css';
@@ -32,47 +31,163 @@ const LiveData = lazy(() => import("./Pages/LiveData"));
 const DataProcessingClient = lazy(() => import("./Pages/DataProcessingClient"));
 const HistoricalData = lazy(() => import("./Pages/HistoricalData"));
 const LiveDataReports = lazy(() => import("./Pages/LiveDataReports"));
+const App = () => {
+ // const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [authenticated, setAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-function App() {
-  //const [location, setlocation] = useState(window.location.pathname);
-  const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const handleAuthentication = (isAuthenticated) => {
+    setAuthenticated(isAuthenticated);
+    navigate('Dashboard');
+  };
+
+  const routes = [
+    {
+      path: '/',
+      element: (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Login handleAuthentication={handleAuthentication} />
+        </Suspense>
+      ),
+     
+    },
+    {
+      path: 'Dashboard',
+      element: authenticated ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+          <Sidenavbar />
+          <Dashboard />
+        </Suspense>
+      ) : (
+        <Navigate to="/Login" />
+      )
+      
+    },
+    {
+      path: 'Profile',
+      element: authenticated ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+          <Sidenavbar />
+          <Profile />
+        </Suspense>
+      ) : (
+        <Navigate to="/Login" />
+      )
+      
+    },
+    {
+      path: 'Parameters',
+      element: authenticated ? (
+        <Suspense fallback={<div>Loading...</div>}>
+          <Header />
+          <Sidenavbar />
+          <Parameters />
+        </Suspense>
+      ) : (
+        <Navigate to="/Login" />
+      )
+      
+    },
+    {
+      path: 'AirQuality',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AirQuality /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'AverageDataReport',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AverageDataReport /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'StatisticalReport',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><StasticsReport /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'StasticsDataReport',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><StasticsDataReport /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'Adduser',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><Adduser /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'AddStation',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AddStation /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'AddDevice',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AddDevice /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'AddParameter',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AddParameter /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'UserLogHistory',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><UserLogHistory /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'PredefinedCharts',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><PredefinedCharts /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'DetailedAnalysisReports',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><DetailedAnalysisReports /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'GsiModbusDrivers',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><GsiModbusDrivers /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'Calibrations',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><Calibration /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'AverageAlarm',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AverageAlarm /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'DataProcessing',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><DataProcessing /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'AppLogHistory',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><AppLogHistory /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'LiveData',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><LiveData /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'DataProcessingClient',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><DataProcessingClient /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'HistoricalData',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><HistoricalData /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'LiveDataReports',
+      element: authenticated ? (<Suspense fallback={<div>Loading...</div>}><Header /><Sidenavbar /><LiveDataReports /></Suspense>) : (<Navigate to="/Login" />)
+    },
+    {
+      path: 'Login',
+      element: ( <Suspense fallback={<div>Loading...</div>}><Login handleAuthentication={handleAuthentication} /></Suspense>)
+    },
+  ];
+
+ 
+
+  const routeResult = useRoutes(routes);
+
   return (
     <div>
-      <BrowserRouter basename={process.env.REACT_APP_BASE_URL}>
-        <ToastContainer />
-        {currentUser != null ? <Header /> : ""}
-        {currentUser != null ? <Sidenavbar /> : ""}
-        <Suspense fallback={<div>Loading...</div>}>
-          <Routes>
-            <Route path="/" exact element={<Login />} />
-            <Route path="/Dashboard" exact element={<Dashboard />} />
-            <Route path="/Profile" exact element={<Profile />} />
-            <Route path="/Parameters" exact element={<Parameters />} />
-            <Route path="/AirQuality" exact element={<AirQuality />} />
-            <Route path="/AverageDataReport" exact element={<AverageDataReport />} />
-            <Route path="/StatisticalReport" exact element={<StasticsReport />} />
-            <Route path="/StasticsDataReport" exact element={<StasticsDataReport />} />
-            <Route path="/Adduser" exact element={<Adduser />} />
-            <Route path="/AddStation" exact element={<AddStation />} />
-            <Route path="/AddDevice" exact element={<AddDevice />} />
-            <Route path="/AddParameter" exact element={<AddParameter />} />
-            <Route path="/UserLogHistory" exact element={<UserLogHistory />} />
-            <Route path="/PredefinedCharts" exact element={<PredefinedCharts />} />
-            <Route path="/DetailedAnalysisReports" exact element={<DetailedAnalysisReports />} />
-            <Route path="/GsiModbusDrivers" exact element={<GsiModbusDrivers />} />
-            <Route path="/Calibrations" exact element={<Calibration />} />
-            <Route path="/AverageAlarm" exact element={<AverageAlarm />} />
-            <Route path="/DataProcessing" exact element={<DataProcessing />} />
-            <Route path="/AppLogHistory" exact element={<AppLogHistory />} />
-            <Route path="/LiveData" exact element={<LiveData />} />
-            <Route path="/DataProcessingClient" exact element={<DataProcessingClient />} />
-            <Route path="/HistoricalData" exact element={<HistoricalData />} />
-            <Route path="/LiveDataReports" exact element={<LiveDataReports />} />
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+      {routeResult}
     </div>
   );
-}
+};
 
 export default App;
+
+
+
