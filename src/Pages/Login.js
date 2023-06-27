@@ -23,9 +23,7 @@ import { toast } from 'react-toastify';
         .then((responseJson) => {
           if (responseJson != null) {
             sessionStorage.setItem("UserData", JSON.stringify(responseJson[0]));
-            handleAuthentication(true)
-          //  window.location.href = "/Dashboard";
-          //window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+            window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
           } else {
             toast.error('User name or password is incorrect. Please try again', {
               position: "top-right",
