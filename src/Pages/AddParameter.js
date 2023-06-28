@@ -96,12 +96,12 @@ function AddParameter() {
   const Editparameter = function (param) {
     setparameterList(false);
     setparameterId(param.id)
-    setStatus(param.status==1?true:false)
+    setStatus(param.status==1?true:false);
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceID;
       Deviceschange();
-      document.getElementById("drivername").value = param.driverID;
+      //document.getElementById("drivername").value = param.driverID;
       document.getElementById("parametername").value = param.parameterName;
       document.getElementById("pollinginterval").value = param.pollingInterval;
       document.getElementById("avginterval").value = param.avgInterval;
@@ -109,6 +109,10 @@ function AddParameter() {
       document.getElementById("scalefactor").value=param.scaleFactor;
       document.getElementById("coefa").value=param.coefA;
       document.getElementById("coefb").value=param.coefB;
+
+      setTimeout(function () {
+        document.getElementById("drivername").value = param.driverID;
+      }, 100);
     }, 10);
 
   }

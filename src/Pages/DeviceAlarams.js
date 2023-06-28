@@ -13,6 +13,7 @@ function DeviceAlarams() {
     const [DeviceAlarm, setDeviceAlarm] = useState([]);
     const [DeviceAlarmData, setDeviceAlarmData] =useState([]);
     const [CheckedValues, setCheckedValues]=useState([]);
+    const [ChangedAlarmData, setChangedAlarmData]=useState([]);
 
     var dataForGrid = [];
     
@@ -85,7 +86,7 @@ function DeviceAlarams() {
           
           fields: [
             { name: "deviceName", title: "Device Name", type: "text" },
-            { name: "deviceModel", title: "Model ID", type: "text" },
+            { name: "deviceModel", title: "Model ID", type: "select", items: Model, valueField: "id", textField: "deviceModelName"  },
             {
               type: "control", width: 100, editButton: false, deleteButton: false,
               itemTemplate: function (value, item) {
@@ -153,7 +154,6 @@ function DeviceAlarams() {
                 triggerChangeCombined: true, placeholder: 'Select Alarm', floatWidth: 200, selectAll: true,    
                 search: true    
               });
-              $('#alarmname').on('change', ChangeDeviceAlarm);  
             }, 100);
         }
     }
@@ -251,30 +251,55 @@ function DeviceAlarams() {
     const EditDeviceAlarm = function (param) {
         setDeviceAlarmList(false);
         setDeviceAlarmId(param.id);
+        setChangedAlarmData([]);
         setTimeout(() => {
           document.getElementById("devicename").value = param.id;
-          document.getElementById("modelname").value = param.deviceModel; 
-          
-          var parameterArray=[];
-          for(var u=0;u<DeviceAlarmData.length;u++){
-            if(DeviceAlarmData[u].modelId == param.deviceModel){
-              var alarmid= DeviceAlarmData[u].alarmId;
-              parameterArray.push(alarmid); 
-            }                    
-          }
+          document.getElementById("modelname").value = param.deviceModel;
 
-          $('#alarmname').val(parameterArray);          
-          setCheckedValues(parameterArray);
-          setTimeout(function () {    
+
+          var AlarmArray=[];          
+          var devicemodelid=Devices.filter(x=> x.id==param.id);
+          if(devicemodelid.length>0){
+            AlarmArray=DeviceAlarm.filter(x=> x.deviceModelId == devicemodelid[0].deviceModel);           
+          }
+          setChangedAlarmData(AlarmArray);
+          var AlarmChecked=[];
+          for(var h=0;h<DeviceAlarmData.length;h++){
+            if(DeviceAlarmData[h].modelId == devicemodelid[0].deviceModel){
+              var alarmid= DeviceAlarmData[h].alarmId;
+              AlarmChecked.push(alarmid);
+            }
+          }
+          setTimeout(function () {  
+            $('#alarmname').val(AlarmChecked);  
             $('#alarmname').SumoSelect({    
               triggerChangeCombined: true, placeholder: 'Select Alarm', floatWidth: 200, selectAll: true,    
               search: true    
-            });
-            $('#alarmname').on('change', ChangeDeviceAlarm);  
+            }); 
+             
           }, 100);
 
         }, 1);
     
+    }
+
+    $('.container').on('change', '#alarmname', function(){     
+      setCheckedValues(this.value);
+    });
+
+    const ChangeDeviceName=function(){
+      setChangedAlarmData([]);
+      let deviceid=document.getElementById("devicename").value;
+      var AlarmArray=[];
+      var devicemodelid=Devices.filter(x=> x.id==deviceid);
+      if(devicemodelid.length>0){
+        AlarmArray=DeviceAlarm.filter(x=> x.deviceModelId == devicemodelid[0].deviceModel);
+      }      
+      setChangedAlarmData(AlarmArray);
+
+      setTimeout(function () {
+        $('.alarmname')[0].sumo.reload();  
+      }, 10);
     }
 
     const ChangeDeviceAlarm=function(checked){
@@ -311,7 +336,7 @@ function DeviceAlarams() {
                         <form id="DeviceAlarmsform" className="row" noValidate>
                             <div className="col-md-12 mb-3">
                                 <label for="devicename" className="form-label">Device Name:</label>
-                                <select className="form-select" id="devicename" required>
+                                <select className="form-select" id="devicename" onChange={ChangeDeviceName} required>
                                     <option selected value="">Select Device Name</option>
                                         {Devices.map((x, y) =>
                                     <option value={x.id} key={y} >{x.deviceName}</option>
@@ -332,7 +357,7 @@ function DeviceAlarams() {
                             <div className="col-md-12 mb-3">
                                 <label className="form-label">Alarm Name:</label>
                                 <select className="form-select alarmname" id="alarmname" multiple="multiple" onChange={ChangeDeviceAlarm}> 
-                                    {DeviceAlarm.map((x, y) =>
+                                    {ChangedAlarmData.map((x, y) =>
                                         <option value={x.id} key={y} >{x.description}</option>
                                     )}                                    
                                 </select>   
