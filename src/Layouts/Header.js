@@ -17,7 +17,7 @@ function Header() {
       .then((responseJson) => {
         if (responseJson) {
           sessionStorage.clear();
-          window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+          window.location.href =process.env.REACT_APP_BASE_URL+ "/";
         }
       })
   }
