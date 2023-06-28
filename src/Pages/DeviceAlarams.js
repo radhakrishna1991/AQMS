@@ -179,7 +179,7 @@ function DeviceAlarams() {
         let deviceid=document.getElementById("devicename").value;
         let modelid=document.getElementById("modelname").value;
         let alarmid=$("#alarmname").val();
-        let status = 0;
+        let status = document.getElementById("status").value;
         let isenabled=1;
         var parameterArray=[];
         for(var i=0;i<alarmid.length;i++){
@@ -216,7 +216,7 @@ function DeviceAlarams() {
         let deviceid=document.getElementById("devicename").value;
         let modelid=document.getElementById("modelname").value;
         let alarmid=$("#alarmname").val();
-        let status = 0;
+        let status = document.getElementById("status").value;
         let isenabled=1;
 
         var parameterArray=[];
@@ -255,7 +255,7 @@ function DeviceAlarams() {
         setTimeout(() => {
           document.getElementById("devicename").value = param.id;
           document.getElementById("modelname").value = param.deviceModel;
-
+          document.getElementById("status").value=param.status;
 
           var AlarmArray=[];          
           var devicemodelid=Devices.filter(x=> x.id==param.id);
@@ -367,10 +367,10 @@ function DeviceAlarams() {
                                 <label for="status" className="form-label">Status:</label>
                                 <input type="number" className="form-control" id="status" placeholder="Enter Status" />
                             </div>
-                            <div className="col-md-12 mb-3">
+                            {/* <div className="col-md-12 mb-3">
                                 <label for="isenabled" className="form-label">IsEnabled:</label>
                                 <input type="number" className="form-control" id="isenable" placeholder="Enter isEnabled" />
-                            </div>
+                            </div> */}
 
 
                             <div className="col-md-12 text-center">
