@@ -1,5 +1,5 @@
 import React from "react";
-
+import { NavLink } from "react-router-dom";
 function Header() {
   const user = JSON.parse(sessionStorage.getItem('UserData'));
   const sidebartoggle = (e) => {
@@ -17,7 +17,7 @@ function Header() {
       .then((responseJson) => {
         if (responseJson) {
           sessionStorage.clear();
-          window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+          window.location.href =process.env.REACT_APP_BASE_URL+ "/";
         }
       })
   }
@@ -25,9 +25,9 @@ function Header() {
     <header id="header" className="header fixed-top d-flex align-items-center">
       {!sessionStorage.getItem('UserData') ? window.location.href = "/" : ""}
       <div className="d-flex align-items-center justify-content-between">
-        <a href="index.html" className="logo d-flex align-items-center">
+      <NavLink to="/Dashboard" className="logo d-flex align-items-center">
           <img src="images/logo.png" alt="" />
-        </a>
+          </NavLink>
         <i className="bi bi-list toggle-sidebar-btn" onClick={sidebartoggle}></i>
       </div>
 
