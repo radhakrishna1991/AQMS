@@ -295,6 +295,7 @@ function AddDevice() {
       setDeviceList(true);
     } else {
       setDeviceList(false);
+      setType(false);
       setDeviceid(0);
     }
   }
