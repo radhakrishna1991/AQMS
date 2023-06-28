@@ -40,8 +40,8 @@ function App() {
         {currentUser != null ? <Sidenavbar /> : ""}
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            <Route path="/" exact element={<Login />} />
-            <Route path="/Login" exact element={<Login />} />
+          <Route   path="/" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)}  />
+          <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
             <Route path="*" exact element={<Login />} />
             <Route path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
             <Route path="/Profile" exact element={currentUser !=null ? <Profile />: (<Navigate to="/" />)} />
