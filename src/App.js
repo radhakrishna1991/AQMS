@@ -42,7 +42,7 @@ function App() {
           <Routes>
           <Route   path="/" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)}  />
           <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
-            <Route path="*" exact element={<Login />} />
+            <Route path="*" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
             <Route path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
             <Route path="/Profile" exact element={currentUser !=null ? <Profile />: (<Navigate to="/" />)} />
             <Route path="/AddParameter" exact element={currentUser !=null ? <AddParameter /> : (<Navigate to="/" />)} />
