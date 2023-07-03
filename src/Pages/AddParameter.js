@@ -419,7 +419,7 @@ function AddParameter() {
                 </div>
 
 
-                <div className="col-md-4 mb-3">
+                <div className="col-md-6 mb-3">
                   <label for="parseparamvalue" className="form-label">Parse Param Value: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="parseparamvalue" onChange={(e) => setParseParamValue(e.target.checked)} defaultChecked={ParseParamValue} />
@@ -432,7 +432,7 @@ function AddParameter() {
                   </div>
                 </div>
 
-                <div className="col-md-4 mb-3">
+                <div className="col-md-6 mb-3">
                   <label for="Status" className="form-label">Status: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
