@@ -14,6 +14,7 @@ function AddParameter() {
   const [parameterList, setparameterList] = useState(true);
   const [parameterId, setparameterId] = useState(0);
   const [Status,setStatus]=useState(true);
+  const [ParseParamValue, setParseParamValue]=useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
@@ -68,6 +69,13 @@ function AddParameter() {
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status?1:0;
+
+    let RegisterIndex=document.getElementById("registerindex").value;
+    let ParseFunction=document.getElementById("parsefunciton").value;
+    let ParseParmvalue=ParseParamValue?true:false;
+
+
+
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, ScaleFactor, CoefA, CoefB);
     if (!validation) {
       return false;
@@ -78,7 +86,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy,RegisterIndex:RegisterIndex,ParseParamValue:ParseParmvalue,ParseFunction:ParseFunction }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -110,6 +118,9 @@ function AddParameter() {
       document.getElementById("coefa").value=param.coefA;
       document.getElementById("coefb").value=param.coefB;
 
+      document.getElementById("registerindex").value=param.registerIndex;
+      document.getElementById("parsefunciton").value=param.parseFunction;
+
       setTimeout(function () {
         document.getElementById("drivername").value = param.driverID;
       }, 100);
@@ -131,6 +142,11 @@ function AddParameter() {
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status?1:0;
+
+    let RegisterIndex=document.getElementById("registerindex").value;
+    let ParseFunction=document.getElementById("parsefunciton").value;
+    let ParseParmvalue=ParseParamValue?true:false;
+
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, CoefA, CoefB);
     if (!validation) {
       return false;
@@ -141,7 +157,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy,RegisterIndex:RegisterIndex,ParseParamValue:ParseParmvalue,ParseFunction:ParseFunction }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -304,7 +320,7 @@ function AddParameter() {
             <h1>Update parameter</h1>
           )}
           {parameterList && (
-            <h1>parameters List</h1>
+            <h1>Parameters List</h1>
           )}
         </div>
         <section className="section">
@@ -389,7 +405,34 @@ function AddParameter() {
                   <input type="text" className="form-control" id="avginterval" placeholder="Enter average interval" required />
                   <div class="invalid-feedback">Please enter average interval</div>
                 </div>
+
                 <div className="col-md-12 mb-3">
+                  <label for="registerindex" className="form-label">Register Index:</label>
+                  <input type="number" className="form-control" id="registerindex" placeholder="Enter Register Index" />
+                  <div class="invalid-feedback">Please enter average interval</div>
+                </div>
+
+                <div className="col-md-12 mb-3">
+                  <label for="parsefunciton" className="form-label">Parse Function:</label>
+                  <input type="text" className="form-control" id="parsefunciton" placeholder="Enter Parse Function" />
+                  <div class="invalid-feedback">Please enter parse function</div>
+                </div>
+
+
+                <div className="col-md-4 mb-3">
+                  <label for="parseparamvalue" className="form-label">Parse Param Value: </label>
+                  <div className="form-check d-inline-block form-switch ms-2">
+                    <input className="form-check-input" type="checkbox" role="switch" id="parseparamvalue" onChange={(e) => setParseParamValue(e.target.checked)} defaultChecked={ParseParamValue} />
+                    {ParseParamValue && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Enable</label>
+                    )}
+                    {!ParseParamValue && (
+                      <label className="form-check-label" for="flexSwitchCheckChecked">Disable</label>
+                    )}
+                  </div>
+                </div>
+
+                <div className="col-md-4 mb-3">
                   <label for="Status" className="form-label">Status: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
