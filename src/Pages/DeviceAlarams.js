@@ -254,7 +254,7 @@ function DeviceAlarams() {
     setTimeout(() => {
       document.getElementById("devicename").value = param.id;
       document.getElementById("modelname").value = param.deviceModel;
-      document.getElementById("status").value = param.status;
+     // document.getElementById("status").value = param.status;
 
       var AlarmArray = [];
       var devicemodelid = Devices.filter(x => x.id == param.id);
