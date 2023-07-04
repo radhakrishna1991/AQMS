@@ -249,7 +249,9 @@ function DeviceAlarams() {
   const EditDeviceAlarm = function (param) {
     setDeviceAlarmList(false);
     setDeviceAlarmId(param.id);
-    setEnableValue(param.isEnable);
+    let devicealarm=DeviceAlarmData.filter(x=>x.deviceId==param.id);
+    let enable=devicealarm.length>0 && DeviceAlarmData[0].isEnable==1?true:false;
+    setEnableValue(enable);
     setChangedAlarmData([]);
     setTimeout(() => {
       document.getElementById("devicename").value = param.id;
