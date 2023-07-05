@@ -38,6 +38,7 @@ function Dashboard() {
   const [Infoalarms, setInfoalarms] = useState([]);
   const [InfoParameteralarms, setInfoParameteralarms] = useState([]);
   const [Commands, setCommands] = useState([]);
+  const [CalibrationsCommands, setCalibrationsCommands] = useState([]);
   const [LiveChartStatus, setLiveChartStatus] = useState([]);
   const [LiveCharticons, setLiveCharticons] = useState([]);
   const [ChartOptions, setChartOptions] = useState();
@@ -224,8 +225,10 @@ function Dashboard() {
   const Devicecalibration = function (param) {
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
     let listcommands = ListAllData.listCommands.filter(x => x.deviceModelId == param.deviceModel);
+    let listcalibartioncommands=ListAllData.listCalibrationCommands;
     setInfoParameters(parameters);
     setCommands(listcommands);
+    setCalibrationsCommands(listcalibartioncommands);
     fetch(process.env.REACT_APP_WSurl + "api/Calibration?Deviceid=" + param.id, {
       method: 'GET',
     }).then((response) => response.json())
@@ -233,6 +236,7 @@ function Dashboard() {
         if (data) {
           setCalibrationSequence(data);
           let listcalibration = data.filter(x => x.parameterId == parameters[0].id);
+          $("#parameter").val(parameters[0].id);
           setListCalibration(listcalibration);
           $('#calibrationmodal').modal('show');
           $("#sequence1-tab").tab('show');
@@ -374,6 +378,7 @@ function Dashboard() {
     let totaltime = $("#totaltime" + param).val();
     let risingtime = $("#risingtime" + param).val();
     let fallingtime = $("#fallingtime" + param).val();
+    let stabilizationtime=$("#stabilizationtime" + param).val();
     let highdrift = $("#highdrift" + param).val();
     let lowdrift = $("#lowdrift" + param).val();
     let signalvalue = $("#signalvalue" + param).val();
@@ -399,19 +404,36 @@ function Dashboard() {
     let command8 = $("#command" + param + "8").val();
     let command9 = $("#command" + param + "9").val();
     let command10 = $("#command" + param + "0").val();
+
+    let CommandsArray=[];
+      for(let k=0;k<10;k++){
+        let command=k==9?$("#command" + param + "0").val():$("#command" + param + (k+1)).val();
+        if(command !=""){
+          let commandsplit=command.split("_");
+          let obj={};
+          obj.CalibrationID=recid;
+          obj.Command=commandsplit[0];
+          obj.Type=commandsplit[1];
+          obj.CommandNumber=k+1;
+          obj.Status=1;
+          CommandsArray.push(obj); 
+        }
+      }
+
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let finalobject = {
       ParameterId: parameter, ProfileId: profile, SequenceNumber: param, RepeatedInterval: repeatedinterval, RepeatedIntervalType: repeatedintervaltype, StartTime: startdatetime, TypeofSequence: typeofsequence,
-      TotalTime: totaltime, RisingTime: risingtime, FallingTime: fallingtime, HighDrift: highdrift, LowDrift: lowdrift, SignalValue: signalvalue,
-      Command1: command1, Command2: command2, Command3: command3, Command4: command4, Command5: command5, Command6: command6, Command7: command7, Command8: command8,
-      Command9: command9, Command10: command10, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, ID: recid, Status: status
+      TotalTime: totaltime, RisingTime: risingtime, FallingTime: fallingtime,StabilizationTime:stabilizationtime, HighDrift: highdrift, LowDrift: lowdrift, SignalValue: signalvalue,
+       CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, ID: recid, Status: status,listCalibrationCommandsSequence:CommandsArray
     }
     return finalobject;
   }
 
   const Setformvalues = function (list) {
-    // $("#parameter").val("1");
+    for(var k=1;k<=5;k++){
+      Clearformvalues(k);
+    }
     for (let i = 0; i < list.length; i++) {
       let param = i + 1;
       let form1 = document.querySelectorAll('#Sequenceform' + param)[0];
@@ -422,6 +444,7 @@ function Dashboard() {
       $("#totaltime" + param).val(list[i].totalTime);
       $("#risingtime" + param).val(list[i].risingTime);
       $("#fallingtime" + param).val(list[i].fallingTime);
+      $("#stabilizationtime" + param).val(list[i].stabilizationTime);
       $("#highdrift" + param).val(list[i].highDrift);
       $("#lowdrift" + param).val(list[i].lowDrift);
       $("#signalvalue" + param).val(list[i].signalValue);
@@ -439,8 +462,14 @@ function Dashboard() {
       }
       $("#repeatedinterval" + param).val(list[i].repeatedInterval);
       $("#repeatedintervaltype" + param).val(list[i].repeatedIntervalType);
-      $("#command" + param + "1").val(list[i].command1);
-      $("#command" + param + "2").val(list[i].command2);
+
+      let listcommands=list[i].listCalibrationCommandsSequence;
+
+      for(var j=0;j<listcommands.length;j++){
+        $("#command" + param + listcommands[j].commandNumber).val(listcommands[j].command+"_"+listcommands[j].type);
+      }
+      
+     /*  $("#command" + param + "2").val(list[i].command2);
       $("#command" + param + "3").val(list[i].command3);
       $("#command" + param + "4").val(list[i].command4);
       $("#command" + param + "5").val(list[i].command5);
@@ -448,7 +477,7 @@ function Dashboard() {
       $("#command" + param + "7").val(list[i].command7);
       $("#command" + param + "8").val(list[i].command8);
       $("#command" + param + "9").val(list[i].command9);
-      $("#command" + param + "0").val(list[i].command10);
+      $("#command" + param + "0").val(list[i].command10); */
     }
   }
 
@@ -460,6 +489,7 @@ function Dashboard() {
     $("#totaltime" + param).val("");
     $("#risingtime" + param).val("");
     $("#fallingtime" + param).val("");
+    $("#stabilizationtime" + param).val("");
     $("#highdrift" + param).val("");
     $("#lowdrift" + param).val("");
     $("#signalvalue" + param).val("");
@@ -570,28 +600,15 @@ function Dashboard() {
       }).catch((error) => toast.error('Unable to change the parameter status. Please contact adminstrator'));
   }
 
-  const GetLowDriftValue=function(){
-    for (let i = 1; i <= 5; i++) {
-      var totaltime = document.getElementById("totaltime" + i).value;
-      var raisingtime=document.getElementById("risingtime" + i).value;
-      var fallingTime=document.getElementById("fallingtime" + i).value;
-      var highdrift=document.getElementById("highdrift" + i).value;
-      
-      var totaltime = document.getElementById("totaltime" + i).value;
-      var lowdriftValue = Number(totaltime) - Number(raisingtime) - Number(fallingTime) - Number(highdrift) ;
-      document.getElementById("lowdrift" + i).value = lowdriftValue;
-    }
-  }
+  
 
   const GetTotalTime=function(){
     for (let i = 1; i <= 5; i++) {
       var raisingtime=document.getElementById("risingtime" + i).value;
       var fallingTime=document.getElementById("fallingtime" + i).value;
-      var highdrift=document.getElementById("highdrift" + i).value;
-      var lowdrift=document.getElementById("lowdrift" + i).value;  
-      
-      var addValue=Number(raisingtime) + Number(fallingTime) + Number(highdrift) + Number(lowdrift);
-      document.getElementById("totaltime" + i).value=addValue;
+      var totaltime=document.getElementById("totaltime" + i).value;
+      var addValue=Number(raisingtime) - Number(fallingTime);
+      document.getElementById("stabilizationtime" + i).value=addValue;
     }
   }
 
@@ -982,7 +999,7 @@ function Dashboard() {
                                     <div className="row mb-3">
                                       <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"totaltime" + i} onChange={GetLowDriftValue} required />
+                                        <input type="number" className="form-control" id={"totaltime" + i}  required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
@@ -998,19 +1015,25 @@ function Dashboard() {
                                       </div>
                                     </div>
                                     <div className="row mb-3">
-                                      <label htmlFor="highdrift" className="col-md-4 col-form-label">4 - High Drift</label>
+                                      <label htmlFor="stabilizationtime" className="col-md-4 col-form-label">4 - Stabilization time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"highdrift" + i} onChange={GetTotalTime} required />
+                                        <input type="number" className="form-control" id={"stabilizationtime" + i} onChange={GetTotalTime} disabled />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
-                                      <label htmlFor="lowdrift" className="col-md-4 col-form-label">5 - Low Drift</label>
+                                      <label htmlFor="highdrift" className="col-md-4 col-form-label">5 - High Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"lowdrift" + i} onChange={GetTotalTime} required />
+                                        <input type="number" className="form-control" id={"highdrift" + i}  required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
-                                      <label htmlFor="signalvalue" className="col-md-4 col-form-label">6 - Signal value</label>
+                                      <label htmlFor="lowdrift" className="col-md-4 col-form-label">6 - Low Drift</label>
+                                      <div className="col-md-8">
+                                        <input type="number" className="form-control" id={"lowdrift" + i}  required />
+                                      </div>
+                                    </div>
+                                    <div className="row mb-3">
+                                      <label htmlFor="signalvalue" className="col-md-4 col-form-label">7 - Signal value</label>
                                       <div className="col-md-8">
                                         <input type="number" className="form-control" id={"signalvalue" + i} required />
                                       </div>
@@ -1024,83 +1047,153 @@ function Dashboard() {
                                 <legend>Commands</legend>
                                 <div className="row">
                                   <div className="col-md-12 mb-2">
-                                    <select className="form-select" id={"command1" + i}>
+                                    <select className="form-select" id={"command" + i +"1"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "2"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "3"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "4"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "5"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "6"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "7"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "8"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "9"}>
                                       <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "0"}>
-                                      <option value="" selected>Select Commands</option>
+                                    <option value="" selected>Select Commands</option>
+                                    <optgroup label="Device">
                                       {Commands.map((x, y) =>
-                                        <option value={x.id}>{x.description}</option>
+                                        <option value={x.id+"_"+"D"}>{x.description}</option>
                                       )}
+                                      </optgroup>
+                                      <optgroup label="Calibration">
+                                      {CalibrationsCommands.map((x, y) =>
+                                        <option value={x.id+"_"+"C"}>{x.description}</option>
+                                      )}
+                                      </optgroup>
                                     </select>
                                   </div>
                                 </div>
