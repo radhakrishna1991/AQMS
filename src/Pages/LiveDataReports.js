@@ -29,15 +29,15 @@ function LiveDataReports() {
           setListReportData(data.count);
           setGridcall(true);
           setRefreshGrid(true);
-         // setItemCount(data.count);
+          // setItemCount(data.count);
           let parameterslist = [];
           data.listPollutents.filter(function (item) {
-            if(item.status==1){
-            var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
-            if (i <= -1) {
-              parameterslist.push(item);
+            if (item.status == 1) {
+              var i = parameterslist.findIndex(x => (x.parameterName == item.parameterName));
+              if (i <= -1) {
+                parameterslist.push(item);
+              }
             }
-          }
             return null;
           });
           setPollutents(parameterslist);
@@ -58,7 +58,7 @@ function LiveDataReports() {
   }, []);
   useEffect(() => {
     initializeJsGrid();
-  }, [RefreshGrid,SelectedPollutents]);
+  }, [RefreshGrid, SelectedPollutents]);
   /* useEffect(() => {
     initializeJsGrid();
   }, [SelectedPollutents]);
@@ -91,12 +91,15 @@ function LiveDataReports() {
     dataForGrid = [];
     var layout = [];
     var gridheadertitle;
+    let Selectedparameter;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
-      gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName
+      gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName;
+      let Selectedparametersplit = SelectedPollutents[i].parameterName.split(".");
+      Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].parameterName.replace(/\./g, '_@_') : SelectedPollutents[i].parameterName;
       layout.push({
-        name: SelectedPollutents[i].parameterName, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+        name: Selectedparameter, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
           return $("<td>").css("background-color", bgcolor).append(item);
@@ -125,7 +128,7 @@ function LiveDataReports() {
         loadData: async function (filter) {
           var startIndex = (filter.pageIndex - 1) * filter.pageSize;
           return {
-            data: await LiveData(startIndex, startIndex + filter.pageSize,filter.sortOrder),
+            data: await LiveData(startIndex, startIndex + filter.pageSize, filter.sortOrder),
             itemsCount: await Itemcount.current
           };
         }
@@ -136,7 +139,7 @@ function LiveDataReports() {
       UpdateColPos(1);
     });
   }
-  const LiveData = async function (startIndex, lastIndex,sortorder) {
+  const LiveData = async function (startIndex, lastIndex, sortorder) {
     dataForGrid = [];
     let Pollutent = $("#pollutentid").val();
     let finalpollutent = [];
@@ -155,7 +158,7 @@ function LiveDataReports() {
       Pollutent.join(',')
     }
     document.getElementById('loader').style.display = "block";
-    let params = new URLSearchParams({ Pollutent: Pollutent, StartIndex: startIndex,SortOrder: sortorder });
+    let params = new URLSearchParams({ Pollutent: Pollutent, StartIndex: startIndex, SortOrder: sortorder });
     let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
     return await fetch(url + params, {
       method: 'GET',
@@ -178,17 +181,25 @@ function LiveDataReports() {
               let digit = window.decimalDigit
               if (window.TruncateorRound == "RoundOff") {
                 let num = data1[k].parametervalue;
-                roundedNumber = num==null?num:num.toFixed(digit);
+                roundedNumber = num == null ? num : num.toFixed(digit);
               }
               else {
-                roundedNumber = data1[k].parametervalue==null?data1[k].parametervalue:CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                roundedNumber = data1[k].parametervalue == null ? data1[k].parametervalue : CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
               }
+
+              let Selectedparametersplit = paramater[0].parameterName.split(".")
+              let Selectedparameter = Selectedparametersplit.length > 1 ? paramater[0].parameterName.replace(/\./g, '_@_') : paramater[0].parameterName;
+
               if (temp >= 0) {
-                dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                //dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                dataForGrid[temp][Selectedparameter] = roundedNumber;
                 dataForGrid[temp][paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
               } else {
-                obj[paramater[0].parameterName] = roundedNumber;
-                obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+                //obj[paramater[0].parameterName] = roundedNumber;
+
+                //obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+                obj[Selectedparameter] = roundedNumber;
+                obj[Selectedparameter + "flag"] = data1[k].loggerFlags;
                 obj["Date"] = generateDatabaseDateTime(data1[k].createdTime);
 
                 dataForGrid.push(obj);
@@ -217,8 +228,8 @@ function LiveDataReports() {
       //ListPollutents.current = finalpollutent;
       setSelectedPollutents(finalpollutent);
     }
-    setRefreshGrid(RefreshGrid?false:true);
-   // initializeJsGrid();
+    setRefreshGrid(RefreshGrid ? false : true);
+    // initializeJsGrid();
   }
 
 

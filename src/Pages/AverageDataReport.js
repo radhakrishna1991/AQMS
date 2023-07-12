@@ -149,7 +149,7 @@ function AverageDataReport() {
     var layout = [];
 
     var gridheadertitle;
-
+    let Selectedparameter;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
 
     for (var i = 0; i < SelectedPollutents.length; i++) {
@@ -159,10 +159,13 @@ function AverageDataReport() {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
 
       gridheadertitle = SelectedPollutents[i] + "<br>" + unitname[0].unitName
+      let Selectedparametersplit = SelectedPollutents[i].split(".");
+      Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].replace(/\./g, '_@_') : SelectedPollutents[i];
 
       layout.push({
 
-        name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+        // name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+        name: Selectedparameter, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
 
           let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
 
@@ -295,11 +298,11 @@ function AverageDataReport() {
     document.getElementById('loader').style.display = "block";
 
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: sortorder });
-    let url="";
-    if(interval=="1M"){
+    let url = "";
+    if (interval == "1M") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/RawDataReport?"
     }
-    else{
+    else {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/AvergaeDataReport?"
     }
 
@@ -362,24 +365,29 @@ function AverageDataReport() {
               if (window.TruncateorRound == "RoundOff") {
 
                 let num = data1[k].parametervalue;
-                roundedNumber = num==null?num:num.toFixed(digit);
+                roundedNumber = num == null ? num : num.toFixed(digit);
               }
 
               else {
-                roundedNumber = data1[k].parametervalue==null?data1[k].parametervalue:CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                roundedNumber = data1[k].parametervalue == null ? data1[k].parametervalue : CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
               }
+              let Selectedparametersplit = paramater[0].parameterName.split(".")
+              let Selectedparameter = Selectedparametersplit.length > 1 ? paramater[0].parameterName.replace(/\./g, '_@_') : paramater[0].parameterName;
 
               if (temp >= 0) {
 
-                dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                //dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
+                dataForGrid[temp][Selectedparameter] = roundedNumber;
 
                 dataForGrid[temp][paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
 
               } else {
 
-                obj[paramater[0].parameterName] = roundedNumber;
+                //obj[paramater[0].parameterName] = roundedNumber;
 
-                obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+                //obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+                obj[Selectedparameter] = roundedNumber;
+                obj[Selectedparameter + "flag"] = data1[k].loggerFlags;
 
                 obj["Date"] = data1[k].interval;
                 dataForGrid.push(obj);
@@ -502,10 +510,10 @@ function AverageDataReport() {
             let digit = window.decimalDigit;
             if (window.TruncateorRound == "RoundOff") {
               let num = pdfdata[k].parametervalue;
-              roundedNumber = num==null?num:num.toFixed(digit);
+              roundedNumber = num == null ? num : num.toFixed(digit);
             }
             else {
-              roundedNumber = pdfdata[k].parametervalue==null?pdfdata[k].parametervalue:CommonFunctions.truncateNumber(pdfdata[k].parametervalue, digit);
+              roundedNumber = pdfdata[k].parametervalue == null ? pdfdata[k].parametervalue : CommonFunctions.truncateNumber(pdfdata[k].parametervalue, digit);
             }
             if (temp >= 0) {
               var n = 1;
@@ -608,7 +616,7 @@ function AverageDataReport() {
 
       }
     }
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames,digit: window.decimalDigit,TruncateorRound: window.TruncateorRound });
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound });
 
     window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
   }
@@ -795,7 +803,7 @@ function AverageDataReport() {
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
 
     let finaldata = AllLookpdata.listPollutents.filter(obj => filter1.includes(obj.parameterName));
- 
+
     if (finaldata.length > 0) {
 
       let finalinterval = [];
@@ -1011,7 +1019,7 @@ function AverageDataReport() {
 
                     <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
 
-                   {/*  <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button> */}
+                    {/*  <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button> */}
 
                   </span>
 
