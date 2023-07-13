@@ -326,6 +326,12 @@ function Dashboard() {
     let finaldata = [];
     for (let i = 1; i <= 5; i++) {
       let data = Getformvalues(i);
+
+      if(parseInt(data.FallingTime)+parseInt(data.RisingTime)>parseInt(data.TotalTime)){
+        toast.error('Total Time should be less than or equal to the sum of Raising Time and Falling Time');
+        return false;
+      }
+
       let status = $("#enable" + i).is(':checked') ? 1 : 0;
       if (data == false) {
         return false;
@@ -999,19 +1005,19 @@ function Dashboard() {
                                     <div className="row mb-3">
                                       <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"totaltime" + i}  required />
+                                        <input type="number" className="form-control" step="any" id={"totaltime" + i}  required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="risingtime" className="col-md-4 col-form-label">2 - Rising time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"risingtime" + i} onChange={GetTotalTime} required />
+                                        <input type="number" className="form-control" step="any" id={"risingtime" + i} onChange={GetTotalTime} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="fallingtime" className="col-md-4 col-form-label">3 - Falling time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"fallingtime" + i} onChange={GetTotalTime} required />
+                                        <input type="number" className="form-control" step="any" id={"fallingtime" + i} onChange={GetTotalTime} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
@@ -1023,19 +1029,19 @@ function Dashboard() {
                                     <div className="row mb-3">
                                       <label htmlFor="highdrift" className="col-md-4 col-form-label">5 - High Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"highdrift" + i}  required />
+                                        <input type="number" className="form-control" step="any" id={"highdrift" + i}  required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="lowdrift" className="col-md-4 col-form-label">6 - Low Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"lowdrift" + i}  required />
+                                        <input type="number" className="form-control" step="any" id={"lowdrift" + i}  required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="signalvalue" className="col-md-4 col-form-label">7 - Signal value</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" id={"signalvalue" + i} required />
+                                        <input type="number" className="form-control" step="any" id={"signalvalue" + i} required />
                                       </div>
                                     </div>
                                   </div>
