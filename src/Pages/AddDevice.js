@@ -259,12 +259,12 @@ function AddDevice() {
         }
       },
       fields: [
-        { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200 },
-        { name: "deviceName", title: "Device Name", type: "text" },
-        { name: "deviceModel", title: "Device Model", type: "select", items: ListDeviceModels, valueField: "id", textField: "deviceModelName", width: 200 },
-        { name: "ipAddress", title: "IP Address", type: "text" },
-        { name: "port", title: "Port", type: "text" },
-        { name: "type", title: "Type", type: "text" },
+        { name: "stationID", title: "Station Name",align:"left", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200 },
+        { name: "deviceName", title: "Device Name",align:"left", type: "text" },
+        { name: "deviceModel", title: "Device Model",align:"left", type: "select", items: ListDeviceModels, valueField: "id", textField: "deviceModelName", width: 200 },
+        { name: "ipAddress", title: "IP Address", align:"left",type: "text" },
+        { name: "port", title: "Port",align:"left", type: "text" },
+        { name: "type", title: "Type",align:"left", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -317,10 +317,10 @@ function AddDevice() {
           <div className="container">
             <div className="me-2 mb-2 float-end">
               {DeviceList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Device</span></span>
               )}
               {!DeviceList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Devices</span></span>
               )}
             </div>
             {!DeviceList && (

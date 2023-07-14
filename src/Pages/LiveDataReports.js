@@ -291,7 +291,7 @@ function LiveDataReports() {
               </div>
               <div className="col-md-3 my-4">
                 <button type="button" className="btn btn-primary" onClick={getdtareport}>Get Data</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={Resetfilters}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Codesinformation}>Flags</button>
               </div>
               <div className="col-md-4">

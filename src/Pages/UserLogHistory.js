@@ -89,7 +89,7 @@ function UserLogHistory() {
         }
       },
       fields: [
-        { name: "userID", title: "User Name", type: "select", items: ListUsers, valueField: "id", textField: "userName", width: 200},
+        { name: "userID", title: "User Name", type: "select",align:"left", items: ListUsers, valueField: "id", textField: "userName", width: 200},
         { name: "ipAddress", title: "IP Address", type: "text" },
         { name: "logInTime", title: "Login Time", type: "text", },
         { name: "logOutTime", title: "Logout Time", type: "text", },
@@ -126,7 +126,7 @@ function UserLogHistory() {
               </div>
               <div className="col-md-3 mt-4">
                 <button type="button" className="btn btn-primary mx-1" onClick={() => GetUserLog()}>Filter</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetUserLog('reset')}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetUserLog('reset')}>Reset</button>
               </div>
               </div>
               <div className="jsGrid" ref={gridRefjsgridreport} />

@@ -262,11 +262,11 @@ function AddParameter() {
         }
       },
       fields: [
-        { name: "stationID", title: "Station Name", type: "select", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
-        { name: "deviceID", title: "Device Name", type: "select", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
-        { name: "driverID", title: "Driver Name", type: "select", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
-        { name: "parameterName", title: "parameter Name", type: "text" },
-        { name: "unitID", title: "Units", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 100 },
+        { name: "stationID", title: "Station Name", type: "select",align:"left", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
+        { name: "deviceID", title: "Device Name", type: "select",align:"left", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
+        { name: "driverID", title: "Driver Name", type: "select",align:"left", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
+        { name: "parameterName", title: "parameter Name",align:"left", type: "text" },
+        { name: "unitID", title: "Units",align:"left", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 100 },
         { name: "pollingInterval", title: "Polling Interval", type: "text" },
         { name: "avgInterval", title: "Average Interval", type: "text" },
         {

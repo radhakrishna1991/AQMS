@@ -181,6 +181,7 @@ h6 {
 --------------------------------------------------------------*/
 .pagetitle {
   margin-bottom: 10px;
+  padding-left: 10px;
 }
 
 .pagetitle h1 {
@@ -643,8 +644,9 @@ h6 {
 }
 
 .header-nav .nav-profile span {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .badge-number {
@@ -729,20 +731,23 @@ h6 {
 }
 
 .header-nav .profile .dropdown-header h6 {
-  font-size: 18px;
+  font-size: 13px!important;
   margin-bottom: 0;
   font-weight: 600;
   color: #444444;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .profile .dropdown-header span {
-  font-size: 14px;
+  font-size: 13px;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .profile .dropdown-item {
-  font-size: 14px;
+  font-size: 13px;
   padding: 10px 15px;
   transition: 0.3s;
+  letter-spacing: 0.5px;
 }
 
 .header-nav .profile .dropdown-item i {
@@ -859,6 +864,7 @@ h6 {
   padding: 10px 15px;
   border-radius: 4px;
   height: 50px;
+  letter-spacing: 0.5px;
 }
 
 .sidebar-nav .nav-link i,
@@ -917,6 +923,7 @@ h6 {
   color: #ffffff;
   padding: 0.825rem 0rem;
   padding-left: 1.25rem;
+  letter-spacing: 0.5px;
 }
 
 .sidebar-nav .nav_sub li {
@@ -1008,6 +1015,7 @@ h6 {
 
 .sidebar-nav .nav-content a span {
   margin-left: 0.75rem;
+  letter-spacing: 0.5px;
 }
 
 .sidebar-nav .nav-content a:hover,
@@ -1324,11 +1332,31 @@ button.nav-link{
 }
 .operation_class span{
   vertical-align: 0.2rem;
-  font-size: 1rem;
+  font-size: 13px;
 }
 .btn{
   font-size: 0.875rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
+}
+.jsgrid-header-row>.jsgrid-header-cell {
+  background-color: #2a4068!important;
+  color: #fff;
+  font-size: 12px;
+  letter-spacing: .5px;
+}
+.jsgrid .jsgrid-mode-button {
+  width: 20px;
+  height: 20px;
+}
+.jsgrid-cell {
+
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.operation_class i {
+  font-size: 1.2rem;
 }
 .required {
   padding-right: calc(1.5em + 0.75rem);
@@ -1425,4 +1453,10 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
 }
 .form-check-label{
   font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+.react-datepicker {
+  font-family: 'Roboto Light'!important;
+  font-size: 11px!important;
+
 }

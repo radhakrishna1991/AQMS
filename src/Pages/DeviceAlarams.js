@@ -85,8 +85,8 @@ function DeviceAlarams() {
       //data:dataForGrid,
 
       fields: [
-        { name: "deviceName", title: "Device Name", type: "text" },
-        { name: "deviceModel", title: "Model ID", type: "select", items: Model, valueField: "id", textField: "deviceModelName" },
+        { name: "deviceName", title: "Device Name",align:"left", type: "text" },
+        { name: "deviceModel", title: "Model ID",align:"left", type: "select", items: Model, valueField: "id", textField: "deviceModelName" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -327,10 +327,10 @@ function DeviceAlarams() {
           <div className="container">
             <div className="me-2 mb-2 float-end">
               {DeviceAlarmList && (
-                <span className="operation_class mx-2" onClick={() => AddDeviceAlarmchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                <span className="operation_class mx-2" onClick={() => AddDeviceAlarmchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Device Alarm</span></span>
               )}
               {!DeviceAlarmList && (
-                <span className="operation_class mx-2" onClick={() => AddDeviceAlarmchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                <span className="operation_class mx-2" onClick={() => AddDeviceAlarmchange('gridlist')}><i className="bi bi-card-list"></i> <span>View Device Alarms</span></span>
               )}
             </div>
             {!DeviceAlarmList && (

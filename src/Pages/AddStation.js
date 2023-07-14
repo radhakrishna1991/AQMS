@@ -167,8 +167,8 @@ function AddStation() {
         }
       },
       fields: [
-        { name: "stationName", title: "Station Name", type: "text" },
-        { name: "description", title: "Description", type: "text" },
+        { name: "stationName", title: "Station Name", type: "text",align:"left", },
+        { name: "description", title: "Description", type: "text" ,align:"left",},
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -220,10 +220,10 @@ function AddStation() {
           <div className="container">
             <div className="me-2 mb-2 float-end">
               {StationList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Station</span></span>
               )}
               {!StationList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Stations</span></span>
               )}
             </div>
             {!StationList && (

@@ -1009,7 +1009,7 @@ function AverageDataReport() {
 
                 <button type="button" className="btn btn-primary datashow" onClick={getdtareport}>GetData</button>
 
-                <button type="button" className="btn btn-primary mx-1 datashow" onClick={Resetfilters}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1 datashow" onClick={Resetfilters}>Reset</button>
 
                 {ListReportData != 0 && (
 

@@ -288,6 +288,14 @@ function Dashboard() {
       scales: {
         xAxes: {
           type: 'time',
+          ticks: {
+            font: {
+              size: 11, // Adjust the font size for x-axis labels
+              family: 'Roboto Light' ,// Change the font type for x-axis labels
+              weight: 'bold',
+              color:'blue'
+            }
+          },
           time: {
             unit: 'second',
             displayFormats: {
@@ -295,13 +303,28 @@ function Dashboard() {
             },
             tooltipFormat: 'D MMM YYYY - HH:mm:ss'
           }
-        }
+        },
+       
 
       },
       // maintainAspectRatio: true,
       plugins: {
         legend: {
           position: 'top',
+          align: 'center',
+          fullSize:true,
+          labels: {
+            color: 'navy',
+            boxWidth:20,
+            padding:20,
+            
+            //boxHeight:20
+            font: {
+              size: 11,
+              family:"Roboto Light",
+              weight:'bold'
+          }
+        },
         },
 
       },

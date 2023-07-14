@@ -85,10 +85,10 @@ function AppLogHistory() {
         }
       },
       fields: [
-        { name: "logID", title: "App ID", type: "text" },
-        { name: "logDescription", title: "Description", type: "text" },
-        { name: "logSource", title: "Source", type: "text", },
-        { name: "logTime", title: "Log Inserted Time", type: "text", },
+        { name: "logID", title: "App ID",align:"left", type: "text" },
+        { name: "logDescription", align:"left",title: "Description", type: "text" },
+        { name: "logSource",align:"left", title: "Source", type: "text", },
+        { name: "logTime",align:"left", title: "Log Inserted Time", type: "text", },
         { type: "control", width: 100, editButton: false, deleteButton: false},
       ]
     });
@@ -114,7 +114,7 @@ function AppLogHistory() {
               </div>
               <div className="col-md-3 mt-4">
                 <button type="button" className="btn btn-primary mx-1" onClick={() => GetAppLog()}>Filter</button>
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetAppLog('reset')}>Reset</button>
+                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetAppLog('reset')}>Reset</button>
               </div>
               </div>
               <div className="jsGrid" ref={gridRefLogHistoryreport} />

@@ -284,6 +284,7 @@ table.table .avatar {
 .form-label {
   font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.5px;
 }
 
 .SumoSelect {
@@ -372,8 +373,9 @@ h6 {
 } */
 
 .dashboard .card .device {
-  font-size: 1.2rem;
+  font-size: 1.0rem;
   font-weight: 600;
+  letter-spacing: 0.5px;
 }
 .dashboard .card .parameter{
   width: 40%;
@@ -468,10 +470,12 @@ h6 {
 
 .dashboard_dmodal .table tr.header_active th {
   background-color: #6e9ce3;
+  letter-spacing: 0.5px;
 }
 
 .dashboard_dmodal .table tr.body_active td {
   background-color: #cfe2ff;
+  letter-spacing: 0.5px;
 }
 
 .dashboard_dmodal table.table tr th,
@@ -483,6 +487,8 @@ h6 {
 .dashboard_dmodal .modal-title {
   font-size: 1rem !important;
   font-weight: 700;
+  padding-left: 10px;
+  letter-spacing: 0.5px;
 }
 
 .dashboard_dmodal .modal-header {
