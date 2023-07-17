@@ -194,7 +194,7 @@ function StasticsReport() {
       });
       isvalid = false;
     } else if (Interval == "") {
-      toast.error('Please select criteria', {
+      toast.error('Please select Interval', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -312,7 +312,7 @@ function StasticsReport() {
                 chartdata.push(tempdata[index1].value)
               }
             }
-            datasets.push({ fill:charttype == 'area'?true:false, label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[j],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[j]) })
+            datasets.push({ fill:charttype == 'area'?true:false, label: data.StationNames[j].StationName + "-" + pollutent[i], data: chartdata, borderColor: colorArray[i],borderWidth: 2, borderRadius: 5, backgroundColor: hexToRgbA(colorArray[i]) })
           }
 
         }
