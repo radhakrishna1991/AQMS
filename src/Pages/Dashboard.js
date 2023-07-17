@@ -636,7 +636,7 @@ function Dashboard() {
       var raisingtime=document.getElementById("risingtime" + i).value;
       var fallingTime=document.getElementById("fallingtime" + i).value;
       var totaltime=document.getElementById("totaltime" + i).value;
-      var addValue=Number(raisingtime) - Number(fallingTime);
+      var addValue=Number(totaltime)-(Number(raisingtime)+Number(fallingTime));
       document.getElementById("stabilizationtime" + i).value=addValue;
     }
   }
