@@ -1,6 +1,10 @@
+import { useState,useEffect } from "react";
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { toast } from 'react-toastify';
 function Header() {
+  const [ListStations, setListStations] = useState([]);
+
   const user = JSON.parse(sessionStorage.getItem('UserData'));
   const sidebartoggle = (e) => {
     document.querySelector('body').classList.toggle('toggle-sidebar')
@@ -21,6 +25,24 @@ function Header() {
         }
       })
   }
+  useEffect(() => {
+    GetStation();
+  }, [])
+
+  const GetStation = function () {
+    fetch(process.env.REACT_APP_WSurl + "api/Stations", {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          var station=data[0].stationName;
+          setListStations(station);
+        }
+      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
+  }
+
+
+
   return (
     <header id="header" className="header fixed-top d-flex align-items-center">
       {!sessionStorage.getItem('UserData') ? window.location.href = "/" : ""}
@@ -30,6 +52,11 @@ function Header() {
           </NavLink>
         <i className="bi bi-list toggle-sidebar-btn" onClick={sidebartoggle}></i>
       </div>
+      {/* <div> Station Name</div> */}
+      &nbsp;&nbsp;
+      {ListStations && (
+        <div className="headerLable">{ListStations} </div>
+      )}
 
      {/*  <div className="search-bar">
         <form className="search-form d-flex align-items-center" method="POST" action="#">

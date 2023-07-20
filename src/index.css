@@ -764,4 +764,10 @@ table.jexcel colgroup col:nth-child(1) {
   font-weight: 600;
 }
 
+.headerLable {
+  font-weight: bold;
+  color: #fff;
+  font-size: 20px;
+}
+
 
