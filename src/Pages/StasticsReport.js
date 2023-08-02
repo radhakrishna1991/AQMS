@@ -481,6 +481,7 @@ function StasticsReport() {
                 <label className="form-label">Interval</label>
                 <select className="form-select" id="intervalid">
                   <option value="" selected>Select Interval</option>
+                  <option value="1M">1-M</option>
                   {Criteria.map((x, y) =>
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
                   )}
