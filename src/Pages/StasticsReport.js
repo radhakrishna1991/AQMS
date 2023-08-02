@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -378,6 +380,45 @@ function StasticsReport() {
     }, 10);
   }
 
+  const DownloadPng=function() {
+    let Criteria = document.getElementById("criteriaid").value;
+    const chartElement = chartRef.current.canvas;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+      const image = canvas.toDataURL('image/png');
+
+      // Create a download link and trigger click event
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image;
+      downloadLink.download = Criteria+'Chart.png';
+      downloadLink.click();
+    });
+    /* var a = document.createElement('a');
+    a.href = chartRef.current.toBase64Image();
+    a.download = 'chart.png';
+    a.click(); */
+    return;
+}
+
+
+  const DownloadPdf = () => {
+    const chartElement = chartRef.current.canvas;
+      html2canvas(chartElement, {
+        backgroundColor: 'white', // Set null to preserve the original chart background color
+      }).then((canvas) => {
+      const chartImage = canvas.toDataURL('image/png');
+  
+      // Create a PDF using jsPDF
+      const pdf = new jsPDF();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(Criteria+'Chart.pdf');
+    });
+  };
+
+
   /* Barchart End */
   return (
     <main id="main" className="main" >
@@ -465,6 +506,12 @@ function StasticsReport() {
                 <Line ref={chartRef} options={ChartOptions} data={ChartData} height={120} />
               </div>
             )}
+            {ChartData.datasets.length>0 && (
+             <div className="text-center">
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                </div>
+                )}
           </div>
         </div>
       </section>

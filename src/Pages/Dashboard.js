@@ -6,6 +6,8 @@ import DateTimePicker from 'react-datetime-picker';
 import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
+import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -652,6 +654,42 @@ function Dashboard() {
     }
   }
 
+  const DownloadPng=function() {
+    const chartElement = chartRef.current.canvas;
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
+      const image = canvas.toDataURL('image/png');
+
+      // Create a download link and trigger click event
+      const downloadLink = document.createElement('a');
+      downloadLink.href = image;
+      downloadLink.download = 'DashboardChart.png';
+      downloadLink.click();
+    });
+    /* var a = document.createElement('a');
+    a.href = chartRef.current.toBase64Image();
+    a.download = 'chart.png';
+    a.click(); */
+    return;
+}
+
+
+  const DownloadPdf = () => {
+    const chartElement = chartRef.current.canvas;
+      html2canvas(chartElement, {
+        backgroundColor: 'white', // Set null to preserve the original chart background color
+      }).then((canvas) => {
+      const chartImage = canvas.toDataURL('image/png');
+  
+      // Create a PDF using jsPDF
+      const pdf = new jsPDF();
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('DashboardChart.pdf');
+    });
+  };
 
 
   return (
@@ -1613,6 +1651,10 @@ function Dashboard() {
                       </label>
                     </div>
                   )}
+                </div>
+                <div className="text-center">
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
               </div>
 

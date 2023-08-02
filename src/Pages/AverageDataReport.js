@@ -296,8 +296,8 @@ function AverageDataReport() {
       Interval = interval.substr(0, interval.length - 1);
     }
     document.getElementById('loader').style.display = "block";
-
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: sortorder });
+    let SortOrder=sortorder==undefined || sortorder=='desc'?'asc':'desc'
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: SortOrder });
     let url = "";
     if (interval == "1M") {
       url = process.env.REACT_APP_WSurl + "api/AirQuality/RawDataReport?"

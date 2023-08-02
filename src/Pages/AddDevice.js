@@ -142,7 +142,7 @@ function AddDevice() {
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
     let servicemode=ServiceMode?1:0;
-    let enable=Enable?1:0;
+    //let enable=Enable?1:0;
     let validation = Deviceaddvalidation();
     if (!validation) {
       return false;
@@ -156,7 +156,7 @@ function AddDevice() {
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port,
         Type: Type, ID: Deviceid, Status: status, CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
-        ServiceMode:servicemode,SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable
+        ServiceMode:servicemode,SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
