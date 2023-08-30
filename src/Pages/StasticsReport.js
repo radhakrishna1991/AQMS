@@ -77,6 +77,8 @@ function StasticsReport() {
     // initializeJsGrid();
   }, []);
   const GenarateChart = function () {
+
+    
     let Station = $("#stationid").val();
     let Pollutent = $("#pollutentid").val();
     let Fromdate = document.getElementById("fromdateid").value;
@@ -379,9 +381,23 @@ function StasticsReport() {
       })
     }, 10);
   }
-
-  const DownloadPng=function() {
+  const getChartTitle=function()
+  {
     let Criteria = document.getElementById("criteriaid").value;
+    let interval = document.getElementById("intervalid").value;
+    let fromdate=document.getElementById("fromdateid").value;
+    
+    let todate=document.getElementById("todateid").value;
+    let datetitle="";
+    if(fromdate==todate)
+      return   Criteria+"_"+fromdate+"_"+interval+'_Chart';
+    else
+      return   Criteria+"_"+fromdate+"_To_"+todate+"_"+interval+'_Chart';
+
+    
+  }
+  const DownloadPng=function() {
+    
     const chartElement = chartRef.current.canvas;
     html2canvas(chartElement, {
       backgroundColor: 'white', // Set null to preserve the original chart background color
@@ -391,7 +407,7 @@ function StasticsReport() {
       // Create a download link and trigger click event
       const downloadLink = document.createElement('a');
       downloadLink.href = image;
-      downloadLink.download = Criteria+'Chart.png';
+      downloadLink.download = getChartTitle()+".png";
       downloadLink.click();
     });
     /* var a = document.createElement('a');
@@ -403,6 +419,8 @@ function StasticsReport() {
 
 
   const DownloadPdf = () => {
+    let Criteria = document.getElementById("criteriaid").value;
+    let interval = document.getElementById("intervalid").value;
     const chartElement = chartRef.current.canvas;
       html2canvas(chartElement, {
         backgroundColor: 'white', // Set null to preserve the original chart background color
@@ -414,7 +432,7 @@ function StasticsReport() {
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
       pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
-      pdf.save(Criteria+'Chart.pdf');
+      pdf.save(getChartTitle()+'.pdf');
     });
   };
 
