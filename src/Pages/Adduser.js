@@ -9,7 +9,7 @@ function Adduser() {
   const [UserList, setUserList] = useState(true);
   const [UserId, setUserId] = useState(0);
   const [Notification, setNotification] = useState(true);
-  const Useraddvalidation = function (UserName, UserEmail, UserRole) {
+  const Useraddvalidation = function (UserName, UserEmail, UserPassword, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
     if (UserName == "") {
@@ -17,6 +17,10 @@ function Adduser() {
       form.classList.add('was-validated');
       isvalid = false;
     } else if (UserEmail == "") {
+      //toast.warning('Please enter user email');
+      form.classList.add('was-validated');
+      isvalid = false;
+    } else if (UserPassword == "") {
       //toast.warning('Please enter user email');
       form.classList.add('was-validated');
       isvalid = false;
@@ -30,9 +34,15 @@ function Adduser() {
   const Useradd = function () {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
+    let UserPassword = document.getElementById("userpwd").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail, UserRole);
+    
+    let validation = Useraddvalidation(UserName, UserEmail, UserPassword, UserRole);
     if (!validation) {
+      return false;
+    }
+    if(UserPassword.length<8){
+      $("#lblPassword")[0].style.display="block";
       return false;
     }
     fetch(process.env.REACT_APP_WSurl + 'api/Users', {
@@ -41,7 +51,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Role: UserRole }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:UserPassword, Role: UserRole }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "useradd") {
@@ -62,6 +72,7 @@ function Adduser() {
     setTimeout(() => {
       document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
+      document.getElementById("userpwd").value = param.password;
      document.getElementById("userrole").value = param.role;
     }, 10);
    
@@ -70,8 +81,9 @@ function Adduser() {
   const UpdateUser=function(){
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
+    let UserPassword = document.getElementById("userpwd").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail, UserRole);
+    let validation = Useraddvalidation(UserName, UserEmail, UserPassword, UserRole);
     if (!validation) {
       return false;
     }
@@ -81,7 +93,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:UserPassword, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -238,6 +250,12 @@ function Adduser() {
                   <div class="invalid-feedback">Please enter user email.</div>
                 </div>
                 <div className="col-md-12 mb-3">
+                  <label for="userpassword" className="form-label">Password:</label>
+                  <input type="password" className="form-control" id="userpwd" placeholder="Enter password" required />
+                  <div class="invalid-feedback">Please enter Password.</div>
+                  <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 charecters</div>
+                </div>
+                <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>
                   <select className="form-select" id="userrole" required>
                     <option value="" selected>select user role</option>
@@ -247,7 +265,7 @@ function Adduser() {
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>
                 </div>
-                <div className="col-md-12 mb-3">
+                <div className="col-md-12 mb-3" style={{display:"none"}}>
                   <label for="Notification" className="form-label">Notification: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />

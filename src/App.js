@@ -6,6 +6,7 @@ import './App.css';
 import Header from './Layouts/Header';
 import Sidenavbar from "./Layouts/Sidenavbar";
 const Login = lazy(() => import("./Pages/Login"));
+const ResetPassword = lazy(() => import("./Pages/ResetPassword"));
 const Dashboard = lazy(() => import("./Pages/Dashboard"));
 const Profile = lazy(() => import("./Pages/Profile"));
 const Parameters = lazy(() => import("./Pages/Parameters"));
@@ -42,6 +43,7 @@ function App() {
           <Routes>
           <Route   path="/" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)}  />
           <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
+          <Route   path="/ResetPassword" exact element={currentUser ==null ? <ResetPassword /> : (<Navigate to="/" />)} />
             <Route path="*" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
             <Route path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
             <Route path="/Profile" exact element={currentUser !=null ? <Profile />: (<Navigate to="/" />)} />

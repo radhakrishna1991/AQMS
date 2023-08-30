@@ -4,8 +4,10 @@ import React from "react";
 import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
 //function Login() {
+  
   const Login = ({ handleAuthentication }) => {
   //const Navigate = useNavigate();
+  
   const handleLogin = async(event) => {
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
@@ -56,6 +58,11 @@ import bcrypt from 'bcryptjs';
 
     return encryptedPassword ;
   }
+
+  
+  const redirectToReset = () => {
+    window.location.href =process.env.REACT_APP_BASE_URL+ "/ResetPassword";
+  };
   return (
     <main>
       <div className="container">
@@ -98,11 +105,14 @@ import bcrypt from 'bcryptjs';
                         <div className="invalid-feedback">Please enter your password!</div>
                       </div>
 
-                      <div className="col-12">
+                      <div className="col-12" style={{float:"left", width:"auto"}}>
                         <div className="form-check">
                           <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
                           <label className="form-check-label" for="rememberMe">Remember me</label>
                         </div>
+                      </div>
+                      <div className="col-12" style={{float:"right", width:"auto", textAlign:"right"}}>
+                        <a className="form-check-label" style={{marginLeft:"122px", cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
                       </div>
                       <div className="col-12">
                         <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
