@@ -414,7 +414,7 @@ function AddParameter() {
 
                 <div className="col-md-12 mb-3">
                   <label for="parsefunciton" className="form-label">Parse Function:</label>
-                  <input type="text" className="form-control" id="parsefunciton" placeholder="Enter Parse Function" />
+                  <textarea class="form-control" id="parsefunciton" placeholder="Enter Parse Function"  rows="3"></textarea>
                   <div class="invalid-feedback">Please enter parse function</div>
                 </div>
 

@@ -70,7 +70,7 @@ function ResetPassword() {
                 toast.success('Password Reset Completed');
                 window.location.href =process.env.REACT_APP_BASE_URL+ "/Login";
               } else {
-                toast.error('Failed to Reset the Password. Please try again', {
+                toast.error('Given User Name or Password is not valid. Please try again', {
                   position: "top-right",
                   autoClose: 5000,
                   hideProgressBar: false,
@@ -128,7 +128,7 @@ function ResetPassword() {
                     <form className="row g-3" autoComplete="false" id="ForgotPWD" novalidate>
 
                       <div className="col-12">
-                        <label htmlFor="yourUsername" className="form-label">UserEmail</label>
+                        <label htmlFor="yourUsername" className="form-label">User Name</label>
                         <div className="input-group has-validation">
                           <span className="input-group-text" id="inputGroupPrepend">@</span>
                           <input type="text" name="username" className="form-control required" id="UserName" required />
