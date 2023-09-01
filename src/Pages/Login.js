@@ -111,10 +111,10 @@ import bcrypt from 'bcryptjs';
                           <label className="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                       </div>
-                      <div className="col-12" style={{float:"right", width:"auto", textAlign:"right"}}>
-                        <a className="form-check-label" style={{marginLeft:"122px", cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
+                      <div className="col-6" style={{textAlign:"right"}}>
+                        <a className="form-check-label" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
                       </div>
-                      <div className="col-12">
+                      <div className="col-6">
                         <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
                       </div>
                     </form>
