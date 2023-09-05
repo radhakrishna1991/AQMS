@@ -56,7 +56,9 @@ function Dashboard() {
   const [StartDatetime5, onChange5] = useState(new Date());
   const [CalibrationSequence, setCalibrationSequence] = useState([]);
   const [ListCalibration, setListCalibration] = useState([]);
-  const [UserRole, setUserRole]=useState(true);
+  const [UserRole, setUserRole] = useState(true);
+  const [IntervalCriteria, setIntervalCriteria] = useState([]);
+  const [SelectedInterval, setSelectedInterval] = useState("1M");
   ListAllDataCopy.current = ListAllData;
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
@@ -64,15 +66,31 @@ function Dashboard() {
   const Minute = window.DashboardRefreshtime;
 
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl() + "api/Dashboard", {
+    let Interval=SelectedInterval;
+    let type = Interval.substr(Interval.length - 1);
+   let Intervaltype;
+   if (type == 'H') {
+     Intervaltype = Interval.substr(0, Interval.length - 1) * 60;
+   } else {
+     Intervaltype = Interval.substr(0, Interval.length - 1);
+   }
+    fetch(CommonFunctions.getWebApiUrl() + "api/Dashboard?Interval="+Intervaltype, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
           setListAllData(data);
           var checkedcnt = 0;
+          let finalinterval = [];
           for (var i = 0; i < data.listPollutents.length; i++) {
-
+            let intervalarr = data.listPollutents[i].avgInterval.split(',');
+                for (let j = 0; j < intervalarr.length; j++) {
+                  let intervalsplitarr = intervalarr[j].split('-');
+                  let index = finalinterval.findIndex(x => x.value === intervalsplitarr[0] && x.type === intervalsplitarr[1]);
+                  if (index == -1) {
+                    finalinterval.push({ value: intervalsplitarr[0], type: intervalsplitarr[1] })
+                  }
+                }
             //sessionStorage.setItem(data.listPollutents[i].id + "_ChartStatus", false);
             if (Cookies.get(data.listPollutents[i].id + "_ChartStatus") != 'false') {
               checkedcnt++;
@@ -82,6 +100,7 @@ function Dashboard() {
               parameterChartStatus.push({ paramaterID: data.listPollutents[i].id, paramaterName: data.listPollutents[i].parameterName, ChartStatus: false })
             }
           }
+          setIntervalCriteria(finalinterval);
           // if(checkedcnt==data.listPollutents.length){
           //     var ele=document.getElementById("selectall");
           //     ele.checked=true;
@@ -95,22 +114,34 @@ function Dashboard() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      //  console.log('Logs every minute');
-      fetch(CommonFunctions.getWebApiUrl() + "api/Livedata", {
-        method: 'GET',
-      }).then((response) => response.json())
-        .then((data) => {
-          if (data) {
-            ListAllDataCopy.current.listParametervalues = data;
-            GenerateChart(ListAllDataCopy.current);
-          }
-        }).catch((error) =>
-          toast.error('Unable to get the data. Please contact adminstrator')
-        );
+      GetLivedata();
     }, window.DashboardChartRefreshtime);
 
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
+
+  const GetLivedata=function(){
+     //  console.log('Logs every minute');
+     let Intervalvalue=document.getElementById("criteriaid").value;
+     let type = Intervalvalue.substr(Intervalvalue.length - 1);
+    let Intervaltype;
+    if (type == 'H') {
+      Intervaltype = Intervalvalue.substr(0, Intervalvalue.length - 1) * 60;
+    } else {
+      Intervaltype = Intervalvalue.substr(0, Intervalvalue.length - 1);
+    }
+     fetch(CommonFunctions.getWebApiUrl() + "api/Livedata?Interval="+Intervaltype, {
+      method: 'GET',
+    }).then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          ListAllDataCopy.current.listParametervalues = data;
+          GenerateChart(ListAllDataCopy.current);
+        }
+      }).catch((error) =>
+        toast.error('Unable to get the data. Please contact adminstrator')
+      );
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -228,7 +259,7 @@ function Dashboard() {
   const Devicecalibration = function (param) {
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
     let listcommands = ListAllData.listCommands.filter(x => x.deviceModelId == param.deviceModel);
-    let listcalibartioncommands=ListAllData.listCalibrationCommands;
+    let listcalibartioncommands = ListAllData.listCalibrationCommands;
     setInfoParameters(parameters);
     setCommands(listcommands);
     setCalibrationsCommands(listcalibartioncommands);
@@ -255,6 +286,13 @@ function Dashboard() {
     return date.replace("T", " ").substring(0, 19);
 
   }
+
+  const Intervalchange = function(e){
+    let value=e.target.value;
+    setSelectedInterval(value); 
+    GetLivedata();
+  }
+
   const GenerateChart = function (data) {
     /*  if (chartRef.current != null) {
        chartRef.current.data = {};
@@ -294,9 +332,9 @@ function Dashboard() {
           ticks: {
             font: {
               size: 11, // Adjust the font size for x-axis labels
-              family: 'Roboto Light' ,// Change the font type for x-axis labels
+              family: 'Roboto Light',// Change the font type for x-axis labels
               weight: 'bold',
-              color:'blue'
+              color: 'blue'
             }
           },
           time: {
@@ -307,7 +345,7 @@ function Dashboard() {
             tooltipFormat: 'D MMM YYYY - HH:mm:ss'
           }
         },
-       
+
 
       },
       // maintainAspectRatio: true,
@@ -315,19 +353,19 @@ function Dashboard() {
         legend: {
           position: 'top',
           align: 'center',
-          fullSize:true,
+          fullSize: true,
           labels: {
             color: 'navy',
-            boxWidth:20,
-            padding:20,
-            
+            boxWidth: 20,
+            padding: 20,
+
             //boxHeight:20
             font: {
               size: 11,
-              family:"Roboto Light",
-              weight:'bold'
-          }
-        },
+              family: "Roboto Light",
+              weight: 'bold'
+            }
+          },
         },
 
       },
@@ -353,7 +391,7 @@ function Dashboard() {
     for (let i = 1; i <= 5; i++) {
       let data = Getformvalues(i);
 
-      if(parseInt(data.FallingTime)+parseInt(data.RisingTime)>parseInt(data.TotalTime)){
+      if (parseInt(data.FallingTime) + parseInt(data.RisingTime) > parseInt(data.TotalTime)) {
         toast.error('Total Time should be less than or equal to the sum of Raising Time and Falling Time');
         return false;
       }
@@ -361,9 +399,9 @@ function Dashboard() {
       let status = $("#enable" + i).is(':checked') ? 1 : 0;
       if (data == false) {
         return false;
-      }else if (status == 1){
-        if(data.Command1=="" && data.Command2=="" && data.Command3=="" && data.Command4=="" && data.Command5=="" && data.Command6=="" && data.Command7 == "" && data.Command8=="" && data.Command9=="" && data.Command10==""){
-          toast.error('Please select at least one command in sequence'+i);
+      } else if (status == 1) {
+        if (data.Command1 == "" && data.Command2 == "" && data.Command3 == "" && data.Command4 == "" && data.Command5 == "" && data.Command6 == "" && data.Command7 == "" && data.Command8 == "" && data.Command9 == "" && data.Command10 == "") {
+          toast.error('Please select at least one command in sequence' + i);
           return false;
         }
       }
@@ -396,8 +434,8 @@ function Dashboard() {
     if (status == 1) {
       let isvalid = SequenceValidation(param);
       if (!isvalid) {
-        var sequencetab="sequence"+param+"-tab";
-        $("#"+sequencetab).tab('show');
+        var sequencetab = "sequence" + param + "-tab";
+        $("#" + sequencetab).tab('show');
         return false;
       }
     }
@@ -410,7 +448,7 @@ function Dashboard() {
     let totaltime = $("#totaltime" + param).val();
     let risingtime = $("#risingtime" + param).val();
     let fallingtime = $("#fallingtime" + param).val();
-    let stabilizationtime=$("#stabilizationtime" + param).val();
+    let stabilizationtime = $("#stabilizationtime" + param).val();
     let highdrift = $("#highdrift" + param).val();
     let lowdrift = $("#lowdrift" + param).val();
     let signalvalue = $("#signalvalue" + param).val();
@@ -437,33 +475,33 @@ function Dashboard() {
     let command9 = $("#command" + param + "9").val();
     let command10 = $("#command" + param + "0").val();
 
-    let CommandsArray=[];
-      for(let k=0;k<10;k++){
-        let command=k==9?$("#command" + param + "0").val():$("#command" + param + (k+1)).val();
-        if(command !=""){
-          let commandsplit=command.split("_");
-          let obj={};
-          obj.CalibrationID=recid;
-          obj.Command=commandsplit[0];
-          obj.Type=commandsplit[1];
-          obj.CommandNumber=k+1;
-          obj.Status=1;
-          CommandsArray.push(obj); 
-        }
+    let CommandsArray = [];
+    for (let k = 0; k < 10; k++) {
+      let command = k == 9 ? $("#command" + param + "0").val() : $("#command" + param + (k + 1)).val();
+      if (command != "") {
+        let commandsplit = command.split("_");
+        let obj = {};
+        obj.CalibrationID = recid;
+        obj.Command = commandsplit[0];
+        obj.Type = commandsplit[1];
+        obj.CommandNumber = k + 1;
+        obj.Status = 1;
+        CommandsArray.push(obj);
       }
+    }
 
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let finalobject = {
       ParameterId: parameter, ProfileId: profile, SequenceNumber: param, RepeatedInterval: repeatedinterval, RepeatedIntervalType: repeatedintervaltype, StartTime: startdatetime, TypeofSequence: typeofsequence,
-      TotalTime: totaltime, RisingTime: risingtime, FallingTime: fallingtime,StabilizationTime:stabilizationtime, HighDrift: highdrift, LowDrift: lowdrift, SignalValue: signalvalue,
-       CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, ID: recid, Status: status,listCalibrationCommandsSequence:CommandsArray
+      TotalTime: totaltime, RisingTime: risingtime, FallingTime: fallingtime, StabilizationTime: stabilizationtime, HighDrift: highdrift, LowDrift: lowdrift, SignalValue: signalvalue,
+      CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, ID: recid, Status: status, listCalibrationCommandsSequence: CommandsArray
     }
     return finalobject;
   }
 
   const Setformvalues = function (list) {
-    for(var k=1;k<=5;k++){
+    for (var k = 1; k <= 5; k++) {
       Clearformvalues(k);
     }
     for (let i = 0; i < list.length; i++) {
@@ -480,7 +518,7 @@ function Dashboard() {
       $("#highdrift" + param).val(list[i].highDrift);
       $("#lowdrift" + param).val(list[i].lowDrift);
       $("#signalvalue" + param).val(list[i].signalValue);
-      let starttime=list[i].startTime==null?new Date():list[i].startTime;
+      let starttime = list[i].startTime == null ? new Date() : list[i].startTime;
       if (param == 1) {
         onChange1(starttime);
       } else if (param == 2) {
@@ -495,21 +533,21 @@ function Dashboard() {
       $("#repeatedinterval" + param).val(list[i].repeatedInterval);
       $("#repeatedintervaltype" + param).val(list[i].repeatedIntervalType);
 
-      let listcommands=list[i].listCalibrationCommandsSequence;
+      let listcommands = list[i].listCalibrationCommandsSequence;
 
-      for(var j=0;j<listcommands.length;j++){
-        $("#command" + param + listcommands[j].commandNumber).val(listcommands[j].command+"_"+listcommands[j].type);
+      for (var j = 0; j < listcommands.length; j++) {
+        $("#command" + param + listcommands[j].commandNumber).val(listcommands[j].command + "_" + listcommands[j].type);
       }
-      
-     /*  $("#command" + param + "2").val(list[i].command2);
-      $("#command" + param + "3").val(list[i].command3);
-      $("#command" + param + "4").val(list[i].command4);
-      $("#command" + param + "5").val(list[i].command5);
-      $("#command" + param + "6").val(list[i].command6);
-      $("#command" + param + "7").val(list[i].command7);
-      $("#command" + param + "8").val(list[i].command8);
-      $("#command" + param + "9").val(list[i].command9);
-      $("#command" + param + "0").val(list[i].command10); */
+
+      /*  $("#command" + param + "2").val(list[i].command2);
+       $("#command" + param + "3").val(list[i].command3);
+       $("#command" + param + "4").val(list[i].command4);
+       $("#command" + param + "5").val(list[i].command5);
+       $("#command" + param + "6").val(list[i].command6);
+       $("#command" + param + "7").val(list[i].command7);
+       $("#command" + param + "8").val(list[i].command8);
+       $("#command" + param + "9").val(list[i].command9);
+       $("#command" + param + "0").val(list[i].command10); */
     }
   }
 
@@ -526,18 +564,18 @@ function Dashboard() {
     $("#lowdrift" + param).val("");
     $("#signalvalue" + param).val("");
     //  let startdatetime = window.moment(StartDatetime).format("YYYY-MM-DD HH:mm:ss");
-    let starttime=new Date();
-      if (param == 1) {
-        onChange1(starttime);
-      } else if (param == 2) {
-        onChange2(starttime);
-      } else if (param == 3) {
-        onChange3(starttime);
-      } else if (param == 4) {
-        onChange4(starttime);
-      } else if (param == 5) {
-        onChange5(starttime);
-      }
+    let starttime = new Date();
+    if (param == 1) {
+      onChange1(starttime);
+    } else if (param == 2) {
+      onChange2(starttime);
+    } else if (param == 3) {
+      onChange3(starttime);
+    } else if (param == 4) {
+      onChange4(starttime);
+    } else if (param == 5) {
+      onChange5(starttime);
+    }
     $("#repeatedinterval" + param).val("");
     $("#repeatedintervaltype" + param).val("M");
     $("#command" + param + "1").val("");
@@ -602,7 +640,7 @@ function Dashboard() {
           //  toast.success('Device Updated successfully');
           param.serviceMode = !param.serviceMode;
           ListAllDataCopy.current.listPollutents.filter(x => x.deviceID == param.id)
-          .forEach(x => x.flag = !x.isEnable?null:param.serviceMode?5:1);
+            .forEach(x => x.flag = !x.isEnable ? null : param.serviceMode ? 5 : 1);
 
         } else {
           toast.error('Unable to change the service mode. Please contact adminstrator');
@@ -624,7 +662,7 @@ function Dashboard() {
         if (responseJson == 1) {
           //  toast.success('Device Updated successfully');
           param.isEnable = !param.isEnable;
-          param.parameterValue=null;
+          param.parameterValue = null;
           param.flag = !param.isEnable ? null : 1;
         } else {
           toast.error('Unable to change the parameter status. Please contact adminstrator');
@@ -632,30 +670,30 @@ function Dashboard() {
       }).catch((error) => toast.error('Unable to change the parameter status. Please contact adminstrator'));
   }
 
-  
 
-  const GetTotalTime=function(){
+
+  const GetTotalTime = function () {
     for (let i = 1; i <= 5; i++) {
-      var raisingtime=document.getElementById("risingtime" + i).value;
-      var fallingTime=document.getElementById("fallingtime" + i).value;
-      var totaltime=document.getElementById("totaltime" + i).value;
-      var addValue=Number(totaltime)-(Number(raisingtime)+Number(fallingTime));
-      document.getElementById("stabilizationtime" + i).value=addValue;
+      var raisingtime = document.getElementById("risingtime" + i).value;
+      var fallingTime = document.getElementById("fallingtime" + i).value;
+      var totaltime = document.getElementById("totaltime" + i).value;
+      var addValue = Number(totaltime) - (Number(raisingtime) + Number(fallingTime));
+      document.getElementById("stabilizationtime" + i).value = addValue;
     }
   }
 
-  const getUserRole = function ()  {
-    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));  
-    
-    if(currentUser.role.toUpperCase()==window.UserRoles[0].ADMIN.toUpperCase()){
+  const getUserRole = function () {
+    const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+
+    if (currentUser.role.toUpperCase() == window.UserRoles[0].ADMIN.toUpperCase()) {
       setUserRole(true);
     }
-    else if(currentUser.role.toUpperCase()==window.UserRoles[0].GUEST.toUpperCase()){ 
+    else if (currentUser.role.toUpperCase() == window.UserRoles[0].GUEST.toUpperCase()) {
       setUserRole(false);
     }
   }
 
-  const DownloadPng=function() {
+  const DownloadPng = function () {
     const chartElement = chartRef.current.canvas;
     html2canvas(chartElement, {
       backgroundColor: 'white', // Set null to preserve the original chart background color
@@ -673,16 +711,16 @@ function Dashboard() {
     a.download = 'chart.png';
     a.click(); */
     return;
-}
+  }
 
 
   const DownloadPdf = () => {
     const chartElement = chartRef.current.canvas;
-      html2canvas(chartElement, {
-        backgroundColor: 'white', // Set null to preserve the original chart background color
-      }).then((canvas) => {
+    html2canvas(chartElement, {
+      backgroundColor: 'white', // Set null to preserve the original chart background color
+    }).then((canvas) => {
       const chartImage = canvas.toDataURL('image/png');
-  
+
       // Create a PDF using jsPDF
       const pdf = new jsPDF();
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -1000,7 +1038,7 @@ function Dashboard() {
                     <button className="nav-link " id="sequence5-tab" data-bs-toggle="tab" data-bs-target="#sequence5-tab-pane" type="button" role="tab" aria-controls="sequence5-tab-pane" aria-selected="false" >Sequence5</button>
                   </li>
                 </ul>
-                <div className={"tab-content "+ (UserRole?"":"sequencedisable")} id="calibrationTabContent">
+                <div className={"tab-content " + (UserRole ? "" : "sequencedisable")} id="calibrationTabContent">
                   {(() => {
                     let calibration = [];
                     for (let i = 1; i <= 5; i++) {
@@ -1067,7 +1105,7 @@ function Dashboard() {
                                     <div className="row mb-3">
                                       <label htmlFor="totaltime" className="col-md-4 col-form-label">1 - Total time</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" step="any" id={"totaltime" + i}  required />
+                                        <input type="number" className="form-control" step="any" id={"totaltime" + i} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
@@ -1091,13 +1129,13 @@ function Dashboard() {
                                     <div className="row mb-3">
                                       <label htmlFor="highdrift" className="col-md-4 col-form-label">5 - High Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" step="any" id={"highdrift" + i}  required />
+                                        <input type="number" className="form-control" step="any" id={"highdrift" + i} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
                                       <label htmlFor="lowdrift" className="col-md-4 col-form-label">6 - Low Drift</label>
                                       <div className="col-md-8">
-                                        <input type="number" className="form-control" step="any" id={"lowdrift" + i}  required />
+                                        <input type="number" className="form-control" step="any" id={"lowdrift" + i} required />
                                       </div>
                                     </div>
                                     <div className="row mb-3">
@@ -1115,17 +1153,17 @@ function Dashboard() {
                                 <legend>Commands</legend>
                                 <div className="row">
                                   <div className="col-md-12 mb-2">
-                                    <select className="form-select" id={"command" + i +"1"}>
+                                    <select className="form-select" id={"command" + i + "1"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1133,14 +1171,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "2"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1148,14 +1186,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "3"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1163,14 +1201,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "4"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1178,14 +1216,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "5"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1193,14 +1231,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "6"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1208,14 +1246,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "7"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1223,14 +1261,14 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "8"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1238,29 +1276,29 @@ function Dashboard() {
                                     <select className="form-select" id={"command" + i + "9"}>
                                       <option value="" selected>Select Commands</option>
                                       <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
                                   <div className="col-md-12 mb-2">
                                     <select className="form-select" id={"command" + i + "0"}>
-                                    <option value="" selected>Select Commands</option>
-                                    <optgroup label="Device">
-                                      {Commands.map((x, y) =>
-                                        <option value={x.id+"_"+"D"}>{x.description}</option>
-                                      )}
+                                      <option value="" selected>Select Commands</option>
+                                      <optgroup label="Device">
+                                        {Commands.map((x, y) =>
+                                          <option value={x.id + "_" + "D"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                       <optgroup label="Calibration">
-                                      {CalibrationsCommands.map((x, y) =>
-                                        <option value={x.id+"_"+"C"}>{x.description}</option>
-                                      )}
+                                        {CalibrationsCommands.map((x, y) =>
+                                          <option value={x.id + "_" + "C"}>{x.description}</option>
+                                        )}
                                       </optgroup>
                                     </select>
                                   </div>
@@ -1270,7 +1308,7 @@ function Dashboard() {
 
                           </div>
                           <div className="float-end ">
-                            <button type="button" className={"btn btn-primary px-3 py-1 my-1 "+ (UserRole?"":"disable")} onClick={() => Clearformvalues(i)} >Clear</button>
+                            <button type="button" className={"btn btn-primary px-3 py-1 my-1 " + (UserRole ? "" : "disable")} onClick={() => Clearformvalues(i)} >Clear</button>
                           </div>
                         </form>
                       </div>);
@@ -1284,7 +1322,7 @@ function Dashboard() {
             </div>
             <div className="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" className={"btn btn-primary "+ (UserRole?"":"disable")} onClick={SaveCalibrationSequence} >Save</button>
+              <button type="button" className={"btn btn-primary " + (UserRole ? "" : "disable")} onClick={SaveCalibrationSequence} >Save</button>
             </div>
           </div>
         </div>
@@ -1294,18 +1332,7 @@ function Dashboard() {
         <div className="col-md-3 mb-3 d-inline-flex">
           <label for="Interval" className="form-label me-3">Date & Time:</label>
           <span className="dashboard_date">  {currentdatetime} </span>
-          {/* <select className="form-select" id="Interval" ref={Interval} >
-            <option value="15000">15 Seconds</option>
-            <option value="30000">30 Seconds</option>
-            <option value="60000">1 Minute</option>
-          </select> */}
         </div>
-        {/* <nav>
-    <ol className="breadcrumb">
-      <li className="breadcrumb-item"><a href="index.html">Home</a></li>
-      <li className="breadcrumb-item active">Dashboard</li>
-    </ol>
-  </nav> */}
       </div>
 
       <section className="section dashboard">
@@ -1317,20 +1344,6 @@ function Dashboard() {
 
                 <div className="col-xxl-4 col-md-4">
                   <div className="card info-card sales-card">
-
-                    {/*  <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li className="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a className="dropdown-item" href="#">Today</a></li>
-                <li><a className="dropdown-item" href="#">This Month</a></li>
-                <li><a className="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div> */}
-
                     <div className="card-body">
                       <h5 className="card-title text-center">Stations</h5>
 
@@ -1349,20 +1362,6 @@ function Dashboard() {
 
                 <div className="col-xxl-4 col-md-4">
                   <div className="card info-card revenue-card">
-                    {/* 
-            <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li className="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a className="dropdown-item" href="#">Today</a></li>
-                <li><a className="dropdown-item" href="#">This Month</a></li>
-                <li><a className="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div> */}
-
                     <div className="card-body">
                       <h5 className="card-title text-center">Devices</h5>
 
@@ -1382,20 +1381,6 @@ function Dashboard() {
                 <div className="col-xxl-4 col-md-4">
 
                   <div className="card info-card customers-card">
-
-                    {/*     <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li className="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a className="dropdown-item" href="#">Today</a></li>
-                <li><a className="dropdown-item" href="#">This Month</a></li>
-                <li><a className="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div> */}
-
                     <div className="card-body">
                       <h5 className="card-title text-center">Parameters</h5>
 
@@ -1413,225 +1398,66 @@ function Dashboard() {
 
                 </div>
 
-                {/*  <div className="col-12">
-          <div className="card">
-
-            <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li className="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a className="dropdown-item" href="#">Today</a></li>
-                <li><a className="dropdown-item" href="#">This Month</a></li>
-                <li><a className="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div>
-
-            <div className="card-body">
-              <h5 className="card-title">Reports <span>/Today</span></h5>
-              <div id="reportsChart"></div>
-            </div>
-
-          </div>
-        </div>
-
-        <div className="col-12">
-          <div className="card recent-sales overflow-auto">
-
-            <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li className="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a className="dropdown-item" href="#">Today</a></li>
-                <li><a className="dropdown-item" href="#">This Month</a></li>
-                <li><a className="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div>
-
-            <div className="card-body">
-              <h5 className="card-title">Recent Sales <span>| Today</span></h5>
-
-              <table className="table table-borderless datatable">
-                <thead>
-                  <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Product</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row"><a href="#">#2457</a></th>
-                    <td>Brandon Jacob</td>
-                    <td><a href="#" className="text-primary">At praesentium minu</a></td>
-                    <td>$64</td>
-                    <td><span className="badge bg-success">Approved</span></td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#">#2147</a></th>
-                    <td>Bridie Kessler</td>
-                    <td><a href="#" className="text-primary">Blanditiis dolor omnis similique</a></td>
-                    <td>$47</td>
-                    <td><span className="badge bg-warning">Pending</span></td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#">#2049</a></th>
-                    <td>Ashleigh Langosh</td>
-                    <td><a href="#" className="text-primary">At recusandae consectetur</a></td>
-                    <td>$147</td>
-                    <td><span className="badge bg-success">Approved</span></td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#">#2644</a></th>
-                    <td>Angus Grady</td>
-                    <td><a href="#" className="text-primar">Ut voluptatem id earum et</a></td>
-                    <td>$67</td>
-                    <td><span className="badge bg-danger">Rejected</span></td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#">#2644</a></th>
-                    <td>Raheem Lehner</td>
-                    <td><a href="#" className="text-primary">Sunt similique distinctio</a></td>
-                    <td>$165</td>
-                    <td><span className="badge bg-success">Approved</span></td>
-                  </tr>
-                </tbody>
-              </table>
-
-            </div>
-
-          </div>
-        </div>
-
-        <div className="col-12">
-          <div className="card top-selling overflow-auto">
-
-            <div className="filter">
-              <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-              <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-                <li className="dropdown-header text-start">
-                  <h6>Filter</h6>
-                </li>
-
-                <li><a className="dropdown-item" href="#">Today</a></li>
-                <li><a className="dropdown-item" href="#">This Month</a></li>
-                <li><a className="dropdown-item" href="#">This Year</a></li>
-              </ul>
-            </div>
-
-            <div className="card-body pb-0">
-              <h5 className="card-title">Top Selling <span>| Today</span></h5>
-
-              <table className="table table-borderless">
-                <thead>
-                  <tr>
-                    <th scope="col">Preview</th>
-                    <th scope="col">Product</th>
-                    <th scope="col">Price</th>
-                    <th scope="col">Sold</th>
-                    <th scope="col">Revenue</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th scope="row"><a href="#"><img src="assets/img/product-1.jpg" alt=""/></a></th>
-                    <td><a href="#" className="text-primary fw-bold">Ut inventore ipsa voluptas nulla</a></td>
-                    <td>$64</td>
-                    <td className="fw-bold">124</td>
-                    <td>$5,828</td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#"><img src="assets/img/product-2.jpg" alt=""/></a></th>
-                    <td><a href="#" className="text-primary fw-bold">Exercitationem similique doloremque</a></td>
-                    <td>$46</td>
-                    <td className="fw-bold">98</td>
-                    <td>$4,508</td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#"><img src="assets/img/product-3.jpg" alt=""/></a></th>
-                    <td><a href="#" className="text-primary fw-bold">Doloribus nisi exercitationem</a></td>
-                    <td>$59</td>
-                    <td className="fw-bold">74</td>
-                    <td>$4,366</td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#"><img src="assets/img/product-4.jpg" alt=""/></a></th>
-                    <td><a href="#" className="text-primary fw-bold">Officiis quaerat sint rerum error</a></td>
-                    <td>$32</td>
-                    <td className="fw-bold">63</td>
-                    <td>$2,016</td>
-                  </tr>
-                  <tr>
-                    <th scope="row"><a href="#"><img src="assets/img/product-5.jpg" alt=""/></a></th>
-                    <td><a href="#" className="text-primary fw-bold">Sit unde debitis delectus repellendus</a></td>
-                    <td>$79</td>
-                    <td className="fw-bold">41</td>
-                    <td>$3,239</td>
-                  </tr>
-                </tbody>
-              </table>
-
-            </div>
-
-          </div>
-        </div> */}
-
               </div>
 
               <div className="dashboard_row">
                 {ListAllData.listDevices.map((x, y) =>
-                  x.status==1 &&(
-                  <div className="dashboard_col">
-                    <div className="card info-card revenue-card">
-                      <div className="card-body ">
-                        <div className="d-flex justify-content-between">
-                          {/*     <div className="icons"><i className="bi bi-sliders2-vertical"></i></div> */}
-                          <div className="device">{x.deviceName}</div>
-                          <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
+                  x.status == 1 && (
+                    <div className="dashboard_col">
+                      <div className="card info-card revenue-card">
+                        <div className="card-body ">
+                          <div className="d-flex justify-content-between">
+                            {/*     <div className="icons"><i className="bi bi-sliders2-vertical"></i></div> */}
+                            <div className="device">{x.deviceName}</div>
+                            <div className="icons" title="Info" onClick={() => Deviceinfo(x)}><i className="bi bi-info-circle"></i></div>
+                          </div>
+                          <div className="d-flex justify-content-start mt-2">
+                            {!x.serviceMode && (
+                              <div className={"icons " + (UserRole ? "" : "disable")} title="Service Mode" onClick={() => DeviceServiceMode(x)}>
+                                <i class="bi bi-modem"></i>&nbsp;
+                              </div>
+                            )}
+                            {x.serviceMode && (
+                              <div className={"icons " + (UserRole ? "" : "disable")} title="Service Mode" onClick={() => DeviceServiceMode(x)}>
+                                <i class="bi bi-modem text-danger" ></i>&nbsp;
+                              </div>
+                            )}
+                            <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
+                            <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
+                            {ListAllData.listAlarms.filter(z => z.deviceModelId == x.deviceModel && z.status == 1).length > 0 && (
+                              <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
+                            )}
+                            {!ListAllData.listAlarms.filter(z => z.deviceModelId == x.deviceModel && z.status == 1).length > 0 && (
+                              <div className="icons"><i className="bi bi-lightbulb" onClick={() => Devicealert(x)}></i></div>
+                            )}
+                          </div>
+                          {ListAllData.listPollutents.map((i, j) =>
+                            (i.deviceID == x.id && i.status == 1) && (
+                              <div className="d-flex justify-content-between mt-2">
+                                <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 " + (UserRole ? "" : "disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg " + (UserRole ? " text-danger" : "disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
+                                <div className="values"><button className="btn1" style={{ backgroundColor: i.flag != null ? ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode : "#FFFFFF" }} onClick={Codesinformation} >{i.flag == null ? "-" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
+                                  <button className="btn2">{i.parameterValue == null ? '-' : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
+                              </div>
+                            )
+                          )}
                         </div>
-                        <div className="d-flex justify-content-start mt-2">
-                          {!x.serviceMode && (                           
-                            <div className={"icons "+ (UserRole?"":"disable")}  title="Service Mode" onClick={() => DeviceServiceMode(x)}>
-                              <i class="bi bi-modem"></i>&nbsp;
-                            </div>
-                          )}
-                          {x.serviceMode && (
-                            <div className={"icons "+ (UserRole?"":"disable")} title="Service Mode" onClick={() => DeviceServiceMode(x)}>
-                              <i class="bi bi-modem text-danger" ></i>&nbsp;
-                            </div>
-                          )}
-                          <div className="icons" title="Calibration" onClick={() => Devicecalibration(x)}><i class="bi bi-gear"></i>&nbsp;</div>
-                          <div className="icons" title="Alarm" onClick={() => Devicealarm(x)}><i class="bi bi-alarm"></i>&nbsp; </div>
-                          {ListAllData.listAlarms.filter(z => z.deviceModelId == x.deviceModel && z.status == 1).length > 0 && (
-                            <div className="icons blink" title="Alert" onClick={() => Devicealert(x)}><i className="bi bi-lightbulb-fill"></i>&nbsp; </div>
-                          )}
-                          {!ListAllData.listAlarms.filter(z => z.deviceModelId == x.deviceModel && z.status == 1).length > 0 && (
-                            <div className="icons"><i className="bi bi-lightbulb" onClick={() => Devicealert(x)}></i></div>
-                          )}
-                        </div>
-                        {ListAllData.listPollutents.map((i, j) =>
-                          (i.deviceID == x.id &&  i.status==1) && (
-                            <div className="d-flex justify-content-between mt-2">
-                              <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 "+ (UserRole?"":"disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg "+ (UserRole?" text-danger":"disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
-                              <div className="values"><button className="btn1"  style={{ backgroundColor: i.flag != null ? ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode:"#FFFFFF" }} onClick={Codesinformation} >{i.flag == null ? "-" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
-                                <button className="btn2">{i.parameterValue == null ? '-' : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
-                            </div>
-                          )
-                        )}
-                      </div>
 
+                      </div>
                     </div>
-                  </div>
                   )
 
                 )}
+              </div>
+              <div class="row mt-3 justify-content-center">
+                <label class="col-sm-2 col-form-label text-end">Select Interval</label>
+                <div class="col-sm-2">
+                  <select className="form-select" id="criteriaid" onChange={(e) => Intervalchange(e)}>
+                    <option value="1M" selected>1-M</option>
+                     {IntervalCriteria.map((x, y) =>
+                    <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
+                  )}
+                  </select>
+                </div>
               </div>
               <div className="row">
                 <div className="col-md-11">
@@ -1639,7 +1465,7 @@ function Dashboard() {
                 </div>
                 <div className="col-md-1 mt-5">
                   <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="selectall" defaultChecked={LiveChartStatus.filter(x=>x.ChartStatus==false).length==0?true:false} onChange={() => selects(ListAllData.listPollutents)} ></input>
+                    <input type="checkbox" class="form-check-input" id="selectall" defaultChecked={LiveChartStatus.filter(x => x.ChartStatus == false).length == 0 ? true : false} onChange={() => selects(ListAllData.listPollutents)} ></input>
                     <label class="form-check-label">Select All</label>
                   </div>
                   {ListAllData.listPollutents.map((i, j) =>
@@ -1654,185 +1480,11 @@ function Dashboard() {
                   )}
                 </div>
                 <div className="text-center">
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
+                  <button type="button" className="btn btn-primary mx-1" onClick={DownloadPng}>Download as Image</button>
+                  <button type="button" className="btn btn-primary mx-1" onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
               </div>
-
             </div>
-
-            {/* 
-    <div className="col-lg-4">
-      <div className="card">
-        <div className="filter">
-          <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-          <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <li className="dropdown-header text-start">
-              <h6>Filter</h6>
-            </li>
-
-            <li><a className="dropdown-item" href="#">Today</a></li>
-            <li><a className="dropdown-item" href="#">This Month</a></li>
-            <li><a className="dropdown-item" href="#">This Year</a></li>
-          </ul>
-        </div>
-
-        <div className="card-body">
-          <h5 className="card-title">Recent Activity <span>| Today</span></h5>
-
-          <div className="activity">
-
-            <div className="activity-item d-flex">
-              <div className="activite-label">32 min</div>
-              <i className='bi bi-circle-fill activity-badge text-success align-self-start'></i>
-              <div className="activity-content">
-                Quia quae rerum <a href="#" className="fw-bold text-dark">explicabo officiis</a> beatae
-              </div>
-            </div>
-            <div className="activity-item d-flex">
-              <div className="activite-label">56 min</div>
-              <i className='bi bi-circle-fill activity-badge text-danger align-self-start'></i>
-              <div className="activity-content">
-                Voluptatem blanditiis blanditiis eveniet
-              </div>
-            </div>
-
-            <div className="activity-item d-flex">
-              <div className="activite-label">2 hrs</div>
-              <i className='bi bi-circle-fill activity-badge text-primary align-self-start'></i>
-              <div className="activity-content">
-                Voluptates corrupti molestias voluptatem
-              </div>
-            </div>
-
-            <div className="activity-item d-flex">
-              <div className="activite-label">1 day</div>
-              <i className='bi bi-circle-fill activity-badge text-info align-self-start'></i>
-              <div className="activity-content">
-                Tempore autem saepe <a href="#" className="fw-bold text-dark">occaecati voluptatem</a> tempore
-              </div>
-            </div>
-
-            <div className="activity-item d-flex">
-              <div className="activite-label">2 days</div>
-              <i className='bi bi-circle-fill activity-badge text-warning align-self-start'></i>
-              <div className="activity-content">
-                Est sit eum reiciendis exercitationem
-              </div>
-            </div>
-
-            <div className="activity-item d-flex">
-              <div className="activite-label">4 weeks</div>
-              <i className='bi bi-circle-fill activity-badge text-muted align-self-start'></i>
-              <div className="activity-content">
-                Dicta dolorem harum nulla eius. Ut quidem quidem sit quas
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="filter">
-          <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-          <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <li className="dropdown-header text-start">
-              <h6>Filter</h6>
-            </li>
-
-            <li><a className="dropdown-item" href="#">Today</a></li>
-            <li><a className="dropdown-item" href="#">This Month</a></li>
-            <li><a className="dropdown-item" href="#">This Year</a></li>
-          </ul>
-        </div>
-
-        <div className="card-body pb-0">
-          <h5 className="card-title">Budget Report <span>| This Month</span></h5>
-
-          <div id="budgetChart"  className="echart"></div>
-
-        </div>
-      </div>
-      <div className="card">
-        <div className="filter">
-          <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-          <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <li className="dropdown-header text-start">
-              <h6>Filter</h6>
-            </li>
-
-            <li><a className="dropdown-item" href="#">Today</a></li>
-            <li><a className="dropdown-item" href="#">This Month</a></li>
-            <li><a className="dropdown-item" href="#">This Year</a></li>
-          </ul>
-        </div>
-
-        <div className="card-body pb-0">
-          <h5 className="card-title">Website Traffic <span>| Today</span></h5>
-
-          <div id="trafficChart"  className="echart"></div>
-
-
-        </div>
-      </div>
-
-      <div className="card">
-        <div className="filter">
-          <a className="icon" href="#" data-bs-toggle="dropdown"><i className="bi bi-three-dots"></i></a>
-          <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-            <li className="dropdown-header text-start">
-              <h6>Filter</h6>
-            </li>
-
-            <li><a className="dropdown-item" href="#">Today</a></li>
-            <li><a className="dropdown-item" href="#">This Month</a></li>
-            <li><a className="dropdown-item" href="#">This Year</a></li>
-          </ul>
-        </div>
-
-        <div className="card-body pb-0">
-          <h5 className="card-title">News &amp; Updates <span>| Today</span></h5>
-
-          <div className="news">
-            <div className="post-item clearfix">
-              <img src="assets/img/news-1.jpg" alt="" />
-              <h4><a href="#">Nihil blanditiis at in nihil autem</a></h4>
-              <p>Sit recusandae non aspernatur laboriosam. Quia enim eligendi sed ut harum...</p>
-            </div>
-
-            <div className="post-item clearfix">
-              <img src="assets/img/news-2.jpg" alt="" />
-              <h4><a href="#">Quidem autem et impedit</a></h4>
-              <p>Illo nemo neque maiores vitae officiis cum eum turos elan dries werona nande...</p>
-            </div>
-
-            <div className="post-item clearfix">
-              <img src="assets/img/news-3.jpg" alt="" />
-              <h4><a href="#">Id quia et et ut maxime similique occaecati ut</a></h4>
-              <p>Fugiat voluptas vero eaque accusantium eos. Consequuntur sed ipsam et totam...</p>
-            </div>
-
-            <div className="post-item clearfix">
-              <img src="assets/img/news-4.jpg" alt="" />
-              <h4><a href="#">Laborum corporis quo dara net para</a></h4>
-              <p>Qui enim quia optio. Eligendi aut asperiores enim repellendusvel rerum cuder...</p>
-            </div>
-
-            <div className="post-item clearfix">
-              <img src="assets/img/news-5.jpg" alt="" />
-              <h4><a href="#">Et dolores corrupti quae illo quod dolor</a></h4>
-              <p>Odit ut eveniet modi reiciendis. Atque cupiditate libero beatae dignissimos eius...</p>
-            </div>
-
-          </div>
-
-        </div>
-      </div>
-
-    </div> */}
-
           </div>
         )}
       </section>
