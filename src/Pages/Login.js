@@ -107,7 +107,7 @@ import CommonFunctions from "../utils/CommonFunctions";
                         <div className="invalid-feedback">Please enter your password!</div>
                       </div>
 
-                      <div className="col-12" style={{float:"left", width:"auto"}}>
+                      <div className="col-6" >
                         <div className="form-check">
                           <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
                           <label className="form-check-label" for="rememberMe">Remember me</label>
