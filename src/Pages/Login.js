@@ -3,6 +3,7 @@ import React from "react";
 //import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
+import CommonFunctions from "../utils/CommonFunctions";
 //function Login() {
   
   const Login = ({ handleAuthentication }) => {
@@ -16,7 +17,8 @@ import bcrypt from 'bcryptjs';
     if (!form.checkValidity()) {
       form.classNameList.add('was-validated');
     } else {
-      fetch(process.env.REACT_APP_WSurl + 'api/Users/Login', {
+      //alert( CommonFunctions.getWebApiUrl());
+      fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/Login', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',

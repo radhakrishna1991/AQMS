@@ -2,6 +2,7 @@ import { useState,useEffect } from "react";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { toast } from 'react-toastify';
+import CommonFunctions from "../utils/CommonFunctions";
 function Header() {
   const [ListStations, setListStations] = useState([]);
 
@@ -10,7 +11,7 @@ function Header() {
     document.querySelector('body').classList.toggle('toggle-sidebar')
   }
   const Signout = function () {
-    fetch(process.env.REACT_APP_WSurl +'api/Users/Logout', {
+    fetch(CommonFunctions.getWebApiUrl()+'api/Users/Logout', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -30,7 +31,7 @@ function Header() {
   }, [])
 
   const GetStation = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Stations", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

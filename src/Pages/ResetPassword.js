@@ -2,6 +2,7 @@
 import React from "react";
 import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
+import CommonFunctions from "../utils/CommonFunctions";
 function ResetPassword() {
 
     //const [newPassword, setNewPassword] = useState('');
@@ -56,7 +57,7 @@ function ResetPassword() {
 
         
 
-        fetch(process.env.REACT_APP_WSurl + 'api/Users/ResetPassword', {
+        fetch(CommonFunctions.getWebApiUrl() + 'api/Users/ResetPassword', {
             method: 'POST',
             headers: {
               'Accept': 'application/json',

@@ -3,6 +3,7 @@ import { id } from "chartjs-plugin-dragdata";
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 function CalibrationDevice() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -60,7 +61,7 @@ function CalibrationDevice() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/CalibrationDevices', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -147,7 +148,7 @@ function CalibrationDevice() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/CalibrationDevices/' + Deviceid, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices/' + Deviceid, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -185,7 +186,7 @@ function CalibrationDevice() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/CalibrationDevices/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -200,7 +201,7 @@ function CalibrationDevice() {
       });
   }
   const GetLookupdata = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/CalibrationDeviceslookup", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDeviceslookup", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -213,7 +214,7 @@ function CalibrationDevice() {
   }
   
   const GetDevices = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/CalibrationDevices", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDevices", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

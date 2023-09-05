@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import DatePicker from "react-datepicker";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 // import DateTimePicker from 'react-datetime-picker';
 function Calibration() {
   const $ = window.jQuery;
@@ -121,7 +122,7 @@ function Calibration() {
       return false;
     }
 
-    fetch(process.env.REACT_APP_WSurl + 'api/Phase', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Phase', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -172,7 +173,7 @@ function Calibration() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Sequence', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Sequence', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -219,7 +220,7 @@ function Calibration() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Sequence/' + sequenceId, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/Sequence/' + sequenceId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -266,7 +267,7 @@ function Calibration() {
       .then(function (isConfirm) {
         if (isConfirm) {
           let id = item.calibrationSequenceID;
-          fetch(process.env.REACT_APP_WSurl + 'api/Sequence/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/Sequence/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -282,7 +283,7 @@ function Calibration() {
   }
 
   const GetSequence = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Sequence", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Sequence", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -293,7 +294,7 @@ function Calibration() {
   }
 
   const GetPhase = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Phase", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Phase", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

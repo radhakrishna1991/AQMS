@@ -1,7 +1,7 @@
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
-
+import CommonFunctions from "../utils/CommonFunctions";
 function DeviceAlarams() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -26,7 +26,7 @@ function DeviceAlarams() {
 
 
   const GetDeviceAlarmsLookup = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/DevicesAlarmlookup", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/DevicesAlarmlookup", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -126,7 +126,7 @@ function DeviceAlarams() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/DeleteDeviceAlarm/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteDeviceAlarm/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -190,7 +190,7 @@ function DeviceAlarams() {
       return false;
     }
 
-    fetch(process.env.REACT_APP_WSurl + 'api/DevicesAlarm', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DevicesAlarm', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -226,7 +226,7 @@ function DeviceAlarams() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/DeviceAlarm/' + DeviceAlarmId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceAlarm/' + DeviceAlarmId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',

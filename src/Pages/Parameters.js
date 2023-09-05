@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 function Parameters1() {
   const gridRef = useRef();
   const gridRefjsgrid = useRef();
@@ -121,7 +122,7 @@ function Parameters1() {
     if (!form.checkValidity()) {
       form.classList.add('was-validated');
     } else {
-      fetch(process.env.REACT_APP_WSurl + 'api/Parameters', {
+      fetch(CommonFunctions.getWebApiUrl() + 'api/Parameters', {
         method: 'POST',
         body: parameterformdata(),
       }).then((response) => response.json())
@@ -160,7 +161,7 @@ function Parameters1() {
       form.classList.add('was-validated');
     } else {
       let formdata = parameterformdata();
-      fetch(process.env.REACT_APP_WSurl + 'api/Parameters/' + Id, {
+      fetch(CommonFunctions.getWebApiUrl() + 'api/Parameters/' + Id, {
         method: 'PUT',
         body: formdata,
       }).then((response) => response.json())
@@ -283,7 +284,7 @@ function Parameters1() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/Parameters/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/Parameters/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -316,7 +317,7 @@ function Parameters1() {
       });
   }
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/Parameters/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/Parameters/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         const data1 = data;
@@ -524,7 +525,7 @@ function Parameters1() {
   }
 
   const GetParametersData = () => {
-    fetch(process.env.REACT_APP_WSurl + "api/Parameters",{
+    fetch(CommonFunctions.getWebApiUrl() + "api/Parameters",{
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

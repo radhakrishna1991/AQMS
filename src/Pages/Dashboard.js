@@ -7,6 +7,7 @@ import 'react-datetime-picker/dist/DateTimePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import 'react-clock/dist/Clock.css';
 import html2canvas from 'html2canvas';
+import CommonFunctions from "../utils/CommonFunctions";
 import jsPDF from 'jspdf';
 import {
   Chart as ChartJS,
@@ -63,7 +64,7 @@ function Dashboard() {
   const Minute = window.DashboardRefreshtime;
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/Dashboard", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Dashboard", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -95,7 +96,7 @@ function Dashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       //  console.log('Logs every minute');
-      fetch(process.env.REACT_APP_WSurl + "api/Livedata", {
+      fetch(CommonFunctions.getWebApiUrl() + "api/Livedata", {
         method: 'GET',
       }).then((response) => response.json())
         .then((data) => {
@@ -114,7 +115,7 @@ function Dashboard() {
   useEffect(() => {
     const interval = setInterval(() => {
       //  console.log('Logs every minute');
-      fetch(process.env.REACT_APP_WSurl + "api/LiveDashboard", {
+      fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard", {
         method: 'GET',
       }).then((response) => response.json())
         .then((data) => {
@@ -231,7 +232,7 @@ function Dashboard() {
     setInfoParameters(parameters);
     setCommands(listcommands);
     setCalibrationsCommands(listcalibartioncommands);
-    fetch(process.env.REACT_APP_WSurl + "api/Calibration?Deviceid=" + param.id, {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Calibration?Deviceid=" + param.id, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -368,7 +369,7 @@ function Dashboard() {
       }
       finaldata.push(data);
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Calibration', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Calibration', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -588,7 +589,7 @@ function Dashboard() {
 
   const DeviceServiceMode = function (param) {
     let servicemode = !param.serviceMode;
-    fetch(process.env.REACT_APP_WSurl + 'api/Devices/ServiceMode/' + param.id, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Devices/ServiceMode/' + param.id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -611,7 +612,7 @@ function Dashboard() {
   }
   const ParameterEnable = function (param) {
     let isEnable = !param.isEnable;
-    fetch(process.env.REACT_APP_WSurl + 'api/Parametres/IsEnable/' + param.id, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Parametres/IsEnable/' + param.id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',

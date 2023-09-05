@@ -1,7 +1,7 @@
-
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 function AddParameter() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -80,7 +80,7 @@ function AddParameter() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/ParametersAdd', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersAdd', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -151,7 +151,7 @@ function AddParameter() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/ParametersUpdate/' + parameterId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersUpdate/' + parameterId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -185,7 +185,7 @@ function AddParameter() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/ParametersDelete/' + id, {
+          fetch(CommonFunctions.getWebApiUrl()+ 'api/ParametersDelete/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -201,7 +201,7 @@ function AddParameter() {
   }
 
   const Getparameters = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/ParametersList", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/ParametersList", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -212,7 +212,7 @@ function AddParameter() {
   }
 
   const GetparametersLookup = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Parameters/ParameterLookup", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Parameters/ParameterLookup", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

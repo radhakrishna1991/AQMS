@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -47,7 +48,7 @@ function PredefinedCharts() {
     GenarateChart();
   }, []);
   const GenarateChart = function () {
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/getPredefinedchartData";
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/getPredefinedchartData";
     let Pollutent = $("input[type='radio'][name='parametersradio']:checked").val();
     let DataFilter = 1440;
     fetch(url, {

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
 import { Line } from 'react-chartjs-2';
+import CommonFunctions from "../utils/CommonFunctions";
 import {
     Chart as ChartJS,
     CategoryScale,
@@ -46,7 +47,7 @@ function StasticsDataReport() {
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -238,7 +239,7 @@ const clearAll=function(trs) {
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality?"
     fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())
@@ -290,7 +291,7 @@ const clearAll=function(trs) {
     if (!valid) {
       return false;
     }
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/"
     let suburl = "getRawData";
     // let suburl = "getAnnualAverages";
     // if (Criteria == 'Max') {
@@ -334,7 +335,7 @@ const clearAll=function(trs) {
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
+    window.open(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcel?" + params,"_blank");
     /*  fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())

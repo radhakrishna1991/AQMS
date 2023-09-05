@@ -1,7 +1,7 @@
-
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 function Adduser() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -58,7 +58,7 @@ function Adduser() {
       $("#lblPassword")[0].style.display="block";
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Users', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Users', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -100,7 +100,7 @@ function Adduser() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Users/' + UserId, {
+    fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + UserId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -134,7 +134,7 @@ function Adduser() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/Users/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/Users/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -149,7 +149,7 @@ function Adduser() {
       });
   }
   const GetUser = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Users", {
+    fetch(CommonFunctions.getWebApiUrl()+ "api/Users", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

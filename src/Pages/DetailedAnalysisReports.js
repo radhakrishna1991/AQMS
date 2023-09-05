@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import 'chartjs-adapter-moment';
+import CommonFunctions from "../utils/CommonFunctions";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -81,7 +82,7 @@ function DetailedAnalysisReports() {
     });
   })
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -101,7 +102,7 @@ function DetailedAnalysisReports() {
     if (!valid) {
       return false;
     }
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/"
     let suburl = "getAnnualAveragesbyYear";
     fetch(url + suburl, {
       method: 'POST',

@@ -1,7 +1,7 @@
-
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 function AddStation() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -35,7 +35,7 @@ function AddStation() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Stations', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Stations', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -78,7 +78,7 @@ function AddStation() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Stations/' + StationId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Stations/' + StationId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -112,7 +112,7 @@ function AddStation() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/Stations/' + id, {
+          fetch(CommonFunctions.getWebApiUrl()+ 'api/Stations/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -127,7 +127,7 @@ function AddStation() {
       });
   }
   const GetStation = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Stations", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

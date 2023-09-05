@@ -2,7 +2,7 @@
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
-
+import CommonFunctions from "../utils/CommonFunctions";
 function AverageAlarm() {
   const $ = window.jQuery;
   const AvgAlarmjsgridref = useRef();
@@ -47,7 +47,7 @@ function AverageAlarm() {
       return false;
     }
     
-    fetch(process.env.REACT_APP_WSurl + 'api/AverageAlarm', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/AverageAlarm', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -104,7 +104,7 @@ function AverageAlarm() {
     if (!validation) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/AverageAlarm/' + AvgAlarmId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/AverageAlarm/' + AvgAlarmId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -138,7 +138,7 @@ function AverageAlarm() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/AverageAlarm/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/AverageAlarm/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -153,7 +153,7 @@ function AverageAlarm() {
       });
   }
   const GetAvgAlarm = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/AverageAlarm", {
+    fetch(CommonFunctions.getWebApiUrl()+ "api/AverageAlarm", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

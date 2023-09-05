@@ -1,6 +1,7 @@
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import CommonFunctions from "../utils/CommonFunctions";
 function UserLogHistory() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -10,7 +11,7 @@ function UserLogHistory() {
   const [toDate, setToDate] = useState(new Date());
 
   const GetUserLogLookup = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/LoginHistory", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistory", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -46,7 +47,7 @@ function UserLogHistory() {
       UserName='';
     }
   let params = new URLSearchParams({ UserName: UserName, Fromdate: Fromdate, Todate: Todate});
-    fetch(process.env.REACT_APP_WSurl + "api/LoginHistoryByFilter?"+ params, {
+    fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistoryByFilter?"+ params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

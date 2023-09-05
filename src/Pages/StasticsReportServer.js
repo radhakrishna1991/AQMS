@@ -44,7 +44,7 @@ function StasticsReportServer() {
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -107,7 +107,7 @@ function StasticsReportServer() {
       Intervaltype = Interval.substr(0, Interval.length - 1);
     }
 
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality/"
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/"
     let suburl = "getAnnualAverages";
     if (Criteria == 'Max') {
       suburl = "geMaxValuePollutants";

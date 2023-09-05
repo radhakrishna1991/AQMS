@@ -21,7 +21,7 @@ function LiveDataReports() {
   var dataForGrid = [];
   useEffect(() => {
     let params = new URLSearchParams({ Pollutent: "", StartIndex: 0 });
-    fetch(process.env.REACT_APP_WSurl + "api/LiveDataLookup?" + params)
+    fetch(CommonFunctions.getWebApiUrl() + "api/LiveDataLookup?" + params)
       .then((response) => response.json())
       .then((data) => {
         if (data != null) {
@@ -159,7 +159,7 @@ function LiveDataReports() {
     }
     document.getElementById('loader').style.display = "block";
     let params = new URLSearchParams({ Pollutent: Pollutent, StartIndex: startIndex, SortOrder: sortorder });
-    let url = process.env.REACT_APP_WSurl + "api/LiveDataReport?"
+    let url = CommonFunctions.getWebApiUrl() + "api/LiveDataReport?"
     return await fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())

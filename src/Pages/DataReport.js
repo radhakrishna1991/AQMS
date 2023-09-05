@@ -15,7 +15,7 @@ function DataReport() {
   const [Criteria, setcriteria] = useState([]);
 
   useEffect(() => {
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAllLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
       .then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
@@ -131,7 +131,7 @@ function DataReport() {
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    let url = process.env.REACT_APP_WSurl + "api/AirQuality?"
+    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality?"
     fetch(url + params, {
       method: 'GET',
     }).then((response) => response.json())
@@ -161,7 +161,7 @@ function DataReport() {
       return false;
     }
     let params = new URLSearchParams({ Station: Station, Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcel?" + params,"_blank");
+    window.open(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcel?" + params,"_blank");
     /*  fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())

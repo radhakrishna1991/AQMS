@@ -1,18 +1,9 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-
 import { toast } from 'react-toastify';
-
 import DatePicker from "react-datepicker";
-
 import CommonFunctions from "../utils/CommonFunctions";
-
 import { jsPDF } from "jspdf";
-
 import "jspdf-autotable";
-
-
-
-
 function AverageDataReport() {
 
   const $ = window.jQuery;
@@ -52,7 +43,7 @@ function AverageDataReport() {
 
   useEffect(() => {
 
-    fetch(process.env.REACT_APP_WSurl + "api/AirQuality/GetAverageLookupData")
+    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAverageLookupData")
 
       .then((response) => response.json())
 
@@ -300,10 +291,10 @@ function AverageDataReport() {
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: SortOrder });
     let url = "";
     if (interval == "1M") {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/RawDataReport?"
+      url =CommonFunctions.getWebApiUrl() + "api/AirQuality/RawDataReport?"
     }
     else {
-      url = process.env.REACT_APP_WSurl + "api/AirQuality/AvergaeDataReport?"
+      url = CommonFunctions.getWebApiUrl() + "api/AirQuality/AvergaeDataReport?"
     }
 
     /* fetch(url + params, {
@@ -499,7 +490,7 @@ function AverageDataReport() {
     };
     var b = 0;
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    fetch(process.env.REACT_APP_WSurl + 'api/AirQuality/ExportToPDFAverageData?' + params, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/AirQuality/ExportToPDFAverageData?' + params, {
       method: 'GET',
     }).then((response) => response.json())
       .then((pdfdata) => {
@@ -618,7 +609,7 @@ function AverageDataReport() {
     }
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound });
 
-    window.open(process.env.REACT_APP_WSurl + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+    window.open(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
   }
 
 

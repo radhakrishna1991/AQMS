@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
+import CommonFunctions from "../utils/CommonFunctions";
 function GsiModbusDrivers() {
   const InstrumentgridRef = useRef();
   const DigitalgridRef = useRef();
@@ -77,7 +78,7 @@ function GsiModbusDrivers() {
     if (!isvalid) {
        return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/DriverEntry', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DriverEntry', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -127,7 +128,7 @@ function GsiModbusDrivers() {
     if (!isvalid) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/DriverEntry/' + DriverEntryId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DriverEntry/' + DriverEntryId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -190,7 +191,7 @@ function GsiModbusDrivers() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/DriverEntry/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/DriverEntry/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -205,7 +206,7 @@ function GsiModbusDrivers() {
       });
   }
   const GetDriverEntry = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/DriverEntry", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/DriverEntry", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -260,7 +261,7 @@ function GsiModbusDrivers() {
     if (!isvalid) {
        return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/DriverDigital', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DriverDigital', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -298,7 +299,7 @@ function GsiModbusDrivers() {
     if (!isvalid) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/DriverDigital/' + DigitalId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/DriverDigital/' + DigitalId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -349,7 +350,7 @@ function GsiModbusDrivers() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/DriverDigital/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/DriverDigital/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -364,7 +365,7 @@ function GsiModbusDrivers() {
       });
   }
   const GetDriverDigital = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/DriverDigital", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/DriverDigital", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -410,7 +411,7 @@ function GsiModbusDrivers() {
     if (!isvalid) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Instrument', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Instrument', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -445,7 +446,7 @@ function GsiModbusDrivers() {
     if (!isvalid) {
       return false;
     }
-    fetch(process.env.REACT_APP_WSurl + 'api/Instrument/' + InstrumentId, {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Instrument/' + InstrumentId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -494,7 +495,7 @@ function GsiModbusDrivers() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(process.env.REACT_APP_WSurl + 'api/Instrument/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/Instrument/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -509,7 +510,7 @@ function GsiModbusDrivers() {
       });
   }
   const GetInstruments = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/Instrument", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/Instrument", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {

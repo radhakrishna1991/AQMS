@@ -1,6 +1,7 @@
 import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import DatePicker from "react-datepicker";
+import CommonFunctions from "../utils/CommonFunctions";
 function AppLogHistory() {
   const $ = window.jQuery;
   const gridRefLogHistoryreport = useRef();
@@ -9,7 +10,7 @@ function AppLogHistory() {
   const [toDate, setToDate] = useState(new Date());
 
   const GetAppLogLookup = function () {
-    fetch(process.env.REACT_APP_WSurl + "api/AppLogHistory", {
+    fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistory", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
@@ -27,7 +28,7 @@ function AppLogHistory() {
       let Fromdate="01-01-0001 0:00:00";
       let Todate="01-01-0001 0:00:00";
       let params = new URLSearchParams({ Fromdate: Fromdate, Todate: Todate});
-      fetch(process.env.REACT_APP_WSurl + "api/AppLogHistoryByFilter?"+ params, {
+      fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistoryByFilter?"+ params, {
         method: 'GET',
       }).then((response) => response.json())
         .then((data) => {
@@ -41,7 +42,7 @@ function AppLogHistory() {
       let Fromdate = document.getElementById("fromdateid").value;
       let Todate = document.getElementById("todateid").value;
       let params = new URLSearchParams({ Fromdate: Fromdate, Todate: Todate});
-      fetch(process.env.REACT_APP_WSurl + "api/AppLogHistoryByFilter?"+ params, {
+      fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistoryByFilter?"+ params, {
         method: 'GET',
       }).then((response) => response.json())
         .then((data) => {
