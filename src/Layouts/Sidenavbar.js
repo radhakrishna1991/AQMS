@@ -114,6 +114,13 @@ function Sidenavbar() {
                 <span>Device Alarms</span>
               </NavLink >
             </li>
+            <li>
+              <NavLink to="/ParameterAlarams" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Parameter Alarms</span>
+              </NavLink >
+            </li>
+            
            {/*  <li>
                   <NavLink to="/AverageAlarm" className="animation-forwards animate-delay-2" >
                     <i className="bi bi-circle"></i>

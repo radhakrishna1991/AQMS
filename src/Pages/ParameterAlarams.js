@@ -2,39 +2,40 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
-function DeviceAlarams() {
+function ParameterAlarams() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
-  const [DeviceAlarmList, setDeviceAlarmList] = useState(true);
-  const [DeviceAlarmId, setDeviceAlarmId] = useState(0);
+  const [ParameterAlarmList, setParameterAlarmList] = useState(true);
+  const [ParameterAlarmId, setParameterAlarmId] = useState(0);
   const [AllLookpdata, setAllLookpdata] = useState(null);
-  const [Model, setModel] = useState([]);
   const [Devices, setDevices] = useState([]);
-  const [DeviceAlarm, setDeviceAlarm] = useState([]);
-  const [DeviceAlarmData, setDeviceAlarmData] = useState([]);
+  const [Parameter, setParameters] = useState([]);
+  const [ParameterList, setParameterList] = useState([]);
+  const [ParameterAlarm, setParameterAlarm] = useState([]);
+  const [ParameterAlarmData, setParameterAlarmData] = useState([]);
   const [CheckedValues, setCheckedValues] = useState([]);
   const [ChangedAlarmData, setChangedAlarmData] = useState([]);
   const [EnableValue, setEnableValue]=useState(true);
   var dataForGrid = [];
 
   useEffect(() => {
-    GetDeviceAlarmsLookup();
+    GetParameterAlarmsLookup();
   }, []);
   useEffect(() => {
     initializeJsGrid();
   });
 
 
-  const GetDeviceAlarmsLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/DevicesAlarmlookup", {
+  const GetParameterAlarmsLookup = function () {
+    fetch(CommonFunctions.getWebApiUrl() + "api/ParameterAlarmlookup", {
       method: 'GET',
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
           setAllLookpdata(data);
           setDevices(data.listDevices);
-          setModel(data.listDeviceModels);
-          setDeviceAlarmData(data.listDeviceAlarm);
+          setParameters(data.listParameters);
+          setParameterAlarmData(data.listParameterAlarm);
           var Alarmlist = [];
           data.listAlarms.filter(function (item) {
             var i = Alarmlist.findIndex(x => (x.id == item.id));
@@ -42,7 +43,7 @@ function DeviceAlarams() {
               Alarmlist.push(item);
             }
           });
-          setDeviceAlarm(Alarmlist);
+          setParameterAlarm(Alarmlist);
           //initializeJsGrid(data.listDevices);
           setTimeout(function () {
             $('#alarmname').SumoSelect({
@@ -61,13 +62,14 @@ function DeviceAlarams() {
   const initializeJsGrid = function () {
 
     dataForGrid = [];
-    DeviceAlarmData.filter(function (item) {
-      var i = dataForGrid.findIndex(x => (x.deviceId == item.deviceId && x.modelId == item.modelId));
+    ParameterAlarmData.filter(function (item) {
+      var i = dataForGrid.findIndex(x => (x.deviceID == item.deviceID && x.parameterID == item.parameterID));
       if (i <= -1) {
         dataForGrid.push(item);
       }
       return null;
     });
+
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
       height: "auto",
@@ -81,12 +83,12 @@ function DeviceAlarams() {
       pageButtonCount: 5,
       pageSize: 100,
       //data: data,
-      data: Devices,
-      //data:dataForGrid,
+    //  data: Parameter,
+      data:dataForGrid,
 
       fields: [
-        { name: "deviceName", title: "Device Name",align:"left", type: "text" },
-        { name: "deviceModel", title: "Model ID",align:"left", type: "select", items: Model, valueField: "id", textField: "deviceModelName" },
+        { name: "deviceID", title: "Device Name",align:"left", type: "select", items: Devices, valueField: "id", textField: "deviceName" },
+        { name: "parameterID", title: "Parameter Name",align:"left", type: "select", items: Parameter, valueField: "id", textField: "parameterName"},
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -94,14 +96,14 @@ function DeviceAlarams() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
-                EditDeviceAlarm(item);
+                EditParameterAlarm(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
             var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
               .click(function (e) {
-                DeleteDeviceAlarm(item);
+                DeleteParameterAlarm(item);
                 e.stopPropagation();
               });
 
@@ -113,7 +115,7 @@ function DeviceAlarams() {
     });
   }
 
-  const DeleteDeviceAlarm = function (item) {
+  const DeleteParameterAlarm = function (item) {
     Swal.fire({
       title: "Are you sure?",
       text: ("You want to delete this Device Alarm !"),
@@ -125,29 +127,29 @@ function DeviceAlarams() {
     })
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
-          let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteDeviceAlarm/' + id, {
+          let id = item.parameterID;
+          fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteParameterAlarm/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
-                toast.success('Device Alarm deleted successfully')
-                GetDeviceAlarmsLookup();
+                toast.success('Parameter Alarm deleted successfully')
+                GetParameterAlarmsLookup();
               } else {
-                toast.error('Unable to delete Device Alarm. Please contact adminstrator');
+                toast.error('Unable to delete Parameter Alarm. Please contact adminstrator');
               }
-            }).catch((error) => toast.error('Unable to delete Device Alarm. Please contact adminstrator'));
+            }).catch((error) => toast.error('Unable to delete Parameter Alarm. Please contact adminstrator'));
         }
       });
   }
 
-  const AddDeviceAlarmchange = function (param) {
+  const AddParameterAlarmchange = function (param) {
     if (param) {
-      setDeviceAlarmList(true);
+      setParameterAlarmList(true);
     }
     else {
-      setDeviceAlarmList(false);
-      setDeviceAlarmId(0);
+      setParameterAlarmList(false);
+      setParameterAlarmId(0);
 
       setTimeout(function () {
         $('#alarmname').SumoSelect({
@@ -157,14 +159,14 @@ function DeviceAlarams() {
       }, 100);
     }
   }
-  const DeviceAlarmaddvalidation = function (deviceid, modelid, alarmid) {
+  const ParameterAlarmaddvalidation = function (deviceid, parameterid, alarmid) {
     let isvalid = true;
-    let form = document.querySelectorAll('#DeviceAlarmsform')[0];
+    let form = document.querySelectorAll('#ParameterAlarmsform')[0];
     if (deviceid == "") {
       //toast.warning('Please enter Station Name');
       form.classList.add('was-validated');
       isvalid = false;
-    } else if (modelid == "") {
+    } else if (parameterid == "") {
       //toast.warning('Please enter Descriptin');
       form.classList.add('was-validated');
       isvalid = false;
@@ -175,22 +177,21 @@ function DeviceAlarams() {
     return isvalid;
   }
 
-  const DeviceAlarmadd = function () {
+  const ParameterAlarmadd = function () {
     let deviceid = document.getElementById("devicename").value;
-    let modelid = document.getElementById("modelname").value;
+    let parameterid = document.getElementById("parametername").value;
     let alarmid = $("#alarmname").val();
     let enable = EnableValue?1:0;
     var parameterArray = [];
-    for (var i = 0; i < alarmid.length; i++) {
-      parameterArray.push({ DeviceId: deviceid, ModelId: modelid, AlarmId: alarmid[i], IsEnable: enable });
-    }
-
-    let validation = DeviceAlarmaddvalidation(deviceid, modelid, alarmid);
+    let validation = ParameterAlarmaddvalidation(deviceid, parameterid, alarmid);
     if (!validation) {
       return false;
     }
+    for (var i = 0; i < alarmid.length; i++) {
+      parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, CustomerAlarmID: alarmid[i], IsEnable: enable });
+    }
 
-    fetch(CommonFunctions.getWebApiUrl() + 'api/DevicesAlarm', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -199,11 +200,11 @@ function DeviceAlarams() {
       body: JSON.stringify(parameterArray),
     }).then((response) => response.json())
       .then((responseJson) => {
-        if (responseJson == "DeviceAlarmadd") {
+        if (responseJson == "ParameterAlarmadd") {
           toast.success('Device Alarm added successfully');
-          GetDeviceAlarmsLookup();
-          setDeviceAlarmList(true);
-        } else if (responseJson == "DeviceAlarmexist") {
+          GetParameterAlarmsLookup();
+          setParameterAlarmList(true);
+        } else if (responseJson == "ParameterAlarmexist") {
           toast.error('Device Alarm already exist with given Device Name. Please try with another Device Name.');
         } else {
           toast.error('Unable to add the Device Alarm. Please contact adminstrator');
@@ -211,22 +212,22 @@ function DeviceAlarams() {
       }).catch((error) => toast.error('Unable to add the Device Alarm. Please contact adminstrator'));
   }
 
-  const UpdateDeviceAlarm = function () {
+  const UpdateParameterAlarm = function () {
     let deviceid = document.getElementById("devicename").value;
-    let modelid = document.getElementById("modelname").value;
+    let parameterid = document.getElementById("parametername").value;
     let alarmid = $("#alarmname").val();
     let enable = EnableValue?1:0;
 
     var parameterArray = [];
-    for (var i = 0; i < alarmid.length; i++) {
-      parameterArray.push({ DeviceId: deviceid, ModelId: modelid, AlarmId: alarmid[i], IsEnable: enable });
-    }
-
-    let validation = DeviceAlarmaddvalidation(deviceid, modelid, alarmid);
+  
+    let validation = ParameterAlarmaddvalidation(deviceid, parameterid, alarmid);
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceAlarm/' + DeviceAlarmId, {
+    for (var i = 0; i < alarmid.length; i++) {
+      parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, CustomerAlarmID: alarmid[i], IsEnable: enable });
+    }
+    fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm/' + ParameterAlarmId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -236,40 +237,39 @@ function DeviceAlarams() {
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-          toast.success('Device Alarm Updated successfully');
-          GetDeviceAlarmsLookup();
-          setDeviceAlarmList(true);
+          toast.success('Parameter Alarm Updated successfully');
+          GetParameterAlarmsLookup();
+          setParameterAlarmList(true);
         } else if (responseJson == 2) {
-          toast.error('Device Alarm already exist with given Device Name. Please try with another Device Name.');
+          toast.error('Parameter Alarm already exist with given Parameter Name. Please try with another Parameter Name.');
         } else {
-          toast.error('Unable to update the Device Alarm. Please contact adminstrator');
+          toast.error('Unable to update the Parameter Alarm. Please contact adminstrator');
         }
-      }).catch((error) => toast.error('Unable to update the Device Alarm. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to update the Parameter Alarm. Please contact adminstrator'));
   }
-  const EditDeviceAlarm = function (param) {
-    setDeviceAlarmList(false);
-    setDeviceAlarmId(param.id);
-    let devicealarm=DeviceAlarmData.filter(x=>x.deviceId==param.id);
-    let enable=devicealarm.length>0 && DeviceAlarmData[0].isEnable==1?true:false;
+
+  const EditParameterAlarm = function (param) {
+    setParameterAlarmList(false);
+    setParameterAlarmId(param.id);
+    let parameterAlarm=ParameterAlarmData.filter(x=>x.deviceID==param.deviceID && x.parameterID==param.parameterID);
+    let enable=ParameterAlarm.length>0 && ParameterAlarmData[0].isEnable==1?true:false;
     setEnableValue(enable);
     setChangedAlarmData([]);
     setTimeout(() => {
-      document.getElementById("devicename").value = param.id;
-      document.getElementById("modelname").value = param.deviceModel;
+      document.getElementById("devicename").value = param.deviceID;  
+      ChangeDeviceName();
+      setTimeout(function () {
+        document.getElementById("parametername").value = param.parameterID;
+      }, 1);
      // document.getElementById("status").value = param.status;
 
       var AlarmArray = [];
-      var devicemodelid = Devices.filter(x => x.id == param.id);
-      if (devicemodelid.length > 0) {
-        AlarmArray = DeviceAlarm.filter(x => x.deviceModelId == devicemodelid[0].deviceModel);
-      }
-      setChangedAlarmData(AlarmArray);
+     
+      setChangedAlarmData(ParameterAlarm);
       var AlarmChecked = [];
-      for (var h = 0; h < DeviceAlarmData.length; h++) {
-        if (DeviceAlarmData[h].modelId == devicemodelid[0].deviceModel) {
-          var alarmid = DeviceAlarmData[h].alarmId;
+      for (var h = 0; h < parameterAlarm.length; h++) {
+          var alarmid = ParameterAlarmData[h].customerAlarmID;
           AlarmChecked.push(alarmid);
-        }
       }
       setTimeout(function () {
         $('#alarmname').val(AlarmChecked);
@@ -290,20 +290,27 @@ function DeviceAlarams() {
 
   const ChangeDeviceName = function () {
     setChangedAlarmData([]);
+    setParameterList([]);
+   document.getElementById("parametername").value="";
     let deviceid = document.getElementById("devicename").value;
     var AlarmArray = [];
-    var devicemodelid = Devices.filter(x => x.id == deviceid);
-    if (devicemodelid.length > 0) {
-      AlarmArray = DeviceAlarm.filter(x => x.deviceModelId == devicemodelid[0].deviceModel);
-    }
-    setChangedAlarmData(AlarmArray);
+    var parameters = Parameter.filter(x => x.deviceID == deviceid);
+    setParameterList(parameters);
+  }
+
+  const ChangeParameterName = function () {
+    setChangedAlarmData([]);
+    let parameterid = document.getElementById("parametername").value;
+   /*  var AlarmArray = [];
+      AlarmArray = ParameterAlarm.filter(x => x.parameterID == parameterid); */
+    setChangedAlarmData(ParameterAlarm);
 
     setTimeout(function () {
       $('.alarmname')[0].sumo.reload();
     }, 10);
   }
 
-  const ChangeDeviceAlarm = function (checked) {
+  const ChangeParameterAlarm = function (checked) {
     //setCheckedValues(checked.target.value.replace(/\r?\n/g, ""));
     setCheckedValues(checked.target.value);
 
@@ -313,28 +320,28 @@ function DeviceAlarams() {
     <main id="main" className="main" >
       <div className="container">
         <div className="pagetitle">
-          {!DeviceAlarmList && DeviceAlarmId == 0 && (
-            <h1>Add Device Alarms</h1>
+          {!ParameterAlarmList && ParameterAlarmId == 0 && (
+            <h1>Add Parameter Alarms</h1>
           )}
-          {!DeviceAlarmList && DeviceAlarmId != 0 && (
-            <h1>Update Device Alarms</h1>
+          {!ParameterAlarmList && ParameterAlarmId != 0 && (
+            <h1>Update Parameter Alarms</h1>
           )}
-          {DeviceAlarmList && (
-            <h1>Device Alarm List</h1>
+          {ParameterAlarmList && (
+            <h1>Parameter Alarm List</h1>
           )}
         </div>
         <section className="section">
           <div className="container">
             <div className="me-2 mb-2 float-end">
-              {DeviceAlarmList && (
-                <span className="operation_class mx-2" onClick={() => AddDeviceAlarmchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Device Alarm</span></span>
+              {ParameterAlarmList && (
+                <span className="operation_class mx-2" onClick={() => AddParameterAlarmchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Parameter Alarm</span></span>
               )}
-              {!DeviceAlarmList && (
-                <span className="operation_class mx-2" onClick={() => AddDeviceAlarmchange('gridlist')}><i className="bi bi-card-list"></i> <span>View Device Alarms</span></span>
+              {!ParameterAlarmList && (
+                <span className="operation_class mx-2" onClick={() => AddParameterAlarmchange('gridlist')}><i className="bi bi-card-list"></i> <span>View Parameter Alarms</span></span>
               )}
             </div>
-            {!DeviceAlarmList && (
-              <form id="DeviceAlarmsform" className="row" noValidate>
+            {!ParameterAlarmList && (
+              <form id="ParameterAlarmsform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
                   <select className="form-select" id="devicename" onChange={ChangeDeviceName} required>
@@ -346,18 +353,18 @@ function DeviceAlarams() {
                   <div class="invalid-feedback">Please select Device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="modelname" className="form-label">Model Name:</label>
-                  <select className="form-select" id="modelname" required>
-                    <option selected value="">Select Model Name</option>
-                    {Model.map((x, y) =>
-                      <option value={x.id} key={y} >{x.deviceModelName}</option>
+                  <label for="parametername" className="form-label">Parameter Name:</label>
+                  <select className="form-select" id="parametername" onChange={ChangeParameterName} required>
+                    <option selected value="">Select Parameter Name</option>
+                    {ParameterList.map((x, y) =>
+                      <option value={x.id} key={y} >{x.parameterName}</option>
                     )}
                   </select>
-                  <div class="invalid-feedback">Please select Model name</div>
+                  <div class="invalid-feedback">Please select Parameter name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label className="form-label">Alarm Name:</label>
-                  <select className="form-select alarmname" id="alarmname" multiple="multiple" onChange={ChangeDeviceAlarm}>
+                  <select className="form-select alarmname" id="alarmname" multiple="multiple" onChange={ChangeParameterAlarm}>
                     {ChangedAlarmData.map((x, y) =>
                       <option value={x.id} key={y} >{x.description}</option>
                     )}
@@ -388,17 +395,17 @@ function DeviceAlarams() {
 
 
                 <div className="col-md-12 text-center">
-                  {!DeviceAlarmList && DeviceAlarmId == 0 && (
-                    <button className="btn btn-primary" onClick={DeviceAlarmadd} type="button">Add Device Alarm</button>
+                  {!ParameterAlarmList && ParameterAlarmId == 0 && (
+                    <button className="btn btn-primary" onClick={ParameterAlarmadd} type="button">Add Parameter Alarm</button>
                   )}
-                  {!DeviceAlarmList && DeviceAlarmId != 0 && (
-                    <button className="btn btn-primary" onClick={UpdateDeviceAlarm} type="button">Update Device Alarm</button>
+                  {!ParameterAlarmList && ParameterAlarmId != 0 && (
+                    <button className="btn btn-primary" onClick={UpdateParameterAlarm} type="button">Update Parameter Alarm</button>
                   )}
                 </div>
               </form>
             )}
 
-            {DeviceAlarmList && (
+            {ParameterAlarmList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
 
@@ -408,4 +415,4 @@ function DeviceAlarams() {
     </main>
   )
 }
-export default DeviceAlarams;
+export default ParameterAlarams;
