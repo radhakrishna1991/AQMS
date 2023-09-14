@@ -129,7 +129,7 @@ import CommonFunctions from "../utils/CommonFunctions";
                       <div className="col-6" style={{textAlign:"right"}}>
                         <a className="form-check-label" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
                       </div>
-                      <div className="col-6">
+                      <div className="col-12">
                         <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
                       </div>
                       <div className="col-6">

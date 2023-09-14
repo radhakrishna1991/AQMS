@@ -114,6 +114,13 @@ function Sidenavbar() {
                 <span>Device Alarms</span>
               </NavLink >
             </li>
+            <li>
+              <NavLink to="/ParameterAlarams" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Parameter Alarms</span>
+              </NavLink >
+            </li>
+            
            {/*  <li>
                   <NavLink to="/AverageAlarm" className="animation-forwards animate-delay-2" >
                     <i className="bi bi-circle"></i>
@@ -295,6 +302,12 @@ function Sidenavbar() {
               </NavLink >
             </li> */}
             <li>
+              <NavLink to="/AlarmsHistory" className="nav-item animation-forwards animate-delay-1" >
+                <i className="bi bi-circle"></i>
+                <span>Alarms History</span>
+              </NavLink >
+            </li>
+            <li>
               <NavLink to="/StatisticalReport" className="nav-item animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
                 <span>Statistical Reports</span>
@@ -312,7 +325,7 @@ function Sidenavbar() {
               </NavLink >
             </li> */}
             <li>
-              <NavLink to="/AverageDataReport" className="nav-item animation-forwards animate-delay-5" >
+              <NavLink to="/AverageDataReport" className="nav-item animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Average Data Reports</span>
               </NavLink >
@@ -325,7 +338,7 @@ function Sidenavbar() {
             </li> */}
 
             <li>
-              <NavLink to="/LiveDataReports" className="nav-item animation-forwards animate-delay-6" >
+              <NavLink to="/LiveDataReports" className="nav-item animation-forwards animate-delay-4" >
                 <i className="bi bi-circle"></i>
                 <span>Live Data Reports</span>
               </NavLink >

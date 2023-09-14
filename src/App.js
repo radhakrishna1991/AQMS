@@ -33,7 +33,9 @@ const DataProcessingClient = lazy(() => import("./Pages/DataProcessingClient"));
 const HistoricalData = lazy(() => import("./Pages/HistoricalData"));
 const LiveDataReports = lazy(() => import("./Pages/LiveDataReports"));
 const DeviceAlarams = lazy(() => import("./Pages/DeviceAlarams"));
+const ParameterAlarams = lazy(() => import("./Pages/ParameterAlarams"));
 const CalibrationDevice=lazy(() => import("./Pages/CalibrationDevice"));
+const AlarmHistory=lazy(() => import("./Pages/AlarmHistory"));
 function App() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   return (
@@ -74,6 +76,8 @@ function App() {
             <Route path="/HistoricalData" exact element={currentUser != null ? <HistoricalData /> : (<Navigate to="/" />)} />
             <Route path="/LiveDataReports" exact element={currentUser != null ? <LiveDataReports /> : (<Navigate to="/Login" />)} />
             <Route path="/DeviceAlarams" exact element={currentUser != null ? <DeviceAlarams /> : (<Navigate to="/" />)} />
+            <Route path="/ParameterAlarams" exact element={currentUser != null ? <ParameterAlarams /> : (<Navigate to="/" />)} />
+            <Route path="/AlarmsHistory" exact element={currentUser != null ? <AlarmHistory /> : (<Navigate to="/" />)} />
           </Routes>
         </Suspense>
       {/* </BrowserRouter> */}
