@@ -2,12 +2,14 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
+import bcrypt from 'bcryptjs';
 function Adduser() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const [ListUsers, setListUsers] = useState([]);
   const [UserList, setUserList] = useState(true);
   const [UserId, setUserId] = useState(0);
+  const [UserPwd, setUserPwd] = useState(null);
   const [Notification, setNotification] = useState(true);
   const Useraddvalidation = function (UserName, UserEmail, UserPassword, UserRole) {
     let isvalid = true;
@@ -44,13 +46,14 @@ function Adduser() {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
   };
-  const Useradd = function () {
+  const Useradd = async(event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
     let UserPassword = document.getElementById("userpwd").value;
     let UserRole = document.getElementById("userrole").value;
     
-    let validation = Useraddvalidation(UserName, UserEmail, UserPassword, UserRole);
+    let encryptPassword=await handleEncrypt(UserPassword);
+    let validation = Useraddvalidation(UserName, UserEmail, encryptPassword, UserRole);
     if (!validation) {
       return false;
     }
@@ -64,7 +67,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:UserPassword, Role: UserRole }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:encryptPassword, Role: UserRole }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "useradd") {
@@ -79,9 +82,21 @@ function Adduser() {
       }).catch((error) => toast.error('Unable to add the user. Please contact adminstrator'));
   }
 
+  const handleEncrypt = async (password) => {
+
+    // Generate a salt (number of rounds determines the complexity)
+    const saltRounds = 10;
+    const salt = await bcrypt.genSalt(saltRounds);
+
+    // Hash the password with the salt
+    const encryptedPassword = await bcrypt.hash(password, salt);
+
+    return encryptedPassword ;
+  }
   const EditUser = function (param) {
     setUserList(false);
-    setUserId(param.id)
+    setUserId(param.id);
+    setUserPwd(param.password);
     setTimeout(() => {
       document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
@@ -91,12 +106,16 @@ function Adduser() {
    
   }
 
-  const UpdateUser=function(){
+  const UpdateUser=async(event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
     let UserPassword = document.getElementById("userpwd").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail, UserPassword, UserRole);
+    let encryptPassword=UserPassword;
+    if(UserPassword != UserPwd){
+      encryptPassword=await handleEncrypt(UserPassword);
+    }
+    let validation = Useraddvalidation(UserName, UserEmail, encryptPassword, UserRole);
     if (!validation) {
       return false;
     }
@@ -106,7 +125,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:UserPassword, Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:encryptPassword, Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
