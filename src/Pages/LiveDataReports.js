@@ -9,6 +9,7 @@ function LiveDataReports() {
   const [ListReportData, setListReportData] = useState(0);
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
+  const [Autorefresh, setAutorefresh] = useState(true);
   const [Pollutents, setPollutents] = useState([]);
   const [ItemCount, setItemCount] = useState(0);
   const [Gridcall, setGridcall] = useState(false);
@@ -65,7 +66,9 @@ function LiveDataReports() {
    */
   useEffect(() => {
     const interval = setInterval(() => {
+      if(Autorefresh){
       getdtareport('refresh');
+    }
     }, getDuration);
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   })
@@ -294,7 +297,15 @@ function LiveDataReports() {
                 <button type="button" className="btn btn-secondary mx-1" onClick={Resetfilters}>Reset</button>
                 <button type="button" className="btn btn-primary mx-1" onClick={Codesinformation}>Flags</button>
               </div>
-              <div className="col-md-4">
+              <div className="col-md-3 my-4">
+              <div className="form-check">
+                    <input className="form-check-input" type="checkbox" id="autorefresh" onChange={(e) => setAutorefresh(e.target.checked)} defaultChecked={Autorefresh}/>
+                    <label className="form-check-label form-label" for="isderived">
+                    Autorefresh
+                    </label>
+                  </div>
+                  </div>
+              <div className="col-md-12">
                 <div className="row">
                   <div id="loader" className="loader"></div>
                 </div>
