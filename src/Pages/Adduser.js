@@ -61,7 +61,7 @@ function Adduser() {
       $("#lblPassword")[0].style.display="block";
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/Users', {
+    fetch(CommonFunctions.getWebApiUrl() + 'api/Users/' + Notification, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -100,7 +100,7 @@ function Adduser() {
     setTimeout(() => {
       document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
-     document.getElementById("userrole").value = param.role;
+           document.getElementById("userrole").value = param.role;
     }, 10);
    
   }
@@ -108,7 +108,7 @@ function Adduser() {
   const UpdateUser=async(event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
-    let UserRole = document.getElementById("userrole").value;
+        let UserRole = document.getElementById("userrole").value;
     
     let validation = Useraddvalidation(UserName, UserEmail,UserRole);
     if (!validation) {
@@ -276,14 +276,14 @@ function Adduser() {
                   <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
                   <div class="invalid-feedback" id="invalidemail">Please enter valid user email.</div>
                 </div>
-                {!UserList && UserId==0 && (
+{!UserList && UserId==0 && (
                 <div className="col-md-12 mb-3">
                   <label for="userpassword" className="form-label">Password:</label>
                   <input type="password" className="form-control" id="userpwd" placeholder="Enter password" required />
                   <div class="invalid-feedback">Please enter Password.</div>
                   <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 charecters</div>
                 </div>
-                )}
+)}
                 <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>
                   <select className="form-select" id="userrole" required>
@@ -294,18 +294,20 @@ function Adduser() {
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>
                 </div>
-                <div className="col-md-12 mb-3" style={{display:"none"}}>
-                  <label for="Notification" className="form-label">Notification: </label>
-                  <div className="form-check d-inline-block form-switch ms-2">
-                    <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
-                    {Notification && (
-                      <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
-                    )}
-                    {!Notification && (
-                      <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
-                    )}
+                {!UserList && UserId==0 && (
+                  <div className="col-md-12 mb-3">
+                    <label for="Notification" className="form-label">Notification: </label>
+                    <div className="form-check d-inline-block form-switch ms-2">
+                      <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
+                      {Notification && (
+                        <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
+                      )}
+                      {!Notification && (
+                        <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
                 <div className="col-md-12 text-center">
                 {!UserList && UserId==0 && (
                   <button className="btn btn-primary" onClick={Useradd} type="button">Add User</button>
