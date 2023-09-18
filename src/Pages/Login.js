@@ -21,7 +21,7 @@ import CommonFunctions from "../utils/CommonFunctions";
         }).then((response) => response.json())
               .then((data) => {
                 if (data != null) {
-                    let uPassword = data.filter(x => x.userName == UserName);
+                    let uPassword = data.filter(x => x.userName.toLowerCase() == UserName.toLowerCase());
                     let doesPasswordMatch = bcrypt.compareSync(Password, uPassword[0].password);
                     if(!doesPasswordMatch){
                           toast.error('User name or password is incorrect. Please try again', {
