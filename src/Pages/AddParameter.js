@@ -13,8 +13,9 @@ function AddParameter() {
   const [Listparameters, setListparameters] = useState([]);
   const [parameterList, setparameterList] = useState(true);
   const [parameterId, setparameterId] = useState(0);
-  const [Status,setStatus]=useState(true);
-  const [ParseParamValue, setParseParamValue]=useState(true);
+  const [Status, setStatus] = useState(true);
+  const [IsDerived, setIsDerived] = useState(false);
+  const [ParseParamValue, setParseParamValue] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
@@ -63,17 +64,18 @@ function AddParameter() {
     let ScaleFactor = document.getElementById("scalefactor").value;
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
-    let UnitID = document.getElementById("unit").value;    
-    let CoefA=document.getElementById('coefa').value;
-    let CoefB=document.getElementById('coefb').value;
+    let UnitID = document.getElementById("unit").value;
+    let CoefA = document.getElementById('coefa').value;
+    let CoefB = document.getElementById('coefb').value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    let status = Status?1:0;
+    let status = Status ? 1 : 0;
 
-    let RegisterIndex=document.getElementById("registerindex").value;
-    let ParseFunction=document.getElementById("parsefunciton").value;
-    let ParseParmvalue=ParseParamValue?true:false;
-
+    let RegisterIndex = document.getElementById("registerindex").value;
+    let ParseFunction = document.getElementById("parsefunciton").value;
+    let SendCommand  = document.getElementById("sendcommand").value;
+    let ParseParmvalue = ParseParamValue ? true : false;
+    let isDerived = IsDerived ? 1 : 0;
 
 
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, ScaleFactor, CoefA, CoefB);
@@ -86,7 +88,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy,RegisterIndex:RegisterIndex,ParseParamValue:ParseParmvalue,ParseFunction:ParseFunction }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -104,7 +106,8 @@ function AddParameter() {
   const Editparameter = function (param) {
     setparameterList(false);
     setparameterId(param.id)
-    setStatus(param.status==1?true:false);
+    setStatus(param.status == 1 ? true : false);
+    setIsDerived(param.isDerived == 1 ? true : false);
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceID;
@@ -114,12 +117,13 @@ function AddParameter() {
       document.getElementById("pollinginterval").value = param.pollingInterval;
       document.getElementById("avginterval").value = param.avgInterval;
       document.getElementById("unit").value = param.unitID;
-      document.getElementById("scalefactor").value=param.scaleFactor;
-      document.getElementById("coefa").value=param.coefA;
-      document.getElementById("coefb").value=param.coefB;
+      document.getElementById("scalefactor").value = param.scaleFactor;
+      document.getElementById("coefa").value = param.coefA;
+      document.getElementById("coefb").value = param.coefB;
 
-      document.getElementById("registerindex").value=param.registerIndex;
-      document.getElementById("parsefunciton").value=param.parseFunction;
+      document.getElementById("registerindex").value = param.registerIndex;
+      document.getElementById("parsefunciton").value = param.parseFunction;
+      document.getElementById("sendcommand").value = param.sendCommand;
 
       setTimeout(function () {
         document.getElementById("drivername").value = param.driverID;
@@ -137,15 +141,17 @@ function AddParameter() {
     let PollingInterval = document.getElementById("pollinginterval").value;
     let AvgInterval = document.getElementById("avginterval").value;
     let UnitID = document.getElementById("unit").value;
-    let CoefA=document.getElementById('coefa').value;
-    let CoefB=document.getElementById('coefb').value;
+    let CoefA = document.getElementById('coefa').value;
+    let CoefB = document.getElementById('coefb').value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    let status = Status?1:0;
+    let status = Status ? 1 : 0;
 
-    let RegisterIndex=document.getElementById("registerindex").value;
-    let ParseFunction=document.getElementById("parsefunciton").value;
-    let ParseParmvalue=ParseParamValue?true:false;
+    let RegisterIndex = document.getElementById("registerindex").value;
+    let ParseFunction = document.getElementById("parsefunciton").value;
+    let SendCommand  = document.getElementById("sendcommand").value;
+    let ParseParmvalue = ParseParamValue ? true : false;
+    let isDerived = IsDerived ? 1 : 0;
 
     let validation = parameteraddvalidation(StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, UnitID, CoefA, CoefB);
     if (!validation) {
@@ -157,7 +163,7 @@ function AddParameter() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA:CoefA, CoefB:CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy,RegisterIndex:RegisterIndex,ParseParamValue:ParseParmvalue,ParseFunction:ParseFunction }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -185,7 +191,7 @@ function AddParameter() {
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl()+ 'api/ParametersDelete/' + id, {
+          fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersDelete/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
             .then((responseJson) => {
@@ -262,11 +268,11 @@ function AddParameter() {
         }
       },
       fields: [
-        { name: "stationID", title: "Station Name", type: "select",align:"left", items: ListStations, valueField: "id", textField: "stationName", width: 200,sorting: false, filtering: false },
-        { name: "deviceID", title: "Device Name", type: "select",align:"left", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
-        { name: "driverID", title: "Driver Name", type: "select",align:"left", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
-        { name: "parameterName", title: "parameter Name",align:"left", type: "text" },
-        { name: "unitID", title: "Units",align:"left", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 100 },
+        { name: "stationID", title: "Station Name", type: "select", align: "left", items: ListStations, valueField: "id", textField: "stationName", width: 200, sorting: false, filtering: false },
+        { name: "deviceID", title: "Device Name", type: "select", align: "left", items: ListDevices, valueField: "id", textField: "deviceName", width: 200 },
+        { name: "driverID", title: "Driver Name", type: "select", align: "left", items: ListDrivers, valueField: "id", textField: "driverName", width: 200 },
+        { name: "parameterName", title: "parameter Name", align: "left", type: "text" },
+        { name: "unitID", title: "Units", align: "left", type: "select", items: ListReportedUnits, valueField: "id", textField: "unitName", width: 100 },
         { name: "pollingInterval", title: "Polling Interval", type: "text" },
         { name: "avgInterval", title: "Average Interval", type: "text" },
         {
@@ -301,6 +307,9 @@ function AddParameter() {
       setparameterList(false);
       setparameterId(0);
     }
+    setIsDerived(false);
+    setStatus(true);
+    setParseParamValue(true);
   }
   const Deviceschange = function () {
     setListdeviceDrivers([]);
@@ -414,12 +423,17 @@ function AddParameter() {
 
                 <div className="col-md-12 mb-3">
                   <label for="parsefunciton" className="form-label">Parse Function:</label>
-                  <textarea class="form-control" id="parsefunciton" placeholder="Enter Parse Function"  rows="3"></textarea>
+                  <textarea class="form-control" id="parsefunciton" placeholder="Enter Parse Function" rows="3"></textarea>
                   <div class="invalid-feedback">Please enter parse function</div>
                 </div>
 
+                <div className="col-md-12 mb-3">
+                  <label for="sendcommand" className="form-label">Send Command:</label>
+                  <input type="text" className="form-control" id="sendcommand" placeholder="Enter send command" />
+                  <div class="invalid-feedback">Please enter send command</div>
+                </div>
 
-                <div className="col-md-6 mb-3">
+                <div className="col-md-4 mb-3">
                   <label for="parseparamvalue" className="form-label">Parse Param Value: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="parseparamvalue" onChange={(e) => setParseParamValue(e.target.checked)} defaultChecked={ParseParamValue} />
@@ -432,7 +446,16 @@ function AddParameter() {
                   </div>
                 </div>
 
-                <div className="col-md-6 mb-3">
+                <div className="col-md-4 mb-3">
+                  <div className="form-check">
+                    <input className="form-check-input" type="checkbox" id="isderived" onChange={(e) => setIsDerived(e.target.checked)} defaultChecked={IsDerived}/>
+                    <label className="form-check-label form-label" for="isderived">
+                    IsDerived
+                    </label>
+                  </div>
+                </div>
+
+                <div className="col-md-4 mb-3">
                   <label for="Status" className="form-label">Status: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="Status" onChange={(e) => setStatus(e.target.checked)} defaultChecked={Status} />
