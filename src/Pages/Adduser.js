@@ -46,6 +46,22 @@ function Adduser() {
       /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     );
   };
+  const UserEditvalidation = function (UserEmail, UserRole) {
+    let isvalid = true;
+    let form = document.querySelectorAll('#AddUserform')[0];
+    $("#invalidemail")[0].style.display="none";
+    let validmail=validateEmail(UserEmail);
+    if (UserEmail == "" || !validmail) {
+      form.classList.add('was-validated');
+      $("#invalidemail")[0].style.display="block";
+      return false;
+      isvalid = false;
+    } else if (UserRole == "") {
+      form.classList.add('was-validated');
+      isvalid = false;
+    }
+    return isvalid;
+  }
   const Useradd = async(event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
@@ -98,7 +114,7 @@ function Adduser() {
     setUserId(param.id);
     setUserPwd(param.password);
     setTimeout(() => {
-      document.getElementById("username").value = param.userName;
+      //document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
            document.getElementById("userrole").value = param.role;
     }, 10);
@@ -106,11 +122,11 @@ function Adduser() {
   }
 
   const UpdateUser=async(event) => {
-    let UserName = document.getElementById("username").value;
+    //let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
         let UserRole = document.getElementById("userrole").value;
     
-    let validation = Useraddvalidation(UserName, UserEmail,UserRole);
+    let validation = UserEditvalidation(UserEmail,UserRole);
     if (!validation) {
       return false;
     }
@@ -120,7 +136,7 @@ function Adduser() {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail,Role: UserRole,ID:UserId }),
+      body: JSON.stringify({ UserEmail: UserEmail,Role: UserRole,ID:UserId }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -266,24 +282,26 @@ function Adduser() {
             </div>
             {!UserList && (
               <form id="AddUserform" className="row">
-                <div className="col-md-12 mb-3">
-                  <label for="username" className="form-label">User Name:</label>
-                  <input type="text" className="form-control" id="username" placeholder="Enter user name" required />
-                  <div class="invalid-feedback">Please enter user name.</div>
-                </div>
+                {!UserList && UserId==0 && (
+                    <div className="col-md-12 mb-3">
+                      <label for="username" className="form-label">User Name:</label>
+                      <input type="text" className="form-control" id="username" placeholder="Enter user name" required />
+                      <div class="invalid-feedback">Please enter user name.</div>
+                    </div>
+                )}
                 <div className="col-md-12 mb-3">
                   <label for="useremail" className="form-label">User Email:</label>
                   <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
                   <div class="invalid-feedback" id="invalidemail">Please enter valid user email.</div>
                 </div>
-{!UserList && UserId==0 && (
-                <div className="col-md-12 mb-3">
-                  <label for="userpassword" className="form-label">Password:</label>
-                  <input type="password" className="form-control" id="userpwd" placeholder="Enter password" required />
-                  <div class="invalid-feedback">Please enter Password.</div>
-                  <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 charecters</div>
-                </div>
-)}
+                {!UserList && UserId==0 && (
+                      <div className="col-md-12 mb-3">
+                          <label for="userpassword" className="form-label">Password:</label>
+                          <input type="password" className="form-control" id="userpwd" placeholder="Enter password" required />
+                          <div class="invalid-feedback">Please enter Password.</div>
+                          <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
+                      </div>
+                )}
                 <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>
                   <select className="form-select" id="userrole" required>
