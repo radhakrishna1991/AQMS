@@ -9,6 +9,7 @@ function DeviceAlarams() {
   const [DeviceAlarmId, setDeviceAlarmId] = useState(0);
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Model, setModel] = useState([]);
+  const [ModelList, setModelList] = useState([]);
   const [Devices, setDevices] = useState([]);
   const [DeviceAlarm, setDeviceAlarm] = useState([]);
   const [DeviceAlarmData, setDeviceAlarmData] = useState([]);
@@ -33,7 +34,7 @@ function DeviceAlarams() {
         if (data) {
           setAllLookpdata(data);
           setDevices(data.listDevices);
-          setModel(data.listDeviceModels);
+          setModelList(data.listDeviceModels);
           setDeviceAlarmData(data.listDeviceAlarm);
           var Alarmlist = [];
           data.listAlarms.filter(function (item) {
@@ -81,12 +82,12 @@ function DeviceAlarams() {
       pageButtonCount: 5,
       pageSize: 100,
       //data: data,
-      data: Devices,
-      //data:dataForGrid,
+     // data: Devices,
+      data:dataForGrid,
 
       fields: [
-        { name: "deviceName", title: "Device Name",align:"left", type: "text" },
-        { name: "deviceModel", title: "Model ID",align:"left", type: "select", items: Model, valueField: "id", textField: "deviceModelName" },
+        { name: "deviceId", title: "Device Name",align:"left", type: "select", items: Devices, valueField: "id", textField: "deviceName" },
+        { name: "modelId", title: "Model ID",align:"left", type: "select", items: ModelList, valueField: "id", textField: "deviceModelName" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -125,7 +126,7 @@ function DeviceAlarams() {
     })
       .then(function (isConfirm) {
         if (isConfirm.isConfirmed) {
-          let id = item.id;
+          let id = item.deviceId;
           fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteDeviceAlarm/' + id, {
             method: 'DELETE'
           }).then((response) => response.json())
@@ -255,7 +256,11 @@ function DeviceAlarams() {
     setChangedAlarmData([]);
     setTimeout(() => {
       document.getElementById("devicename").value = param.id;
-      document.getElementById("modelname").value = param.deviceModel;
+      ChangeDeviceName();
+      setTimeout(function () {
+        document.getElementById("modelname").value = param.modelId;
+      }, 1);
+  
      // document.getElementById("status").value = param.status;
 
       var AlarmArray = [];
@@ -290,14 +295,23 @@ function DeviceAlarams() {
 
   const ChangeDeviceName = function () {
     setChangedAlarmData([]);
+    setModel([]);
+    document.getElementById("modelname").value="";
     let deviceid = document.getElementById("devicename").value;
-    var AlarmArray = [];
-    var devicemodelid = Devices.filter(x => x.id == deviceid);
-    if (devicemodelid.length > 0) {
-      AlarmArray = DeviceAlarm.filter(x => x.deviceModelId == devicemodelid[0].deviceModel);
-    }
-    setChangedAlarmData(AlarmArray);
+     var devicemodelid = Devices.filter(x => x.id == deviceid);
+     var DeviceModels=ModelList.filter(x=>x.id==devicemodelid[0].deviceModel);
+    setModel(DeviceModels);
+    setTimeout(function () {
+      $('.alarmname')[0].sumo.reload();
+    }, 10);
+  }
 
+  const ChangeDeviceModel=function(){
+    setChangedAlarmData([]);
+    var AlarmArray = [];
+    let modelid = document.getElementById("modelname").value;
+    AlarmArray = DeviceAlarm.filter(x => x.deviceModelId == modelid);
+    setChangedAlarmData(AlarmArray);
     setTimeout(function () {
       $('.alarmname')[0].sumo.reload();
     }, 10);
@@ -347,7 +361,7 @@ function DeviceAlarams() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="modelname" className="form-label">Model Name:</label>
-                  <select className="form-select" id="modelname" required>
+                  <select className="form-select" id="modelname" required onChange={ChangeDeviceModel}>
                     <option selected value="">Select Model Name</option>
                     {Model.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceModelName}</option>

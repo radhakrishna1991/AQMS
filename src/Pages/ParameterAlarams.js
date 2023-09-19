@@ -296,6 +296,9 @@ function ParameterAlarams() {
     var AlarmArray = [];
     var parameters = Parameter.filter(x => x.deviceID == deviceid);
     setParameterList(parameters);
+    setTimeout(function () {
+      $('.alarmname')[0].sumo.reload();
+    }, 10);
   }
 
   const ChangeParameterName = function () {
