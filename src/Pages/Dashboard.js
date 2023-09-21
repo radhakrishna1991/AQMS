@@ -76,7 +76,8 @@ function Dashboard() {
    }
     fetch(CommonFunctions.getWebApiUrl() + "api/Dashboard?Interval="+Intervaltype, {
       method: 'GET',
-    }).then((response) => response.json())
+      headers: CommonFunctions.getAuthHeader() ,
+        }).then((response) => response.json())
       .then((data) => {
         if (data) {
           setListAllData(data);
@@ -132,6 +133,7 @@ function Dashboard() {
     }
      fetch(CommonFunctions.getWebApiUrl() + "api/Livedata?Interval="+Intervaltype, {
       method: 'GET',
+      headers: CommonFunctions.getAuthHeader() ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -145,9 +147,10 @@ function Dashboard() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      //  console.log('Logs every minute');
+      //console.log(CommonFunctions.getAuthHeader());
       fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard", {
         method: 'GET',
+        headers: CommonFunctions.getAuthHeader() ,
       }).then((response) => response.json())
         .then((data) => {
           if (data) {

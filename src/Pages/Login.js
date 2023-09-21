@@ -4,6 +4,7 @@ import React from "react";
 import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
 import CommonFunctions from "../utils/CommonFunctions";
+
 //function Login() {
   
   const Login = ({ handleAuthentication }) => {
@@ -12,6 +13,8 @@ import CommonFunctions from "../utils/CommonFunctions";
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
     let Password = document.getElementById("Password").value;
+    //const token = jwt.sign({ userId: 'JWTAuthenticationServer' }, 'Yh2k7QSu4l8CZg5p6X3Pna9L0Miy4D3Bvt0JVr87UcOj69Kqw5R2Nmf4FWs03Hdx', { expiresIn: '1h' });
+   
     //Password=await handleEncrypt(Password);
     if (!form.checkValidity()) {
         form.classNameList.add('was-validated');
@@ -21,8 +24,23 @@ import CommonFunctions from "../utils/CommonFunctions";
         }).then((response) => response.json())
               .then((data) => {
                 if (data != null) {
-                    let uPassword = data.filter(x => x.userName.toLowerCase() == UserName.toLowerCase());
-                    let doesPasswordMatch = bcrypt.compareSync(Password, uPassword[0].password);
+                  if(data.users==null)
+                  {
+                    toast.error('User name or password is incorrect. Please try again', {
+                      position: "top-right",
+                      autoClose: 5000,
+                      hideProgressBar: false,
+                      closeOnClick: true,
+                      pauseOnHover: true,
+                      draggable: true,
+                      progress: undefined,
+                      theme: "colored",
+                    });
+                    return false;
+                  }
+
+                  let uPassword = data.users.filter(x => x.userName.toLowerCase() == UserName.toLowerCase());
+                  let doesPasswordMatch = bcrypt.compareSync(Password, uPassword[0].password);
                     if(!doesPasswordMatch){
                           toast.error('User name or password is incorrect. Please try again', {
                             position: "top-right",
@@ -37,7 +55,16 @@ import CommonFunctions from "../utils/CommonFunctions";
                           return false;
                     }
                     else{
-                        sessionStorage.setItem("UserData", JSON.stringify(data[0]));
+                        sessionStorage.setItem("UserData", JSON.stringify(data.users[0]));
+                        sessionStorage.setItem("Token",data.token);
+                        console.log(data.token);
+                        //sessionStorage.setItem("TokenExpTime",data.tokenExpirationTime);
+                        var currentDate=new Date();
+                        //alert(currentDate);
+                        //sessionStorage.setItem("LoggedInTime",currentDate);
+                        currentDate.setMinutes(currentDate.getMinutes()+data.tokenExpirationTime-1);
+                        
+                        sessionStorage.setItem("TokenExpTime",currentDate);
                         window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
                     } 
                 }
