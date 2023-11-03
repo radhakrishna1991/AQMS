@@ -66,6 +66,8 @@ function Dashboard() {
   const Minute = window.DashboardRefreshtime;
 
   useEffect(() => {
+    async function fetchDataload() {
+      let authHeader = await CommonFunctions.getAuthHeader();
     let Interval=SelectedInterval;
     let type = Interval.substr(Interval.length - 1);
    let Intervaltype;
@@ -74,9 +76,9 @@ function Dashboard() {
    } else {
      Intervaltype = Interval.substr(0, Interval.length - 1);
    }
-    fetch(CommonFunctions.getWebApiUrl() + "api/Dashboard?Interval="+Intervaltype, {
+   await fetch(CommonFunctions.getWebApiUrl() + "api/Dashboard?Interval="+Intervaltype, {
       method: 'GET',
-      headers: CommonFunctions.getAuthHeader() ,
+      headers: authHeader ,
         }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -111,6 +113,8 @@ function Dashboard() {
           getUserRole();
         }
       }).catch((error) => toast.error('Unable to get the data. Please contact adminstrator'));
+    }
+    fetchDataload();
   }, []);
 
   useEffect(() => {
@@ -121,7 +125,7 @@ function Dashboard() {
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
 
-  const GetLivedata=function(){
+  const GetLivedata=async function(){
      //  console.log('Logs every minute');
      let Intervalvalue=document.getElementById("criteriaid").value;
      let type = Intervalvalue.substr(Intervalvalue.length - 1);
@@ -131,9 +135,10 @@ function Dashboard() {
     } else {
       Intervaltype = Intervalvalue.substr(0, Intervalvalue.length - 1);
     }
-     fetch(CommonFunctions.getWebApiUrl() + "api/Livedata?Interval="+Intervaltype, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Livedata?Interval="+Intervaltype, {
       method: 'GET',
-      headers: CommonFunctions.getAuthHeader() ,
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -145,24 +150,30 @@ function Dashboard() {
       );
   }
 
+  async function fetchData() {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard", {
+    method: 'GET',
+    headers: authHeader ,
+  }).then((response) => response.json())
+    .then((data) => {
+      if (data) {
+        ListAllDataCopy.current.listDevices = data.listDevices;
+        ListAllDataCopy.current.listAlarms = data.listAlarms;
+        ListAllDataCopy.current.listPollutents = data.listPollutents;
+      }
+    }).catch((error) =>
+      toast.error('Unable to get the data. Please contact adminstrator')
+    );
+  }
+
   useEffect(() => {
     const interval = setInterval(() => {
       //console.log(CommonFunctions.getAuthHeader());
-      fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard", {
-        method: 'GET',
-        headers: CommonFunctions.getAuthHeader() ,
-      }).then((response) => response.json())
-        .then((data) => {
-          if (data) {
-            ListAllDataCopy.current.listDevices = data.listDevices;
-            ListAllDataCopy.current.listAlarms = data.listAlarms;
-            ListAllDataCopy.current.listPollutents = data.listPollutents;
-          }
-        }).catch((error) =>
-          toast.error('Unable to get the data. Please contact adminstrator')
-        );
+    
+      fetchData();
     }, window.DashboardRefreshtime);
-
+  
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, [])
 

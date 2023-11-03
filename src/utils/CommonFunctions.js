@@ -19,7 +19,7 @@ const CommonFunctions = {
         }      
       }
     },
-    getAuthHeader()
+    async  getAuthHeader()
     {
       const token = sessionStorage.getItem('Token');
      // const LoggedInTime = sessionStorage.getItem('LoggedInTime');
@@ -30,22 +30,29 @@ const CommonFunctions = {
       var currentDate=new Date();
       console.log("currentDate",currentDate);
       console.log("exp date",tokenExpTime);
-      if(currentDate > newdate)
+      if(currentDate >= newdate)
       {
-        fetch(CommonFunctions.getWebApiUrl() + "Token", {
-          method: 'POST',
-        }).then((response) => response.json())
-        .then((responseJson) => {
-          if (responseJson) {
-            console.log(responseJson);
-            sessionStorage.setItem("Token",responseJson.token);
-            var currentDate=new Date();
-            currentDate.setMinutes(currentDate.getMinutes()+responseJson.tokenExpirationTime);            
-            sessionStorage.setItem("TokenExpTime",currentDate);
-            console.log(responseJson.token);
-            return { Authorization: 'Bearer ' +responseJson.token ,'app-origin': 'http://localhost:3000'};
+        try {
+          const response = await fetch(CommonFunctions.getWebApiUrl() + "Token", {
+            method: 'POST',
+          });
+    
+          if (response.ok) {
+            const responseJson = await response.json();
+            if (responseJson.token) {
+              console.log(responseJson);
+              sessionStorage.setItem('Token', responseJson.token);
+    
+              const expirationTime = new Date();
+              expirationTime.setMinutes(expirationTime.getMinutes() + responseJson.tokenExpirationTime);
+              sessionStorage.setItem('TokenExpTime', expirationTime);
+    
+              return { Authorization: 'Bearer ' + responseJson.token, 'app-origin': 'http://localhost:3000' };
+            }
           }
-        })
+        } catch (error) {
+          console.error('Token refresh failed:', error);
+        }
       
       }
       else{
