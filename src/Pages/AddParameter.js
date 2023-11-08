@@ -15,6 +15,8 @@ function AddParameter() {
   const [parameterId, setparameterId] = useState(0);
   const [Status, setStatus] = useState(true);
   const [IsDerived, setIsDerived] = useState(false);
+  const [EnableParametersAlarms, setEnableParametersAlarms] = useState(false);
+  
   const [ParseParamValue, setParseParamValue] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
@@ -74,6 +76,12 @@ function AddParameter() {
     let RegisterIndex = document.getElementById("registerindex").value;
     let ParseFunction = document.getElementById("parsefunciton").value;
     let SendCommand  = document.getElementById("sendcommand").value;
+    let HighHigh  = document.getElementById("highhighlimit").value;
+    let High  = document.getElementById("highlimit").value;
+    let LowLow  = document.getElementById("lowlowlimit").value;
+    let Low  = document.getElementById("lowlimit").value;
+    let Threshold  = document.getElementById("thresholdlimit").value;
+    let enableParametersAlarms  = EnableParametersAlarms ? true : false;
     let ParseParmvalue = ParseParamValue ? true : false;
     let isDerived = IsDerived ? 1 : 0;
 
@@ -91,7 +99,11 @@ function AddParameter() {
         Authorization: authHeader.Authorization,
         'app-origin':authHeader["app-origin"]
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName,
+         PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, 
+         ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, 
+         ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand, IsDerived:isDerived,
+         HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms}),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -111,6 +123,7 @@ function AddParameter() {
     setparameterId(param.id)
     setStatus(param.status == 1 ? true : false);
     setIsDerived(param.isDerived == 1 ? true : false);
+    setEnableParametersAlarms(param.enableParametersAlarms);
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceID;
@@ -127,7 +140,11 @@ function AddParameter() {
       document.getElementById("registerindex").value = param.registerIndex;
       document.getElementById("parsefunciton").value = param.parseFunction;
       document.getElementById("sendcommand").value = param.sendCommand;
-
+     document.getElementById("highhighlimit").value = param.highHigh;
+      document.getElementById("highlimit").value = param.high;
+      document.getElementById("lowlowlimit").value = param.lowLow;
+      document.getElementById("lowlimit").value = param.low;
+      document.getElementById("thresholdlimit").value = param.threshold;
       setTimeout(function () {
         document.getElementById("drivername").value = param.driverID;
       }, 100);
@@ -153,6 +170,12 @@ function AddParameter() {
     let RegisterIndex = document.getElementById("registerindex").value;
     let ParseFunction = document.getElementById("parsefunciton").value;
     let SendCommand  = document.getElementById("sendcommand").value;
+    let HighHigh  = document.getElementById("highhighlimit").value;
+    let High  = document.getElementById("highlimit").value;
+    let LowLow  = document.getElementById("lowlowlimit").value;
+    let Low  = document.getElementById("lowlimit").value;
+    let Threshold  = document.getElementById("thresholdlimit").value;
+    let enableParametersAlarms  = EnableParametersAlarms ? true : false;
     let ParseParmvalue = ParseParamValue ? true : false;
     let isDerived = IsDerived ? 1 : 0;
 
@@ -169,7 +192,11 @@ function AddParameter() {
         Authorization: authHeader.Authorization,
         'app-origin':authHeader["app-origin"]
       },
-      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived }),
+      body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, 
+        PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ID: parameterId,
+         ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, 
+         ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived,
+         HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -444,7 +471,39 @@ function AddParameter() {
                   <input type="text" className="form-control" id="sendcommand" placeholder="Enter send command" />
                   <div class="invalid-feedback">Please enter send command</div>
                 </div>
-
+                <div className="col-md-6 mb-3">
+                  <label for="sendcommand" className="form-label">High High Limit:</label>
+                  <input type="text" className="form-control" id="highhighlimit" placeholder="high high limit" />
+                  <div class="invalid-feedback">Please enter High High Limit</div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label for="sendcommand" className="form-label">High Limit:</label>
+                  <input type="text" className="form-control" id="highlimit" placeholder="high limit" />
+                  <div class="invalid-feedback">Please enter High Limit</div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label for="sendcommand" className="form-label">Low Low Limit:</label>
+                  <input type="text" className="form-control" id="lowlowlimit" placeholder="Enter low low limit" />
+                  <div class="invalid-feedback">Please enter Low Low Limit:</div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label for="sendcommand" className="form-label">Low Limit:</label>
+                  <input type="text" className="form-control" id="lowlimit" placeholder="Enter low limit" />
+                  <div class="invalid-feedback">Please enter Low Limit:</div>
+                </div>
+                <div className="col-md-6 mb-3">
+                  <label for="sendcommand" className="form-label">Threshold Limit:</label>
+                  <input type="text" className="form-control" id="thresholdlimit" placeholder="Enter threshold limit" />
+                  <div class="invalid-feedback">Please enter Threshold Limit</div>
+                </div>
+                <div className="col-md-6 mt-4 mb-3">
+                  <div className="form-check mt-2">
+                    <input className="form-check-input" type="checkbox" id="enableparametersalarms" onChange={(e) => setEnableParametersAlarms(e.target.checked)} defaultChecked={EnableParametersAlarms}/>
+                    <label className="form-check-label form-label" for="isderived">
+                    EnableParametersAlarms
+                    </label>
+                  </div>
+                </div>
                 <div className="col-md-4 mb-3">
                   <label for="parseparamvalue" className="form-label">Parse Param Value: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
