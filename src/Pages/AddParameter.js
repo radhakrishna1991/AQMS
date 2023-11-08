@@ -473,27 +473,27 @@ function AddParameter() {
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">High High Limit:</label>
-                  <input type="text" className="form-control" id="highhighlimit" placeholder="high high limit" />
+                  <input type="number" className="form-control" id="highhighlimit" placeholder="high high limit" />
                   <div class="invalid-feedback">Please enter High High Limit</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">High Limit:</label>
-                  <input type="text" className="form-control" id="highlimit" placeholder="high limit" />
+                  <input type="number" className="form-control" id="highlimit" placeholder="high limit" />
                   <div class="invalid-feedback">Please enter High Limit</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">Low Low Limit:</label>
-                  <input type="text" className="form-control" id="lowlowlimit" placeholder="Enter low low limit" />
+                  <input type="number" className="form-control" id="lowlowlimit" placeholder="Enter low low limit" />
                   <div class="invalid-feedback">Please enter Low Low Limit:</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">Low Limit:</label>
-                  <input type="text" className="form-control" id="lowlimit" placeholder="Enter low limit" />
+                  <input type="number" className="form-control" id="lowlimit" placeholder="Enter low limit" />
                   <div class="invalid-feedback">Please enter Low Limit:</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">Threshold Limit:</label>
-                  <input type="text" className="form-control" id="thresholdlimit" placeholder="Enter threshold limit" />
+                  <input type="number" className="form-control" id="thresholdlimit" placeholder="Enter threshold limit" />
                   <div class="invalid-feedback">Please enter Threshold Limit</div>
                 </div>
                 <div className="col-md-6 mt-4 mb-3">
