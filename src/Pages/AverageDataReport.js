@@ -573,7 +573,7 @@ function AverageDataReport() {
       }).catch((error) => toast.error('Unable to download the PDF File. Please contact adminstrator'));
   }
 
-  const DownloadExcel = function () {
+  const DownloadExcel = async function () {
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -615,7 +615,22 @@ function AverageDataReport() {
     }
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound });
 
-    window.open(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+   // window.open(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcelAverageData?" + params, "_blank");
+   let authHeader = await CommonFunctions.getAuthHeader();
+   
+    await fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcelAverageData?" + params, {
+      method: 'GET',
+      headers:authHeader
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a link element and trigger a click on it to download the file
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+       link.download = "filename.xlsx"; // Set the desired filename
+        link.click();
+      })
+      .catch(error => console.error('Error:', error));
   }
 
 
