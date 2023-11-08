@@ -26,7 +26,7 @@ function Header() {
         }
       })
   }
-  useEffect(() => {
+  /*useEffect(() => {
     GetStation();
   }, [])
 
@@ -40,7 +40,7 @@ function Header() {
           setListStations(station);
         }
       }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
-  }
+  }*/
 
 
 
