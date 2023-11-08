@@ -27,7 +27,7 @@ function CalibrationDevice() {
     }
     return isvalid;
   }
-  const Deviceadd = function () {
+  const Deviceadd = async function () {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
@@ -61,11 +61,14 @@ function CalibrationDevice() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port, Type: Type,
@@ -114,7 +117,7 @@ function CalibrationDevice() {
 
   }
 
-  const UpdateDevice= function () {
+  const UpdateDevice= async function () {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
@@ -148,11 +151,14 @@ function CalibrationDevice() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices/' + Deviceid, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices/' + Deviceid, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port,
@@ -183,11 +189,13 @@ function CalibrationDevice() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices/' + id, {
-            method: 'DELETE'
+          let authHeader = await CommonFunctions.getAuthHeader();
+          await fetch(CommonFunctions.getWebApiUrl() + 'api/CalibrationDevices/' + id, {
+            method: 'DELETE',
+            headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -200,9 +208,11 @@ function CalibrationDevice() {
         }
       });
   }
-  const GetLookupdata = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDeviceslookup", {
+  const GetLookupdata = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDeviceslookup", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -213,9 +223,11 @@ function CalibrationDevice() {
       }).catch((error) => toast.error('Unable to get the Devices lookup list. Please contact adminstrator'));
   }
   
-  const GetDevices = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDevices", {
+  const GetDevices = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDevices", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

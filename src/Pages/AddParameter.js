@@ -56,7 +56,7 @@ function AddParameter() {
     }
     return isvalid;
   }
-  const parameteradd = function () {
+  const parameteradd = async function () {
     let StationID = document.getElementById("stationname").value;
     let DeviceID = document.getElementById("devicename").value;
     let DriverID = document.getElementById("drivername").value;
@@ -82,11 +82,14 @@ function AddParameter() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersAdd', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersAdd', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived }),
     }).then((response) => response.json())
@@ -132,7 +135,7 @@ function AddParameter() {
 
   }
 
-  const Updateparameter = function () {
+  const Updateparameter = async function () {
     let StationID = document.getElementById("stationname").value;
     let DeviceID = document.getElementById("devicename").value;
     let DriverID = document.getElementById("drivername").value;
@@ -157,11 +160,14 @@ function AddParameter() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersUpdate/' + parameterId, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersUpdate/' + parameterId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ StationID: StationID, DeviceID: DeviceID, DriverID: DriverID, ParameterName: ParameterName, PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ID: parameterId, ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived }),
     }).then((response) => response.json())
@@ -188,11 +194,13 @@ function AddParameter() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersDelete/' + id, {
-            method: 'DELETE'
+          let authHeader = await CommonFunctions.getAuthHeader();
+          await fetch(CommonFunctions.getWebApiUrl() + 'api/ParametersDelete/' + id, {
+            method: 'DELETE',
+            headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -206,9 +214,11 @@ function AddParameter() {
       });
   }
 
-  const Getparameters = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/ParametersList", {
+  const Getparameters = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/ParametersList", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -217,9 +227,11 @@ function AddParameter() {
       }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'));
   }
 
-  const GetparametersLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/Parameters/ParameterLookup", {
+  const GetparametersLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Parameters/ParameterLookup", {
       method: 'GET',
+      headers: authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

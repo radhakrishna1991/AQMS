@@ -26,9 +26,11 @@ function AlarmHistory() {
     initializeJsGrid();;
   }, [grid]);
 
-  const GetParameters = function () {
-    fetch(CommonFunctions.getWebApiUrl()+ "api/ParametersList", {
+  const GetParameters = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/ParametersList", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -58,8 +60,10 @@ function AlarmHistory() {
     document.getElementById('loader').style.display = "block";
     let SortOrder=sortorder==undefined || sortorder=='desc'?'asc':'desc'
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate,StartIndex: startIndex, SortOrder: SortOrder });
+    let authHeader = await CommonFunctions.getAuthHeader();
     return await fetch(CommonFunctions.getWebApiUrl()+ "api/AlarmHistory?" + params, {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

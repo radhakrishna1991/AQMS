@@ -25,21 +25,24 @@ function AddStation() {
     }
     return isvalid;
   }
-  const Stationadd = function () {
+  const Stationadd = async function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
-   let CreatedBy = currentUser.id;
+    let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status?1:0;
     let validation = Stationaddvalidation(StationName, Description);
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/Stations', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+      await fetch(CommonFunctions.getWebApiUrl() + 'api/Stations', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ StationName: StationName, Description: Description,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy }),
     }).then((response) => response.json())
@@ -68,7 +71,7 @@ function AddStation() {
 
   }
 
-  const UpdateStation = function () {
+  const UpdateStation = async function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
     let CreatedBy = currentUser.id;
@@ -78,11 +81,14 @@ function AddStation() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/Stations/' + StationId, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/Stations/' + StationId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ StationName: StationName, Description: Description,Status:status,CreatedBy:CreatedBy,ModifiedBy:ModifiedBy}),
     }).then((response) => response.json())
@@ -97,9 +103,10 @@ function AddStation() {
           toast.error('Unable to update the Station. Please contact adminstrator');
         }
       }).catch((error) => toast.error('Unable to update the Station. Please contact adminstrator'));
+    
   }
 
-  const DeleteStation = function (item) {
+  const DeleteStation =  function (item) {
     Swal.fire({
       title: "Are you sure?",
       text: ("You want to delete this Station !"),
@@ -109,11 +116,13 @@ function AddStation() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.id;
-          fetch(CommonFunctions.getWebApiUrl()+ 'api/Stations/' + id, {
-            method: 'DELETE'
+          let authHeader = await CommonFunctions.getAuthHeader();
+          await fetch(CommonFunctions.getWebApiUrl()+ 'api/Stations/' + id, {
+            method: 'DELETE',
+            headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -123,12 +132,15 @@ function AddStation() {
                 toast.error('Unable to delete Station. Please contact adminstrator');
               }
             }).catch((error) => toast.error('Unable to delete Station. Please contact adminstrator'));
+          
         }
       });
   }
-  const GetStation = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
+  const GetStation = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
       method: 'GET',
+      headers: authHeader ,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

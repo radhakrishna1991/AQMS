@@ -9,9 +9,11 @@ function AppLogHistory() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
 
-  const GetAppLogLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistory", {
+  const GetAppLogLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistory", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -21,15 +23,17 @@ function AppLogHistory() {
       }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'));
   }
 
-  const GetAppLog = function (param) {
+  const GetAppLog = async function (param) {
     // let Fromdate = document.getElementById("fromdateid").value;
     // let Todate = document.getElementById("todateid").value;
     if(param =='reset'){
       let Fromdate="01-01-0001 0:00:00";
       let Todate="01-01-0001 0:00:00";
       let params = new URLSearchParams({ Fromdate: Fromdate, Todate: Todate});
-      fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistoryByFilter?"+ params, {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      await fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistoryByFilter?"+ params, {
         method: 'GET',
+        headers:authHeader
       }).then((response) => response.json())
         .then((data) => {
           if (data) {

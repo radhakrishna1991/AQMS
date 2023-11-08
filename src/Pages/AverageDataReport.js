@@ -42,10 +42,12 @@ function AverageDataReport() {
 
 
   useEffect(() => {
-
-    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAverageLookupData")
-
-      .then((response) => response.json())
+    async function fetchData() {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      await fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAverageLookupData",{
+        method: 'GET',
+        headers: authHeader ,
+      }).then((response) => response.json())
 
       .then((data) => {
 
@@ -89,7 +91,8 @@ function AverageDataReport() {
       })
 
       .catch((error) => console.log(error));
-
+    }
+    fetchData();
     // initializeJsGrid();
 
   }, []);
@@ -314,10 +317,11 @@ function AverageDataReport() {
           setListReportData(data1);
 
         } */
-
+        let authHeader = await CommonFunctions.getAuthHeader();
     return await fetch(url + params, {
 
       method: 'GET',
+      headers:authHeader
 
     }).then((response) => response.json())
 
@@ -438,7 +442,7 @@ function AverageDataReport() {
 
   }
 
-  const DownloadPDF = function () {
+  const DownloadPDF = async function () {
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -489,9 +493,11 @@ function AverageDataReport() {
       width: "100%"
     };
     var b = 0;
+    let authHeader = await CommonFunctions.getAuthHeader();
     let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval });
-    fetch(CommonFunctions.getWebApiUrl() + 'api/AirQuality/ExportToPDFAverageData?' + params, {
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/AirQuality/ExportToPDFAverageData?' + params, {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((pdfdata) => {
         if (pdfdata) {

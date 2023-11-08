@@ -10,9 +10,11 @@ function UserLogHistory() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
 
-  const GetUserLogLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistory", {
+  const GetUserLogLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistory", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -29,7 +31,7 @@ function UserLogHistory() {
       }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'));
   }
 
-  const GetUserLog = function (param) {
+  const GetUserLog = async function (param) {
    
     let UserName = $("#userid").val();
     if (UserName.length > 0) {
@@ -46,9 +48,11 @@ function UserLogHistory() {
       }, 10);
       UserName='';
     }
+    let authHeader = await CommonFunctions.getAuthHeader();
   let params = new URLSearchParams({ UserName: UserName, Fromdate: Fromdate, Todate: Todate});
-    fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistoryByFilter?"+ params, {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistoryByFilter?"+ params, {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

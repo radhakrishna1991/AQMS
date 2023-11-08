@@ -26,9 +26,11 @@ function DeviceAlarams() {
   });
 
 
-  const GetDeviceAlarmsLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/DevicesAlarmlookup", {
+  const GetDeviceAlarmsLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/DevicesAlarmlookup", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -124,11 +126,13 @@ function DeviceAlarams() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.deviceId;
-          fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteDeviceAlarm/' + id, {
-            method: 'DELETE'
+          let authHeader = await CommonFunctions.getAuthHeader();
+          await fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteDeviceAlarm/' + id, {
+            method: 'DELETE',
+            headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -176,7 +180,7 @@ function DeviceAlarams() {
     return isvalid;
   }
 
-  const DeviceAlarmadd = function () {
+  const DeviceAlarmadd = async function () {
     let deviceid = document.getElementById("devicename").value;
     let modelid = document.getElementById("modelname").value;
     let alarmid = $("#alarmname").val();
@@ -190,12 +194,14 @@ function DeviceAlarams() {
     if (!validation) {
       return false;
     }
-
-    fetch(CommonFunctions.getWebApiUrl() + 'api/DevicesAlarm', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/DevicesAlarm', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify(parameterArray),
     }).then((response) => response.json())
@@ -212,7 +218,7 @@ function DeviceAlarams() {
       }).catch((error) => toast.error('Unable to add the Device Alarm. Please contact adminstrator'));
   }
 
-  const UpdateDeviceAlarm = function () {
+  const UpdateDeviceAlarm = async function () {
     let deviceid = document.getElementById("devicename").value;
     let modelid = document.getElementById("modelname").value;
     let alarmid = $("#alarmname").val();
@@ -227,11 +233,14 @@ function DeviceAlarams() {
     if (!validation) {
       return false;
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceAlarm/' + DeviceAlarmId, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceAlarm/' + DeviceAlarmId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify(parameterArray),
     }).then((response) => response.json())

@@ -47,8 +47,12 @@ function StasticsReport() {
   const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
     "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
   useEffect(() => {
-    fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData")
-      .then((response) => response.json())
+    async function fetchData() {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData",{
+      method: 'GET',
+      headers: authHeader ,
+     }).then((response) => response.json())
       .then((data) => {
         setAllLookpdata(data);
         setStations(data.listStations);
@@ -75,10 +79,11 @@ function StasticsReport() {
         //setcriteria(data.listPollutentsConfig);
       })
       .catch((error) => console.log(error));
+    }
+    fetchData();
     // initializeJsGrid();
   }, []);
-  const GenarateChart = function () {
-
+  const GenarateChart = async function () {
     
     let Station = $("#stationid").val();
     let Pollutent = $("#pollutentid").val();
@@ -132,11 +137,14 @@ function StasticsReport() {
     } else if (Criteria == "Raw") {
       suburl = "getRawData";
     }
-    fetch(url + suburl, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(url + suburl, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ StationName: Station.toString(), FromDate: Fromdate, ToDate: Todate, Criteria: Criteria, DataFilter: Interval, Pollutant: Pollutent.toString(), DataFilterID:Intervaltype }),
     }).then((response) => response.json())

@@ -26,9 +26,11 @@ function ParameterAlarams() {
   });
 
 
-  const GetParameterAlarmsLookup = function () {
-    fetch(CommonFunctions.getWebApiUrl() + "api/ParameterAlarmlookup", {
+  const GetParameterAlarmsLookup = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/ParameterAlarmlookup", {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -125,11 +127,13 @@ function ParameterAlarams() {
       confirmButtonText: "Yes",
       closeOnConfirm: false
     })
-      .then(function (isConfirm) {
+      .then(async function (isConfirm) {
         if (isConfirm.isConfirmed) {
           let id = item.parameterID;
-          fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteParameterAlarm/' + id, {
-            method: 'DELETE'
+          let authHeader = await CommonFunctions.getAuthHeader();
+          await fetch(CommonFunctions.getWebApiUrl() + 'api/DeleteParameterAlarm/' + id, {
+            method: 'DELETE',
+            headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
@@ -177,7 +181,7 @@ function ParameterAlarams() {
     return isvalid;
   }
 
-  const ParameterAlarmadd = function () {
+  const ParameterAlarmadd = async function () {
     let deviceid = document.getElementById("devicename").value;
     let parameterid = document.getElementById("parametername").value;
     let alarmid = $("#alarmname").val();
@@ -190,12 +194,14 @@ function ParameterAlarams() {
     for (var i = 0; i < alarmid.length; i++) {
       parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, CustomerAlarmID: alarmid[i], IsEnable: enable });
     }
-
-    fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify(parameterArray),
     }).then((response) => response.json())
@@ -212,7 +218,7 @@ function ParameterAlarams() {
       }).catch((error) => toast.error('Unable to add the Device Alarm. Please contact adminstrator'));
   }
 
-  const UpdateParameterAlarm = function () {
+  const UpdateParameterAlarm = async function () {
     let deviceid = document.getElementById("devicename").value;
     let parameterid = document.getElementById("parametername").value;
     let alarmid = $("#alarmname").val();
@@ -227,11 +233,14 @@ function ParameterAlarams() {
     for (var i = 0; i < alarmid.length; i++) {
       parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, CustomerAlarmID: alarmid[i], IsEnable: enable });
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm/' + ParameterAlarmId, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm/' + ParameterAlarmId, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify(parameterArray),
     }).then((response) => response.json())

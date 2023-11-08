@@ -19,71 +19,39 @@ import CommonFunctions from "../utils/CommonFunctions";
     if (!form.checkValidity()) {
         form.classNameList.add('was-validated');
     } else {
-        fetch(CommonFunctions.getWebApiUrl()+ "api/Users/" + UserName, {
-          method: 'GET',
-        }).then((response) => response.json())
-              .then((data) => {
-                if (data != null) {
-                  if(data.users==null)
-                  {
-                    toast.error('User name or password is incorrect. Please try again', {
-                      position: "top-right",
-                      autoClose: 5000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                      theme: "colored",
-                    });
-                    return false;
-                  }
-
-                  let uPassword = data.users.filter(x => x.userName.toLowerCase() == UserName.toLowerCase());
-                  let doesPasswordMatch = bcrypt.compareSync(Password, uPassword[0].password);
-                    if(!doesPasswordMatch){
-                          toast.error('User name or password is incorrect. Please try again', {
-                            position: "top-right",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: true,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "colored",
-                          });
-                          return false;
-                    }
-                    else{
-                        sessionStorage.setItem("UserData", JSON.stringify(data.users[0]));
-                        sessionStorage.setItem("Token",data.token);
-                        console.log(data.token);
-                        //sessionStorage.setItem("TokenExpTime",data.tokenExpirationTime);
-                        var currentDate=new Date();
-                        //alert(currentDate);
-                        //sessionStorage.setItem("LoggedInTime",currentDate);
-                        currentDate.setMinutes(currentDate.getMinutes()+data.tokenExpirationTime-1);
-                        
-                        sessionStorage.setItem("TokenExpTime",currentDate);
-                        window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
-                    } 
-                }
-                else {
-                    toast.error('User name or password is incorrect. Please try again', {
-                      position: "top-right",
-                      autoClose: 5000,
-                      hideProgressBar: false,
-                      closeOnClick: true,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                      theme: "colored",
-                    });
-                    return false;
-                  }
-                
-              }).catch((error) => toast.error('Unable to connect Database. Please contact adminstrator'));
+      fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/Login', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ UserName: UserName, Password: Password }),
+      }).then((response) => response.json())
+        .then((data) => {
+          if (data != null) {
+              sessionStorage.setItem("UserData", JSON.stringify(data.users[0]));
+              sessionStorage.setItem("Token",data.token);
+              var currentDate=new Date();
+              currentDate.setMinutes(currentDate.getMinutes()+data.tokenExpirationTime-1);
+              sessionStorage.setItem("TokenExpTime",currentDate);
+              window.location.href =process.env.REACT_APP_BASE_URL+ "/Dashboard";
+          } else {
+            toast.error('User name or password is incorrect. Please try again', {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+            return false;
           }
+        }).catch((error) => 
+            toast.error('Unable to connect Database. Please contact adminstrator')
+        );
+     }
   }
 
  

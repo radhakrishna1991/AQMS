@@ -21,9 +21,13 @@ function LiveDataReports() {
   Itemcount.current = ItemCount;
   var dataForGrid = [];
   useEffect(() => {
+    async function fetchData() {
+      let authHeader = await CommonFunctions.getAuthHeader();
     let params = new URLSearchParams({ Pollutent: "", StartIndex: 0 });
-    fetch(CommonFunctions.getWebApiUrl() + "api/LiveDataLookup?" + params)
-      .then((response) => response.json())
+    await fetch(CommonFunctions.getWebApiUrl() + "api/LiveDataLookup?" + params,{
+      method: 'GET',
+      headers: authHeader ,
+    }).then((response) => response.json())
       .then((data) => {
         if (data != null) {
           setAllLookpdata(data);
@@ -55,7 +59,8 @@ function LiveDataReports() {
 
       })
       .catch((error) => console.log(error));
-
+    }
+    fetchData();
   }, []);
   useEffect(() => {
     initializeJsGrid();
@@ -163,8 +168,10 @@ function LiveDataReports() {
     document.getElementById('loader').style.display = "block";
     let params = new URLSearchParams({ Pollutent: Pollutent, StartIndex: startIndex, SortOrder: sortorder });
     let url = CommonFunctions.getWebApiUrl() + "api/LiveDataReport?"
+    let authHeader = await CommonFunctions.getAuthHeader();
     return await fetch(url + params, {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {

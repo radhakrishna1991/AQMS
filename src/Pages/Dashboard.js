@@ -270,15 +270,17 @@ function Dashboard() {
     $('#alertcode').modal('show');
   }
 
-  const Devicecalibration = function (param) {
+  const Devicecalibration = async function (param) {
     let parameters = ListAllData.listPollutents.filter(x => x.deviceID == param.id);
     let listcommands = ListAllData.listCommands.filter(x => x.deviceModelId == param.deviceModel);
     let listcalibartioncommands = ListAllData.listCalibrationCommands;
     setInfoParameters(parameters);
     setCommands(listcommands);
     setCalibrationsCommands(listcalibartioncommands);
-    fetch(CommonFunctions.getWebApiUrl() + "api/Calibration?Deviceid=" + param.id, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Calibration?Deviceid=" + param.id, {
       method: 'GET',
+      headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -400,7 +402,7 @@ function Dashboard() {
     }
     return isvalid;
   }
-  const SaveCalibrationSequence = function () {
+  const SaveCalibrationSequence = async function () {
     let finaldata = [];
     for (let i = 1; i <= 5; i++) {
       let data = Getformvalues(i);
@@ -421,11 +423,14 @@ function Dashboard() {
       }
       finaldata.push(data);
     }
-    fetch(CommonFunctions.getWebApiUrl() + 'api/Calibration', {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/Calibration', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify(finaldata),
     }).then((response) => response.json())
@@ -639,13 +644,16 @@ function Dashboard() {
     // } 
   }
 
-  const DeviceServiceMode = function (param) {
+  const DeviceServiceMode = async function (param) {
     let servicemode = !param.serviceMode;
-    fetch(CommonFunctions.getWebApiUrl() + 'api/Devices/ServiceMode/' + param.id, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/Devices/ServiceMode/' + param.id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ ServiceMode: servicemode }),
     }).then((response) => response.json())
@@ -662,13 +670,16 @@ function Dashboard() {
       }).catch((error) => toast.error('Unable to change the service mode. Please contact adminstrator'));
 
   }
-  const ParameterEnable = function (param) {
+  const ParameterEnable = async function (param) {
     let isEnable = !param.isEnable;
-    fetch(CommonFunctions.getWebApiUrl() + 'api/Parametres/IsEnable/' + param.id, {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/Parametres/IsEnable/' + param.id, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({ IsEnable: isEnable }),
     }).then((response) => response.json())
