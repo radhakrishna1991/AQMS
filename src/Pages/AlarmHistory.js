@@ -70,7 +70,7 @@ function AlarmHistory() {
           let finallist=data.listAlarms;
           Itemcount.current = data.count;
           let data1 = finallist.map((x) => { x.startDate = x.startDate.replace("T", " ").substring(0, 19); return x; });
-          let data2 = data1.map((x) => { x.endDate = x.endDate.replace("T", " ").substring(0, 19); return x; });
+          let data2 = data1.map((x) => { x.endDate = x.endDate?.replace("T", " ").substring(0, 19); return x; });
           dataForGrid=data2;
           document.getElementById('loader').style.display = "none";
           return dataForGrid;

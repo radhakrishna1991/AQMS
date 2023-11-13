@@ -627,7 +627,7 @@ function AverageDataReport() {
         // Create a link element and trigger a click on it to download the file
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-       link.download = "filename.xlsx"; // Set the desired filename
+       link.download = Date.now()+".xlsx"; // Set the desired filename
         link.click();
       })
       .catch(error => console.error('Error:', error));

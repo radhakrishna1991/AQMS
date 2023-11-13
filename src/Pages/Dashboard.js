@@ -161,6 +161,7 @@ function Dashboard() {
         ListAllDataCopy.current.listDevices = data.listDevices;
         ListAllDataCopy.current.listAlarms = data.listAlarms;
         ListAllDataCopy.current.listPollutents = data.listPollutents;
+        ListAllDataCopy.current.rainLiveValue=data.rainLiveValue;
       }
     }).catch((error) =>
       toast.error('Unable to get the data. Please contact adminstrator')
@@ -1460,9 +1461,17 @@ function Dashboard() {
                             (i.deviceID == x.id && i.status == 1) && (
                               <div className="d-flex justify-content-between mt-2">
                                 <div className="parameter"><span onClick={() => ParameterEnable(i)}>{i.isEnable && (<i className={"bi bi-check2 " + (UserRole ? "" : "disable")} ></i>)} {!i.isEnable && (<i className={"bi bi-x-lg " + (UserRole ? " text-danger" : "disable")} ></i>)}</span> <span>{i.parameterName}</span></div>
+                                {(i.parameterName.toUpperCase() == "RAIN" && i.parseFunction == "") ? (
                                 <div className="values"><button className="btn1" style={{ backgroundColor: i.flag != null ? ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode : "#FFFFFF" }} onClick={Codesinformation} >{i.flag == null ? "-" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
-                                  <button className="btn2">{i.parameterValue == null ? '-' : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub></div>
-                              </div>
+                                  <button className="btn2">{ListAllData.rainLiveValue == null ? '-' : ListAllData.rainLiveValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub>
+                                  </div>
+                                  ):
+                                  (
+                                <div className="values"><button className="btn1" style={{ backgroundColor: i.flag != null ? ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].colorCode : "#FFFFFF" }} onClick={Codesinformation} >{i.flag == null ? "-" : ListAllData.listFlagCodes.filter(y => y.id == i.flag)[0].code}</button>
+                                  <button className="btn2">{i.parameterValue == null ? '-' : i.parameterValue.toFixed(window.DashboardLivenumberround)}</button>&nbsp;<sub>{ListAllData.listReportedUnits.filter(x => x.id === i.unitID).length > 0 ? ListAllData.listReportedUnits.filter(x => x.id === i.unitID)[0].unitName.toLowerCase() : ""}</sub>
+                                  </div>
+                                  )}
+                                  </div>
                             )
                           )}
                         </div>
