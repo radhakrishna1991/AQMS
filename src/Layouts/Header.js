@@ -26,13 +26,15 @@ function Header() {
         }
       })
   }
-  /*useEffect(() => {
+  useEffect(() => {
     GetStation();
   }, [])
 
-  const GetStation = function () {
+  const GetStation = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
     fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
       method: 'GET',
+      headers:authHeader,
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
@@ -40,7 +42,8 @@ function Header() {
           setListStations(station);
         }
       }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
-  }*/
+  }
+  
 
 
 

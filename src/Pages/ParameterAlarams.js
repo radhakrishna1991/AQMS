@@ -192,7 +192,7 @@ function ParameterAlarams() {
       return false;
     }
     for (var i = 0; i < alarmid.length; i++) {
-      parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, CustomerAlarmID: alarmid[i], IsEnable: enable });
+      parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, ParameterAlarmID: alarmid[i], IsEnable: enable });
     }
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm', {
@@ -231,7 +231,7 @@ function ParameterAlarams() {
       return false;
     }
     for (var i = 0; i < alarmid.length; i++) {
-      parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, CustomerAlarmID: alarmid[i], IsEnable: enable });
+      parameterArray.push({ DeviceID: deviceid, ParameterID: parameterid, ParameterAlarmID: alarmid[i], IsEnable: enable });
     }
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + 'api/ParameterAlarm/' + ParameterAlarmId, {
@@ -277,7 +277,7 @@ function ParameterAlarams() {
       setChangedAlarmData(ParameterAlarm);
       var AlarmChecked = [];
       for (var h = 0; h < parameterAlarm.length; h++) {
-          var alarmid = ParameterAlarmData[h].customerAlarmID;
+          var alarmid = ParameterAlarmData[h].parameterAlarmID;
           AlarmChecked.push(alarmid);
       }
       setTimeout(function () {
