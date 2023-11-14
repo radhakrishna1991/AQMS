@@ -35,6 +35,7 @@ const CommonFunctions = {
         try {
           const response = await fetch(CommonFunctions.getWebApiUrl() + "Token", {
             method: 'POST',
+       //     headers:{ Authorization: 'Bearer ' + token, 'app-origin': 'http://localhost:3000' },
           });
     
           if (response.ok) {
