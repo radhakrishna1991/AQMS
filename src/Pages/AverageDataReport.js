@@ -142,8 +142,6 @@ function AverageDataReport() {
 
     var layout = [];
 
-    var gridheadertitle;
-    let Selectedparameter;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true });
 
     for (var i = 0; i < SelectedPollutents.length; i++) {
@@ -152,21 +150,17 @@ function AverageDataReport() {
 
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
 
-      gridheadertitle = SelectedPollutents[i] + "<br>" + unitname[0].unitName
+      var gridheadertitle = SelectedPollutents[i] + "<br>" + unitname[0].unitName
       let Selectedparametersplit = SelectedPollutents[i].split(".");
-      Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].replace(/\./g, '_@_') : SelectedPollutents[i];
+      let Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].replace(/\./g, '_@_') : SelectedPollutents[i];
 
       layout.push({
-
         // name: SelectedPollutents[i], title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
         name: Selectedparameter, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
-
-          let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
-
+          let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Selectedparameter + "flag"]);
+        //  let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
-
           return $("<td>").css("background-color", bgcolor).append(item);
-
         }
 
       });

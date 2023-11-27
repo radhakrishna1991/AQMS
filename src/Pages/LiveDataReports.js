@@ -98,17 +98,18 @@ function LiveDataReports() {
   const initializeJsGrid = function () {
     dataForGrid = [];
     var layout = [];
-    var gridheadertitle;
-    let Selectedparameter;
     layout.push({ name: "Date", title: "Date", type: "text", width: "140px", sorting: true, });
     for (var i = 0; i < SelectedPollutents.length; i++) {
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == SelectedPollutents[i].unitID);
-      gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName;
+      var gridheadertitle = SelectedPollutents[i].parameterName + "<br>" + unitname[0].unitName;
       let Selectedparametersplit = SelectedPollutents[i].parameterName.split(".");
-      Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].parameterName.replace(/\./g, '_@_') : SelectedPollutents[i].parameterName;
+      let Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].parameterName.replace(/\./g, '_@_') : SelectedPollutents[i].parameterName;
+     
       layout.push({
         name: Selectedparameter, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
-          let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
+        let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Selectedparameter + "flag"]);
+          //let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
+          console.log(item, value,value[Selectedparameter]); 
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
           return $("<td>").css("background-color", bgcolor).append(item);
         }
@@ -203,7 +204,7 @@ function LiveDataReports() {
               if (temp >= 0) {
                 //dataForGrid[temp][paramater[0].parameterName] = roundedNumber;
                 dataForGrid[temp][Selectedparameter] = roundedNumber;
-                dataForGrid[temp][paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
+                dataForGrid[temp][Selectedparameter + "flag"] = data1[k].loggerFlags;
               } else {
                 //obj[paramater[0].parameterName] = roundedNumber;
 
