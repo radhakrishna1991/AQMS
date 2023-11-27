@@ -162,7 +162,6 @@ function AverageDataReport() {
           let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
           return $("<td>").css("background-color", bgcolor).append(item);
         }
-
       });
 
 
