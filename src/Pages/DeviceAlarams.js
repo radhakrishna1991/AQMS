@@ -264,8 +264,8 @@ function DeviceAlarams() {
     setEnableValue(enable);
     setChangedAlarmData([]);
     setTimeout(() => {
-      document.getElementById("devicename").value = param.id;
-      ChangeDeviceName();
+      document.getElementById("devicename").value = param.deviceId;
+      ChangeDeviceName(param);
       setTimeout(function () {
         document.getElementById("modelname").value = param.modelId;
       }, 1);
@@ -273,7 +273,7 @@ function DeviceAlarams() {
      // document.getElementById("status").value = param.status;
 
       var AlarmArray = [];
-      var devicemodelid = Devices.filter(x => x.id == param.id);
+      var devicemodelid = Devices.filter(x => x.id == param.deviceId);
       if (devicemodelid.length > 0) {
         AlarmArray = DeviceAlarm.filter(x => x.deviceModelId == devicemodelid[0].deviceModel);
       }

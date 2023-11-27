@@ -28,7 +28,7 @@ import CommonFunctions from "../utils/CommonFunctions";
         body: JSON.stringify({ UserName: UserName, Password: Password }),
       }).then((response) => response.json())
         .then((data) => {
-          if (data != null) {
+          if (data != null && data.users !=null) {
               sessionStorage.setItem("UserData", JSON.stringify(data.users[0]));
               sessionStorage.setItem("Token",data.token);
               var currentDate=new Date();
