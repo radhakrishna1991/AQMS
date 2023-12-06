@@ -5,7 +5,6 @@ import { toast } from 'react-toastify';
 import CommonFunctions from "../utils/CommonFunctions";
 function Header() {
   const [ListStations, setListStations] = useState([]);
-
   const user = JSON.parse(sessionStorage.getItem('UserData'));
   const sidebartoggle = (e) => {
     document.querySelector('body').classList.toggle('toggle-sidebar')
@@ -27,8 +26,29 @@ function Header() {
       })
   }
   useEffect(() => {
+  const License = JSON.parse(sessionStorage.getItem('LicenseInformation'));
+  if(License==null)
+  {
+    GetLicenseInfo();
+  }
+
+
+
     GetStation();
   }, [])
+
+  const GetLicenseInfo =async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    //let authHeader=null;
+    fetch(CommonFunctions.getWebApiUrl() + "api/ValidateLicense", {
+      method: 'GET',
+      headers:authHeader,
+    }).then((response) => response.json())
+      .then((data) => {
+       console.log(data);
+      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
+
+  }
 
   const GetStation = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
@@ -62,12 +82,7 @@ function Header() {
         <div className="headerLable">{ListStations} </div>
       )}
 
-     {/*  <div className="search-bar">
-        <form className="search-form d-flex align-items-center" method="POST" action="#">
-          <input type="text" name="query" placeholder="Search" title="Enter search keyword" />
-          <button type="submit" title="Search"><i className="bi bi-search"></i></button>
-        </form>
-      </div> */}
+    
 
       <nav className="header-nav ms-auto">
         <ul className="d-flex align-items-center">
