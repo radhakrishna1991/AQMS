@@ -5,6 +5,8 @@ import { toast } from 'react-toastify';
 import CommonFunctions from "../utils/CommonFunctions";
 function Header() {
   const [ListStations, setListStations] = useState([]);
+  const [LicenseMessage,setLicenseMessage]=useState();
+  var LisenceValidity;
   const user = JSON.parse(sessionStorage.getItem('UserData'));
   const sidebartoggle = (e) => {
     document.querySelector('body').classList.toggle('toggle-sidebar')
@@ -26,10 +28,16 @@ function Header() {
       })
   }
   useEffect(() => {
-  const License = JSON.parse(sessionStorage.getItem('LicenseInformation'));
-  if(License==null)
+    //GetLicenseInfo();
+
+
+  const licenseInfo = sessionStorage.getItem('LicenseInformation');
+  if(licenseInfo==null)
   {
     GetLicenseInfo();
+  }
+  else{
+    showLicenseMessage(JSON.parse(licenseInfo));
   }
 
 
@@ -46,9 +54,55 @@ function Header() {
     }).then((response) => response.json())
       .then((data) => {
        console.log(data);
-      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
+       sessionStorage.setItem("LicenseInformation",JSON.stringify(data));
+       setLicenseMessage(data); 
+      }).catch((error) => toast.error('Unable to get the license information. Please contact adminstrator'));
 
   }
+  function showLicenseMessage(licenseInfo)
+  {
+    /*if(!licenseInfo.IsLicenseValid)
+    {
+      setLicenseMessage("Your license file is corrupted. Please contact administrator");
+    }
+    else{*/
+      if(licenseInfo.LicenseType=="Free")
+      {
+        var licenseExpiryDate=new Date(licenseInfo.EndDate);
+        const currentDate=new Date();
+        if (licenseExpiryDate < currentDate) {
+          // Redirect to another page
+          window.location.href = 'www.google.com';
+        }
+        else{
+        var daysUntilExpiration=30;
+        setLicenseMessage(`This is a free license. You can use the application for ${daysUntilExpiration} days. Upgrade your license before ${licenseInfo.EndDate} to continue enjoying uninterrupted access.`);
+       }
+      }
+      else if(licenseInfo.LicenseType!="Free")
+      {
+        var licenseExpiryDate=new Date(licenseInfo.EndDate);
+        const currentDate=new Date();
+        const gracePeriodEndDate = new Date(licenseExpiryDate);
+        gracePeriodEndDate=gracePeriodEndDate.setMonth(licenseExpiryDate.getMonth() + 1); 
+      
+        if (licenseExpiryDate < currentDate) {
+          if(gracePeriodEndDate < currentDate)
+          {
+              setLicenseMessage("The license has expired, and the grace period has also passed. The system won't work.")
+          }
+          else{
+            setLicenseMessage("The license has expired, but you are within the grace period. System will work for the next 1 month.");
+          }
+
+        }
+        
+      }
+     // setLicenseMessage("License valid");
+    //}
+  }
+
+
 
   const GetStation = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
@@ -76,13 +130,21 @@ function Header() {
           </NavLink>
         <i className="bi bi-list toggle-sidebar-btn" onClick={sidebartoggle}></i>
       </div>
+        
+     {/*  <div className="col-lg-4" style={{ flex:-1, textAlign:"center",marginLeft:"50px"}}>
+        <marquee class="scrollmarque" id="LisenceMessage">{ LisenceValidity }</marquee>
+      </div> */}
+
+
       {/* <div> Station Name</div> */}
       &nbsp;&nbsp;
       {ListStations && (
         <div className="headerLable">{ListStations} </div>
       )}
 
-    
+{ <div className="d-flex align-items-center justify-content-between">
+        <div style={{ color: "white"}} id="LisenceMessage">{ LicenseMessage }</div>
+      </div> }
 
       <nav className="header-nav ms-auto">
         <ul className="d-flex align-items-center">
