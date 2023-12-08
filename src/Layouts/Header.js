@@ -55,7 +55,8 @@ function Header() {
       .then((data) => {
        console.log(data);
        sessionStorage.setItem("LicenseInformation",JSON.stringify(data));
-       setLicenseMessage(data); 
+      // setLicenseMessage(data); 
+      showLicenseMessage(data);
       }).catch((error) => toast.error('Unable to get the license information. Please contact adminstrator'));
 
   }
