@@ -29,8 +29,6 @@ function Header() {
   }
   useEffect(() => {
     //GetLicenseInfo();
-
-
   const licenseInfo = sessionStorage.getItem('LicenseInformation');
   if(licenseInfo==null)
   {
@@ -39,9 +37,6 @@ function Header() {
   else{
     showLicenseMessage(JSON.parse(licenseInfo));
   }
-
-
-
     GetStation();
   }, [])
 
@@ -73,11 +68,12 @@ function Header() {
         const currentDate=new Date();
         if (licenseExpiryDate < currentDate) {
           // Redirect to another page
-          window.location.href = 'www.google.com';
+         // window.location.href = 'www.google.com';
+         setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
         }
         else{
         var daysUntilExpiration=30;
-        setLicenseMessage(`This is a free license. You can use the application for ${daysUntilExpiration} days. Upgrade your license before ${licenseInfo.EndDate} to continue enjoying uninterrupted access.`);
+        setLicenseMessage(`This is a trail license mode. For testing and non-commercial use only`);
        }
       }
       else if(licenseInfo.LicenseType!="Free")
@@ -90,7 +86,7 @@ function Header() {
         if (licenseExpiryDate < currentDate) {
           if(gracePeriodEndDate < currentDate)
           {
-              setLicenseMessage("The license has expired, and the grace period has also passed. The system won't work.")
+            setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
           }
           else{
             setLicenseMessage("The license has expired, but you are within the grace period. System will work for the next 1 month.");
