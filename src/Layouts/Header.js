@@ -3,9 +3,12 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { toast } from 'react-toastify';
 import CommonFunctions from "../utils/CommonFunctions";
+import License from "../Pages/License";
+import { redirect } from 'react-router-dom';
 function Header() {
   const [ListStations, setListStations] = useState([]);
-  const [LicenseMessage,setLicenseMessage]=useState();
+  const [LicenseMessage,setLicenseMessage]=useState("");
+  const [redirectToLicense, setRedirectToLicense] = useState(false);
   var LisenceValidity;
   const user = JSON.parse(sessionStorage.getItem('UserData'));
   const sidebartoggle = (e) => {
@@ -59,7 +62,8 @@ function Header() {
   {
     /*if(!licenseInfo.IsLicenseValid)
     {
-      setLicenseMessage("Your license file is corrupted. Please contact administrator");
+      window.location.href =process.env.REACT_APP_BASE_URL+ "/License";
+      
     }
     else{*/
       if(licenseInfo.LicenseType=="Free")
@@ -67,9 +71,8 @@ function Header() {
         var licenseExpiryDate=new Date(licenseInfo.EndDate);
         const currentDate=new Date();
         if (licenseExpiryDate < currentDate) {
-          // Redirect to another page
-         // window.location.href = 'www.google.com';
-         setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
+        window.location.href =process.env.REACT_APP_BASE_URL+ "/License";
+        // setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
         }
         else{
         var daysUntilExpiration=30;
@@ -86,7 +89,9 @@ function Header() {
         if (licenseExpiryDate < currentDate) {
           if(gracePeriodEndDate < currentDate)
           {
-            setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
+            setLicenseMessage("redirect");
+            setRedirectToLicense(true);
+            //setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
           }
           else{
             setLicenseMessage("The license has expired, but you are within the grace period. System will work for the next 1 month.");
@@ -114,8 +119,7 @@ function Header() {
         }
       }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
   }
-  
-
+ 
 
 
   return (
@@ -139,7 +143,9 @@ function Header() {
         <div className="headerLable">{ListStations} </div>
       )}
 
-{ <div className="d-flex align-items-center justify-content-between">
+      
+
+      { <div className="d-flex align-items-center justify-content-between">
         <div style={{ color: "white"}} id="LisenceMessage">{ LicenseMessage }</div>
       </div> }
 

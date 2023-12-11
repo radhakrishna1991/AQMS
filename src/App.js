@@ -1,5 +1,5 @@
 import React, {  Suspense, lazy } from "react";
-import {  Routes, Route, Navigate } from "react-router-dom";
+import {  Routes, Route, Navigate ,useLocation } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
 import "react-datepicker/dist/react-datepicker.css";
 import './App.css';
@@ -36,15 +36,19 @@ const DeviceAlarams = lazy(() => import("./Pages/DeviceAlarams"));
 const ParameterAlarams = lazy(() => import("./Pages/ParameterAlarams"));
 const CalibrationDevice=lazy(() => import("./Pages/CalibrationDevice"));
 const AlarmHistory=lazy(() => import("./Pages/AlarmHistory"));
+const License =lazy(() => import("./Pages/License"));
 function App() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const location = useLocation();
+  const shouldRenderHeaderAndSidebar = currentUser != null && location.pathname !== "/License";
   return (
     <div>
       
-        {currentUser != null ? <Header /> : ""}
-        {currentUser != null ? <Sidenavbar /> : ""}
+      {shouldRenderHeaderAndSidebar && <Header />}
+      {shouldRenderHeaderAndSidebar && <Sidenavbar />}
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
+
           <Route   path="/" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)}  />
           <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
           <Route   path="/ResetPassword" exact element={currentUser ==null ? <ResetPassword /> : (<Navigate to="/" />)} />
@@ -78,6 +82,7 @@ function App() {
             <Route path="/DeviceAlarams" exact element={currentUser != null ? <DeviceAlarams /> : (<Navigate to="/" />)} />
             <Route path="/ParameterAlarams" exact element={currentUser != null ? <ParameterAlarams /> : (<Navigate to="/" />)} />
             <Route path="/AlarmsHistory" exact element={currentUser != null ? <AlarmHistory /> : (<Navigate to="/" />)} />
+            <Route path="/License" exact element=<License /> />
           </Routes>
         </Suspense>
       {/* </BrowserRouter> */}
