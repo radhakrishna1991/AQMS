@@ -25,10 +25,7 @@ const CommonFunctions = {
       const tokenExpTime=sessionStorage.getItem('TokenExpTime');
       const userData=sessionStorage.getItem("UserData");
       var newdate=new Date(tokenExpTime);
-      var currentDate=new Date();
-
-      console.log(userData);
-      
+      var currentDate=new Date();      
       //console.log("currentDate",currentDate);
       //console.log("exp date",tokenExpTime);
       if(currentDate >= newdate)
