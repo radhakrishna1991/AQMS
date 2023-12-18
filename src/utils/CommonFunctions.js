@@ -22,22 +22,27 @@ const CommonFunctions = {
     async  getAuthHeader()
     {
       const token = sessionStorage.getItem('Token');
-     // const LoggedInTime = sessionStorage.getItem('LoggedInTime');
       const tokenExpTime=sessionStorage.getItem('TokenExpTime');
+      const userData=sessionStorage.getItem("UserData");
       var newdate=new Date(tokenExpTime);
-
-     // var expTime=LoggedInTime.set
       var currentDate=new Date();
-      console.log("currentDate",currentDate);
-      console.log("exp date",tokenExpTime);
+
+      console.log(userData);
+      
+      //console.log("currentDate",currentDate);
+      //console.log("exp date",tokenExpTime);
       if(currentDate >= newdate)
       {
         try {
           const response = await fetch(CommonFunctions.getWebApiUrl() + "Token", {
             method: 'POST',
-       //     headers:{ Authorization: 'Bearer ' + token, 'app-origin': 'http://localhost:3000' },
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: userData,
           });
-    
+         
           if (response.ok) {
             const responseJson = await response.json();
             if (responseJson.token) {
