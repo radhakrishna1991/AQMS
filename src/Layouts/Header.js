@@ -113,7 +113,7 @@ function Header() {
   return (
     <header id="header" className="header fixed-top d-flex align-items-center">
       {!sessionStorage.getItem('UserData') ? window.location.href = "/" : ""}
-      <div className="d-flex align-items-center justify-content-between">
+      <div className="d-flex align-items-center justify-content-between header_logodiv">
       <NavLink to="/Dashboard" className="logo d-flex align-items-center">
           <img src="images/logo.png" alt="" />
           </NavLink>
@@ -128,8 +128,8 @@ function Header() {
 
       
 
-      { <div className="d-flex align-items-center justify-content-between">
-        <div style={{ color: "white"}} id="LisenceMessage">{ LicenseMessage }</div>
+      { <div className="scrolling-text d-flex align-items-center justify-content-between">
+        <div  id="LisenceMessage">{ LicenseMessage }</div>
       </div> }
 
       <nav className="header-nav ms-auto">
