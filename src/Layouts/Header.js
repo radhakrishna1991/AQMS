@@ -9,7 +9,6 @@ function Header() {
   const [ListStations, setListStations] = useState([]);
   const [LicenseMessage,setLicenseMessage]=useState("");
   const [redirectToLicense, setRedirectToLicense] = useState(false);
-  var LisenceValidity;
   const user = JSON.parse(sessionStorage.getItem('UserData'));
   const sidebartoggle = (e) => {
     document.querySelector('body').classList.toggle('toggle-sidebar')
@@ -31,7 +30,6 @@ function Header() {
       })
   }
   useEffect(() => {
-    //GetLicenseInfo();
   const licenseInfo = sessionStorage.getItem('LicenseInformation');
   if(licenseInfo==null)
   {
@@ -45,7 +43,6 @@ function Header() {
 
   const GetLicenseInfo =async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    //let authHeader=null;
     fetch(CommonFunctions.getWebApiUrl() + "api/ValidateLicense", {
       method: 'GET',
       headers:authHeader,
@@ -53,26 +50,23 @@ function Header() {
       .then((data) => {
        console.log(data);
        sessionStorage.setItem("LicenseInformation",JSON.stringify(data));
-      // setLicenseMessage(data); 
       showLicenseMessage(data);
       }).catch((error) => toast.error('Unable to get the license information. Please contact adminstrator'));
 
   }
   function showLicenseMessage(licenseInfo)
   {
-    /*if(!licenseInfo.IsLicenseValid)
+    if(!licenseInfo.IsLicenseValid)
     {
-      window.location.href =process.env.REACT_APP_BASE_URL+ "/License";
-      
+      window.location.href =process.env.REACT_APP_BASE_URL+ "/License";      
     }
-    else{*/
+    else{
       if(licenseInfo.LicenseType=="Free")
       {
         var licenseExpiryDate=new Date(licenseInfo.EndDate);
         const currentDate=new Date();
         if (licenseExpiryDate < currentDate) {
         window.location.href =process.env.REACT_APP_BASE_URL+ "/License";
-        // setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
         }
         else{
         var daysUntilExpiration=30;
@@ -84,24 +78,18 @@ function Header() {
         var licenseExpiryDate=new Date(licenseInfo.EndDate);
         const currentDate=new Date();
         const gracePeriodEndDate = new Date(licenseExpiryDate);
-        gracePeriodEndDate=gracePeriodEndDate.setMonth(licenseExpiryDate.getMonth() + 1); 
-      
+        gracePeriodEndDate=gracePeriodEndDate.setMonth(licenseExpiryDate.getMonth() + 1);       
         if (licenseExpiryDate < currentDate) {
           if(gracePeriodEndDate < currentDate)
           {
-            setLicenseMessage("redirect");
-            setRedirectToLicense(true);
-            //setLicenseMessage(`License expired or missing. Please contact IST Team (connectus@ispatialtec.com)`);
+            setLicenseMessage("redirect");            
           }
           else{
             setLicenseMessage("The license has expired, but you are within the grace period. System will work for the next 1 month.");
           }
-
-        }
-        
+        }        
       }
-     // setLicenseMessage("License valid");
-    //}
+    }
   }
 
 
@@ -132,12 +120,7 @@ function Header() {
         <i className="bi bi-list toggle-sidebar-btn" onClick={sidebartoggle}></i>
       </div>
         
-     {/*  <div className="col-lg-4" style={{ flex:-1, textAlign:"center",marginLeft:"50px"}}>
-        <marquee class="scrollmarque" id="LisenceMessage">{ LisenceValidity }</marquee>
-      </div> */}
-
-
-      {/* <div> Station Name</div> */}
+     
       &nbsp;&nbsp;
       {ListStations && (
         <div className="headerLable">{ListStations} </div>

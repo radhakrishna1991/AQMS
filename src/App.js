@@ -85,7 +85,7 @@ function App() {
             <Route path="/License" exact element=<License /> />
           </Routes>
         </Suspense>
-      {/* </BrowserRouter> */}
+      
     </div>
   );
 };
