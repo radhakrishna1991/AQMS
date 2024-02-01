@@ -37,7 +37,6 @@ function ResetPassword() {
         let NewPassword = document.getElementById("NewPassword").value;
         let ConfirmPassword = document.getElementById("confirmNewPassword").value;
         
-        Password=await handleEncrypt(Password);
         $("#lblbothmatch")[0].style.display="none"; 
         $("#lblPassword")[0].style.display="none";  
         if (NewPassword != ConfirmPassword) {            
@@ -53,10 +52,7 @@ function ResetPassword() {
             return false;
         }
         
-        
-
-        
-
+        NewPassword=await handleEncrypt(NewPassword);
         fetch(CommonFunctions.getWebApiUrl() + 'api/Users/ResetPassword', {
             method: 'POST',
             headers: {
