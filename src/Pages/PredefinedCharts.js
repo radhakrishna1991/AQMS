@@ -110,7 +110,7 @@ function PredefinedCharts() {
           chartdata.push(pollutentdata[j].PollutantValue)
         }
       }
-      datasets.push({ label: Stations[i] + " - " + pollutent, data: chartdata, borderColor: colorArray[i], backgroundColor: hexToRgbA(colorArray[i]) })
+      datasets.push({ label: Stations[i] + " - " + pollutent, data: chartdata, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)] })
     }
 
 

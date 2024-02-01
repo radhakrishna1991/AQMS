@@ -30,14 +30,14 @@ function Header() {
       })
   }
   useEffect(() => {
-  const licenseInfo = sessionStorage.getItem('LicenseInformation');
-  if(licenseInfo==null)
+  //const licenseInfo = sessionStorage.getItem('LicenseInformation');
+  /*if(licenseInfo==null)
   {
     GetLicenseInfo();
   }
   else{
     showLicenseMessage(JSON.parse(licenseInfo));
-  }
+  }*/
     GetStation();
   }, [])
 
