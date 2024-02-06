@@ -179,6 +179,13 @@ function Header() {
               <li>
                 <hr className="dropdown-divider" />
               </li> */}
+               <li>
+               <NavLink to="/ChangePassword" className="dropdown-item d-flex align-items-center cursor_pointer">
+                  <i className="bi bi-lock"></i>
+                  <span>Change Password</span>
+                </NavLink>
+              </li>
+              
               <li>
                 <a className="dropdown-item d-flex align-items-center cursor_pointer" onClick={Signout}>
                   <i className="bi bi-box-arrow-right"></i>

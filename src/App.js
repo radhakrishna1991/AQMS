@@ -53,7 +53,7 @@ function App() {
           <Route   path="/Login" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
           <Route   path="/ResetPassword" exact element={currentUser ==null ? <ResetPassword /> : (<Navigate to="/" />)} />
           <Route   path="/ForgotPassword" exact element={currentUser ==null ? <ForgotPassword /> : (<Navigate to="/" />)} />
-          <Route   path="/ChangePassword" exact element={currentUser ==null ? <ChangePassword /> : (<Navigate to="/" />)} />
+          <Route   path="/ChangePassword" exact element={currentUser !=null ? <ChangePassword /> : (<Navigate to="/" />)} />
             <Route path="*" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
             <Route path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
             <Route path="/Profile" exact element={currentUser !=null ? <Profile />: (<Navigate to="/" />)} />
@@ -82,7 +82,7 @@ function App() {
             <Route path="/DeviceAlarams" exact element={currentUser != null ? <DeviceAlarams /> : (<Navigate to="/" />)} />
             <Route path="/ParameterAlarams" exact element={currentUser != null ? <ParameterAlarams /> : (<Navigate to="/" />)} />
             <Route path="/AlarmsHistory" exact element={currentUser != null ? <AlarmHistory /> : (<Navigate to="/" />)} />
-            <Route path="/License" exact element=<License /> />
+            <Route path="/License" exact element={<License />} />
           </Routes>
         </Suspense>
       

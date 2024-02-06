@@ -115,21 +115,21 @@ import CommonFunctions from "../utils/CommonFunctions";
                         <div className="invalid-feedback">Please enter your password!</div>
                       </div>
 
-                      <div className="col-6" >
+                      <div className="col-12" >
                         <div className="form-check">
                           <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
                           <label className="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                       </div>
-                      <div className="col-6" style={{textAlign:"right"}}>
+                     {/*  <div className="col-6" style={{textAlign:"right"}}>
                         <a className="form-check-label" style={{cursor:"pointer"}} onClick={redirectToReset}>Reset Password</a>
-                      </div>
+                      </div> */}
                       <div className="col-12">
                         <button className="btn btn-primary w-100" onClick={handleLogin} type="button">Login</button>
                       </div>
-                      <div className="col-6">
+                      {/* <div className="col-6">
                          <a className="form-check-label" style={{cursor:"pointer"}} onClick={forgotPassword}>Forgot Password?</a>
-                      </div>
+                      </div> */}
                     </form>
 
                   </div>

@@ -11,6 +11,8 @@ function Adduser() {
   const [UserId, setUserId] = useState(0);
   const [UserPwd, setUserPwd] = useState(null);
   const [Notification, setNotification] = useState(true);
+  const [IsNotification, setIsNotification] = useState(window.notifications);
+  const [ChangePasswordState, setChangePasswordState] = useState(false);
   const Useraddvalidation = function (UserName, UserEmail, UserPassword, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
@@ -67,18 +69,18 @@ function Adduser() {
     let UserEmail = document.getElementById("useremail").value;
     let UserPassword = document.getElementById("userpwd").value;
     let UserRole = document.getElementById("userrole").value;
-    
-    let encryptPassword=await handleEncrypt(UserPassword);
-    let validation = Useraddvalidation(UserName, UserEmail, encryptPassword, UserRole);
+    let validation = Useraddvalidation(UserName, UserEmail, UserPassword, UserRole);
     if (!validation) {
       return false;
     }
+    //let encryptPassword=await handleEncrypt(UserPassword);
     if(UserPassword.length<8){
       $("#lblPassword")[0].style.display="block";
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + 'api/Users/' + Notification, {
+    let FinalNotification=IsNotification?Notification:false;
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/Users/' + FinalNotification, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -86,7 +88,7 @@ function Adduser() {
         Authorization: authHeader.Authorization,
         'app-origin':authHeader["app-origin"]
       },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:encryptPassword, Role: UserRole }),
+      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:UserPassword, Role: UserRole }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "useradd") {
@@ -114,6 +116,7 @@ function Adduser() {
   }
   const EditUser = function (param) {
     setUserList(false);
+    setChangePasswordState(false);
     setUserId(param.id);
     setUserPwd(param.password);
     setTimeout(() => {
@@ -155,6 +158,64 @@ function Adduser() {
           toast.error('Unable to update the user. Please contact adminstrator');
         }
       }).catch((error) => toast.error('Unable to update the user. Please contact adminstrator'));
+  }
+
+  const ChangePassword = function (param) {
+    setUserList(false);
+    setChangePasswordState(true);
+    setUserId(param.id);
+  }
+
+  const Passwordvalidation = function ( NewPassword, ConfirmPassword) {
+    let isvalid = true;
+    let form = document.querySelectorAll('#AddUserform')[0];
+    if (NewPassword == "") {
+      form.classList.add('was-validated');
+      isvalid = false;
+    }else if(NewPassword.length<8){
+      form.classList.add('was-validated');
+      $("#lblPassword")[0].style.display="block";
+      isvalid = false;
+    }else if (ConfirmPassword == "") {
+      form.classList.add('was-validated');
+      isvalid = false;
+    }else if (NewPassword != ConfirmPassword) {            
+      $("#lblbothmatch")[0].style.display="block";            
+      isvalid = false;
+  }
+    return isvalid;
+  }
+
+  const UpdateUserPassword=async(event) => {
+    //let UserName = document.getElementById("username").value;
+    let Newpassword = document.getElementById("userpwd").value;
+    let ConfirmNewpassword = document.getElementById("confirmNewPassword").value;
+    $("#lblPassword")[0].style.display="none";
+    $("#lblbothmatch")[0].style.display="none";  
+    let validation = Passwordvalidation(Newpassword,ConfirmNewpassword);
+    if (!validation) {
+      return false;
+    }
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/ChangePassword', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        Authorization: authHeader.Authorization,
+        'app-origin':authHeader["app-origin"]
+      },
+      body: JSON.stringify({ Newpassword: Newpassword,ID:UserId }),
+    }).then((response) => response.json())
+      .then((responseJson) => {
+        if (responseJson == 1) {
+          toast.success('Password changed successfully');
+          GetUser();
+          setUserList(true);
+        }else {
+          toast.error('Unable to change the password. Please contact adminstrator');
+        }
+      }).catch((error) => toast.error('Unable to change the password. Please contact adminstrator'));
   }
 
   const DeleteUser = function (item) {
@@ -238,20 +299,25 @@ function Adduser() {
           itemTemplate: function (value, item) {
             // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
 
-            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
+            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button",title: "Edit" })
               .click(function (e) {
                 EditUser(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
-
-            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
+              var $customResetButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button_custom bi bi-lock-fill",title: "Change password" })
+              .click(function (e) {
+                ChangePassword(item);
+                /* alert("ID: " + item.id); */
+                e.stopPropagation();
+              });
+            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button",title: "Delete" })
               .click(function (e) {
                 DeleteUser(item);
                 e.stopPropagation();
               });
 
-            return $("<div>").append($customEditButton).append($customDeleteButton);
+            return $("<div>").append($customEditButton).append($customResetButton).append($customDeleteButton);
             //return $result.add($customButton);
           }
         },
@@ -273,8 +339,11 @@ function Adduser() {
           {!UserList && UserId==0 && (
             <h1>Add User</h1>
           )}
-           {!UserList && UserId!=0 && (
+           {!UserList && UserId!=0 && !ChangePasswordState &&  (
             <h1>Update User</h1>
+          )}
+           {!UserList && UserId!=0 && ChangePasswordState && (
+            <h1>Change Password</h1>
           )}
           {UserList && (
             <h1>Users List</h1>
@@ -299,11 +368,13 @@ function Adduser() {
                       <div class="invalid-feedback">Please enter user name.</div>
                     </div>
                 )}
+                {!ChangePasswordState && (
                 <div className="col-md-12 mb-3">
                   <label for="useremail" className="form-label">User Email:</label>
                   <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
                   <div class="invalid-feedback" id="invalidemail">Please enter valid user email.</div>
                 </div>
+                )}
                 {!UserList && UserId==0 && (
                       <div className="col-md-12 mb-3">
                           <label for="userpassword" className="form-label">Password:</label>
@@ -312,6 +383,23 @@ function Adduser() {
                           <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
                       </div>
                 )}
+                 {ChangePasswordState && (
+                      <div className="col-md-12 mb-3">
+                          <label for="userpassword" className="form-label">New Password:</label>
+                          <input type="password" className="form-control" id="userpwd" placeholder="Enter new password" required />
+                          <div class="invalid-feedback">Please enter Password.</div>
+                          <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
+                      </div>
+                )}
+                 {ChangePasswordState && (
+                      <div className="col-md-12 mb-3">
+                          <label htmlFor="yourConfirmNewPassword" className="form-label">Confirm New Password:</label>
+                        <input type="password" name="password" className="form-control" placeholder="Enter confirm new password" id="confirmNewPassword" required />
+                        <div className="invalid-feedback">Please enter Confrim new password!</div>                        
+                        <div id="lblbothmatch" style={{display:"none"}} className="invalid-feedback">New Password and Confirm Password should Match</div>
+                        </div>
+                )}
+                 {!ChangePasswordState && (
                 <div className="col-md-12 mb-3">
                   <label for="userrole" className="form-label">User Role:</label>
                   <select className="form-select" id="userrole" required>
@@ -322,7 +410,8 @@ function Adduser() {
                   </select>
                   <div class="invalid-feedback">Please select user role.</div>
                 </div>
-                {!UserList && UserId==0 && (
+                 )}
+                {!UserList && UserId==0 && IsNotification && (
                   <div className="col-md-12 mb-3">
                     <label for="Notification" className="form-label">Notification: </label>
                     <div className="form-check d-inline-block form-switch ms-2">
@@ -340,8 +429,11 @@ function Adduser() {
                 {!UserList && UserId==0 && (
                   <button className="btn btn-primary" onClick={Useradd} type="button">Add User</button>
                   )}
-                  {!UserList && UserId!=0 && (
+                  {!ChangePasswordState && !UserList && UserId!=0 && (
                       <button className="btn btn-primary" onClick={UpdateUser} type="button">Update User</button>
+                  )}
+                   {ChangePasswordState && UserId!=0 && (
+                      <button className="btn btn-primary" onClick={UpdateUserPassword} type="button">Change Password</button>
                   )}
                 </div>
               </form>
