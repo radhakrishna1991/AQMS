@@ -97,10 +97,7 @@ function WindRose() {
               counter1 += 10;
              // console.log(filteredData);
           }
-         // setrange1(finalrange1);
-         // setrange2(finalrange2);
-         // setrange3(finalrange3);
-         // setrange4(finalrange4);
+         
           showwindrose(finalrange1,finalrange2,finalrange3,finalrange4);
           document.getElementById('loader').style.display = "none";
         }
