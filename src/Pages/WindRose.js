@@ -14,37 +14,9 @@ function WindRose() {
   const chartRef = useRef();
   const [Isdownlaod, setIsdownlaod] = useState(false);
   //const $ = window.jQuery;
-  useEffect(() => {
-    GetStation();
-   
-  }, []); // Empty dependency array ensures this effect runs once when the component mounts
-  const GetStation = async function () {
-    let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/Stations", {
-      method: 'GET',
-      headers: authHeader ,
-    }).then((response) => response.json())
-      .then((data) => {
-        if (data) {
-          setListStations(data);
-        }
-      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
-  }
-  const ReportValidations = function (Station, Fromdate, Todate) {
+  const ReportValidations = function (Fromdate, Todate) {
     let isvalid = true;
-    if (Station == "") {
-      toast.error('Please select station', {
-        position: "top-right",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "colored",
-      });
-      isvalid = false;
-    } else if (Fromdate == "") {
+    if (Fromdate == "") {
       toast.error('Please select from date', {
         position: "top-right",
         autoClose: 5000,
@@ -73,15 +45,15 @@ function WindRose() {
   }
   const GenarateReport= async function(){
     setIsdownlaod(false);
-    let StationID = document.getElementById("stationid").value;
+    //let StationID = document.getElementById("stationid").value;
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
-    let valid = ReportValidations(StationID,Fromdate, Todate);
+    let valid = ReportValidations(Fromdate, Todate);
     if (!valid) {
       return false;
     }
     document.getElementById('loader').style.display = "block";
-    let params = new URLSearchParams({StationID: StationID, FromDate: Fromdate, ToDate: Todate});
+    let params = new URLSearchParams({FromDate: Fromdate, ToDate: Todate});
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/getWindRose?"+params, {
       method: 'GET',
@@ -290,29 +262,17 @@ const chartElement = chartRef.current;
           <div className="card">
               <div className="card-body">
                 <div className="row filtergroup">
-                  <div className="col">
-                    <label className="form-label">Station Name</label>
-                    <select className="form-select stationid" id="stationid">
-                    <option selected> Select Station Name</option>
-                      {Stations.map((x, y) =>
-                        <option value={x.id} key={y}>{x.stationName}</option>
-                      )}
-                    </select>
-                  </div>
-                  
-                  <div className="col">
+                  <div className="col-md-3">
                     <label className="form-label">From Date</label>
                     <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
                   </div>
-                  <div className="col">
+                  <div className="col-md-3">
                     <label className="form-label">To Date</label>
                     <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
                   </div>
 
-                  <div className="col  mt-4">
+                  <div className="col-md-3  mt-4">
                     <button type="button" className="btn btn-primary" onClick={GenarateReport}>Generate Report</button>
-
-                  
                   </div>
                  
                 </div>
