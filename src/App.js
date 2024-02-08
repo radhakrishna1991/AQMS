@@ -37,6 +37,7 @@ const ParameterAlarams = lazy(() => import("./Pages/ParameterAlarams"));
 const CalibrationDevice=lazy(() => import("./Pages/CalibrationDevice"));
 const AlarmHistory=lazy(() => import("./Pages/AlarmHistory"));
 const License =lazy(() => import("./Pages/License"));
+const WindRose =lazy(() => import("./Pages/WindRose"));
 function App() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const location = useLocation();
@@ -82,6 +83,7 @@ function App() {
             <Route path="/DeviceAlarams" exact element={currentUser != null ? <DeviceAlarams /> : (<Navigate to="/" />)} />
             <Route path="/ParameterAlarams" exact element={currentUser != null ? <ParameterAlarams /> : (<Navigate to="/" />)} />
             <Route path="/AlarmsHistory" exact element={currentUser != null ? <AlarmHistory /> : (<Navigate to="/" />)} />
+            <Route path="/WindRose" exact element={currentUser != null ? <WindRose /> : (<Navigate to="/" />)} />
             <Route path="/License" exact element={<License />} />
           </Routes>
         </Suspense>
