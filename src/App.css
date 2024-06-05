@@ -13,6 +13,16 @@
   }
 }
 
+.password-toggle-icon {
+  position: relative;
+  font-size: 16px;
+  color: #8b8b8b;
+  cursor: pointer;
+  bottom: 26px;
+  left: 90%;
+  transform: translateY(50%);
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
