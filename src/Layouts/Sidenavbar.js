@@ -343,7 +343,12 @@ function Sidenavbar() {
                 <span>Live Data Reports</span>
               </NavLink >
             </li>
-
+            {/* <li>
+              <NavLink to="/WindRose" className="nav-item animation-forwards animate-delay-5" >
+                <i className="bi bi-circle"></i>
+                <span>Live Data Reports</span>
+              </NavLink >
+            </li> */}
 
 
            {/*  <li className="nav-item">
