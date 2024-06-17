@@ -150,7 +150,7 @@ function AverageDataReport() {
 
       let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
 
-      var gridheadertitle = SelectedPollutents[i] + "<br>" + unitname[0].unitName
+      var gridheadertitle = SelectedPollutents[i] + "<br>" + unitname[0].unitName + "<br>Min: <br>Max: "
       let Selectedparametersplit = SelectedPollutents[i].split(".");
       let Selectedparameter = Selectedparametersplit.length > 1 ? SelectedPollutents[i].replace(/\./g, '_@_') : SelectedPollutents[i];
 
@@ -210,6 +210,12 @@ function AverageDataReport() {
         loadData: async function (filter) {
 
           var startIndex = (filter.pageIndex - 1) * filter.pageSize;
+          let data = await AvgDataReport(startIndex, startIndex + filter.pageSize, filter.sortOrder);
+          updateHeaderWithMinMaxValues(data);
+          return {
+              data: data,
+              itemsCount: await Itemcount.current
+          };
 
           // console.log(filter);
 
@@ -219,13 +225,13 @@ function AverageDataReport() {
 
           // setsortOrder(filter.sortOrder);
 
-          return {
+          // return {
 
-            data: await AvgDataReport(startIndex, startIndex + filter.pageSize, filter.sortOrder),
+          //   data: await AvgDataReport(startIndex, startIndex + filter.pageSize, filter.sortOrder),
 
-            itemsCount: await Itemcount.current
+          //   itemsCount: await Itemcount.current
 
-          };
+          // };
 
         }
 
@@ -243,7 +249,41 @@ function AverageDataReport() {
 
   }
 
+  function updateHeaderWithMinMaxValues(data) {
+    // console.log(data, 'data')
+    let minMaxValues = {};
 
+    // Calculate min and max values for each pollutant
+    SelectedPollutents.forEach(item => {
+        //Object.keys(item).forEach(key => {
+            if (!minMaxValues[item]) {
+                minMaxValues[item] = { min: "", max: "" };
+            }
+            let finalitem = item.split(".").length > 1 ? item.replace(/\./g, '_@_') : item.split("@")[0];
+            let finadata = data.filter(key => key.hasOwnProperty(finalitem));
+            // console.log(finadata, 'finadata')
+            if(finadata.length>0){
+                 minMaxValues[item].min = finadata[0][finalitem+"minValue"]==null?"":finadata[0][finalitem+"minValue"];
+                minMaxValues[item].max = finadata[0][finalitem+"maxValue"]==null?"":finadata[0][finalitem+"maxValue"];
+            }
+        });
+    //});
+    // Update the header
+    Object.keys(minMaxValues).forEach(key => {
+        if (key !== "Date" && key !== " ") {
+          let headerCell = $('th').filter(function() {
+            let finaltext =$(this).html().split("<br>")[0];
+            let finalparametersplit = finaltext.split(".");
+            let finalparameter = finaltext;
+            return finalparameter === key.split("@")[0];
+        });
+            if (headerCell.length > 0) {
+                let unitname = headerCell.html().split("<br>")[1];
+                headerCell.html(`${key.split("@")[0]}<br>${unitname}<br>Min: ${minMaxValues[key].min}<br>Max: ${minMaxValues[key].max}`);
+            }
+        }
+    });
+}
 
 
   const generateDatabaseDateTime = function (date) {
@@ -347,17 +387,25 @@ function AverageDataReport() {
             if (paramater.length > 0) {
 
               let roundedNumber = 0;
+              let minValue = 0;
+              let maxValue = 0;
 
               let digit = window.decimalDigit
 
               if (window.TruncateorRound == "RoundOff") {
 
                 let num = data1[k].parametervalue;
+                let minnum = data1[k].minValue;
+                let maxnum = data1[k].maxValue;
                 roundedNumber = num == null ? num : num.toFixed(digit);
+                minValue = minnum == null ? minnum : minnum.toFixed(digit);
+                maxValue = maxnum == null ? maxnum : maxnum.toFixed(digit);
               }
 
               else {
                 roundedNumber = data1[k].parametervalue == null ? data1[k].parametervalue : CommonFunctions.truncateNumber(data1[k].parametervalue, digit);
+                minValue = data1[k].minValue == null ? data1[k].minValue : CommonFunctions.truncateNumber(data1[k].minValue, digit);
+                maxValue = data1[k].maxValue == null ? data1[k].maxValue : CommonFunctions.truncateNumber(data1[k].maxValue, digit);
               }
               let Selectedparametersplit = paramater[0].parameterName.split(".")
               let Selectedparameter = Selectedparametersplit.length > 1 ? paramater[0].parameterName.replace(/\./g, '_@_') : paramater[0].parameterName;
@@ -368,7 +416,8 @@ function AverageDataReport() {
                 dataForGrid[temp][Selectedparameter] = roundedNumber;
 
                 dataForGrid[temp][paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
-
+                dataForGrid[temp][Selectedparameter + "minValue"] = minValue;
+                dataForGrid[temp][Selectedparameter + "maxValue"] = maxValue;
               } else {
 
                 //obj[paramater[0].parameterName] = roundedNumber;
@@ -376,7 +425,8 @@ function AverageDataReport() {
                 //obj[paramater[0].parameterName + "flag"] = data1[k].loggerFlags;
                 obj[Selectedparameter] = roundedNumber;
                 obj[Selectedparameter + "flag"] = data1[k].loggerFlags;
-
+                obj[Selectedparameter + "minValue"] = minValue;
+                obj[Selectedparameter + "maxValue"] = maxValue;
                 obj["Date"] = data1[k].interval;
                 dataForGrid.push(obj);
 

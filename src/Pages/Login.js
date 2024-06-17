@@ -1,15 +1,45 @@
 
-import React from "react";
+import React, {useState, useEffect} from "react";
 //import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import bcrypt from 'bcryptjs';
 import CommonFunctions from "../utils/CommonFunctions";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 //function Login() {
   
   const Login = ({ handleAuthentication }) => {
   //const Navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("rememberedUsername");
+    const storedPassword = localStorage.getItem("rememberedPassword");
+    if (storedUsername && storedPassword) {
+      setUsername(storedUsername);
+      setPassword(storedPassword);
+      setRememberMe(true);
+    }
+  }, []);
+
+
+    const togglePasswordVisibility = () => {
+      setPasswordVisible(!passwordVisible);
+    };
+
+
   const handleLogin = async(event) => {
+    if (rememberMe) {
+      localStorage.setItem("rememberedUsername", username);
+      localStorage.setItem("rememberedPassword", password);
+    } else {
+      localStorage.removeItem("rememberedUsername");
+      localStorage.removeItem("rememberedPassword");
+    }
     let form = document.querySelectorAll('#Loginform')[0];
     let UserName = document.getElementById("UserName").value;
     let Password = document.getElementById("Password").value;
@@ -104,20 +134,25 @@ import CommonFunctions from "../utils/CommonFunctions";
                         <label htmlFor="yourUsername" className="form-label">Username</label>
                         <div className="input-group has-validation">
                           <span className="input-group-text" id="inputGroupPrepend">@</span>
-                          <input type="text" name="username" className="form-control required" id="UserName" required />
+                          <input type="text" name="username" className="form-control required" id="UserName" value={username} onChange={(e) => setUsername(e.target.value)} required />
                           <div className="invalid-feedback">Please enter your username.</div>
                         </div>
                       </div>
 
                       <div className="col-12">
                         <label htmlFor="yourPassword" className="form-label">Password</label>
-                        <input type="password" name="password" className="form-control" id="Password" required />
+                        <div>
+                        <input type={passwordVisible ? 'text' : 'password'} name="password" className="form-control" id="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+                        <span className="password-toggle-icon" onClick={togglePasswordVisibility}>
+                          <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
+                          </span>
+                          </div>
                         <div className="invalid-feedback">Please enter your password!</div>
                       </div>
 
                       <div className="col-12" >
                         <div className="form-check">
-                          <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" />
+                          <input className="form-check-input" type="checkbox" name="remember" value="true" id="rememberMe" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)}/>
                           <label className="form-check-label" for="rememberMe">Remember me</label>
                         </div>
                       </div>
