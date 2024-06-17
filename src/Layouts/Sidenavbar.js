@@ -97,6 +97,18 @@ function Sidenavbar() {
               </NavLink >
             </li>
             <li>
+              <NavLink to="/AddInstruments" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Instruments</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/AddDrivers" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Drivers</span>
+              </NavLink >
+            </li>
+            <li>
               <NavLink to="/AddParameter" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Parameters</span>
@@ -313,12 +325,13 @@ function Sidenavbar() {
                 <span>Statistical Reports</span>
               </NavLink >
             </li>
-            {/* <li>
+             <li>
               <NavLink to="/PredefinedCharts" className="nav-item animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Pre-Defned Charts</span>
               </NavLink >
-            </li> <li>
+            </li>
+            {/* <li>
               <NavLink to="/DetailedAnalysisReports" className="nav-item animation-forwards animate-delay-4" >
                 <i className="bi bi-circle"></i>
                 <span>Detailed Analysis Reports</span>
@@ -343,7 +356,18 @@ function Sidenavbar() {
                 <span>Live Data Reports</span>
               </NavLink >
             </li>
-
+            <li>
+              <NavLink to="/PollutionRose" className="nav-item animation-forwards animate-delay-5" >
+                <i className="bi bi-circle"></i>
+                <span>PollutionRose</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/WindRose" className="nav-item animation-forwards animate-delay-6" >
+                <i className="bi bi-circle"></i>
+                <span>WindRose</span>
+              </NavLink >
+            </li>
 
 
            {/*  <li className="nav-item">
