@@ -72,7 +72,7 @@ function AddDriver() {
     setDriverid(param.id);
     setTimeout(() => {
       document.getElementById("driverdigitalentryname").value = param.driverDigitalEntryName;
-      document.getElementById("associatedinstrument").value = param.InstrumentName;
+      document.getElementById("associatedinstrument").value = param.instrumentID;
       document.getElementById("coilnumber").value = param.coilNumber;
       document.getElementById("inputradio").checked = param.inputType;
       document.getElementById("outputradio").checked = param.outputType;
@@ -276,7 +276,7 @@ function AddDriver() {
         link.click();
       })
       .catch(error => console.error('Error:', error));
-    document.getElementById('loader').style.display = "none";
+    //document.getElementById('loader').style.display = "none";
      /* fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())
@@ -350,12 +350,12 @@ function AddDriver() {
                </div>
                <div className="col-md-12 mb-3">
                   <label for="closedvalue" className="form-label">Closed Value:</label>
-                  <input type="number" className="form-control" id="closedvalue" placeholder="Enter Closed Value" required />
+                  <input type="number" className="form-control" id="closedvalue" placeholder="Enter Closed Value"  />
                   <div class="invalid-feedback">Please enter Closed Value</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="openvalue" className="form-label">Open Value:</label>
-                  <input type="number" className="form-control" id="openvalue" placeholder="Enter Open Value" required />
+                  <input type="number" className="form-control" id="openvalue" placeholder="Enter Open Value"  />
                   <div class="invalid-feedback">Please enter Open Value</div>
                 </div> 
 

@@ -267,7 +267,7 @@ function AddDevice() {
         link.click();
       })
       .catch(error => console.error('Error:', error));
-    document.getElementById('loader').style.display = "none";
+   // document.getElementById('loader').style.display = "none";
      /* fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())
@@ -309,22 +309,22 @@ function AddDevice() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="tcpipport" className="form-label">Default Modbus TcpIp Port:</label>
-                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Default Modbus TcpIp Port number" required />
+                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Default Modbus TcpIp Port number"  />
                   <div class="invalid-feedback">Please enter Default Modbus TcpIp Port number</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="modbuscode" className="form-label">Default Modbus Code:</label>
-                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Default Modbus Code" required />
+                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Default Modbus Code"  />
                   <div class="invalid-feedback">Please enter Default Modbus Code</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="modbuscommandtype" className="form-label">Default Modbus Command Type:</label>
-                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Default Modbus Command Type" required />
+                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Default Modbus Command Type"  />
                   <div class="invalid-feedback">Please enter Default Modbus Command Type</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="defaulttimeout" className="form-label">Default Timeout (ms):</label>
-                  <input type="number" className="form-control" id="defaulttimeout" placeholder="Enter Default Timeout" required />
+                  <input type="number" className="form-control" id="defaulttimeout" placeholder="Enter Default Timeout"  />
                   <div class="invalid-feedback">Please enter Default Timeout</div>
                 </div>
                <div className="form-check">

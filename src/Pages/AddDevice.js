@@ -333,7 +333,7 @@ function AddDevice() {
         link.click();
       })
       .catch(error => console.error('Error:', error));
-    document.getElementById('loader').style.display = "none";
+  //  document.getElementById('loader').style.display = "none";
      /* fetch(url + params, {
        method: 'GET',
      }).then((response) => response.json())
