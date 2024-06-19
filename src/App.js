@@ -9,7 +9,7 @@ const Login = lazy(() => import("./Pages/Login"));
 const ForgotPassword = lazy(() => import("./Pages/ForgotPassword"));
 const ChangePassword = lazy(() => import("./Pages/ChangePassword"));
 const ResetPassword = lazy(() => import("./Pages/ResetPassword"));
-const Dashboard = lazy(() => import("./Pages/Dashboard"));
+const Dashboard = lazy(() => import("./Pages/Dashboard")); 
 const Profile = lazy(() => import("./Pages/Profile"));
 const Parameters = lazy(() => import("./Pages/Parameters"));
 const AirQuality = lazy(() => import("./Pages/AirQuality"));
