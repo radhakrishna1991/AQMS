@@ -3,7 +3,7 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
-function AddDriver() {
+function AddAlarms() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const [ListDrivers, setListDrivers] = useState([]);
@@ -288,13 +288,13 @@ function AddDriver() {
       <div className="container">
         <div className="pagetitle">
           {!DriverList && Driverid == 0 && (
-            <h1>Add Driver</h1>
+            <h1>Add Alarm</h1>
           )}
           {!DriverList && Driverid != 0 && (
-            <h1>Update Driver</h1>
+            <h1>Update Alarm</h1>
           )}
           {DriverList && (
-            <h1>Drivers List</h1>
+            <h1>Alarms List</h1>
           )}
         </div>
         <section className="section">
@@ -387,4 +387,4 @@ function AddDriver() {
     </main>
   );
 }
-export default AddDriver;
+export default AddAlarms;

@@ -97,15 +97,15 @@ function Sidenavbar() {
               </NavLink >
             </li>
             <li>
-              <NavLink to="/AddInstruments" className="animation-forwards animate-delay-3" >
+              <NavLink to="/AddDeviceModels" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
-                <span>Instruments</span>
+                <span>Device Models</span>
               </NavLink >
             </li>
             <li>
-              <NavLink to="/AddDrivers" className="animation-forwards animate-delay-3" >
+              <NavLink to="/AddAlarms" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
-                <span>Drivers</span>
+                <span>Alarms</span>
               </NavLink >
             </li>
             <li>

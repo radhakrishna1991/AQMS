@@ -39,8 +39,8 @@ const AlarmHistory=lazy(() => import("./Pages/AlarmHistory"));
 const License =lazy(() => import("./Pages/License"));
 const WindRose =lazy(() => import("./Pages/WindRose"));
 const PollutionRose =lazy(() => import("./Pages/PollutionRose"));
-const AddInstruments =lazy(() => import("./Pages/AddInstruments"));
-const AddDrivers =lazy(() => import("./Pages/AddDrivers"));
+const AddDeviceModels =lazy(() => import("./Pages/AddDeviceModels"));
+const AddAlarms =lazy(() => import("./Pages/AddAlarms"));
 function App() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const location = useLocation();
@@ -88,8 +88,8 @@ function App() {
             <Route path="/AlarmsHistory" exact element={currentUser != null ? <AlarmHistory /> : (<Navigate to="/" />)} />
             <Route path="/WindRose" exact element={currentUser != null ? <WindRose /> : (<Navigate to="/" />)} />
             <Route path="/PollutionRose" exact element={currentUser != null ? <PollutionRose /> : (<Navigate to="/" />)} />
-            <Route path="/AddInstruments" exact element={currentUser != null ? <AddInstruments /> : (<Navigate to="/" />)} />
-            <Route path="/AddDrivers" exact element={currentUser != null ? <AddDrivers /> : (<Navigate to="/" />)} />
+            <Route path="/AddDeviceModels" exact element={currentUser != null ? <AddDeviceModels /> : (<Navigate to="/" />)} />
+            <Route path="/AddAlarms" exact element={currentUser != null ? <AddAlarms /> : (<Navigate to="/" />)} />
             <Route path="/License" exact element={<License />} />
           </Routes>
         </Suspense>
