@@ -13,7 +13,7 @@ function AddAlarms() {
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
-  const Driveraddvalidation = function (DriverEntryName, DriverInstrumentID, CoilNumber, DiscreteInput, RegisterOutput, RegisterValueClosed, RegisterValueOpen) {
+  const Alarmaddvalidation = function (DriverEntryName, DriverInstrumentID, CoilNumber, DiscreteInput, RegisterOutput, RegisterValueClosed, RegisterValueOpen) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddDriverform')[0];
     if (!form.checkValidity()) {
@@ -22,7 +22,7 @@ function AddAlarms() {
     }
     return isvalid;
   }
-  const Driveradd = async function () {
+  const Alarmadd = async function () {
     let DriverDigitalEntryName = document.getElementById("driverdigitalentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstrument").value;
     let CoilNumber = document.getElementById("coilnumber").value;
@@ -34,7 +34,7 @@ function AddAlarms() {
     let RegisterValueOpen = document.getElementById("openvalue").value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    let validation = Driveraddvalidation(DriverDigitalEntryName, DriverInstrumentID, CoilNumber,  DiscreteInput, RegisterOutput, RegisterValueClosed, RegisterValueOpen);
+    let validation = Alarmaddvalidation(DriverDigitalEntryName, DriverInstrumentID, CoilNumber,  DiscreteInput, RegisterOutput, RegisterValueClosed, RegisterValueOpen);
     if (!validation) {
       return false;
     }
@@ -67,7 +67,7 @@ function AddAlarms() {
   }
 
 
-  const EditDriver = function (param) {
+  const EditAlarm = function (param) {
     setDriverList(false);
     setDriverid(param.id);
     setTimeout(() => {
@@ -85,7 +85,7 @@ function AddAlarms() {
 
   }
 
-  const UpdateDriver= async function () {
+  const UpdateAlarm = async function () {
     let DriverDigitalEntryName = document.getElementById("driverdigitalentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstrument").value;
     let CoilNumber = document.getElementById("coilnumber").value;
@@ -97,7 +97,7 @@ function AddAlarms() {
     let RegisterValueOpen = document.getElementById("openvalue").value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    let validation = Driveraddvalidation();
+    let validation = Alarmaddvalidation();
     if (!validation) {
       return false;
     }
@@ -129,7 +129,7 @@ function AddAlarms() {
       }).catch((error) => toast.error('Unable to update the Driver. Please contact adminstrator'));
   }
 
-  const DeleteDriver = function (item) {
+  const DeleteAlarm = function (item) {
     Swal.fire({
       title: "Are you sure?",
       text: ("You want to delete this Driver !"),
@@ -228,14 +228,14 @@ function AddAlarms() {
 
             var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button" })
               .click(function (e) {
-                EditDriver(item);
+                EditAlarm(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
 
             var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button" })
               .click(function (e) {
-                DeleteDriver(item);
+                DeleteAlarm(item);
                 e.stopPropagation();
               });
 
@@ -361,10 +361,10 @@ function AddAlarms() {
 
                 <div className="col-md-12 text-center">
                   {!DriverList && Driverid == 0 && (
-                    <button className="btn btn-primary" onClick={Driveradd} type="button">Add Driver</button>
+                    <button className="btn btn-primary" onClick={Alarmadd} type="button">Add Driver</button>
                   )}
                   {!DriverList && Driverid != 0 && (
-                    <button className="btn btn-primary" onClick={UpdateDriver} type="button">Update Driver</button>
+                    <button className="btn btn-primary" onClick={UpdateAlarm} type="button">Update Driver</button>
                   )}
                 </div>
               </form>
