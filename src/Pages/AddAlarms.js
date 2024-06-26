@@ -6,14 +6,15 @@ import CommonFunctions from "../utils/CommonFunctions";
 function AddAlarms() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
-  const [ListDrivers, setListDrivers] = useState([]);
+  const [ListAlarms, setListAlarms] = useState([]);
   const [DriverList, setDriverList] = useState(true);
-  const [ListInstruments, setListInstruments] = useState([]);
+  const [ListDeviceModels, setListDeviceModels] = useState([]);
+  const [ListFlags, setListFlags] = useState([]);
   const [Driverid, setDriverid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
 
-  const Alarmaddvalidation = function (DriverEntryName, DriverInstrumentID, CoilNumber, DiscreteInput, RegisterOutput, RegisterValueClosed, RegisterValueOpen) {
+  const Alarmaddvalidation = function (DriverEntryName, DriverInstrumentID, CoilNumber, Flag) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddDriverform')[0];
     if (!form.checkValidity()) {
@@ -23,23 +24,17 @@ function AddAlarms() {
     return isvalid;
   }
   const Alarmadd = async function () {
-    let DriverDigitalEntryName = document.getElementById("driverdigitalentryname").value;
+    let AlarmName = document.getElementById("driverdigitalentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstrument").value;
     let CoilNumber = document.getElementById("coilnumber").value;
-    let InputType = document.getElementById("inputradio").checked;
-    let OutputType = document.getElementById("outputradio").checked;
-    let DiscreteInput = document.getElementById("descreteinput").checked;
-    let RegisterOutput = document.getElementById("registeroutput").checked;
-    let RegisterValueClosed = document.getElementById("closedvalue").value;
-    let RegisterValueOpen = document.getElementById("openvalue").value;
+    let Flag = document.getElementById("flag").value;
     let CreatedBy = currentUser.id;
-    let ModifiedBy = currentUser.id;
-    let validation = Alarmaddvalidation(DriverDigitalEntryName, DriverInstrumentID, CoilNumber,  DiscreteInput, RegisterOutput, RegisterValueClosed, RegisterValueOpen);
+    let validation = Alarmaddvalidation(AlarmName, DriverInstrumentID, CoilNumber,Flag);
     if (!validation) {
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/DriverDigital", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Alarm", {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -48,22 +43,21 @@ function AddAlarms() {
         'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
-        DriverDigitalEntryName: DriverDigitalEntryName, DriverInstrumentID: DriverInstrumentID, CoilNumber: CoilNumber, InputType: InputType, 
-        OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed,
-        RegisterValueOpen: RegisterValueOpen, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+        Description: AlarmName, DeviceModelId: DriverInstrumentID, InputIndex: CoilNumber, Flag: Flag, 
+         CreatedBy: CreatedBy
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
-        if (responseJson == "Driverdigitaladd") {
-          toast.success('Driver added successfully');
-          GetDrivers();
+        if (responseJson == "Alarmadd") {
+          toast.success('Alarm added successfully');
+          GetAlarms();
           setDriverList(true);
-        } else if (responseJson == "Driverexist") {
-          toast.error('Driver already exist with given Driver Name. Please try with another Driver Name.');
+        } else if (responseJson == "Alarmexist") {
+          toast.error('Alarm already exist with given Driver Name. Please try with another Alarm Name.');
         } else {
-          toast.error('Unable to add the Driver. Please contact adminstrator');
+          toast.error('Unable to add the Alarm. Please contact adminstrator');
         }
-      }).catch((error) => toast.error('Unable to add the Driver. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to add the Alarm. Please contact adminstrator'));
   }
 
 
@@ -71,38 +65,26 @@ function AddAlarms() {
     setDriverList(false);
     setDriverid(param.id);
     setTimeout(() => {
-      document.getElementById("driverdigitalentryname").value = param.driverDigitalEntryName;
-      document.getElementById("associatedinstrument").value = param.instrumentID;
+      document.getElementById("driverdigitalentryname").value = param.alarmName;
+      document.getElementById("associatedinstrument").value = param.deviceModelID;
       document.getElementById("coilnumber").value = param.coilNumber;
-      document.getElementById("inputradio").checked = param.inputType;
-      document.getElementById("outputradio").checked = param.outputType;
-      document.getElementById("descreteinput").checked = param.discreteInput;
-      document.getElementById("registeroutput").checked = param.registerOutput;
-      document.getElementById("closedvalue").value = param.registerValueClosed;
-      document.getElementById("openvalue").value = param.registerValueOpen;
-      
+      document.getElementById("flag").value = param.flag;
     }, 10);
 
   }
 
   const UpdateAlarm = async function () {
-    let DriverDigitalEntryName = document.getElementById("driverdigitalentryname").value;
+    let AlarmName = document.getElementById("driverdigitalentryname").value;
     let DriverInstrumentID = document.getElementById("associatedinstrument").value;
     let CoilNumber = document.getElementById("coilnumber").value;
-    let InputType = document.getElementById("inputradio").checked;
-    let OutputType = document.getElementById("outputradio").checked;
-    let DiscreteInput = document.getElementById("descreteinput").checked;
-    let RegisterOutput = document.getElementById("registeroutput").checked;
-    let RegisterValueClosed = document.getElementById("closedvalue").value;
-    let RegisterValueOpen = document.getElementById("openvalue").value;
-    let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    let validation = Alarmaddvalidation();
+    let Flag = document.getElementById("flag").value;
+    let validation = Alarmaddvalidation(AlarmName, DriverInstrumentID, CoilNumber,Flag);
     if (!validation) {
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + 'api/DriverDigital/' + Driverid, {
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/Alarm/' + Driverid, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -111,28 +93,27 @@ function AddAlarms() {
         'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
-        DriverDigitalEntryName: DriverDigitalEntryName, DriverInstrumentID: DriverInstrumentID, CoilNumber: CoilNumber, InputType: InputType, 
-        OutputType: OutputType, DiscreteInput: DiscreteInput, RegisterOutput: RegisterOutput, RegisterValueClosed: RegisterValueClosed,
-        RegisterValueOpen: RegisterValueOpen, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+        Description: AlarmName, DeviceModelId: DriverInstrumentID, InputIndex: CoilNumber, Flag: Flag, 
+         ModifiedBy: ModifiedBy
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-          toast.success('Driver Updated successfully');
-          GetDrivers();
+          toast.success('Alarm Updated successfully');
+          GetAlarms();
           setDriverList(true);
         } else if (responseJson == 2) {
-          toast.error('Driver already exist with given Driver Name. Please try with another Driver Name.');
+          toast.error('Alarm already exist with given Alarm Name. Please try with another Alarm Name.');
         } else {
-          toast.error('Unable to update the Driver. Please contact adminstrator');
+          toast.error('Unable to update the Alarm. Please contact adminstrator');
         }
-      }).catch((error) => toast.error('Unable to update the Driver. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to update the Alarm. Please contact adminstrator'));
   }
 
   const DeleteAlarm = function (item) {
     Swal.fire({
       title: "Are you sure?",
-      text: ("You want to delete this Driver !"),
+      text: ("You want to delete this Alarm !"),
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#5cb85c",
@@ -143,46 +124,47 @@ function AddAlarms() {
         if (isConfirm.isConfirmed) {
           let id = item.id;
           let authHeader = await CommonFunctions.getAuthHeader();
-          await fetch(CommonFunctions.getWebApiUrl() + 'api/DriverDigital/' + id, {
+          await fetch(CommonFunctions.getWebApiUrl() + 'api/Alarm/' + id, {
             method: 'DELETE',
             headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
-                toast.success('Driver deleted successfully')
-                GetDrivers();
+                toast.success('Alarm deleted successfully')
+                GetAlarms();
               } else {
-                toast.error('Unable to delete Driver. Please contact adminstrator');
+                toast.error('Unable to delete Alarm. Please contact adminstrator');
               }
-            }).catch((error) => toast.error('Unable to delete Driver. Please contact adminstrator'));
+            }).catch((error) => toast.error('Unable to delete Alarm. Please contact adminstrator'));
         }
       });
   }
   const GetLookupdata = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/Driversdigitallookup", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/AlarmsLookup", {
       method: 'GET',
       headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-          setListDrivers(data.listDrivers);
-          setListInstruments(data.listInstrument);
+          setListAlarms(data.listAlarms);
+          setListDeviceModels(data.listDeviceModel);
+          setListFlags(data.listFlags);
         }
-      }).catch((error) => toast.error('Unable to get the Devices lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Alarms lookup list. Please contact adminstrator'));
   }
   
-  const GetDrivers = async function () {
+  const GetAlarms = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/DriverDigital", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Alarm", {
       method: 'GET',
       headers:authHeader
     }).then((response) => response.json())
       .then((data) => {
         if (data) {
-          setListDrivers(data);
+          setListAlarms(data);
         }
-      }).catch((error) => toast.error('Unable to get the devices list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the alarm list. Please contact adminstrator'));
   }
   useEffect(() => {
     initializeJsGrid();
@@ -204,12 +186,12 @@ function AddAlarms() {
       pageSize: 100,
       pageButtonCount: 5,
       controller: {
-        data: ListDrivers,
+        data: ListAlarms,
         loadData: function (filter) {
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
-            return ((!filter.driverDigitalEntryName || item.driverDigitalEntryName.toUpperCase().indexOf(filter.driverDigitalEntryName.toUpperCase()) >= 0)
+            return ((!filter.alarmName || item.alarmName.toUpperCase().indexOf(filter.alarmName.toUpperCase()) >= 0)
               && (!filter.instrumentName || item.instrumentName.toUpperCase().indexOf(filter.instrumentName.toUpperCase()) >= 0)
               && (!filter.coilNumber || item.coilNumber.toUpperCase().indexOf(filter.coilNumber.toUpperCase()) >= 0)
             
@@ -218,8 +200,8 @@ function AddAlarms() {
         }
       },
       fields: [
-        { name: "driverDigitalEntryName", title: "Driver DigitalEntry Name ",align:"left", type: "text" },
-        { name: "instrumentName", title: "Instrument Name",align:"left", type: "text"},
+        { name: "alarmName", title: "Alarm",align:"left", type: "text" },
+        { name: "deviceModelName", title: "Device Model Name",align:"left", type: "text"},
         { name: "coilNumber", title: "Coil Number", align:"left",type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
@@ -260,7 +242,7 @@ function AddAlarms() {
    
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/GsiDriver/DriverListExportToExcel?" + params,{
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/AlarmsExportToExcel?" + params,{
       method: 'GET',
       headers: authHeader ,
     }).then(response => response.blob())
@@ -276,12 +258,6 @@ function AddAlarms() {
         link.click();
       })
       .catch(error => console.error('Error:', error));
-    //document.getElementById('loader').style.display = "none";
-     /* fetch(url + params, {
-       method: 'GET',
-     }).then((response) => response.json())
-       .then((data) => {
-       }).catch((error) => console.log(error)); */
   }
   return (
     <main id="main" className="main" >
@@ -302,35 +278,45 @@ function AddAlarms() {
           
             <div className="me-2 mb-2 float-end">
               {DriverList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Driver</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Alarm</span></span>
               )}
               {!DriverList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Drivers</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Alarms</span></span>
               )}
             </div>
             {!DriverList && (
               <form id="AddDriverform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
-                  <label for="drivername" className="form-label">Driver Entry Name:</label>
-                  <input type="text" className="form-control" id="driverdigitalentryname" placeholder="Enter Driver DigitalEntry Name" required />
-                  <div class="invalid-feedback">Please enter Driver DigitalEntry Name</div>
+                  <label for="drivername" className="form-label">Alarm Name:</label>
+                  <input type="text" className="form-control" id="driverdigitalentryname" placeholder="Enter Alarm Name" required />
+                  <div class="invalid-feedback">Please enter Alarm Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="instrument" className="form-label">Associated Instrument:</label>
+                  <label for="instrument" className="form-label">Associated Device Model:</label>
                   <select className="form-select" id="associatedinstrument" required>
-                    <option selected value="">Select Associated Instrument</option>
-                    {ListInstruments.map((x, y) =>
-                      <option value={x.id} key={y} >{x.instrumentName}</option>,
+                    <option selected value="">Select Associated Device Model</option>
+                    {ListDeviceModels.map((x, y) =>
+                      <option value={x.id} key={y} >{x.deviceModelName}</option>,
                     )}
                   </select>
-                  <div class="invalid-feedback">Please select Associated Instrument</div>
+                  <div class="invalid-feedback">Please select Associated Device Model</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="coilnumber" className="form-label">Coil Number:</label>
-                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil Number" required />
+                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil Number" />
                   <div class="invalid-feedback">Please enter Coil Number</div>
                 </div>
                 <div className="col-md-12 mb-3">
+                  <label for="instrument" className="form-label">Flag:</label>
+                  <select className="form-select" id="flag" required>
+                    <option selected value="">Select Flag</option>
+                    {ListFlags.map((x, y) =>
+                      <option value={x.name} key={y} >{x.name}</option>,
+                    )}
+                  </select>
+                  <div class="invalid-feedback">Please select Flag</div>
+                </div>
+               {/*  <div className="col-md-12 mb-3">
                 <label for="type" className="form-label">Input/Output Type:</label><br></br>
                   <input className="form-check-input" type="radio" name="type" id="inputradio" defaultValue={false}  />&nbsp;&nbsp;
                   <label className="form-label" for="inputradio">Input</label><br></br>
@@ -357,14 +343,14 @@ function AddAlarms() {
                   <label for="openvalue" className="form-label">Open Value:</label>
                   <input type="number" className="form-control" id="openvalue" placeholder="Enter Open Value"  />
                   <div class="invalid-feedback">Please enter Open Value</div>
-                </div> 
+                </div>  */}
 
                 <div className="col-md-12 text-center">
                   {!DriverList && Driverid == 0 && (
-                    <button className="btn btn-primary" onClick={Alarmadd} type="button">Add Driver</button>
+                    <button className="btn btn-primary" onClick={Alarmadd} type="button">Add Alarm</button>
                   )}
                   {!DriverList && Driverid != 0 && (
-                    <button className="btn btn-primary" onClick={UpdateAlarm} type="button">Update Driver</button>
+                    <button className="btn btn-primary" onClick={UpdateAlarm} type="button">Update Alarm</button>
                   )}
                 </div>
               </form>

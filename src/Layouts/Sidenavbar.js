@@ -109,6 +109,12 @@ function Sidenavbar() {
               </NavLink >
             </li>
             <li>
+              <NavLink to="/AddParameterDriver" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Parameter Templates</span>
+              </NavLink >
+            </li>
+            <li>
               <NavLink to="/AddParameter" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Parameters</span>

@@ -310,11 +310,13 @@ function AddDevice() {
       setDeviceList(false);
       setType(false);
       setDeviceid(0);
+      setTimeout(() => {
+        setType("Tcp/IP");
+        document.getElementById("type").value = "Tcp/IP"; 
+      }, 10);
     }
   }
   const DownloadExcel = async function (filetype) {          {/*edited*/}
-    
-   
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/DeviceListExportToExcel?" + params,{
@@ -340,6 +342,37 @@ function AddDevice() {
        .then((data) => {
        }).catch((error) => console.log(error)); */
   }
+
+  const DeviceModelChange = (event, index) => {
+    let DeviceModel=ListDeviceModels[index-1];
+    setTimeout(() => {
+      let deviceid = document.getElementById("deviceid");
+      let port = document.getElementById("port");
+      if(deviceid != null){
+        deviceid.value=DeviceModel.modbusCode;
+      }
+      if(port != null){
+        port.value=DeviceModel.tcpIpPort;
+      }
+    }, 10);
+  };
+
+  const setTypechange = (event) => {
+    setType(event);
+    let SelDeviceModel = document.getElementById("devicemodel").value;
+    let DeviceModel=ListDeviceModels.find(x=>x.id == SelDeviceModel);
+    setTimeout(() => {
+      let deviceid = document.getElementById("deviceid");
+      let port = document.getElementById("port");
+    if(deviceid != null){
+      deviceid.value=DeviceModel.modbusCode;
+    }
+    if(port != null){
+      port.value=DeviceModel.tcpIpPort;
+    }
+  }, 10);
+  };
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -383,13 +416,8 @@ function AddDevice() {
                   <div class="invalid-feedback">Please enter device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="deviceid" className="form-label">Instrument ID:</label>
-                  <input type="number" className="form-control" id="deviceid" placeholder="Enter instrument id" required />
-                  <div class="invalid-feedback">Please enter id</div>
-                </div>
-                <div className="col-md-12 mb-3">
                   <label for="devicemodel" className="form-label">Device Model:</label>
-                  <select className="form-select" id="devicemodel" required>
+                  <select className="form-select" id="devicemodel" required  onChange={(e) => DeviceModelChange(e, e.target.selectedIndex)}>
                     <option selected value="">Select device model</option>
                     {ListDeviceModels.map((x, y) =>
                       <option value={x.id} key={y} >{x.deviceModelName}</option>
@@ -398,8 +426,13 @@ function AddDevice() {
                   <div class="invalid-feedback">Please select device model</div>
                 </div>
                 <div className="col-md-12 mb-3">
+                  <label for="deviceid" className="form-label">Instrument ID:</label>
+                  <input type="number" className="form-control" id="deviceid" placeholder="Enter instrument id" required />
+                  <div class="invalid-feedback">Please enter id</div>
+                </div>
+                <div className="col-md-12 mb-3">
                   <label for="type" className="form-label">Type:</label>
-                  <select className="form-select" id="type" onChange={(e) => setType(e.target.value)} required>
+                  <select className="form-select" id="type" onChange={(e) => setTypechange(e.target.value)} required>
                     <option selected value="">Select type</option>
                     <option value="Serial"  >Serial</option>
                     <option value="Tcp/IP"  >Tcp/IP</option>
@@ -462,15 +495,16 @@ function AddDevice() {
                 {Type == 'Tcp/IP' && (
                   <div>
                     <div className="col-md-12 mb-3">
-                      <label for="ipaddress" className="form-label">IP Address:</label>
-                      <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
-                      <div class="invalid-feedback">Please enter IP address</div>
-                    </div>
-                    <div className="col-md-12 mb-3">
                       <label for="port" className="form-label">Port:</label>
                       <input type="text" className="form-control" id="port" placeholder="Enter port" required />
                       <div class="invalid-feedback">Please enter port</div>
                     </div>
+                    <div className="col-md-12 mb-3">
+                      <label for="ipaddress" className="form-label">IP Address:</label>
+                      <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
+                      <div class="invalid-feedback">Please enter IP address</div>
+                    </div>
+                    
                   </div>
                 )}
                  <div className="col-md-4 mb-3">

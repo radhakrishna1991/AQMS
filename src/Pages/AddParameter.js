@@ -345,6 +345,7 @@ function AddParameter() {
     } else {
       setparameterList(false);
       setparameterId(0);
+      setListdeviceDrivers([]);
     }
     setIsDerived(false);
     setStatus(true);
@@ -354,9 +355,28 @@ function AddParameter() {
     setListdeviceDrivers([]);
     let DeviceID = document.getElementById("devicename").value;
     let finaldevices = ListDevices.filter(val => val.id == DeviceID);
-    let finaldribers = ListDrivers.filter(val => val.deviceModelID == finaldevices[0].deviceModel);
-    setListdeviceDrivers(finaldribers);
+    let finaldrivers = ListDrivers.filter(val => val.deviceModelID == finaldevices[0].deviceModel);
+    setListdeviceDrivers(finaldrivers);
   }
+
+  const DriverChange = (event, index) => {
+    let DeviceModel=ListdeviceDrivers[index-1];
+    //setTimeout(() => {
+      let registerindex = document.getElementById("registerindex");
+      let parsefunciton = document.getElementById("parsefunciton");
+      let sendcommand = document.getElementById("sendcommand");
+      if(registerindex != null){
+        registerindex.value=DeviceModel.registerIndex;
+      }
+      if(parsefunciton != null){
+        parsefunciton.value=DeviceModel.parseFunction;
+      }
+      if(sendcommand != null){
+        sendcommand.value=DeviceModel.sendCommand;
+      }
+   // }, 10);
+  };
+
   const DownloadExcel = async function (filetype) {          {/*edited*/}
     
    
@@ -433,7 +453,7 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Driver Name:</label>
-                  <select className="form-select" id="drivername" required>
+                  <select className="form-select" id="drivername" onChange={(e) => DriverChange(e, e.target.selectedIndex)} required>
                     <option selected value="">Select driver name</option>
                     {ListdeviceDrivers.map((x, y) =>
                       <option value={x.id} key={y} >{x.driverName}</option>
@@ -583,10 +603,12 @@ function AddParameter() {
 
         </section>
         <br></br>
+        {parameterList && (
         <div align="center"> {/*edited*/}
         <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
         <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>
         </div>
+        )}
       </div>
     </main>
   );

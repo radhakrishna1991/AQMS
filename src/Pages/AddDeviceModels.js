@@ -60,7 +60,7 @@ function AddDeviceModels() {
         } else {
           toast.error('Unable to add the Device Model. Please contact adminstrator');
         }
-      }).catch((error) => toast.error('Unable to add the Instrument. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to add the Device Model. Please contact adminstrator'));
   }
 
   const EditInstrument = function (param) {
@@ -150,7 +150,7 @@ function AddDeviceModels() {
   }
   const GetLookupdata = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/Instrumentslookup", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/DeviceModellookup", {
       method: 'GET',
       headers:authHeader
     }).then((response) => response.json())
@@ -158,7 +158,7 @@ function AddDeviceModels() {
         if (data) {
           setListInstruments(data);
         }
-      }).catch((error) => toast.error('Unable to get the Instruments lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Device Model lookup list. Please contact adminstrator'));
   }
   
   const GetInstruments = async function () {
@@ -251,7 +251,7 @@ function AddDeviceModels() {
 
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/GsiDriver/InstrumentListExportToExcel?" + params,{
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/DeviceModelsExportToExcel?" + params,{
       method: 'GET',
       headers: authHeader ,
     }).then(response => response.blob())
@@ -293,37 +293,37 @@ function AddDeviceModels() {
           
             <div className="me-2 mb-2 float-end">
               {InstrumentList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Instrument</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Device Model</span></span>
               )}
               {!InstrumentList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Instruments</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Device Models</span></span>
               )}
             </div>
             {!InstrumentList && (
               <form id="AddInstrumentform" className="row" noValidate>
                 
                 <div className="col-md-12 mb-3">
-                  <label for="instrumentname" className="form-label">Instrument Name:</label>
-                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Instrument name" required />
-                  <div class="invalid-feedback">Please enter Instrument name</div>
+                  <label for="instrumentname" className="form-label">Device Model Name:</label>
+                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Device Model" required />
+                  <div class="invalid-feedback">Please enter Device Model Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="tcpipport" className="form-label">Default Modbus TcpIp Port:</label>
-                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Default Modbus TcpIp Port number"  />
-                  <div class="invalid-feedback">Please enter Default Modbus TcpIp Port number</div>
+                  <label for="tcpipport" className="form-label">TcpIp Port:</label>
+                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter TcpIp Port number"  />
+                  <div class="invalid-feedback">Please enter TcpIp Port number</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="modbuscode" className="form-label">Default Modbus Code:</label>
-                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Default Modbus Code"  />
-                  <div class="invalid-feedback">Please enter Default Modbus Code</div>
+                  <label for="modbuscode" className="form-label">Modbus Code:</label>
+                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Modbus Code"  />
+                  <div class="invalid-feedback">Please enter Modbus Code</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="modbuscommandtype" className="form-label">Default Modbus Command Type:</label>
-                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Default Modbus Command Type"  />
-                  <div class="invalid-feedback">Please enter Default Modbus Command Type</div>
+                  <label for="modbuscommandtype" className="form-label">Modbus Command Type:</label>
+                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Modbus Command Type"  />
+                  <div class="invalid-feedback">Please enter Modbus Command Type</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="defaulttimeout" className="form-label">Default Timeout (ms):</label>
+                  <label for="defaulttimeout" className="form-label">Default Timeout:</label>
                   <input type="number" className="form-control" id="defaulttimeout" placeholder="Enter Default Timeout"  />
                   <div class="invalid-feedback">Please enter Default Timeout</div>
                 </div>
@@ -334,10 +334,10 @@ function AddDeviceModels() {
                <br></br>
                 <div className="col-md-12 text-center">
                   {!InstrumentList && Instrumentid == 0 && (
-                    <button className="btn btn-primary" onClick={Instrumentadd} type="button">Add Instrument</button>
+                    <button className="btn btn-primary" onClick={Instrumentadd} type="button">Add Device Model</button>
                   )}
                   {!InstrumentList && Instrumentid != 0 && (
-                    <button className="btn btn-primary" onClick={UpdateInstrument} type="button">Update Instrument</button>
+                    <button className="btn btn-primary" onClick={UpdateInstrument} type="button">Update Device Model</button>
                   )}
                 </div>
               </form>
