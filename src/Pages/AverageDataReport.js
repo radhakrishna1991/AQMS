@@ -617,6 +617,7 @@ function AverageDataReport() {
   }
 
   const DownloadExcel = async function () {
+    debugger;
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
