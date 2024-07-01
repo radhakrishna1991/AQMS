@@ -368,7 +368,7 @@ function Sidenavbar() {
                 <span>WindRose</span>
               </NavLink >
             </li>
-
+           
 
            {/*  <li className="nav-item">
               <a className="nav-link collapsed animation-forwards animate-delay-1 disable" data-bs-target="#report-nav-sub" data-bs-toggle="collapse" href="#">
