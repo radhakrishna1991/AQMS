@@ -1,7 +1,7 @@
 
 import React from "react";
 import { toast } from 'react-toastify';
-import bcrypt from 'bcryptjs';
+//import bcrypt from 'bcryptjs';
 import CommonFunctions from "../utils/CommonFunctions";
 function ChangePassword() {
 
@@ -94,14 +94,14 @@ function ChangePassword() {
             toast.error('Unable to change the password. Please contact adminstrator.')
             );
   };
-  const handleEncrypt = async (password) => {
+  /* const handleEncrypt = async (password) => {
       // Generate a salt (number of rounds determines the complexity)
       const saltRounds = 10;
       const salt = await bcrypt.genSalt(saltRounds);
       // Hash the password with the salt
       const encryptedPassword = await bcrypt.hash(password, salt);
       return encryptedPassword ;
-  }
+  } */
 
   return (
     <main id="main" className="main">

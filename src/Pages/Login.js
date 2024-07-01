@@ -2,7 +2,7 @@
 import React, {useState, useEffect} from "react";
 //import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
-import bcrypt from 'bcryptjs';
+//import bcrypt from 'bcryptjs';
 import CommonFunctions from "../utils/CommonFunctions";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -85,7 +85,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
   }
 
  
-  const handleEncrypt = async (password) => {
+  /* const handleEncrypt = async (password) => {
 
     // Generate a salt (number of rounds determines the complexity)
     const saltRounds = 10;
@@ -95,7 +95,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
     const encryptedPassword = await bcrypt.hash(password, salt);
 
     return encryptedPassword ;
-  }
+  } */
   const forgotPassword = () => {
     window.location.href =process.env.REACT_APP_BASE_URL+ "/ForgotPassword";
   };
