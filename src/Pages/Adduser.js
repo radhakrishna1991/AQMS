@@ -2,7 +2,7 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
-import bcrypt from 'bcryptjs';
+//import bcrypt from 'bcryptjs';
 function Adduser() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
@@ -103,7 +103,7 @@ function Adduser() {
       }).catch((error) => toast.error('Unable to add the user. Please contact adminstrator'));
   }
 
-  const handleEncrypt = async (password) => {
+ /*  const handleEncrypt = async (password) => {
 
     // Generate a salt (number of rounds determines the complexity)
     const saltRounds = 10;
@@ -113,7 +113,7 @@ function Adduser() {
     const encryptedPassword = await bcrypt.hash(password, salt);
 
     return encryptedPassword ;
-  }
+  } */
   const EditUser = function (param) {
     setUserList(false);
     setChangePasswordState(false);

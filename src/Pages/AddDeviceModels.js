@@ -3,7 +3,7 @@ import React, { Component, useEffect, useState, useRef } from "react";
 import { toast } from 'react-toastify';
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
-function AddDevice() {
+function AddDeviceModels() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const [ListInstruments, setListInstruments] = useState([]);
@@ -36,7 +36,7 @@ function AddDevice() {
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + 'api/Instrument', {
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceModel', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -45,33 +45,33 @@ function AddDevice() {
         'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
-        InstrumentName: InstrumentName, DefaultTcpIpPort: DefaultTcpIpPort, DefaultModbusCode: DefaultModbusCode, 
-        DefaultModbusCommandType: DefaultModbusCommandType, DefaultTimeoutMs: DefaultTimeoutMs,
-         SupportsForceMultipleCoils: SupportsForceMultipleCoils, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+        DeviceModelName: InstrumentName,TcpIpPort: DefaultTcpIpPort, ModbusCode: DefaultModbusCode, 
+        ModbusCommandType: DefaultModbusCommandType, DefaultTimeout: DefaultTimeoutMs,
+         SupportsForceMultipleCoils: SupportsForceMultipleCoils, CreatedBy: CreatedBy
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
-        if (responseJson == "Instrumentadd") {
-          toast.success('Instrument added successfully');
+        if (responseJson == "DeviceModeladd") {
+          toast.success('Device Model added successfully');
           GetInstruments();
           setInstrumentList(true);
-        } else if (responseJson == "Instrumentexist") {
-          toast.error('Instrument already exist with given Instrument Name. Please try with another Instrument Name.');
+        } else if (responseJson == "DeviceModelexist") {
+          toast.error('DeviceModel already exist with given Device Model Name. Please try with another Device Model Name.');
         } else {
-          toast.error('Unable to add the Instrument. Please contact adminstrator');
+          toast.error('Unable to add the Device Model. Please contact adminstrator');
         }
-      }).catch((error) => toast.error('Unable to add the Instrument. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to add the Device Model. Please contact adminstrator'));
   }
 
   const EditInstrument = function (param) {
     setInstrumentList(false);
     setInstrumentid(param.id);
     setTimeout(() => {
-      document.getElementById("instrumentname").value = param.instrumentName;
-      document.getElementById("tcpipport").value = param.defaultTcpIpPort;
-      document.getElementById("modbuscode").value = param.defaultModbusCode;
-      document.getElementById("modbuscommandtype").value = param.defaultModbusCommandType;
-      document.getElementById("defaulttimeout").value = param.defaultTimeoutMs;
+      document.getElementById("instrumentname").value = param.deviceModelName;
+      document.getElementById("tcpipport").value = param.tcpIpPort;
+      document.getElementById("modbuscode").value = param.modbusCode;
+      document.getElementById("modbuscommandtype").value = param.modbusCommandType;
+      document.getElementById("defaulttimeout").value = param.defaultTimeout;
       document.getElementById("forcemultiplecoils").checked = param.supportsForceMultipleCoils;
      
     }, 10);
@@ -92,7 +92,7 @@ function AddDevice() {
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + 'api/Instrument/' + Instrumentid, {
+    await fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceModel/' + Instrumentid, {
       method: 'PUT',
       headers: {
         'Accept': 'application/json',
@@ -101,28 +101,28 @@ function AddDevice() {
         'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
-        InstrumentName: InstrumentName, DefaultTcpIpPort: DefaultTcpIpPort, DefaultModbusCode: DefaultModbusCode, 
+        DeviceModelName: InstrumentName, DefaultTcpIpPort: DefaultTcpIpPort, DefaultModbusCode: DefaultModbusCode, 
         DefaultModbusCommandType: DefaultModbusCommandType, DefaultTimeoutMs: DefaultTimeoutMs, SupportsForceMultipleCoils: SupportsForceMultipleCoils,
          CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-          toast.success('Instrument Updated successfully');
+          toast.success('Device Model Updated successfully');
           GetInstruments();
           setInstrumentList(true);
         } else if (responseJson == 2) {
-          toast.error('Instrument already exist with given Instrument Name. Please try with another Instrument Name.');
+          toast.error('Device Model already exist with given Device Model Name. Please try with another Device Model Name.');
         } else {
-          toast.error('Unable to update the Instrument. Please contact adminstrator');
+          toast.error('Unable to update the Device Model. Please contact adminstrator');
         }
-      }).catch((error) => toast.error('Unable to update the Instrument. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to update the Device Model. Please contact adminstrator'));
   }
 
   const DeleteInstrument = function (item) {
     Swal.fire({
       title: "Are you sure?",
-      text: ("You want to delete this Instrument !"),
+      text: ("You want to delete this Device Model !"),
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#5cb85c",
@@ -133,24 +133,24 @@ function AddDevice() {
         if (isConfirm.isConfirmed) {
           let id = item.id;
           let authHeader = await CommonFunctions.getAuthHeader();
-          await fetch(CommonFunctions.getWebApiUrl() + 'api/Instrument/' + id, {
+          await fetch(CommonFunctions.getWebApiUrl() + 'api/DeviceModel/' + id, {
             method: 'DELETE',
             headers:authHeader
           }).then((response) => response.json())
             .then((responseJson) => {
               if (responseJson == 1) {
-                toast.success('Instrument deleted successfully')
+                toast.success('Device Model deleted successfully')
                 GetInstruments();
               } else {
-                toast.error('Unable to delete Instrument. Please contact adminstrator');
+                toast.error('Unable to delete Device Model. Please contact adminstrator');
               }
-            }).catch((error) => toast.error('Unable to delete Instrument. Please contact adminstrator'));
+            }).catch((error) => toast.error('Unable to delete Device Model. Please contact adminstrator'));
         }
       });
   }
   const GetLookupdata = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/Instrumentslookup", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/DeviceModellookup", {
       method: 'GET',
       headers:authHeader
     }).then((response) => response.json())
@@ -158,12 +158,12 @@ function AddDevice() {
         if (data) {
           setListInstruments(data);
         }
-      }).catch((error) => toast.error('Unable to get the Instruments lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Device Model lookup list. Please contact adminstrator'));
   }
   
   const GetInstruments = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/Instrument", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/DeviceModel", {
       method: 'GET',
       headers:authHeader
     }).then((response) => response.json())
@@ -171,7 +171,7 @@ function AddDevice() {
         if (data) {
           setListInstruments(data);
         }
-      }).catch((error) => toast.error('Unable to get the instruments list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Device Models list. Please contact adminstrator'));
   }
   useEffect(() => {
     initializeJsGrid();
@@ -198,7 +198,7 @@ function AddDevice() {
           $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
           $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
-            return ((!filter.instrumentName || item.instrumentName.toUpperCase().indexOf(filter.instrumentName.toUpperCase()) >= 0)
+            return ((!filter.deviceModelName || item.deviceModelName.toUpperCase().indexOf(filter.deviceModelName.toUpperCase()) >= 0)
               && (!filter.defaultTcpIpPort || item.defaultTcpIpPort.toUpperCase().indexOf(filter.defaultTcpIpPort.toUpperCase()) >= 0)
               && (!filter.defaultModbusCode || item.defaultModbusCode.toUpperCase().indexOf(filter.defaultModbusCode.toUpperCase()) >= 0)
               && (!filter.defaultModbusCommandType || item.defaultModbusCommandType.toUpperCase().indexOf(filter.defaultModbusCommandType.toUpperCase()) >= 0)
@@ -208,11 +208,11 @@ function AddDevice() {
         }
       },
       fields: [
-        { name: "instrumentName", title: "Instrument Name",align:"left", type: "text" },
-        { name: "defaultTcpIpPort", title: "Default TcpIp Port",align:"left", type: "text" },
-        { name: "defaultModbusCode", title: "Default Modbus Code", align:"left",type: "text" },
-        { name: "defaultModbusCommandType", title: "Default Modbus CommandType",align:"left", type: "text" },
-        { name: "defaultTimeoutMs", title: "Default Timeout (Ms)",align:"left", type: "text" },
+        { name: "deviceModelName", title: "Device Model Name",align:"left", type: "text" },
+        { name: "tcpIpPort", title: "TcpIp Port",align:"left", type: "text" },
+        { name: "modbusCode", title: "Modbus Code", align:"left",type: "text" },
+        { name: "modbusCommandType", title: "Modbus CommandType",align:"left", type: "text" },
+        { name: "defaultTimeout", title: "Default Timeout",align:"left", type: "text" },
         {
           type: "control", width: 100, editButton: false, deleteButton: false,
           itemTemplate: function (value, item) {
@@ -251,7 +251,7 @@ function AddDevice() {
 
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/GsiDriver/InstrumentListExportToExcel?" + params,{
+    await fetch(CommonFunctions.getWebApiUrl()+ "api/DeviceModelsExportToExcel?" + params,{
       method: 'GET',
       headers: authHeader ,
     }).then(response => response.blob())
@@ -279,13 +279,13 @@ function AddDevice() {
       <div className="container">
         <div className="pagetitle">
           {!InstrumentList && Instrumentid == 0 && (
-            <h1>Add Instrument</h1>
+            <h1>Add Device Model</h1>
           )}
           {!InstrumentList && Instrumentid != 0 && (
-            <h1>Update Instrument</h1>
+            <h1>Update Device Model</h1>
           )}
           {InstrumentList && (
-            <h1>Instruments List</h1>
+            <h1>Device Models List</h1>
           )}
         </div>
         <section className="section">
@@ -293,37 +293,37 @@ function AddDevice() {
           
             <div className="me-2 mb-2 float-end">
               {InstrumentList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Instrument</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange()}><i className="bi bi-plus-circle-fill"></i> <span>Create New Device Model</span></span>
               )}
               {!InstrumentList && (
-                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Instruments</span></span>
+                <span className="operation_class mx-2" onClick={() => AddStationchange('gridlist')}><i className="bi bi-card-list"></i> <span>View All Device Models</span></span>
               )}
             </div>
             {!InstrumentList && (
               <form id="AddInstrumentform" className="row" noValidate>
                 
                 <div className="col-md-12 mb-3">
-                  <label for="instrumentname" className="form-label">Instrument Name:</label>
-                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Instrument name" required />
-                  <div class="invalid-feedback">Please enter Instrument name</div>
+                  <label for="instrumentname" className="form-label">Device Model Name:</label>
+                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Device Model" required />
+                  <div class="invalid-feedback">Please enter Device Model Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="tcpipport" className="form-label">Default Modbus TcpIp Port:</label>
-                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter Default Modbus TcpIp Port number"  />
-                  <div class="invalid-feedback">Please enter Default Modbus TcpIp Port number</div>
+                  <label for="tcpipport" className="form-label">TcpIp Port:</label>
+                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter TcpIp Port number"  />
+                  <div class="invalid-feedback">Please enter TcpIp Port number</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="modbuscode" className="form-label">Default Modbus Code:</label>
-                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Default Modbus Code"  />
-                  <div class="invalid-feedback">Please enter Default Modbus Code</div>
+                  <label for="modbuscode" className="form-label">Modbus Code:</label>
+                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Modbus Code"  />
+                  <div class="invalid-feedback">Please enter Modbus Code</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="modbuscommandtype" className="form-label">Default Modbus Command Type:</label>
-                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Default Modbus Command Type"  />
-                  <div class="invalid-feedback">Please enter Default Modbus Command Type</div>
+                  <label for="modbuscommandtype" className="form-label">Modbus Command Type:</label>
+                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Modbus Command Type"  />
+                  <div class="invalid-feedback">Please enter Modbus Command Type</div>
                 </div>
                 <div className="col-md-12 mb-3">
-                  <label for="defaulttimeout" className="form-label">Default Timeout (ms):</label>
+                  <label for="defaulttimeout" className="form-label">Default Timeout:</label>
                   <input type="number" className="form-control" id="defaulttimeout" placeholder="Enter Default Timeout"  />
                   <div class="invalid-feedback">Please enter Default Timeout</div>
                 </div>
@@ -334,10 +334,10 @@ function AddDevice() {
                <br></br>
                 <div className="col-md-12 text-center">
                   {!InstrumentList && Instrumentid == 0 && (
-                    <button className="btn btn-primary" onClick={Instrumentadd} type="button">Add Instrument</button>
+                    <button className="btn btn-primary" onClick={Instrumentadd} type="button">Add Device Model</button>
                   )}
                   {!InstrumentList && Instrumentid != 0 && (
-                    <button className="btn btn-primary" onClick={UpdateInstrument} type="button">Update Instrument</button>
+                    <button className="btn btn-primary" onClick={UpdateInstrument} type="button">Update Device Model</button>
                   )}
                 </div>
               </form>
@@ -360,4 +360,4 @@ function AddDevice() {
     </main>
   );
 }
-export default AddDevice;
+export default AddDeviceModels;

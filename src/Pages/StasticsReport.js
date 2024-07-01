@@ -542,7 +542,7 @@ function StasticsReport() {
             )}
             {ChartData.datasets.length>0 && (
              <div className="text-center">
-                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>
+                <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Pdf</button>
                 <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPdf}>Download as Pdf</button>
                 </div>
                 )}
