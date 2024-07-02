@@ -296,7 +296,7 @@ function AverageDataReport() {
 
 
   const AvgDataReport = async function (startIndex, lastIndex, sortorder) {
-
+    
     let Pollutent = $("#pollutentid").val();
     // setSelectedPollutents(Pollutent);
     if (Pollutent.length > 0) {
@@ -308,13 +308,14 @@ function AverageDataReport() {
     let Fromdate = document.getElementById("fromdateid").value;
 
     let Todate = document.getElementById("todateid").value;
-    let interval = document.getElementById("criteriaid").value;
-    let valid = ReportValidations(Pollutent, Fromdate, Todate, interval);
+    let Interval = document.getElementById("criteriaid").value;
+    let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
     if (!valid) {
 
       return false;
 
     }
+    /*
     let type = interval.substr(interval.length - 1);
     let Interval;
     if (type == 'H') {
@@ -322,17 +323,41 @@ function AverageDataReport() {
     } else {
       Interval = interval.substr(0, interval.length - 1);
     }
+      */
+     
+     let Intervaltype;
+     let isAvgData = false;
+     let isRollingAvg=false;
+    let Intervaltypesplit = Interval.split('-');
+    if(Interval !="Rolling"){
+    if (Intervaltypesplit[1] == 'H') {
+      Intervaltype = Intervaltypesplit[0] * 60;
+    } else {
+      Intervaltype = Intervaltypesplit[0];
+    }
+  }else{
+    isRollingAvg=true;
+    Intervaltype =60;
+  }
+    if (Interval == window.Intervalval) {
+      isAvgData = false;
+    }
+    else {
+      isAvgData = true;
+    } 
+      
+    
     document.getElementById('loader').style.display = "block";
     let SortOrder=sortorder==undefined || sortorder=='desc'?'asc':'desc'
-    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Interval, StartIndex: startIndex, SortOrder: SortOrder });
-    let url = "";
-    if (interval == "1M") {
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype, StartIndex: startIndex, SortOrder: SortOrder });
+    let url = ""; console.log(Intervaltype);
+    if (Intervaltype == "1") {
       url =CommonFunctions.getWebApiUrl() + "api/AirQuality/RawDataReport?"
     }
     else {
       url = CommonFunctions.getWebApiUrl() + "api/AirQuality/AvergaeDataReport?"
     }
-
+  
     /* fetch(url + params, {
 
       method: 'GET',
@@ -617,6 +642,7 @@ function AverageDataReport() {
   }
 
   const DownloadExcel = async function () {
+    debugger;
     let Pollutent = $("#pollutentid").val();
     if (Pollutent.length > 0) {
       Pollutent.join(',')
@@ -676,7 +702,114 @@ function AverageDataReport() {
       .catch(error => console.error('Error:', error));
   }
 
+  const DownloadExcel2 = async function (filetype) {
+    debugger;
+    document.getElementById('loader').style.display = "block";
 
+    let Station = "";
+    let Pollutent = "";
+   // let GroupId = $("#groupid").val();
+    Station = $("#stationid").val();
+    Pollutent = $("#pollutentid").val();
+    if (Pollutent.length > 0) {
+      Pollutent.join(',')
+    }
+    
+    setSelectedPollutents(Pollutent);
+    if (Pollutent.length > 0) {
+      Pollutent.join(',')
+    }
+    let Fromdate = document.getElementById("fromdateid").value;
+    let Todate = document.getElementById("todateid").value;
+    let Interval = document.getElementById("criteriaid").value;
+
+    let valid = ReportValidations(Station, Pollutent, Fromdate, Todate, Interval);
+    if (!valid) {
+      return false;
+    }
+    document.getElementById('loader').style.display = "block";
+    let Intervaltype;
+    let isAvgData = false;
+    let isRollingAvg=false;
+   /*
+    let type = interval.substr(interval.length - 1);
+    let Interval;
+    if (type == 'H') {
+      Interval = interval.substr(0, interval.length - 1) * 60;
+    } else {
+      Interval = interval.substr(0, interval.length - 1);
+    }
+    */
+    let Intervaltypesplit = Interval.split('-');
+    if(Interval !="Rolling"){
+    if (Intervaltypesplit[1] == 'H') {
+      Intervaltype = Intervaltypesplit[0] * 60;
+    } else {
+      Intervaltype = Intervaltypesplit[0];
+    }
+  }else{
+    isRollingAvg=true;
+    Intervaltype =60;
+  }
+    if (Interval == window.Intervalval) {
+      isAvgData = false;
+    }
+    else {
+      isAvgData = true;
+    } 
+
+    let paramUnitnames;
+
+
+    for (var i = 0; i < SelectedPollutents.length; i++) {
+
+      let filter = AllLookpdata.listPollutents.filter(x => x.parameterName == SelectedPollutents[i]);
+
+      let unitname = AllLookpdata.listReportedUnits.filter(x => x.id == filter[0].unitID);
+
+      if (paramUnitnames == undefined) {
+
+        paramUnitnames = filter[0].parameterName + "-" + unitname[0].unitName + ",";
+
+      }
+
+      else {
+
+        paramUnitnames += filter[0].parameterName + "-" + unitname[0].unitName + ",";
+
+      }
+    }
+
+    let validRecord = "Valid";
+    let params = new URLSearchParams({ Pollutent: Pollutent, Fromdate: Fromdate, Todate: Todate, Interval: Intervaltype , Units: paramUnitnames, digit: window.decimalDigit, TruncateorRound: window.TruncateorRound, validRecord: validRecord, fileType:filetype });
+    let url = CommonFunctions.getWebApiUrl()+ "api/AirQuality/ExportToExcel?"
+  //  window.open(url + params, "_blank");
+  let authHeader = await CommonFunctions.getAuthHeader();
+   
+    await fetch(url + params, {
+      method: 'GET',
+      headers:authHeader
+    })
+      .then(response => response.blob())
+      .then(blob => {
+        // Create a link element and trigger a click on it to download the file
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        if(filetype=='excel'){
+       link.download = Date.now()+".xlsx";
+        }else{
+          link.download = Date.now()+".csv";
+        }
+        link.click();
+      })
+      .catch(error => console.error('Error:', error));
+    document.getElementById('loader').style.display = "none";
+    /*  fetch(url + params, {
+       method: 'GET',
+     }).then((response) => response.json())
+       .then((data) => {
+       }).catch((error) => console.log(error)); */
+  }
 
 
   const ReportValidations = function (Pollutent, Fromdate, Todate, Interval) {
@@ -907,6 +1040,7 @@ function AverageDataReport() {
 
   }
 
+
   return (
 
     <main id="main" className="main" >
@@ -1049,12 +1183,15 @@ function AverageDataReport() {
                 <select className="form-select" id="criteriaid">
 
                   <option value="" selected>Select Interval</option>
-                  <option value="1M" selected>1-M</option>
-                  {Criteria.map((x, y) =>
+                  <option value="1-M" selected>1-M</option>
+                 {Criteria.map((x, y) =>
+                        <option value={x.value + '-' + x.type} key={y} >{x.value + '-' + x.type}</option>
+                  )}  
+                 {/*  {Criteria.map((x, y) =>
 
                     <option value={x.value + x.type} key={y} >{x.value + '-' + x.type}</option>
 
-                  )}
+                  )}  */}
 
                 </select>
 
@@ -1072,7 +1209,15 @@ function AverageDataReport() {
 
                     <button type="button" className="btn btn-primary mx-1" onClick={Codesinformation}>Flags</button>
 
-                    <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>
+                   {/* <button type="button" className="btn btn-primary datashow" onClick={DownloadExcel}>Download Excel</button>   */}
+            
+                   <div className="col-md-12 text-center my-3">
+                      <button type="button" className="btn btn-primary datashow me-0 download-btn" onClick={() => DownloadExcel2('excel')} >Download Excel</button>&nbsp;
+                    
+                      <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel2('csv')} >Download Csv</button> 
+
+                   </div>
+                    
 
                     {/*  <button type="button" className="btn btn-primary mx-1 datashow" onClick={DownloadPDF}>Download PDF</button> */}
 
