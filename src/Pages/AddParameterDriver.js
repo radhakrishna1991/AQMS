@@ -10,6 +10,8 @@ function AddParameterTemplates() {
   const [ListDeviceModels, setListDeviceModels] = useState([]);
   const [ListDrivers, setListDrivers] = useState([]);
   const [ParameterTemplatesConfig, setParameterTemplatesConfig] = useState([]);
+  const [ParameterDataType, setParameterDataType] = useState([]);
+  const [ParameterDataFormat, setParameterDataFormat] = useState([]);
   const [ListDataFormat, setListDataFormat] = useState([]);
   const [InstrumentList, setInstrumentList] = useState(true);
   const [Instrumentid, setInstrumentid] = useState(0);
@@ -171,7 +173,9 @@ function AddParameterTemplates() {
           setAllLookupData(data);
           setListDeviceModels(data.listDeviceModels);
           setListDrivers(data.listDrivers);
-          setParameterTemplatesConfig(JSON.parse(data.parameterTemplateConfig));
+          setParameterDataType(data.listParameterDataType);
+          setParameterDataFormat(data.listParameterDataFormat);
+         // setParameterTemplatesConfig(JSON.parse(data.parameterTemplateConfig));
         }
       }).catch((error) => toast.error('Unable to get the lookup list. Please contact adminstrator'));
   }
@@ -260,8 +264,9 @@ function AddParameterTemplates() {
   }
 
   const DataTypeChange = (event, index) => {
-    let DataFormat=ParameterTemplatesConfig.ConfigList[index-1];
-    setListDataFormat(DataFormat.DataValueFormat);
+    let value =event.currentTarget.value;
+    let DataFormat=ParameterDataFormat.filter(x=>x.dataTypeID == value);
+    setListDataFormat(DataFormat);
   };
 
   const DownloadExcel = async function (filetype) {          {/*edited*/}
@@ -318,12 +323,6 @@ function AddParameterTemplates() {
             </div>
             {!InstrumentList && (
               <form id="AddParameterDriverForm" className="row" noValidate>
-                
-                <div className="col-md-12 mb-3">
-                  <label for="ParameterDriver" className="form-label">Parameter Driver Name:</label>
-                  <input type="text" className="form-control" id="ParameterDriver" placeholder="Enter Parameter Driver Name" required />
-                  <div class="invalid-feedback">Parameter Driver Name</div>
-                </div>
                 <div className="col-md-12 mb-3">
                   <label for="instrument" className="form-label">Associated Device Model:</label>
                   <select className="form-select" id="associatedinstrument" required>
@@ -335,11 +334,16 @@ function AddParameterTemplates() {
                   <div class="invalid-feedback">Please select Associated Device Model</div>
                 </div>
                 <div className="col-md-12 mb-3">
+                  <label for="ParameterDriver" className="form-label">Parameter Driver Name:</label>
+                  <input type="text" className="form-control" id="ParameterDriver" placeholder="Enter Parameter Driver Name" required />
+                  <div class="invalid-feedback">Parameter Name</div>
+                </div>
+                <div className="col-md-12 mb-3">
                   <label for="DataType" className="form-label">Data Type:</label>
                   <select className="form-select" id="DataType" onChange={(e) => DataTypeChange(e, e.target.selectedIndex)}>
                     <option selected value="">Select Data Type</option>
-                    {ParameterTemplatesConfig.ConfigList.map((x, y) =>
-                      <option value={x.DataFieldType.Value} key={y} >{x.DataFieldType.Name}</option>,
+                    {ParameterDataType.map((x, y) =>
+                      <option value={x.id} key={y} >{x.name}</option>,
                     )}
                   </select>
                   <div class="invalid-feedback">Please Data Type</div>
@@ -349,7 +353,7 @@ function AddParameterTemplates() {
                   <select className="form-select" id="DataFormat">
                     <option selected value="">Select Data Format</option>
                     {ListDataFormat.map((x, y) =>
-                      <option value={x.Value} key={y} >{x.Name}</option>,
+                      <option value={x.id} key={y} >{x.name}</option>,
                     )}
                   </select>
                   <div class="invalid-feedback">Please select Data Format</div>
