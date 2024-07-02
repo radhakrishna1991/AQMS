@@ -35,55 +35,38 @@ function Sidenavbar() {
             <span>Dashboard</span>
           </NavLink >
         </li>
-        {/*  <li className="nav-item">
-    <NavLink  to="/Parameters" className="nav-link animation-forwards animate-delay-1" >
-      <i className="bi bi-grid"></i>
-      <span>Parameters</span>
-    </NavLink >
-  </li> */}
+        <li className="nav-item" id="Masters-Panel">
+              <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#Masters-nav" data-bs-toggle="collapse" href="#">
+                <i className="bi bi-menu-button-wide"></i><span>Masters</span><i className="bi bi-chevron-down ms-auto"></i>
+              </a>
+              <ul id="Masters-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
+              
+            <li>
+              <NavLink to="/AddDeviceModels" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Master Devices</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/AddAlarms" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Master Alarms</span>
+              </NavLink >
+            </li>
+            <li>
+              <NavLink to="/AddParameterDriver" className="animation-forwards animate-delay-3" >
+                <i className="bi bi-circle"></i>
+                <span>Master Parameters</span>
+              </NavLink >
+            </li>
+              </ul>
+            </li>
        
             <li className="nav-item" id="Configuration-Panel">
               <a className="nav-link collapsed animation-forwards animate-delay-2" data-bs-target="#configuration-nav" data-bs-toggle="collapse" href="#">
                 <i className="bi bi-menu-button-wide"></i><span>Configuration</span><i className="bi bi-chevron-down ms-auto"></i>
               </a>
               <ul id="configuration-nav" className="nav-content collapse" data-bs-parent="#sidebar-nav">
-                {/* <li>
-                  <a className="animation-forwards animate-delay-1 disable" href="components-alerts.html">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="stroke-1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-                    <span className="animate-fill-mode-forwards">Cal Expected Values</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-2 disable" href="components-accordion.html">
-                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Favorites Editors - All Users</span>
-                  </a>
-                </li> */}
-               {/*  <li>
-                  <NavLink to="/GsiModbusDrivers" className="animation-forwards animate-delay-3">
-                    <i className="bi bi-circle"></i><span className="animate-fill-mode-forwards">Gsi/Modbus Drivers</span>
-                  </NavLink>
-                </li> */}
-                
-              {/*  <li>
-                  <a className="animation-forwards animate-delay-4 disable" href="components-breadcrumbs.html">
-                    <i className="bi bi-circle"></i><span>Logger Channels</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-5 disable" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>My Favorites Editor</span>
-                  </a>
-                </li>
-                <li>
-                  <a className="animation-forwards animate-delay-6 disable" href="components-buttons.html">
-                    <i className="bi bi-circle"></i><span>Parameter MDL Editor</span>
-                  </a>
-                </li> */}
-               {/*  <li>
-                  <NavLink to="/Parameters" className="animation-forwards animate-delay-7">
-                    <i className="bi bi-circle"></i><span>Parameter Settings</span>
-                  </NavLink>
-                </li> */}
                 <li>
               <NavLink to="/AddStation" className="animation-forwards animate-delay-2" >
                 <i className="bi bi-circle"></i>
@@ -94,24 +77,6 @@ function Sidenavbar() {
               <NavLink to="/AddDevice" className="animation-forwards animate-delay-3" >
                 <i className="bi bi-circle"></i>
                 <span>Devices</span>
-              </NavLink >
-            </li>
-            <li>
-              <NavLink to="/AddDeviceModels" className="animation-forwards animate-delay-3" >
-                <i className="bi bi-circle"></i>
-                <span>Device Models</span>
-              </NavLink >
-            </li>
-            <li>
-              <NavLink to="/AddAlarms" className="animation-forwards animate-delay-3" >
-                <i className="bi bi-circle"></i>
-                <span>Alarms</span>
-              </NavLink >
-            </li>
-            <li>
-              <NavLink to="/AddParameterDriver" className="animation-forwards animate-delay-3" >
-                <i className="bi bi-circle"></i>
-                <span>Parameter Templates</span>
               </NavLink >
             </li>
             <li>

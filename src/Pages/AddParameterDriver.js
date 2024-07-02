@@ -361,7 +361,7 @@ function AddParameterTemplates() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="SendCommand" className="form-label">Send Command:</label>
-                  <input type="number" className="form-control" id="SendCommand" placeholder="Enter Send Command"  />
+                  <input type="text" className="form-control" id="SendCommand" placeholder="Enter Send Command"  />
                   <div class="invalid-feedback">Please enter Send Command</div>
                 </div>
                 <div className="col-md-12">
@@ -384,7 +384,7 @@ function AddParameterTemplates() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ParseFunction" className="form-label">Parse Function:</label>
-                  <input type="number" className="form-control" id="ParseFunction" placeholder="Enter Parse Function"  />
+                  <textarea className="form-control" id="ParseFunction" placeholder="Enter Parse Function"  ></textarea>
                   <div class="invalid-feedback">Please enter Parse Function</div>
                 </div>
                <br></br>
