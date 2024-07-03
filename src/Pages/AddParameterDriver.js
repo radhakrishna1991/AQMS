@@ -85,7 +85,7 @@ function AddParameterTemplates() {
       document.getElementById("SendInterval").value = SendInterval==""?"":SendInterval[0];
       document.getElementById("SendInterval1").value = SendInterval==""?"":SendInterval[1];
       document.getElementById("ParseFunction").value = param.parseFunction;
-    }, 10);
+    }, 10); 
 
   }
 
