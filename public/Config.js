@@ -19,5 +19,6 @@ var CommPort = ["COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", 
 var BaudRate = ["9600", "14400", "19200", "38400", "57600", "115200", "128000", "256000"];
 var Parity =["None","Odd","Even","Mark","Space"];
 var StopBits=[1,1.5,2];
+var DataCollectionMode=[{Value:1,Name:"Pull"},{Value:2,Name:"Push"}];
 var Typeofsequence=['Zero','Span']
 var UserRoles =[{SUPER_ADMIN: 'SUPER_ADMIN',ADMIN: 'ADMIN',MANAGER: 'MANAGER',CUSTOMER: 'CUSTOMER',GUEST: 'GUEST'}]
