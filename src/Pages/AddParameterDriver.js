@@ -36,7 +36,7 @@ function AddParameterTemplates() {
     let SendCommand =  document.getElementById("SendCommand").value;
     let SendInterval =  document.getElementById("SendInterval").value;
     let SendInterval1 =  document.getElementById("SendInterval1").value;
-    let finalInterval=SendInterval==""?"":SendInterval1==""?SendInterval+"-"+"M":SendInterval+"-"+SendInterval;
+    let finalInterval=SendInterval==""?"":SendInterval1==""?SendInterval+"-"+"M":SendInterval+"-"+SendInterval1;
     let ParseFunction =  document.getElementById("ParseFunction").value;
     let CreatedBy = currentUser.id;
     let validation = Instrumentaddvalidation();
