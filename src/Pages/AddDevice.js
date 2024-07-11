@@ -73,6 +73,7 @@ function AddDevice() {
     let StopBits = "";
     let DataBits = "";
     let SerialRtuMode = "";
+    let DataCollectionMode = 1;
     let Type = document.getElementById("type").value;
     if (Type == 'Tcp/IP') {
       IPAddress = document.getElementById("ipaddress").value;
@@ -84,6 +85,7 @@ function AddDevice() {
       StopBits = document.getElementById("stopbits").value;
       DataBits = document.getElementById("databits").value;
       SerialRtuMode = document.getElementById("serialrtumode").checked;
+      DataCollectionMode = document.getElementById("datacollectionmode").value;
     }
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
@@ -106,7 +108,7 @@ function AddDevice() {
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port, Type: Type,
         CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,ServiceMode:servicemode,
-        SerialRtuMode: SerialRtuMode, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable
+        SerialRtuMode: SerialRtuMode, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,IsEnable:enable,DataCollectionMode:DataCollectionMode
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -145,6 +147,7 @@ function AddDevice() {
         document.getElementById("stopbits").value=param.stopBits;
         document.getElementById("databits").value=param.dataBits;
         document.getElementById("serialrtumode").checked=param.serialRtuMode;
+        document.getElementById("datacollectionmode").value = param.dataCollectionMode;
       }
     }, 10);
 
@@ -163,6 +166,7 @@ function AddDevice() {
     let StopBits = "";
     let DataBits = "";
     let SerialRtuMode = "";
+    let DataCollectionMode=1;
     let Type = document.getElementById("type").value;
     if (Type == 'Tcp/IP') {
       IPAddress = document.getElementById("ipaddress").value;
@@ -174,6 +178,7 @@ function AddDevice() {
       StopBits = document.getElementById("stopbits").value;
       DataBits = document.getElementById("databits").value;
       SerialRtuMode = document.getElementById("serialrtumode").checked;
+      DataCollectionMode = document.getElementById("datacollectionmode").value;
     }
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
@@ -196,7 +201,7 @@ function AddDevice() {
       body: JSON.stringify({
         StationID: StationID, DeviceName: DeviceName, DeviceModel: DeviceModel, InstrumentID: deviceId, IPAddress: IPAddress, Port: Port,
         Type: Type, ID: Deviceid, Status: status, CommPort: CommPort, BaudRate: BaudRate, Parity: Parity, StopBits: StopBits, DataBits: DataBits,
-        ServiceMode:servicemode,SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
+        ServiceMode:servicemode,SerialRtuMode: SerialRtuMode, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy,DataCollectionMode:DataCollectionMode
       }),
     }).then((response) => response.json())
       .then((responseJson) => {
@@ -542,13 +547,22 @@ function AddDevice() {
                       </select>
                       <div class="invalid-feedback">Please select stop bits</div>
                     </div>
-                    <div className="col-md-6 mb-3">
+                    <div className="col-md-4 mb-3">
                       <label htmlFor="databits" className="form-label">Data Bits:</label>
                       <input type="number" className="form-control" id="databits" placeholder="Enter IP Data Bits" defaultValue="8" value={value.databitsid} onChange={(e) => handleTextBox(e.target.value, 9, "databitsid" )} required />
                       <div id="databitsid" style={{ display: display.databitsid }}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                       <div class="invalid-feedback">Please enter data bits</div>
                     </div>
-                    <div className="col-md-6 serialrtumode mb-3 form-check">
+                    <div className="col-md-4 mb-3">
+                      <label htmlFor="datacollectionmode" className="form-label">Data Collection Mode:</label>
+                      <select className="form-select" id="datacollectionmode" required>
+                        {window.DataCollectionMode.map((x, y) =>
+                          <option value={x.Value}  >{x.Name}</option>
+                        )}
+                      </select>
+                      <div class="invalid-feedback">Please select data collection mode</div>
+                    </div>
+                    <div className="col-md-4 serialrtumode mb-3 form-check">
                       <input className="form-check-input" type="checkbox" id="serialrtumode" defaultChecked={false} />
                       <label className="form-check-label" htmlFor="serialrtumode">
                         Serial RTU Mode

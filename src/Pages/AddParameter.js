@@ -54,7 +54,7 @@ function AddParameter() {
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddParametersform')[0];
-    if (StationID == "") {
+   /*  if (StationID == "") {
       //toast.warning('Please select Station');
       form.classList.add('was-validated');
       isvalid = false;
@@ -86,7 +86,12 @@ function AddParameter() {
       //toast.warning('Please enter average interval');
       form.classList.add('was-validated');
       isvalid = false;
-    }
+    } */
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        isvalid = false;
+      }
+      return isvalid;
     return isvalid;
   }
   const parameteradd = async function () {
@@ -103,7 +108,9 @@ function AddParameter() {
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
-
+    let Frequency =  document.getElementById("frequency").value;
+    let Frequency1 =  document.getElementById("frequency1").value;
+    let finalFrequency=Frequency==""?"":Frequency1==""?Frequency+"-"+"M":Frequency+"-"+Frequency1;
     let RegisterIndex = document.getElementById("registerindex").value;
     let ParseFunction = document.getElementById("parsefunciton").value;
     let SendCommand  = document.getElementById("sendcommand").value;
@@ -134,7 +141,8 @@ function AddParameter() {
          PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, 
          ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, 
          ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand, IsDerived:isDerived,
-         HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms}),
+         HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms,
+         Frequency:finalFrequency}),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -167,7 +175,9 @@ function AddParameter() {
       document.getElementById("scalefactor").value = param.scaleFactor;
       document.getElementById("coefa").value = param.coefA;
       document.getElementById("coefb").value = param.coefB;
-
+      let Frequency=param.frequency !=null?param.frequency.split("-"):"";
+      document.getElementById("frequency").value = Frequency==""?"":Frequency[0];
+      document.getElementById("frequency1").value = Frequency==""?"M":Frequency[1];
       document.getElementById("registerindex").value = param.registerIndex;
       document.getElementById("parsefunciton").value = param.parseFunction;
       document.getElementById("sendcommand").value = param.sendCommand;
@@ -197,7 +207,9 @@ function AddParameter() {
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
-
+    let Frequency =  document.getElementById("frequency").value;
+    let Frequency1 =  document.getElementById("frequency1").value;
+    let finalFrequency=Frequency==""?"":Frequency1==""?Frequency+"-"+"M":Frequency+"-"+Frequency1;
     let RegisterIndex = document.getElementById("registerindex").value;
     let ParseFunction = document.getElementById("parsefunciton").value;
     let SendCommand  = document.getElementById("sendcommand").value;
@@ -227,7 +239,8 @@ function AddParameter() {
         PollingInterval: PollingInterval, AvgInterval: AvgInterval, CoefA: CoefA, CoefB: CoefB, UnitID: UnitID, ID: parameterId,
          ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, 
          ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived,
-         HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms }),
+         HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms,
+        Frequency:finalFrequency }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -545,6 +558,21 @@ function AddParameter() {
                   <input type="number" className="form-control" id="coefb" placeholder="Enter COEF B" defaultValue="0" value={value.coefbid} onChange={(e) => handleTextBox(e.target.value, 9, "coefbid" )} required />
                   <div id="coefbid" style={{ display: display.coefbid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter COEF B</div>
+                </div>
+                <div className="col-md-12">
+                  <div className="row">
+                <div className="col-md-8 mb-3">
+                  <label for="frequency" className="form-label">Frequency:</label>
+                  <input type="number" className="form-control" id="frequency" placeholder="Enter Frequency"  required/>
+                  <div class="invalid-feedback">Please enter Frequency</div>
+                </div>
+                <div className="col-md-4 Frequency1 mb-3">
+                <select className="form-select" id="frequency1">
+                  <option  value="M">Minutes</option>
+                  <option  value="H">Hours</option>
+                  </select>
+                </div>
+                </div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="pollinginterval" className="form-label">Polling Interval:</label>
