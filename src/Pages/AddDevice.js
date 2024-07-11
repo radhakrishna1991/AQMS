@@ -17,16 +17,49 @@ function AddDevice() {
   const [Enable, setEnable] = useState(false);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [display, setDisplay] = useState({
+    name: 'none',
+    instrumentid: 'none',
+    databitsid : 'none',
+    portid: 'none',
+    ipaddressid: 'none',
+  });
+  const [value, setValue] = useState({
+    name: '', instrumentid: '', databitsid : '', portid: '', ipaddressid: ''
+  });
 
   const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddDeviceform')[0];
-    if (!form.checkValidity()) {
-      form.classList.add('was-validated');
-      isvalid = false;
+    $("#invalidIPaddress")[0].style.display="none";
+    let validIPaddress = validateIPaddress(IPAddress);
+    if(Type == 'Tcp/IP'){
+      if(!form.checkValidity()){
+        form.classList.add('was-validated');
+        isvalid = false;
+      }
+      else if(!validIPaddress && IPAddress != "") {
+        form.classList.add('was-validated');
+        $("#invalidIPaddress")[0].style.display="block";
+        isvalid = false;
+      }
+    }else{
+      if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        isvalid = false;
+      }
     }
     return isvalid;
   }
+
+  const validateIPaddress = (email) => {
+    return String(email)
+    .toLowerCase()
+    .match(
+      /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])$/
+    );
+  };
+
   const Deviceadd = async function () {
     let StationID = document.getElementById("stationname").value;
     let DeviceName = document.getElementById("devicename").value;
@@ -373,6 +406,34 @@ function AddDevice() {
   }, 10);
   };
 
+ /* const handleTextBox = (event, character, elementId) => {
+    debugger;
+    const value = event;  
+        if (value.length < character) {
+         $(`#${elementId}`)[0].style.display="none";
+        } else {
+          $(`#${elementId}`)[0].style.display="block";
+        }  
+  } */
+
+        const handleTextBox = (value, characterLimit, elementId) => { 
+          if (value.length <= characterLimit) {
+            setDisplay((prevDisplay) => ({
+              ...prevDisplay,
+              [elementId]: 'none',
+            }));
+            setValue((prevDisplay) => ({
+              ...prevDisplay,
+              [elementId]: value,
+            }));
+          } else {
+            setDisplay((prevDisplay) => ({
+              ...prevDisplay,
+              [elementId]: 'block',
+            }));
+          }
+        }
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -412,7 +473,8 @@ function AddDevice() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="devicename" className="form-label">Device Name:</label>
-                  <input type="text" className="form-control" id="devicename" placeholder="Enter device name" required />
+                  <input type="text" className="form-control" id="devicename" placeholder="Enter device name" value={value.name} onChange={(e) => handleTextBox(e.target.value, 50, "name" )} required />
+                  <div id="name" style={{ display: display.name }} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter device name</div>
                 </div>
                 <div className="col-md-12 mb-3">
@@ -427,7 +489,8 @@ function AddDevice() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="deviceid" className="form-label">Instrument ID:</label>
-                  <input type="number" className="form-control" id="deviceid" placeholder="Enter instrument id" required />
+                  <input type="number" className="form-control" id="deviceid" placeholder="Enter instrument id" value={value.instrumentid} onChange={(e) => handleTextBox(e.target.value, 9, "instrumentid")} required />
+                  <div id="instrumentid" style={{ display: display.instrumentid }}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter id</div>
                 </div>
                 <div className="col-md-12 mb-3">
@@ -481,7 +544,8 @@ function AddDevice() {
                     </div>
                     <div className="col-md-6 mb-3">
                       <label htmlFor="databits" className="form-label">Data Bits:</label>
-                      <input type="number" className="form-control" id="databits" placeholder="Enter IP Data Bits" defaultValue="8" required />
+                      <input type="number" className="form-control" id="databits" placeholder="Enter IP Data Bits" defaultValue="8" value={value.databitsid} onChange={(e) => handleTextBox(e.target.value, 9, "databitsid" )} required />
+                      <div id="databitsid" style={{ display: display.databitsid }}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                       <div class="invalid-feedback">Please enter data bits</div>
                     </div>
                     <div className="col-md-6 serialrtumode mb-3 form-check">
@@ -496,15 +560,17 @@ function AddDevice() {
                   <div>
                     <div className="col-md-12 mb-3">
                       <label for="port" className="form-label">Port:</label>
-                      <input type="text" className="form-control" id="port" placeholder="Enter port" required />
+                      <input type="number" className="form-control" id="port" placeholder="Enter port" value={value.portid} onChange={(e) => handleTextBox(e.target.value, 9, "portid" )} required />
+                      <div id="portid" style={{ display: display.portid }}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                       <div class="invalid-feedback">Please enter port</div>
                     </div>
                     <div className="col-md-12 mb-3">
                       <label for="ipaddress" className="form-label">IP Address:</label>
-                      <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" required />
+                      <input type="text" className="form-control" id="ipaddress" placeholder="Enter IP address" value={value.ipaddressid} onChange={(e) => handleTextBox(e.target.value, 30, "ipaddressid" )} required />
+                      <div id="ipaddressid" style={{ display: display.ipaddressid }} className="invalid-feedback">Character limit exceeded! Maximum 30 characters are allowed.</div>
                       <div class="invalid-feedback">Please enter IP address</div>
-                    </div>
-                    
+                      <div class="invalid-feedback" style={{ display: "none"}}  id="invalidIPaddress">Please enter valid IPaddress.</div>
+                    </div>   
                   </div>
                 )}
                  <div className="col-md-4 mb-3">
@@ -561,9 +627,9 @@ function AddDevice() {
         </section>
         <br></br>
         <div align="center">
-        {DeviceList && (               
+        {DeviceList && ListDevices[0] != null && (               
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {DeviceList && (
+             {DeviceList && ListDevices[0] != null && (
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
           )}
         </div>  

@@ -13,6 +13,19 @@ function Adduser() {
   const [Notification, setNotification] = useState(true);
   const [IsNotification, setIsNotification] = useState(window.notifications);
   const [ChangePasswordState, setChangePasswordState] = useState(false);
+  const [display, setDisplay] = useState({
+    usernameid: 'none',
+    useremailid: 'none',
+    userpwdid: 'none',
+    newpwdid: 'none',
+  });
+  const [value, setValue] = useState({
+    usernameid: '',
+    useremailid: '',
+    userpwdid: '',
+    newpwdid: '',
+  });
+
   const Useraddvalidation = function (UserName, UserEmail, UserPassword, UserRole) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddUserform')[0];
@@ -332,6 +345,25 @@ function Adduser() {
       setUserId(0);
     }
   }
+
+  const handleTextBox = (value, characterLimit, elementId) => { 
+    if (value.length <= characterLimit) {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'none',
+      }));
+      setValue((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: value,
+      }));
+    } else {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'block',
+      }));
+    }
+  }
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -364,21 +396,24 @@ function Adduser() {
                 {!UserList && UserId==0 && (
                     <div className="col-md-12 mb-3">
                       <label for="username" className="form-label">User Name:</label>
-                      <input type="text" className="form-control" id="username" placeholder="Enter user name" required />
+                      <input type="text" className="form-control" id="username" placeholder="Enter user name" value={value.usernameid} onChange={(e) => handleTextBox(e.target.value, 50, "usernameid" )} required />
+                      <div id="usernameid" style={{ display: display.usernameid}} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                       <div class="invalid-feedback">Please enter user name.</div>
                     </div>
                 )}
                 {!ChangePasswordState && (
                 <div className="col-md-12 mb-3">
                   <label for="useremail" className="form-label">User Email:</label>
-                  <input type="email" className="form-control" id="useremail" placeholder="Enter user email" required />
+                  <input type="email" className="form-control" id="useremail" placeholder="Enter user email" value={value.useremailid} onChange={(e) => handleTextBox(e.target.value, 50, "useremailid" )} required />
+                  <div id="useremailid" style={{ display: display.useremailid}} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback" id="invalidemail">Please enter valid user email.</div>
                 </div>
                 )}
                 {!UserList && UserId==0 && (
                       <div className="col-md-12 mb-3">
                           <label for="userpassword" className="form-label">Password:</label>
-                          <input type="password" className="form-control" id="userpwd" placeholder="Enter password" required />
+                          <input type="password" className="form-control" id="userpwd" placeholder="Enter password" value={value.userpwdid} onChange={(e) => handleTextBox(e.target.value, 20, "userpwdid" )} required />
+                          <div id="userpwdid" style={{ display: display.userpwdid}} className="invalid-feedback">Character limit exceeded! Maximum 20 characters are allowed.</div>
                           <div class="invalid-feedback">Please enter Password.</div>
                           <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
                       </div>
@@ -386,7 +421,8 @@ function Adduser() {
                  {ChangePasswordState && (
                       <div className="col-md-12 mb-3">
                           <label for="userpassword" className="form-label">New Password:</label>
-                          <input type="password" className="form-control" id="userpwd" placeholder="Enter new password" required />
+                          <input type="password" className="form-control" id="userpwd" placeholder="Enter new password" value={value.newpwdid} onChange={(e) => handleTextBox(e.target.value, 20, "newpwdid" )} required />
+                          <div id="newpwdid" style={{ display: display.userpwdid}} className="invalid-feedback">Character limit exceeded! Maximum 20 characters are allowed.</div>
                           <div class="invalid-feedback">Please enter Password.</div>
                           <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
                       </div>

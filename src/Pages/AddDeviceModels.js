@@ -11,6 +11,20 @@ function AddDeviceModels() {
   const [Instrumentid, setInstrumentid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [display, setDisplay] = useState({
+    nameid: 'none',
+    tcpipportid: 'none',
+    modbuscodeid: 'none',
+    modbuscommandtypeid: 'none',
+    defaulttimeoutid: 'none',
+  });
+  const [value, setValue] = useState({
+    nameid: '',
+    tcpipportid: '',
+    modbuscodeid: '',
+    modbuscommandtypeid: '',
+    defaulttimeoutid: '',
+  });
 
   const Instrumentaddvalidation = function (InstrumentName, DefaultTcpIpPort, DefaultModbusCode, DefaultModbusCommandType, DefaultTimeoutMs, SupportsForceMultipleCoils) {
     let isvalid = true;
@@ -274,6 +288,25 @@ function AddDeviceModels() {
        .then((data) => {
        }).catch((error) => console.log(error)); */
   }
+
+  const handleTextBox = (value, characterLimit, elementId) => {      
+    if (value.length <= characterLimit) {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'none',
+      }));
+      setValue((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: value,
+      }));
+    } else {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'block',
+      }));
+    }
+  }
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -304,27 +337,32 @@ function AddDeviceModels() {
                 
                 <div className="col-md-12 mb-3">
                   <label for="instrumentname" className="form-label">Device Model Name:</label>
-                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Device Model" required />
+                  <input type="text" className="form-control" id="instrumentname" placeholder="Enter Device Model" value={value.nameid} onChange={(e) => handleTextBox(e.target.value, 50, "nameid" )} required />
+                  <div id="nameid" style={{ display: display.nameid}} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Device Model Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="tcpipport" className="form-label">TcpIp Port:</label>
-                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter TcpIp Port number"  />
+                  <input type="number" className="form-control" id="tcpipport" placeholder="Enter TcpIp Port number" value={value.tcpipportid} onChange={(e) => handleTextBox(e.target.value, 9, "tcpipportid" )} />
+                  <div id="tcpipportid" style={{ display: display.tcpipportid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter TcpIp Port number</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="modbuscode" className="form-label">Modbus Code:</label>
-                  <input type="text" className="form-control" id="modbuscode" placeholder="Enter Modbus Code"  />
+                  <input type="number" className="form-control" id="modbuscode" placeholder="Enter Modbus Code" value={value.modbuscodeid} onChange={(e) => handleTextBox(e.target.value, 9, "modbuscodeid" )} />
+                  <div id="modbuscodeid" style={{ display: display.modbuscodeid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Modbus Code</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="modbuscommandtype" className="form-label">Modbus Command Type:</label>
-                  <input type="text" className="form-control" id="modbuscommandtype" placeholder="Enter Modbus Command Type"  />
+                  <input type="number" className="form-control" id="modbuscommandtype" placeholder="Enter Modbus Command Type" value={value.modbuscommandtypeid} onChange={(e) => handleTextBox(e.target.value, 9, "modbuscommandtypeid" )} />
+                  <div id="modbuscommandtypeid" style={{ display: display.modbuscommandtypeid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Modbus Command Type</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="defaulttimeout" className="form-label">Default Timeout:</label>
-                  <input type="number" className="form-control" id="defaulttimeout" placeholder="Enter Default Timeout"  />
+                  <input type="number" className="form-control" id="defaulttimeout" placeholder="Enter Default Timeout" value={value.defaulttimeoutid} onChange={(e) => handleTextBox(e.target.value, 9, "defaulttimeoutid" )} />
+                  <div id="defaulttimeoutid" style={{ display: display.defaulttimeoutid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Default Timeout</div>
                 </div>
                <div className="form-check">
@@ -350,9 +388,9 @@ function AddDeviceModels() {
         </section>
         <br></br>
         <div align="center">
-        {InstrumentList && (               
+        {InstrumentList && ListInstruments[0] != null && (               
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {InstrumentList && (
+             {InstrumentList && ListInstruments[0] != null && (
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
           )}
         </div>

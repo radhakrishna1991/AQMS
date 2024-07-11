@@ -13,6 +13,14 @@ function AddAlarms() {
   const [Driverid, setDriverid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [display, setDisplay] = useState({
+    alarmnameid: 'none',
+    coilnumberid: 'none',
+  });
+  const [value, setValue] = useState({
+    alarmnameid: '',
+    coilnumberid: '',
+  });
 
   const Alarmaddvalidation = function (DriverEntryName, DriverInstrumentID, CoilNumber, Flag) {
     let isvalid = true;
@@ -259,6 +267,25 @@ function AddAlarms() {
       })
       .catch(error => console.error('Error:', error));
   }
+
+  const handleTextBox = (value, characterLimit, elementId) => { 
+    if (value.length <= characterLimit) {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'none',
+      }));
+      setValue((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: value,
+      }));
+    } else {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'block',
+      }));
+    }
+  }
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -288,7 +315,8 @@ function AddAlarms() {
               <form id="AddDriverform" className="row" noValidate>
                 <div className="col-md-12 mb-3">
                   <label for="drivername" className="form-label">Alarm Name:</label>
-                  <input type="text" className="form-control" id="driverdigitalentryname" placeholder="Enter Alarm Name" required />
+                  <input type="text" className="form-control" id="driverdigitalentryname" placeholder="Enter Alarm Name" value={value.alarmnameid} onChange={(e) => handleTextBox(e.target.value, 100, "alarmnameid" )} required />
+                  <div id="alarmnameid" style={{ display: display.alarmnameid}} className="invalid-feedback">Character limit exceeded! Maximum 100 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Alarm Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
@@ -303,7 +331,8 @@ function AddAlarms() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="coilnumber" className="form-label">Coil Number:</label>
-                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil Number" />
+                  <input type="number" className="form-control" id="coilnumber" placeholder="Enter Coil Number" value={value.coilnumberid} onChange={(e) => handleTextBox(e.target.value, 9, "coilnumberid" )} />
+                  <div id="coilnumberid" style={{ display: display.coilnumberid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Coil Number</div>
                 </div>
                 <div className="col-md-12 mb-3">
@@ -363,9 +392,9 @@ function AddAlarms() {
         </section>
         <br></br>
         <div align="center">
-        {DriverList && (               
+        {DriverList && ListAlarms[0] != null && (               
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {DriverList && (
+             {DriverList && ListAlarms[0] != null &&  (
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
           )}
         </div>

@@ -15,10 +15,41 @@ function AddParameter() {
   const [parameterId, setparameterId] = useState(0);
   const [Status, setStatus] = useState(true);
   const [IsDerived, setIsDerived] = useState(false);
-  const [EnableParametersAlarms, setEnableParametersAlarms] = useState(false);
-  
+  const [EnableParametersAlarms, setEnableParametersAlarms] = useState(false);  
   const [ParseParamValue, setParseParamValue] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [display, setDisplay] = useState({
+    parameternameid: 'none',
+    scalefactorid: 'none',
+    coefaid: 'none',
+    coefbid: 'none',
+    pollingintervalid: 'none',
+    averageintervalid: 'none',
+    registerindexid: 'none',
+    parsefuncitonid: 'none',
+    sendcommandid: 'none',
+    highhighlimitid: 'none',
+    highlimitid: 'none',
+    lowlowlimitid: 'none',
+    lowlimitid: 'none',
+    thresholdlimitid: 'none',
+  });
+  const [value, setValue] = useState({
+    parameternameid: '', 
+    scalefactorid: '',
+    coefaid: '',
+    coefbid: '',
+    pollingintervalid: '',
+    averageintervalid: '',
+    registerindexid: '',
+    parsefuncitonid: '',
+    sendcommandid: '',
+    highhighlimitid: '',
+    highlimitid: '',
+    lowlowlimitid: '',
+    lowlimitid: '',
+    thresholdlimitid: '',
+  });
 
   const parameteraddvalidation = function (StationID, DeviceID, DriverID, ParameterName, PollingInterval, AvgInterval, Unit, ScaleFactor) {
     let isvalid = true;
@@ -405,6 +436,26 @@ function AddParameter() {
        .then((data) => {
        }).catch((error) => console.log(error)); */
   }
+
+  const handleTextBox = (value, characterLimit, elementId) => {  
+    if (value.length <= characterLimit) {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'none',
+      }));
+      setValue((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: value,
+      }));
+    } else {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'block',
+      }));
+    }
+  }
+
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -463,7 +514,8 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="parametername" className="form-label">Parameter Name:</label>
-                  <input type="text" className="form-control" id="parametername" placeholder="Enter parameter name" required />
+                  <input type="text" className="form-control" id="parametername" placeholder="Enter parameter name" value={value.parameternameid} onChange={(e) => handleTextBox(e.target.value, 50, "parameternameid" )} required />
+                  <div id="parameternameid" style={{ display: display.parameternameid}}  className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter parameter name</div>
                 </div>
                 <div className="col-md-12 mb-3">
@@ -478,70 +530,83 @@ function AddParameter() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="scalefactor" className="form-label">Scale Factor:</label>
-                  <input type="number" className="form-control" id="scalefactor" placeholder="Enter scale factor" required />
+                  <input type="number" className="form-control" id="scalefactor" placeholder="Enter scale factor" value={value.scalefactorid} onChange={(e) => handleTextBox(e.target.value, 9, "scalefactorid" )} required />
+                  <div id="scalefactorid" style={{ display: display.scalefactorid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter scale factor</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="coefa" className="form-label">COEF A:</label>
-                  <input type="number" className="form-control" id="coefa" placeholder="Enter COEF A" defaultValue="1" required />
+                  <input type="number" className="form-control" id="coefa" placeholder="Enter COEF A" defaultValue="1" value={value.coefaid} onChange={(e) => handleTextBox(e.target.value, 9, "coefaid" )} required />
+                  <div id="coefaid" style={{ display: display.coefaid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter COEF A</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="coefb" className="form-label">COEF B:</label>
-                  <input type="number" className="form-control" id="coefb" placeholder="Enter COEF B" defaultValue="0" required />
+                  <input type="number" className="form-control" id="coefb" placeholder="Enter COEF B" defaultValue="0" value={value.coefbid} onChange={(e) => handleTextBox(e.target.value, 9, "coefbid" )} required />
+                  <div id="coefbid" style={{ display: display.coefbid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter COEF B</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="pollinginterval" className="form-label">Polling Interval:</label>
-                  <input type="text" className="form-control" id="pollinginterval" placeholder="Enter polling interval" required />
+                  <input type="text" className="form-control" id="pollinginterval" placeholder="Enter polling interval" value={value.pollingintervalid} onChange={(e) => handleTextBox(e.target.value, 10, "pollingintervalid" )} required />
+                  <div id="pollingintervalid" style={{ display: display.pollingintervalid}}  className="invalid-feedback">Character limit exceeded! Maximum 10 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter polling interval</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="avginterval" className="form-label">Average Interval:</label>
-                  <input type="text" className="form-control" id="avginterval" placeholder="Enter average interval" required />
+                  <input type="text" className="form-control" id="avginterval" placeholder="Enter average interval" value={value.averageintervalid} onChange={(e) => handleTextBox(e.target.value, 50, "averageintervalid" )} required />
+                  <div id="averageintervalid" style={{ display: display.averageintervalid}}  className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter average interval</div>
                 </div>
 
                 <div className="col-md-12 mb-3">
                   <label for="registerindex" className="form-label">Register Index:</label>
-                  <input type="number" className="form-control" id="registerindex" placeholder="Enter Register Index" />
+                  <input type="number" className="form-control" id="registerindex" placeholder="Enter Register Index" value={value.registerindexid} onChange={(e) => handleTextBox(e.target.value, 9, "registerindexid" )} />
+                  <div id="registerindexid" style={{ display: display.registerindexid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter average interval</div>
                 </div>
 
                 <div className="col-md-12 mb-3">
                   <label for="parsefunciton" className="form-label">Parse Function:</label>
-                  <textarea class="form-control" id="parsefunciton" placeholder="Enter Parse Function" rows="3"></textarea>
+                  <textarea class="form-control" id="parsefunciton" placeholder="Enter Parse Function" rows="3" value={value.parsefuncitonid} onChange={(e) => handleTextBox(e.target.value, 1000, "parsefuncitonid" )} ></textarea>
+                  <div id="parsefuncitonid" style={{ display: display.parsefuncitonid}}  className="invalid-feedback">Character limit exceeded! Maximum 1000 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter parse function</div>
                 </div>
 
                 <div className="col-md-12 mb-3">
                   <label for="sendcommand" className="form-label">Send Command:</label>
-                  <input type="text" className="form-control" id="sendcommand" placeholder="Enter send command" />
+                  <input type="text" className="form-control" id="sendcommand" placeholder="Enter send command" value={value.sendcommandid} onChange={(e) => handleTextBox(e.target.value, 150, "sendcommandid" )} />
+                  <div id="sendcommandid" style={{ display: display.sendcommandid}}  className="invalid-feedback">Character limit exceeded! Maximum 150 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter send command</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">High High Limit:</label>
-                  <input type="number" className="form-control" id="highhighlimit" placeholder="high high limit" />
+                  <input type="number" className="form-control" id="highhighlimit" placeholder="high high limit" value={value.highhighlimitid} onChange={(e) => handleTextBox(e.target.value, 9, "highhighlimitid" )} />
+                  <div id="highhighlimitid" style={{ display: display.highhighlimitid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter High High Limit</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">High Limit:</label>
-                  <input type="number" className="form-control" id="highlimit" placeholder="high limit" />
+                  <input type="number" className="form-control" id="highlimit" placeholder="high limit" value={value.highlimitid} onChange={(e) => handleTextBox(e.target.value, 9, "highlimitid" )} />
+                  <div id="highlimitid" style={{ display: display.highlimitid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter High Limit</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">Low Low Limit:</label>
-                  <input type="number" className="form-control" id="lowlowlimit" placeholder="Enter low low limit" />
+                  <input type="number" className="form-control" id="lowlowlimit" placeholder="Enter low low limit" value={value.lowlowlimitid} onChange={(e) => handleTextBox(e.target.value, 9, "lowlowlimitid" )} />
+                  <div id="lowlowlimitid" style={{ display: display.lowlowlimitid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Low Low Limit:</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">Low Limit:</label>
-                  <input type="number" className="form-control" id="lowlimit" placeholder="Enter low limit" />
+                  <input type="number" className="form-control" id="lowlimit" placeholder="Enter low limit" value={value.lowlimitid} onChange={(e) => handleTextBox(e.target.value, 9, "lowlimitid" )} />
+                  <div id="lowlimitid" style={{ display: display.lowlimitid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Low Limit:</div>
                 </div>
                 <div className="col-md-6 mb-3">
                   <label for="sendcommand" className="form-label">Threshold Limit:</label>
-                  <input type="number" className="form-control" id="thresholdlimit" placeholder="Enter threshold limit" />
+                  <input type="number" className="form-control" id="thresholdlimit" placeholder="Enter threshold limit" value={value.thresholdlimitid} onChange={(e) => handleTextBox(e.target.value, 9, "thresholdlimitid" )} />
+                  <div id="thresholdlimitid" style={{ display: display.thresholdlimitid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Threshold Limit</div>
                 </div>
                 <div className="col-md-6 mt-4 mb-3">
@@ -603,8 +668,8 @@ function AddParameter() {
 
         </section>
         <br></br>
-        {parameterList && (
-        <div align="center"> {/*edited*/}
+        {parameterList && Listparameters[0] != null && (
+        <div align="center"> 
         <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
         <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>
         </div>

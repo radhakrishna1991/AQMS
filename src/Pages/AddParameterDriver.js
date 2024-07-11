@@ -17,6 +17,20 @@ function AddParameterTemplates() {
   const [Instrumentid, setInstrumentid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [display, setDisplay] = useState({
+    ParameterDriverid: 'none',
+    ModusRegisterIndexid: 'none',
+    SendCommandid: 'none',
+    SendIntervalid: 'none',
+    ParseFunctionid: 'none',
+  });
+  const [value, setValue] = useState({
+    ParameterDriverid: '',
+    ModusRegisterIndexid: '',
+    SendCommandid: '',
+    SendIntervalid: '',
+    ParseFunctionid: '',
+  });
 
   const Instrumentaddvalidation = function () {
     let isvalid = true;
@@ -296,6 +310,25 @@ function AddParameterTemplates() {
        .then((data) => {
        }).catch((error) => console.log(error)); */
   }
+
+  const handleTextBox = (value, characterLimit, elementId) => { 
+    if (value.length <= characterLimit) {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'none',
+      }));
+      setValue((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: value,
+      }));
+    } else {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'block',
+      }));
+    }
+  }
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -335,7 +368,8 @@ function AddParameterTemplates() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ParameterDriver" className="form-label">Parameter Driver Name:</label>
-                  <input type="text" className="form-control" id="ParameterDriver" placeholder="Enter Parameter Driver Name" required />
+                  <input type="text" className="form-control" id="ParameterDriver" placeholder="Enter Parameter Driver Name" value={value.ParameterDriverid} onChange={(e) => handleTextBox(e.target.value, 50, "ParameterDriverid" )} required />
+                  <div id="ParameterDriverid" style={{ display: display.ParameterDriverid}} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback">Parameter Name</div>
                 </div>
                 <div className="col-md-12 mb-3">
@@ -360,19 +394,22 @@ function AddParameterTemplates() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ModusRegisterIndex" className="form-label">Modus Register Index:</label>
-                  <input type="number" className="form-control" id="ModusRegisterIndex" placeholder="Enter Modus Register Index"  />
+                  <input type="number" className="form-control" id="ModusRegisterIndex" placeholder="Enter Modus Register Index" value={value.ModusRegisterIndexid} onChange={(e) => handleTextBox(e.target.value, 9, "ModusRegisterIndexid" )} />
+                  <div id="ModusRegisterIndexid" style={{ display: display.ModusRegisterIndexid}}  className="invalid-feedback">Character limit exceeded! Maximum 9 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Modus Register Index</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="SendCommand" className="form-label">Send Command:</label>
-                  <input type="text" className="form-control" id="SendCommand" placeholder="Enter Send Command"  />
+                  <input type="text" className="form-control" id="SendCommand" placeholder="Enter Send Command" value={value.SendCommandid} onChange={(e) => handleTextBox(e.target.value, 150, "SendCommandid" )} />
+                  <div id="SendCommandid" style={{ display: display.SendCommandid}} className="invalid-feedback">Character limit exceeded! Maximum 150 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Send Command</div>
                 </div>
                 <div className="col-md-12">
                   <div className="row">
                 <div className="col-md-8 mb-3">
                   <label for="SendInterval" className="form-label">Send Interval:</label>
-                  <input type="number" className="form-control" id="SendInterval" placeholder="Enter Send Interval"  />
+                  <input type="number" className="form-control" id="SendInterval" placeholder="Enter Send Interval" value={value.SendIntervalid} onChange={(e) => handleTextBox(e.target.value, 20, "SendIntervalid" )} />
+                  <div id="SendIntervalid" style={{ display: display.SendIntervalid}} className="invalid-feedback">Character limit exceeded! Maximum 20 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Send Interval</div>
                 </div>
                 <div className="col-md-4 SendInterval1 mb-3">
@@ -388,7 +425,8 @@ function AddParameterTemplates() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="ParseFunction" className="form-label">Parse Function:</label>
-                  <textarea className="form-control" id="ParseFunction" placeholder="Enter Parse Function"  ></textarea>
+                  <textarea className="form-control" id="ParseFunction" placeholder="Enter Parse Function" value={value.ParseFunctionid} onChange={(e) => handleTextBox(e.target.value, 1000, "ParseFunctionid" )} ></textarea>
+                  <div id="ParseFunctionid" style={{ display: display.ParseFunctionid}} className="invalid-feedback">Character limit exceeded! Maximum 1000 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Parse Function</div>
                 </div>
                <br></br>
@@ -410,9 +448,9 @@ function AddParameterTemplates() {
         </section>
         <br></br>
         <div align="center">
-        {InstrumentList && (               
+        {InstrumentList && ListDrivers[0] != null && (               
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {InstrumentList && (
+             {InstrumentList && ListDrivers[0] != null && (
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
           )}
         </div>

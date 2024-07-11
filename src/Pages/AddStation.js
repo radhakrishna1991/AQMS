@@ -10,6 +10,10 @@ function AddStation() {
   const [StationId, setStationId] = useState(0);
   const [Status, setStatus] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [display, setDisplay] = useState({
+    name: 'none',
+    description: 'none',
+  });
 
   const Stationaddvalidation = function (StationName, Description) {
     let isvalid = true;
@@ -138,6 +142,7 @@ function AddStation() {
   }
   const GetStation = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
+    debugger;
     await fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
       method: 'GET',
       headers: authHeader ,
@@ -242,6 +247,22 @@ function AddStation() {
        .then((data) => {
        }).catch((error) => console.log(error)); */
   }
+
+  const handleTextBox = (value, characterLimit, elementId) => {
+    debugger;
+    if (value.length < characterLimit) {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'none',
+      }));
+    } else {
+      setDisplay((prevDisplay) => ({
+        ...prevDisplay,
+        [elementId]: 'block',
+      }));
+    }
+  }
+
   return (
     <main id="main" className="main" >
       <div className="container">
@@ -270,12 +291,14 @@ function AddStation() {
               <form id="AddStationform" className="row">
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">Station Name:</label>
-                  <input type="text" className="form-control" id="StationName" placeholder="Enter station name" required />
+                  <input type="text" className="form-control" id="StationName" placeholder="Enter station name" onChange={(e) => handleTextBox(e.target.value, 50, "name")} maxLength={50} required />
+                  <div id="name" style={{ display: display.name }} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter station name</div>
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="Description" className="form-label">Description:</label>
-                  <textarea class="form-control required" id="Description" rows="3" placeholder="Enter description" required></textarea>
+                  <textarea class="form-control required" id="Description" rows="3" placeholder="Enter description" onChange={(e) => handleTextBox(e.target.value, 150, "description" )} maxLength={150} required></textarea>
+                  <div id="description" style={{ display: display.description }}  className="invalid-feedback">Character limit exceeded! Maximum 150 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter description</div>
                 </div>
                 <div className="col-md-12">
@@ -309,9 +332,9 @@ function AddStation() {
         </section>
         <br></br>
         <div align="center">
-        {StationList && (               
+        {StationList && ListStations[0] != null && (               
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {StationList && (
+             {StationList && ListStations[0] != null && (
             <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
           )}
         </div> 
