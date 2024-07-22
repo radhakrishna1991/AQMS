@@ -90,15 +90,20 @@ function AddParameterTemplates() {
     setInstrumentid(param.id);
     setTimeout(() => {
       document.getElementById("ParameterDriver").value = param.driverName;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["ParameterDriverid"]: param.driverName, }));
       document.getElementById("associatedinstrument").value = param.deviceModelID;
       document.getElementById("DataType").value = param.dataType;
       document.getElementById("DataFormat").value = param.dataFormat;
       document.getElementById("ModusRegisterIndex").value = param.registerIndex;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["ModusRegisterIndexid"]: param.registerIndex, }));
       document.getElementById("SendCommand").value = param.sendCommand;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["SendCommandid"]: param.sendCommand, }));
       let SendInterval=param.sendInterval !=null?param.sendInterval.split("-"):"";
       document.getElementById("SendInterval").value = SendInterval==""?"":SendInterval[0];
+      setValue((prevDisplay) => ({ ...prevDisplay, ["SendIntervalid"]: SendInterval==""?"":SendInterval[0], }));
       document.getElementById("SendInterval1").value = SendInterval==""?"":SendInterval[1];
       document.getElementById("ParseFunction").value = param.parseFunction;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["ParseFunctionid"]: param.parseFunction, }));
     }, 10); 
 
   }
@@ -447,13 +452,14 @@ function AddParameterTemplates() {
 
         </section>
         <br></br>
-        <div align="center">
-        {InstrumentList && ListDrivers[0] != null && (               
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {InstrumentList && ListDrivers[0] != null && (
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
+       
+        {InstrumentList && ListDrivers.length > 0 && (   
+           <div align="center">            
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>  
+           </div>   
           )}
-        </div>
+        
       </div>
     </main>
   );

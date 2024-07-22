@@ -74,8 +74,10 @@ function AddAlarms() {
     setDriverid(param.id);
     setTimeout(() => {
       document.getElementById("driverdigitalentryname").value = param.alarmName;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["alarmnameid"]: param.alarmName, }));
       document.getElementById("associatedinstrument").value = param.deviceModelID;
       document.getElementById("coilnumber").value = param.coilNumber;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["coilnumberid"]: param.coilNumber, }));
       document.getElementById("flag").value = param.flag;
     }, 10);
 
@@ -391,13 +393,14 @@ function AddAlarms() {
 
         </section>
         <br></br>
-        <div align="center">
-        {DriverList && ListAlarms[0] != null && (               
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {DriverList && ListAlarms[0] != null &&  (
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
-          )}
-        </div>
+        
+        {DriverList && ListAlarms.length > 0 && (    
+          <div align="center">           
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>  
+          </div>   
+        )}
+        
       </div>
     </main>
   );

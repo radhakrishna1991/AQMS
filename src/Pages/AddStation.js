@@ -219,9 +219,7 @@ function AddStation() {
       setStationId(0);
     }
   }
-  const DownloadExcel = async function (filetype) {          {/*edited*/}
-    
-   
+  const DownloadExcel = async function (filetype) {          {/*edited*/} 
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/StationListExportToExcel?" + params,{
@@ -331,13 +329,14 @@ function AddStation() {
 
         </section>
         <br></br>
-        <div align="center">
-        {StationList && ListStations[0] != null && (               
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {StationList && ListStations[0] != null && (
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
+        
+        {StationList && ListStations.length > 0 && (  
+          <div align="center">             
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button> 
+            </div>     
           )}
-        </div> 
+        
       </div>
     </main>
   );

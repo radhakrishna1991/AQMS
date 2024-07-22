@@ -219,6 +219,7 @@ function DeviceAlarams() {
   }
 
   const UpdateDeviceAlarm = async function () {
+    debugger;
     let deviceid = document.getElementById("devicename").value;
     let modelid = document.getElementById("modelname").value;
     let alarmid = $("#alarmname").val();
@@ -257,6 +258,7 @@ function DeviceAlarams() {
       }).catch((error) => toast.error('Unable to update the Device Alarm. Please contact adminstrator'));
   }
   const EditDeviceAlarm = function (param) {
+    debugger;
     setDeviceAlarmList(false);
     setDeviceAlarmId(param.id);
     let devicealarm=DeviceAlarmData.filter(x=>x.deviceId==param.id);
@@ -331,6 +333,27 @@ function DeviceAlarams() {
     setCheckedValues(checked.target.value);
 
   }
+
+  const DownloadExcel = async function (filetype) {          {/*edited*/}
+  let params = new URLSearchParams({ filetype : filetype });
+  let authHeader = await CommonFunctions.getAuthHeader();
+  await fetch(CommonFunctions.getWebApiUrl()+ "api/DeviceAlarmsListExportToExcel?" + params,{
+    method: 'GET',
+    headers: authHeader ,
+  }).then(response => response.blob())
+    .then(blob => {
+      // Create a link element and trigger a click on it to download the file
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      if(filetype=='excel'){
+     link.download = Date.now()+".xlsx";
+      }else{
+        link.download = Date.now()+".csv";
+      }
+      link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
 
   return (
     <main id="main" className="main" >
@@ -427,6 +450,14 @@ function DeviceAlarams() {
 
           </div>
         </section>
+        <br></br>
+       
+        {DeviceAlarmList && Devices.length > 0 && (   
+           <div align="center">            
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>  
+           </div>   
+          )}
       </div>
     </main>
   )

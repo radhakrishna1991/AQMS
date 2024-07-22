@@ -134,20 +134,26 @@ function AddDevice() {
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceName;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["name"]: param.deviceName, }));
       document.getElementById("devicemodel").value = param.deviceModel;
       document.getElementById("type").value = param.type;
       document.getElementById("deviceid").value = param.instrumentID;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["instrumentid"]: param.instrumentID, }));
       if (param.type == 'Tcp/IP') {
-        document.getElementById("ipaddress").value = param.ipAddress;
-        document.getElementById("port").value = param.port;
+       document.getElementById("ipaddress").value = param.ipAddress;
+       document.getElementById("port").value = param.port;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["portid"]: param.port, }));
+        setValue((prevDisplay) => ({ ...prevDisplay, ["ipaddressid"]: param.ipAddress, }));
       } else if (param.type == 'Serial') {
         document.getElementById("commport").value=param.commPort;
         document.getElementById("baudrate").value=param.baudRate;
         document.getElementById("parity").value=param.parity;
         document.getElementById("stopbits").value=param.stopBits;
         document.getElementById("databits").value=param.dataBits;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["databitsid"]: param.dataBits, }));
         document.getElementById("serialrtumode").checked=param.serialRtuMode;
         document.getElementById("datacollectionmode").value = param.dataCollectionMode;
+      
       }
     }, 10);
 
@@ -639,14 +645,15 @@ function AddDevice() {
           </div>
 
         </section>
-        <br></br>
-        <div align="center">
-        {DeviceList && ListDevices[0] != null && (               
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {DeviceList && ListDevices[0] != null && (
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
+        <br></br>          
+            
+          {DeviceList && ListDevices.length > 0 && (
+            <div align="center">
+                 <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+                 <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button> 
+            </div>     
           )}
-        </div>  
+         
       </div>
     </main>
   );

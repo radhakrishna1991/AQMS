@@ -82,17 +82,23 @@ function AddDeviceModels() {
     setInstrumentid(param.id);
     setTimeout(() => {
       document.getElementById("instrumentname").value = param.deviceModelName;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["nameid"]: param.deviceModelName, }));
       document.getElementById("tcpipport").value = param.tcpIpPort;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["tcpipportid"]: param.tcpIpPort, }));
       document.getElementById("modbuscode").value = param.modbusCode;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["modbuscodeid"]: param.modbusCode, }));
       document.getElementById("modbuscommandtype").value = param.modbusCommandType;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["modbuscommandtypeid"]: param.modbusCommandType, }));
       document.getElementById("defaulttimeout").value = param.defaultTimeout;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["defaulttimeoutid"]: param.defaultTimeout, }));
       document.getElementById("forcemultiplecoils").checked = param.supportsForceMultipleCoils;
-     
+    
     }, 10);
 
   }
 
   const UpdateInstrument= async function () {
+    debugger;
     let InstrumentName = document.getElementById("instrumentname").value;
     let DefaultTcpIpPort = document.getElementById("tcpipport").value;
     let DefaultModbusCode = document.getElementById("modbuscode").value;
@@ -101,7 +107,7 @@ function AddDeviceModels() {
     let SupportsForceMultipleCoils = document.getElementById("forcemultiplecoils").checked;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
-    let validation = Instrumentaddvalidation();
+    let validation = Instrumentaddvalidation(InstrumentName, DefaultTcpIpPort, DefaultModbusCode, DefaultModbusCommandType, DefaultTimeoutMs, SupportsForceMultipleCoils);
     if (!validation) {
       return false;
     }
@@ -115,8 +121,8 @@ function AddDeviceModels() {
         'app-origin':authHeader["app-origin"]
       },
       body: JSON.stringify({
-        DeviceModelName: InstrumentName, DefaultTcpIpPort: DefaultTcpIpPort, DefaultModbusCode: DefaultModbusCode, 
-        DefaultModbusCommandType: DefaultModbusCommandType, DefaultTimeoutMs: DefaultTimeoutMs, SupportsForceMultipleCoils: SupportsForceMultipleCoils,
+        DeviceModelName: InstrumentName, TcpIpPort: DefaultTcpIpPort, ModbusCode: DefaultModbusCode, 
+        ModbusCommandType: DefaultModbusCommandType, DefaultTimeout: DefaultTimeoutMs, SupportsForceMultipleCoils: SupportsForceMultipleCoils,
          CreatedBy: CreatedBy, ModifiedBy: ModifiedBy
       }),
     }).then((response) => response.json())
@@ -387,13 +393,14 @@ function AddDeviceModels() {
 
         </section>
         <br></br>
-        <div align="center">
-        {InstrumentList && ListInstruments[0] != null && (               
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>)} &nbsp;
-             {InstrumentList && ListInstruments[0] != null && (
-            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>     
-          )}
-        </div>
+        
+        {InstrumentList && ListInstruments.length > 0 && ( 
+          <div align="center">              
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>   
+         </div>  
+       )}
+
       </div>
     </main>
   );

@@ -132,18 +132,23 @@ function CalibrationDevice() {
     setTimeout(() => {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceName;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["name"]: param.deviceName, }));
       document.getElementById("devicemodel").value = param.deviceModel;
       document.getElementById("type").value = param.type;
       document.getElementById("deviceid").value = param.instrumentID;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["instrumentid"]: param.instrumentID, }));
       if (param.type == 'Tcp/IP') {
         document.getElementById("ipaddress").value = param.ipAddress;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["ipaddressid"]: param.ipAddress, }));
         document.getElementById("port").value = param.port;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["portid"]: param.port, }));
       } else if (param.type == 'Serial') {
         document.getElementById("commport").value=param.commPort;
         document.getElementById("baudrate").value=param.baudRate;
         document.getElementById("parity").value=param.parity;
         document.getElementById("stopbits").value=param.stopBits;
         document.getElementById("databits").value=param.dataBits;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["databitsid"]: param.dataBits, }));
         document.getElementById("serialrtumode").checked=param.serialRtuMode;
       }
     }, 10);
@@ -345,6 +350,27 @@ function CalibrationDevice() {
       setDeviceid(0);
     }
   }
+
+  const DownloadExcel = async function (filetype) {          {/*edited*/}
+  let params = new URLSearchParams({ filetype : filetype });
+  let authHeader = await CommonFunctions.getAuthHeader();
+  await fetch(CommonFunctions.getWebApiUrl()+ "api/CalibrationDeviceListExportToExcel?" + params,{
+    method: 'GET',
+    headers: authHeader ,
+  }).then(response => response.blob())
+    .then(blob => {
+      // Create a link element and trigger a click on it to download the file
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      if(filetype=='excel'){
+     link.download = Date.now()+".xlsx";
+      }else{
+        link.download = Date.now()+".csv";
+      }
+      link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
 
   const handleTextBox = (value, characterLimit, elementId) => {       
     if (value.length <= characterLimit) {
@@ -554,6 +580,14 @@ function CalibrationDevice() {
           </div>
 
         </section>
+        <br></br>
+       
+        {DeviceList && ListDevices.length > 0 && (   
+           <div align="center">            
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+            <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>  
+           </div>   
+          )}
       </div>
     </main>
   );

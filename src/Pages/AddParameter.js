@@ -23,6 +23,7 @@ function AddParameter() {
     scalefactorid: 'none',
     coefaid: 'none',
     coefbid: 'none',
+    frequencyid: 'none',
     pollingintervalid: 'none',
     averageintervalid: 'none',
     registerindexid: 'none',
@@ -39,6 +40,7 @@ function AddParameter() {
     scalefactorid: '',
     coefaid: '',
     coefbid: '',
+    frequencyid: '',
     pollingintervalid: '',
     averageintervalid: '',
     registerindexid: '',
@@ -95,6 +97,7 @@ function AddParameter() {
     return isvalid;
   }
   const parameteradd = async function () {
+    debugger;
     let StationID = document.getElementById("stationname").value;
     let DeviceID = document.getElementById("devicename").value;
     let DriverID = document.getElementById("drivername").value;
@@ -110,7 +113,8 @@ function AddParameter() {
     let status = Status ? 1 : 0;
     let Frequency =  document.getElementById("frequency").value;
     let Frequency1 =  document.getElementById("frequency1").value;
-    let finalFrequency=Frequency==""?"":Frequency1==""?Frequency+"-"+"M":Frequency+"-"+Frequency1;
+    //let finalFrequency=Frequency==""?"":Frequency1==""?Frequency+"-"+"M":Frequency+"-"+Frequency1;
+    let finalFrequency=Frequency==""?"":Frequency1=="M"?Frequency:Frequency * 60;
     let RegisterIndex = document.getElementById("registerindex").value;
     let ParseFunction = document.getElementById("parsefunciton").value;
     let SendCommand  = document.getElementById("sendcommand").value;
@@ -142,7 +146,7 @@ function AddParameter() {
          ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, 
          ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand, IsDerived:isDerived,
          HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms,
-         Frequency:finalFrequency}),
+         DataSyncFrequency:finalFrequency}),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "Parameteradd") {
@@ -167,30 +171,62 @@ function AddParameter() {
       document.getElementById("stationname").value = param.stationID;
       document.getElementById("devicename").value = param.deviceID;
       Deviceschange();
+      console.log(param);
       //document.getElementById("drivername").value = param.driverID;
-      document.getElementById("parametername").value = param.parameterName;
+      
+      setTimeout(function () {
+        document.getElementById("parametername").value = param.parameterName;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["parameternameid"]: param.parameterName, }));
       document.getElementById("pollinginterval").value = param.pollingInterval;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["pollingintervalid"]: param.pollingInterval, }));
       document.getElementById("avginterval").value = param.avgInterval;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["averageintervalid"]: param.avgInterval, }));
       document.getElementById("unit").value = param.unitID;
       document.getElementById("scalefactor").value = param.scaleFactor;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["scalefactorid"]: param.scaleFactor, }));
       document.getElementById("coefa").value = param.coefA;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["coefaid"]: param.coefA, }));
       document.getElementById("coefb").value = param.coefB;
-      let Frequency=param.frequency !=null?param.frequency.split("-"):"";
-      document.getElementById("frequency").value = Frequency==""?"":Frequency[0];
-      document.getElementById("frequency1").value = Frequency==""?"M":Frequency[1];
+      setValue((prevDisplay) => ({ ...prevDisplay, ["coefbid"]: param.coefB, }));
+    //  let Frequency=param.frequency !=null?param.frequency.split("-"):"";
+     // document.getElementById("frequency").value = Frequency==""?"":Frequency[0];
+     // document.getElementById("frequency1").value = Frequency==""?"M":Frequency[1];
+     if(param.dataSyncFrequency != null && param.dataSyncFrequency >= 60)
+      {
+        document.getElementById("frequency").value = param.dataSyncFrequency / 60;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["frequencyid"]: param.dataSyncFrequency / 60, }));
+        document.getElementById("frequency1").value = "H";
+      }
+      else if(param.dataSyncFrequency != null && param.dataSyncFrequency < 60){
+        document.getElementById("frequency").value = param.dataSyncFrequency;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["frequencyid"]: param.dataSyncFrequency, }));
+        document.getElementById("frequency1").value = "M";
+      }
+      else if(param.dataSyncFrequency == null){
+        document.getElementById("frequency").value = param.dataSyncFrequency;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["frequencyid"]: param.dataSyncFrequency, }));
+        document.getElementById("frequency1").value = "M";
+      }
       document.getElementById("registerindex").value = param.registerIndex;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["registerindexid"]: param.registerIndex, }));
       document.getElementById("parsefunciton").value = param.parseFunction;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["parsefuncitonid"]: param.parseFunction, }));
       document.getElementById("sendcommand").value = param.sendCommand;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["sendcommandid"]: param.sendCommand, }));
      document.getElementById("highhighlimit").value = param.highHigh;
+     setValue((prevDisplay) => ({ ...prevDisplay, ["highhighlimitid"]: param.highHigh, }));
       document.getElementById("highlimit").value = param.high;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["highlimitid"]: param.high, }));
       document.getElementById("lowlowlimit").value = param.lowLow;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["lowlowlimitid"]: param.lowLow, }));
       document.getElementById("lowlimit").value = param.low;
+      setValue((prevDisplay) => ({ ...prevDisplay, ["lowlimitid"]: param.low, }));
       document.getElementById("thresholdlimit").value = param.threshold;
-      setTimeout(function () {
+      setValue((prevDisplay) => ({ ...prevDisplay, ["thresholdlimitid"]: param.threshold, }));
         document.getElementById("drivername").value = param.driverID;
       }, 100);
     }, 10);
-
+  
   }
 
   const Updateparameter = async function () {
@@ -209,7 +245,8 @@ function AddParameter() {
     let status = Status ? 1 : 0;
     let Frequency =  document.getElementById("frequency").value;
     let Frequency1 =  document.getElementById("frequency1").value;
-    let finalFrequency=Frequency==""?"":Frequency1==""?Frequency+"-"+"M":Frequency+"-"+Frequency1;
+   // let finalFrequency=Frequency==""?"":Frequency1==""?Frequency+"-"+"M":Frequency+"-"+Frequency1;
+   let finalFrequency=Frequency==""?"":Frequency1=="M"?Frequency:Frequency * 60;
     let RegisterIndex = document.getElementById("registerindex").value;
     let ParseFunction = document.getElementById("parsefunciton").value;
     let SendCommand  = document.getElementById("sendcommand").value;
@@ -240,7 +277,7 @@ function AddParameter() {
          ScaleFactor: ScaleFactor, Status: status, CreatedBy: CreatedBy, ModifiedBy: ModifiedBy, RegisterIndex: RegisterIndex, 
          ParseParamValue: ParseParmvalue, ParseFunction: ParseFunction,SendCommand:SendCommand,IsDerived:isDerived,
          HighHigh:HighHigh,High:High,LowLow:LowLow,Low:Low,Threshold:Threshold,EnableParametersAlarms:enableParametersAlarms,
-        Frequency:finalFrequency }),
+         DataSyncFrequency:finalFrequency }),
     }).then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
@@ -423,7 +460,6 @@ function AddParameter() {
 
   const DownloadExcel = async function (filetype) {          {/*edited*/}
     
-   
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl()+ "api/AirQuality/ParameterListExportToExcel?" + params,{
@@ -563,7 +599,8 @@ function AddParameter() {
                   <div className="row">
                 <div className="col-md-8 mb-3">
                   <label for="frequency" className="form-label">Frequency:</label>
-                  <input type="number" className="form-control" id="frequency" placeholder="Enter Frequency"  required/>
+                  <input type="number" className="form-control" id="frequency" placeholder="Enter Frequency" value={value.frequencyid} onChange={(e) => handleTextBox(e.target.value, 7, "frequencyid" )} required/>
+                  <div id="frequencyid" style={{ display: display.frequencyid}}  className="invalid-feedback">Character limit exceeded! Maximum 7 characters are allowed.</div>
                   <div class="invalid-feedback">Please enter Frequency</div>
                 </div>
                 <div className="col-md-4 Frequency1 mb-3">
@@ -696,7 +733,7 @@ function AddParameter() {
 
         </section>
         <br></br>
-        {parameterList && Listparameters[0] != null && (
+        {parameterList && Listparameters.length > 0 && (
         <div align="center"> 
         <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button>&nbsp; {/*edited*/}
         <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>

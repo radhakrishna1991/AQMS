@@ -102,6 +102,27 @@ function UserLogHistory() {
       ]
     });
   }
+
+  const DownloadExcel = async function (filetype) {          {/*edited*/}
+  let params = new URLSearchParams({ filetype : filetype });
+  let authHeader = await CommonFunctions.getAuthHeader();
+  await fetch(CommonFunctions.getWebApiUrl()+ "api/UsersLogListExportToExcel?" + params,{
+    method: 'GET',
+    headers: authHeader ,
+  }).then(response => response.blob())
+    .then(blob => {
+      // Create a link element and trigger a click on it to download the file
+      var link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      if(filetype=='excel'){
+     link.download = Date.now()+".xlsx";
+      }else{
+        link.download = Date.now()+".csv";
+      }
+      link.click();
+    })
+    .catch(error => console.error('Error:', error));
+}
   
   return (
     <main id="main" className="main" >
@@ -137,6 +158,14 @@ function UserLogHistory() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
           </div>
         </section>
+        <br></br>
+       
+       { ListUsersLog.length > 0 && (   
+          <div align="center">            
+           <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
+           <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>  
+          </div>   
+         )}
 
       </div>
     </main>
