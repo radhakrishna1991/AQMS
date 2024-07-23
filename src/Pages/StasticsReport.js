@@ -266,6 +266,7 @@ function StasticsReport() {
   }
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
+    debugger;
     if (chartRef.current != null) {
       chartRef.current.data = {};
     }
@@ -412,13 +413,13 @@ function StasticsReport() {
     
   }
   const DownloadPng=function() {
-    
+    debugger;
     const chartElement = chartRef.current.canvas;
     html2canvas(chartElement, {
       backgroundColor: 'white', // Set null to preserve the original chart background color
     }).then((canvas) => {
       const image = canvas.toDataURL('image/png');
-
+      debugger;
       // Create a download link and trigger click event
       const downloadLink = document.createElement('a');
       downloadLink.href = image;
