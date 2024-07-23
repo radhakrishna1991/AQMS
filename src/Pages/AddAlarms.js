@@ -245,8 +245,20 @@ function AddAlarms() {
       setDriverList(false);
       setType(false);
       setDriverid(0);
+      resetState();
     }
   }
+
+  const resetState = () => {
+    const newState = { ...value };
+    for (const key in newState) {
+      if (newState.hasOwnProperty(key)) {
+        newState[key] = '';
+      }
+    }
+    setValue(newState);
+  };
+
   const DownloadExcel = async function (filetype) {          {/*edited*/}
     
    

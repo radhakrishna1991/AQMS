@@ -354,12 +354,24 @@ function AddDevice() {
       setDeviceList(false);
       setType(false);
       setDeviceid(0);
+      resetState();
       setTimeout(() => {
         setType("Tcp/IP");
         document.getElementById("type").value = "Tcp/IP"; 
       }, 10);
     }
   }
+
+  const resetState = () => {
+    const newState = { ...value };
+    for (const key in newState) {
+      if (newState.hasOwnProperty(key)) {
+        newState[key] = '';
+      }
+    }
+    setValue(newState);
+  };
+
   const DownloadExcel = async function (filetype) {          {/*edited*/}
     let params = new URLSearchParams({ filetype : filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
@@ -388,15 +400,18 @@ function AddDevice() {
   }
 
   const DeviceModelChange = (event, index) => {
+    debugger;
     let DeviceModel=ListDeviceModels[index-1];
     setTimeout(() => {
       let deviceid = document.getElementById("deviceid");
       let port = document.getElementById("port");
       if(deviceid != null){
         deviceid.value=DeviceModel.modbusCode;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["instrumentid"]: DeviceModel.modbusCode, }));
       }
       if(port != null){
         port.value=DeviceModel.tcpIpPort;
+        setValue((prevDisplay) => ({ ...prevDisplay, ["portid"]: DeviceModel.tcpIpPort, }));
       }
     }, 10);
   };

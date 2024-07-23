@@ -265,8 +265,20 @@ function AddDeviceModels() {
       setInstrumentList(false);
       setType(false);
       setInstrumentid(0);
+      resetState();
     }
   }
+
+  const resetState = () => {
+    const newState = { ...value };
+    for (const key in newState) {
+      if (newState.hasOwnProperty(key)) {
+        newState[key] = '';
+      }
+    }
+    setValue(newState);
+  };
+
   const DownloadExcel = async function (filetype) {          {/*edited*/}
 
     let params = new URLSearchParams({ filetype : filetype });

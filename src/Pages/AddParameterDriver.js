@@ -279,8 +279,19 @@ function AddParameterTemplates() {
       setInstrumentList(false);
       setType(false);
       setInstrumentid(0);
+      resetState();
     }
   }
+
+  const resetState = () => {
+    const newState = { ...value };
+    for (const key in newState) {
+      if (newState.hasOwnProperty(key)) {
+        newState[key] = '';
+      }
+    }
+    setValue(newState);
+  };
 
   const DataTypeChange = (event, index) => {
     let value =event.currentTarget.value;

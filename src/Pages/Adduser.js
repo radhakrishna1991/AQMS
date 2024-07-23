@@ -343,8 +343,19 @@ function Adduser() {
     } else {
       setUserList(false);
       setUserId(0);
+      resetState();
     }
   }
+
+  const resetState = () => {
+    const newState = { ...value };
+    for (const key in newState) {
+      if (newState.hasOwnProperty(key)) {
+        newState[key] = '';
+      }
+    }
+    setValue(newState);
+  };
 
   const handleTextBox = (value, characterLimit, elementId) => { 
     if (value.length <= characterLimit) {

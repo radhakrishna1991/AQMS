@@ -427,11 +427,23 @@ function AddParameter() {
       setparameterList(false);
       setparameterId(0);
       setListdeviceDrivers([]);
+      resetState();
     }
     setIsDerived(false);
     setStatus(true);
     setParseParamValue(true);
   }
+
+  const resetState = () => {
+    const newState = { ...value };
+    for (const key in newState) {
+      if (newState.hasOwnProperty(key)) {
+        newState[key] = '';
+      }
+    }
+    setValue(newState);
+  };
+
   const Deviceschange = function () {
     setListdeviceDrivers([]);
     let DeviceID = document.getElementById("devicename").value;
