@@ -225,7 +225,7 @@ function WindRose() {
     // Create a download link and trigger click event
     const downloadLink = document.createElement('a');
     downloadLink.href = image;
-    downloadLink.download = 'windrosechart.png';
+    downloadLink.download = 'WindRoseChart.png';
     downloadLink.click();
   });
   /* var a = document.createElement('a');
@@ -247,7 +247,7 @@ const chartElement = chartRef.current;
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
   pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
-  pdf.save('windrosechart.pdf');
+  pdf.save('WindRoseChart.pdf');
 });
 };
  
