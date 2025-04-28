@@ -48,9 +48,10 @@ function PredefinedCharts() {
     GenarateChart();
   }, []);
   const GenarateChart = async function () {
+    document.getElementById('loader').style.display = "block";
     let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/getPredefinedchartData";
     let Pollutent = $("input[type='radio'][name='parametersradio']:checked").val();
-    let DataFilter = 1440;
+    let DataFilter = 60;
     let authHeader = await CommonFunctions.getAuthHeader();
     fetch(url, {
       method: 'POST',
@@ -67,7 +68,10 @@ function PredefinedCharts() {
           let data1 = JSON.parse(data);
           getchartdata(data1, Pollutent, ChartType, Criteria)
         }
-      }).catch((error) => console.log(error));
+      }).catch((error) => console.log(error))
+      .finally(() => {
+        document.getElementById('loader').style.display = "none";
+      });
   }
 
   /* Barchart Start */
@@ -185,6 +189,11 @@ function PredefinedCharts() {
                   <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={120}/>
                 </div>
               )}
+              <div className="col-md-4">
+                    <div className="row">
+                      <div id="loader" className="loader"></div>
+                    </div>
+                  </div>
             </div>
           </div>
         </section>

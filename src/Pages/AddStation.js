@@ -10,6 +10,7 @@ function AddStation() {
   const [StationId, setStationId] = useState(0);
   const [Status, setStatus] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [gridLoad,setgridLoad]= useState(false);
   const [display, setDisplay] = useState({
     name: 'none',
     description: 'none',
@@ -141,8 +142,8 @@ function AddStation() {
       });
   }
   const GetStation = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
-    debugger;
     await fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
       method: 'GET',
       headers: authHeader ,
@@ -151,10 +152,16 @@ function AddStation() {
         if (data) {
           setListStations(data);
         }
-      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Stations list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetStation();
@@ -326,7 +333,11 @@ function AddStation() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>
         

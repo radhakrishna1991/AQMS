@@ -330,7 +330,7 @@ function PollutionRose() {
     const pdf = new jsPDF();
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(chartImage, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.addImage(chartImage, 'PNG', 0, 20, pdfWidth, pdfHeight);
     pdf.save('PollutionRoseChart.pdf');
   });
   };
@@ -387,7 +387,7 @@ function PollutionRose() {
                       </div>
                     </div>
             <div ref={chartRef} id="radar" style={{ width: '100%', height: '400px' }}>
-              </div>;
+              </div>
               {Isdownlaod &&(
               <div className="text-center">
                   <button type="button" className="btn btn-primary mx-1"  onClick={DownloadPng}>Download as Image</button>

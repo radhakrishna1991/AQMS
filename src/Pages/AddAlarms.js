@@ -13,6 +13,7 @@ function AddAlarms() {
   const [Driverid, setDriverid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [gridLoad,setgridLoad]= useState(false);
   const [display, setDisplay] = useState({
     alarmnameid: 'none',
     coilnumberid: 'none',
@@ -150,6 +151,7 @@ function AddAlarms() {
       });
   }
   const GetLookupdata = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/AlarmsLookup", {
       method: 'GET',
@@ -161,10 +163,15 @@ function AddAlarms() {
           setListDeviceModels(data.listDeviceModel);
           setListFlags(data.listFlags);
         }
-      }).catch((error) => toast.error('Unable to get the Alarms lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Alarms lookup list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   
   const GetAlarms = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/Alarm", {
       method: 'GET',
@@ -174,10 +181,16 @@ function AddAlarms() {
         if (data) {
           setListAlarms(data);
         }
-      }).catch((error) => toast.error('Unable to get the alarm list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the alarm list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetLookupdata();
@@ -402,7 +415,11 @@ function AddAlarms() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>
         

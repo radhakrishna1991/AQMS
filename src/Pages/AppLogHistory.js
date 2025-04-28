@@ -8,8 +8,10 @@ function AppLogHistory() {
   const [ListAppLog, setListAppLog] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
+  const [gridLoad,setgridLoad]= useState(false);
 
   const GetAppLogLookup = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/AppLogHistory", {
       method: 'GET',
@@ -20,12 +22,17 @@ function AppLogHistory() {
           let data1 = data.listAppLogHistory.map((x) => { x.logTime = x.logTime.replace('T', ' ');  return x; });
           setListAppLog(data1);
         }
-      }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
 
   const GetAppLog = async function (param) {
     // let Fromdate = document.getElementById("fromdateid").value;
     // let Todate = document.getElementById("todateid").value;
+    document.getElementById('loader').style.display = "block";
     if(param =='reset'){
       let Fromdate="01-01-0001 0:00:00";
       let Todate="01-01-0001 0:00:00";
@@ -40,7 +47,11 @@ function AppLogHistory() {
             let data1 = data.map((x) => { x.logTime = x.logTime.replace('T', ' '); return x; });
             setListAppLog(data1);
           }
-        }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'));
+        }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'))
+        .finally(() => {
+          setgridLoad(true);
+          document.getElementById('loader').style.display = "none";
+      });
     }
     else{
       let Fromdate = document.getElementById("fromdateid").value;
@@ -54,11 +65,17 @@ function AppLogHistory() {
             let data1 = data.map((x) => { x.logTime = x.logTime.replace('T', ' '); return x; });
             setListAppLog(data1);
           }
-        }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'));
+        }).catch((error) => toast.error('Unable to get the application log list. Please contact adminstrator'))
+        .finally(() => {
+          setgridLoad(true);
+          document.getElementById('loader').style.display = "none";
+      });
     }
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetAppLogLookup();
@@ -123,6 +140,11 @@ function AppLogHistory() {
               </div>
               </div>
               <div className="jsGrid" ref={gridRefLogHistoryreport} />
+          </div>
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
           </div>
         </section>
 

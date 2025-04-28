@@ -16,17 +16,21 @@ function DeviceAlarams() {
   const [CheckedValues, setCheckedValues] = useState([]);
   const [ChangedAlarmData, setChangedAlarmData] = useState([]);
   const [EnableValue, setEnableValue]=useState(true);
+  const [gridLoad,setgridLoad]= useState(false);
   var dataForGrid = [];
 
   useEffect(() => {
     GetDeviceAlarmsLookup();
   }, []);
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
 
 
   const GetDeviceAlarmsLookup = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/DevicesAlarmlookup", {
       method: 'GET',
@@ -57,7 +61,11 @@ function DeviceAlarams() {
       })
       .catch((error) => {
         toast.error('Unable to get the Devices lookup list. Please contact adminstrator')
-      });
+      })
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
 
   }
 
@@ -448,6 +456,11 @@ function DeviceAlarams() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
 
+          </div>
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
           </div>
         </section>
         <br></br>

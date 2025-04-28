@@ -16,6 +16,7 @@ function CalibrationDevice() {
   const [ServiceMode, setServiceMode] = useState(false);
   const [Enable, setEnable] = useState(false);
   const [Type, setType] = useState(true);
+  const [gridLoad,setgridLoad]= useState(false);
   const [display, setDisplay] = useState({
     name: 'none',
     instrumentid: 'none',
@@ -31,9 +32,9 @@ function CalibrationDevice() {
   const Deviceaddvalidation = function (StationID, DeviceName, DeviceModel, IPAddress, Port, Type, Number) {
     let isvalid = true;
     let form = document.querySelectorAll('#AddDeviceform')[0];
-    $("#invalidIPaddress")[0].style.display="none";
-    let validIPaddress = validateIPaddress(IPAddress);
     if(Type == 'Tcp/IP'){
+      $("#invalidIPaddress")[0].style.display="none";
+      let validIPaddress = validateIPaddress(IPAddress);
       if(!form.checkValidity()){
         form.classList.add('was-validated');
         isvalid = false;
@@ -247,6 +248,7 @@ function CalibrationDevice() {
       });
   }
   const GetLookupdata = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDeviceslookup", {
       method: 'GET',
@@ -258,10 +260,15 @@ function CalibrationDevice() {
           setListDevices(data.listCalibrationDevices);
           setListDeviceModels(data.listDeviceModels);
         }
-      }).catch((error) => toast.error('Unable to get the Devices lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Devices lookup list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   
   const GetDevices = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/CalibrationDevices", {
       method: 'GET',
@@ -271,10 +278,16 @@ function CalibrationDevice() {
         if (data) {
           setListDevices(data);
         }
-      }).catch((error) => toast.error('Unable to get the devices list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the devices list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetLookupdata();
@@ -589,7 +602,11 @@ function CalibrationDevice() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>
        

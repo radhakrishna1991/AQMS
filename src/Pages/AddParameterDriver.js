@@ -17,6 +17,7 @@ function AddParameterTemplates() {
   const [Instrumentid, setInstrumentid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [gridLoad,setgridLoad]= useState(false);
   const [display, setDisplay] = useState({
     ParameterDriverid: 'none',
     ModusRegisterIndexid: 'none',
@@ -182,6 +183,7 @@ function AddParameterTemplates() {
       });
   }
   const GetLookupdata = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/ParametersTemplateslookup", {
       method: 'GET',
@@ -196,10 +198,15 @@ function AddParameterTemplates() {
           setParameterDataFormat(data.listParameterDataFormat);
          // setParameterTemplatesConfig(JSON.parse(data.parameterTemplateConfig));
         }
-      }).catch((error) => toast.error('Unable to get the lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the lookup list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   
   const GetParameterDrivers = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/ParameterDriver", {
       method: 'GET',
@@ -209,10 +216,16 @@ function AddParameterTemplates() {
         if (data) {
           setListDrivers(data);
         }
-      }).catch((error) => toast.error('Unable to get the Parameter Drivers list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Parameter Drivers list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetLookupdata();
@@ -460,7 +473,11 @@ function AddParameterTemplates() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>
        

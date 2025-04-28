@@ -13,6 +13,7 @@ function Adduser() {
   const [Notification, setNotification] = useState(true);
   const [IsNotification, setIsNotification] = useState(window.notifications);
   const [ChangePasswordState, setChangePasswordState] = useState(false);
+  const [gridLoad,setgridLoad]= useState(false);
   const [display, setDisplay] = useState({
     usernameid: 'none',
     useremailid: 'none',
@@ -261,6 +262,7 @@ function Adduser() {
       });
   }
   const GetUser = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl()+ "api/Users", {
       method: 'GET',
@@ -270,10 +272,16 @@ function Adduser() {
         if (data) {
           setListUsers(data);
         }
-      }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetUser();
@@ -510,7 +518,11 @@ function Adduser() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>          
             

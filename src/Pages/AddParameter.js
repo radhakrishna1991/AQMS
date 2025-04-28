@@ -15,7 +15,8 @@ function AddParameter() {
   const [parameterId, setparameterId] = useState(0);
   const [Status, setStatus] = useState(true);
   const [IsDerived, setIsDerived] = useState(false);
-  const [EnableParametersAlarms, setEnableParametersAlarms] = useState(false);  
+  const [EnableParametersAlarms, setEnableParametersAlarms] = useState(false); 
+  const [gridLoad,setgridLoad]= useState(false); 
   const [ParseParamValue, setParseParamValue] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const [display, setDisplay] = useState({
@@ -323,6 +324,7 @@ function AddParameter() {
   }
 
   const Getparameters = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/ParametersList", {
       method: 'GET',
@@ -332,10 +334,15 @@ function AddParameter() {
         if (data) {
           setListparameters(data);
         }
-      }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
 
   const GetparametersLookup = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/Parameters/ParameterLookup", {
       method: 'GET',
@@ -349,10 +356,16 @@ function AddParameter() {
           setListReportedUnits(data.listReportedunits);
           setListDrivers(data.listDrivers);
         }
-      }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the parameters list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetparametersLookup();
@@ -742,7 +755,11 @@ function AddParameter() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>
         {parameterList && Listparameters.length > 0 && (

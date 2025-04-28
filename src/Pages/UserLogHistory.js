@@ -9,8 +9,10 @@ function UserLogHistory() {
   const [ListUsers, setListUsers] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
+  const [gridLoad,setgridLoad]= useState(false);
 
   const GetUserLogLookup = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistory", {
       method: 'GET',
@@ -28,11 +30,15 @@ function UserLogHistory() {
             });
           }, 100);
         }
-      }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
 
   const GetUserLog = async function (param) {
-   
+    document.getElementById('loader').style.display = "block";
     let UserName = $("#userid").val();
     if (UserName.length > 0) {
       UserName.join(',')
@@ -59,7 +65,11 @@ function UserLogHistory() {
           let data1 = data.map((x) => { x.logInTime = x.logInTime.replace('T', ' '); x.logOutTime = x.logOutTime!=null?x.logOutTime.replace('T', ' '):x.logOutTime; return x; });
           setListUsersLog(data1);
         }
-      }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
     initializeJsGrid();
@@ -156,6 +166,11 @@ function UserLogHistory() {
               </div>
               </div>
               <div className="jsGrid" ref={gridRefjsgridreport} />
+          </div>
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
           </div>
         </section>
         <br></br>

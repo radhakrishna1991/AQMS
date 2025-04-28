@@ -11,6 +11,7 @@ function AddDeviceModels() {
   const [Instrumentid, setInstrumentid] = useState(0);
   const [Type, setType] = useState(true);
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
+  const [gridLoad,setgridLoad]= useState(false);
   const [display, setDisplay] = useState({
     nameid: 'none',
     tcpipportid: 'none',
@@ -169,6 +170,7 @@ function AddDeviceModels() {
       });
   }
   const GetLookupdata = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/DeviceModellookup", {
       method: 'GET',
@@ -178,10 +180,15 @@ function AddDeviceModels() {
         if (data) {
           setListInstruments(data);
         }
-      }).catch((error) => toast.error('Unable to get the Device Model lookup list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Device Model lookup list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   
   const GetInstruments = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/DeviceModel", {
       method: 'GET',
@@ -191,10 +198,16 @@ function AddDeviceModels() {
         if (data) {
           setListInstruments(data);
         }
-      }).catch((error) => toast.error('Unable to get the Device Models list. Please contact adminstrator'));
+      }).catch((error) => toast.error('Unable to get the Device Models list. Please contact adminstrator'))
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
   }
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
   useEffect(() => {
     GetLookupdata();
@@ -402,7 +415,11 @@ function AddDeviceModels() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
           </div>
-
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
+          </div>
         </section>
         <br></br>
         

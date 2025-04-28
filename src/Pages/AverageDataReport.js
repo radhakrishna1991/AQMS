@@ -29,7 +29,7 @@ function AverageDataReport() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
 
   const [Pollutents, setPollutents] = useState([]);
-
+  const [loadGrid, setLoadGrid] = useState(false);
   const [Criteria, setcriteria] = useState([]);
   const PollutentsRef = useRef([]);
   PollutentsRef.current = SelectedPollutents;
@@ -98,8 +98,9 @@ function AverageDataReport() {
   }, []);
 
   useEffect(() => {
-
-    initializeJsGrid();
+    if(loadGrid == true){
+      initializeJsGrid();
+    } 
   }, [SelectedPollutents]);
   /* reported data start */
 
@@ -315,6 +316,7 @@ function AverageDataReport() {
       return false;
 
     }
+    setLoadGrid(true);
     /*
     let type = interval.substr(interval.length - 1);
     let Interval;
@@ -501,7 +503,7 @@ function AverageDataReport() {
       return false;
 
     }
-
+    setLoadGrid(true);
     setListReportData(1);
 
     //initializeJsGrid();
@@ -727,6 +729,7 @@ function AverageDataReport() {
     if (!valid) {
       return false;
     }
+    setLoadGrid(false);
     document.getElementById('loader').style.display = "block";
     let Intervaltype;
     let isAvgData = false;

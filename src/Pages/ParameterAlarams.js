@@ -15,6 +15,7 @@ function ParameterAlarams() {
   const [ParameterAlarmData, setParameterAlarmData] = useState([]);
   const [CheckedValues, setCheckedValues] = useState([]);
   const [ChangedAlarmData, setChangedAlarmData] = useState([]);
+  const [gridLoad,setgridLoad]= useState(false);
   const [EnableValue, setEnableValue]=useState(true);
   var dataForGrid = [];
 
@@ -22,11 +23,14 @@ function ParameterAlarams() {
     GetParameterAlarmsLookup();
   }, []);
   useEffect(() => {
-    initializeJsGrid();
+    if(gridLoad){
+      initializeJsGrid();
+    }
   });
 
 
   const GetParameterAlarmsLookup = async function () {
+    document.getElementById('loader').style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/ParameterAlarmlookup", {
       method: 'GET',
@@ -57,7 +61,11 @@ function ParameterAlarams() {
       })
       .catch((error) => {
         toast.error('Unable to get the Devices lookup list. Please contact adminstrator')
-      });
+      })
+      .finally(() => {
+        setgridLoad(true);
+        document.getElementById('loader').style.display = "none";
+    });
 
   }
 
@@ -442,6 +450,11 @@ function ParameterAlarams() {
               <div className="jsGrid" ref={gridRefjsgridreport} />
             )}
 
+          </div>
+          <div className="col-md-4">
+            <div className="row">
+            <div id="loader" className="loader"></div>
+            </div>
           </div>
         </section>
         <br></br>

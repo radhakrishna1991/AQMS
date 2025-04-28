@@ -123,7 +123,7 @@ function StasticsReport() {
     if (!valid) {
       return false;
     }
-
+    document.getElementById('loader').style.display = "block";
     let type = Interval.substr(Interval.length - 1);
     let Intervaltype;
     if (type == 'H') {
@@ -159,7 +159,10 @@ function StasticsReport() {
           let data1 = JSON.parse(data);
           getchartdata(data1, Pollutent, ChartType, Criteria)
         }
-      }).catch((error) => console.log(error));
+      }).catch((error) => console.log(error))
+      .finally(() => {
+        document.getElementById('loader').style.display = "none";
+      });
   }
 
   const ReportValidations = function (Station, Pollutent, Fromdate, Todate, Interval) {
@@ -548,7 +551,12 @@ function StasticsReport() {
                 </div>
                 )}
           </div>
-        </div>
+          <div className="col-md-4">
+                      <div className="row">
+                        <div id="loader" className="loader"></div>
+                      </div>
+                    </div>
+         </div>
       </section>
 
     </main>
