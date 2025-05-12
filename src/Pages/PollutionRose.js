@@ -128,7 +128,12 @@ function PollutionRose() {
           if (data) {
             let count = 0;
             let finalData=[];
-             configparam=PollutionRoseConfig?.ConfigList?.filter(x=>x.parametername?.toLowerCase()==PollutentName?.toLowerCase());
+            let driverID = AllLookpdata.listPollutents.find(x => x.parameterName?.toLowerCase() == PollutentName?.toLowerCase() && x.stationID == StationID).driverID;
+            let unitID = AllLookpdata.listPollutents.find(x => x.parameterName?.toLowerCase() == PollutentName?.toLowerCase() && x.stationID == StationID).unitID;
+            let unitName = AllLookpdata.listReportedUnits.find(x => x.id == unitID).unitName;
+            let driverName = AllLookpdata.listDrivers.find(x => x.id == driverID).driverName;
+            // configparam=PollutionRoseConfig?.ConfigList?.filter(x=>x.parametername?.toLowerCase()==PollutentName?.toLowerCase());
+            configparam=PollutionRoseConfig?.ConfigList?.filter(x=>x.parametername?.toLowerCase()==driverName?.toLowerCase() && x.unit == unitName);
              let Paramsplit=configparam[0]?.ranges?.split(",");
             for(let i=0;i<Paramsplit.length;i++){
               let finalrange1=[];
