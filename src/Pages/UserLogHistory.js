@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState, useRef } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
 function UserLogHistory() {
@@ -9,74 +9,110 @@ function UserLogHistory() {
   const [ListUsers, setListUsers] = useState([]);
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
-  const [gridLoad,setgridLoad]= useState(false);
+  const [gridLoad, setgridLoad] = useState(false);
 
   const GetUserLogLookup = async function () {
-    document.getElementById('loader').style.display = "block";
+    document.getElementById("loader").style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistory", {
-      method: 'GET',
-      headers:authHeader
-    }).then((response) => response.json())
+      method: "GET",
+      headers: authHeader,
+    })
+      .then((response) => response.json())
       .then((data) => {
         if (data) {
-          let data1 = data.listUsersLoginHistory.map((x) => { x.logInTime = x.logInTime.replace('T', ' '); x.logOutTime = x.logOutTime!=null?x.logOutTime.replace('T', ' '):x.logOutTime; return x; });
+          let data1 = data.listUsersLoginHistory.map((x) => {
+            x.logInTime = x.logInTime.replace("T", " ");
+            x.logOutTime =
+              x.logOutTime != null
+                ? x.logOutTime.replace("T", " ")
+                : x.logOutTime;
+            return x;
+          });
           setListUsersLog(data1);
           setListUsers(data.listUsers);
           setTimeout(function () {
-            $('#userid').SumoSelect({
-              triggerChangeCombined: true, placeholder: 'Select user', floatWidth: 200, selectAll: true,
-              search: true
+            $("#userid").SumoSelect({
+              triggerChangeCombined: true,
+              placeholder: "Select user",
+              floatWidth: 200,
+              selectAll: true,
+              search: true,
             });
           }, 100);
         }
-      }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'))
+      })
+      .catch((error) =>
+        toast.error(
+          "Unable to get the userlog list. Please contact adminstrator"
+        )
+      )
       .finally(() => {
         setgridLoad(true);
-        document.getElementById('loader').style.display = "none";
-    });
-  }
+        document.getElementById("loader").style.display = "none";
+      });
+  };
 
   const GetUserLog = async function (param) {
-    document.getElementById('loader').style.display = "block";
+    document.getElementById("loader").style.display = "block";
     let UserName = $("#userid").val();
     if (UserName.length > 0) {
-      UserName.join(',')
-    }else{
-      UserName="all"
+      UserName.join(",");
+    } else {
+      UserName = "all";
     }
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
-    if(param =='reset'){
+    if (param == "reset") {
       setTimeout(function () {
-        $('.userid')[0].sumo.unSelectAll(); 
-        $('.userid')[0].sumo.reload();
+        $(".userid")[0].sumo.unSelectAll();
+        $(".userid")[0].sumo.reload();
       }, 10);
-      UserName='';
+      UserName = "";
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-  let params = new URLSearchParams({ UserName: UserName, Fromdate: Fromdate, Todate: Todate});
-    await fetch(CommonFunctions.getWebApiUrl() + "api/LoginHistoryByFilter?"+ params, {
-      method: 'GET',
-      headers:authHeader
-    }).then((response) => response.json())
+    let params = new URLSearchParams({
+      UserName: UserName,
+      Fromdate: Fromdate,
+      Todate: Todate,
+    });
+    await fetch(
+      CommonFunctions.getWebApiUrl() + "api/LoginHistoryByFilter?" + params,
+      {
+        method: "GET",
+        headers: authHeader,
+      }
+    )
+      .then((response) => response.json())
       .then((data) => {
         if (data) {
-          let data1 = data.map((x) => { x.logInTime = x.logInTime.replace('T', ' '); x.logOutTime = x.logOutTime!=null?x.logOutTime.replace('T', ' '):x.logOutTime; return x; });
+          let data1 = data.map((x) => {
+            x.logInTime = x.logInTime.replace("T", " ");
+            x.logOutTime =
+              x.logOutTime != null
+                ? x.logOutTime.replace("T", " ")
+                : x.logOutTime;
+            return x;
+          });
           setListUsersLog(data1);
         }
-      }).catch((error) => toast.error('Unable to get the userlog list. Please contact adminstrator'))
+      })
+      .catch((error) =>
+        toast.error(
+          "Unable to get the userlog list. Please contact adminstrator"
+        )
+      )
       .finally(() => {
         setgridLoad(true);
-        document.getElementById('loader').style.display = "none";
-    });
-  }
+        document.getElementById("loader").style.display = "none";
+      });
+  };
   useEffect(() => {
     initializeJsGrid();
   });
   useEffect(() => {
     GetUserLogLookup();
-  }, [])
+  }, []);
   const initializeJsGrid = function () {
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
@@ -92,96 +128,170 @@ function UserLogHistory() {
       controller: {
         data: ListUsersLog,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          console.log(filter);
+          $(".jsgrid-filter-row input:text")
+            .addClass("form-control")
+            .addClass("form-control-sm");
+          $(".jsgrid-filter-row select")
+            .addClass("custom-select")
+            .addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
-            return ((!filter.ipAddress || item.ipAddress.toUpperCase().indexOf(filter.ipAddress.toUpperCase()) >= 0)
-            && (!filter.userID || item.userID === filter.userID)
-              && (!filter.logInTime || item.logInTime.toUpperCase().indexOf(filter.logInTime.toUpperCase()) >= 0)
-              && (!filter.logOutTime || item.logOutTime.toUpperCase().indexOf(filter.logOutTime.toUpperCase()) >= 0)
+            return (
+              (!filter.ipAddress ||
+                item.ipAddress
+                  .toUpperCase()
+                  .indexOf(filter.ipAddress.toUpperCase()) >= 0) &&
+              (!filter.userID || item.userID === filter.userID) &&
+              (!filter.logInTime ||
+                item.logInTime
+                  .toUpperCase()
+                  .indexOf(filter.logInTime.toUpperCase()) >= 0) &&
+              (!filter.logOutTime ||
+                (item.logOutTime == null
+                  ? false
+                  : item.logOutTime
+                      .toUpperCase()
+                      .indexOf(filter.logOutTime.toUpperCase()) >= 0))
             );
           });
-        }
+        },
       },
       fields: [
-        { name: "userID", title: "User Name", type: "select",align:"left", items: ListUsers, valueField: "id", textField: "userName", width: 200},
+        {
+          name: "userID",
+          title: "User Name",
+          type: "select",
+          align: "left",
+          items: ListUsers,
+          valueField: "id",
+          textField: "userName",
+          width: 200,
+        },
         { name: "ipAddress", title: "IP Address", type: "text" },
-        { name: "logInTime", title: "Login Time", type: "text", },
-        { name: "logOutTime", title: "Logout Time", type: "text", },
-        { type: "control", width: 100, editButton: false, deleteButton: false},
-      ]
+        { name: "logInTime", title: "Login Time", type: "text" },
+        { name: "logOutTime", title: "Logout Time", type: "text" },
+        { type: "control", width: 100, editButton: false, deleteButton: false },
+      ],
     });
-  }
+  };
 
-  const DownloadExcel = async function (filetype) {          {/*edited*/}
-  let params = new URLSearchParams({ filetype : filetype });
-  let authHeader = await CommonFunctions.getAuthHeader();
-  await fetch(CommonFunctions.getWebApiUrl()+ "api/UsersLogListExportToExcel?" + params,{
-    method: 'GET',
-    headers: authHeader ,
-  }).then(response => response.blob())
-    .then(blob => {
-      // Create a link element and trigger a click on it to download the file
-      var link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      if(filetype=='excel'){
-     link.download = Date.now()+".xlsx";
-      }else{
-        link.download = Date.now()+".csv";
+  const DownloadExcel = async function (filetype) {
+    {
+      /*edited*/
+    }
+    let params = new URLSearchParams({ filetype: filetype });
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(
+      CommonFunctions.getWebApiUrl() +
+        "api/UsersLogListExportToExcel?" +
+        params,
+      {
+        method: "GET",
+        headers: authHeader,
       }
-      link.click();
-    })
-    .catch(error => console.error('Error:', error));
-}
-  
+    )
+      .then((response) => response.blob())
+      .then((blob) => {
+        // Create a link element and trigger a click on it to download the file
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        if (filetype == "excel") {
+          link.download = Date.now() + ".xlsx";
+        } else {
+          link.download = Date.now() + ".csv";
+        }
+        link.click();
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+
   return (
-    <main id="main" className="main" >
+    <main id="main" className="main">
       <div className="container">
         <div className="pagetitle">
-            <h1>Users Log List</h1>
+          <h1>Users Log List</h1>
         </div>
         <section className="section">
           <div className="container">
             <div className="row my-4">
-          <div className="col-md-3">
+              <div className="col-md-3">
                 <label className="form-label">User Name</label>
-                <select className="form-select userid" id="userid" multiple="multiple">
-
-                  {ListUsers.map((x, y) =>
-                    <option value={x.id} key={y} >{x.userName}</option>
-                  )}
+                <select
+                  className="form-select userid"
+                  id="userid"
+                  multiple="multiple"
+                >
+                  {ListUsers.map((x, y) => (
+                    <option value={x.id} key={y}>
+                      {x.userName}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="col-md-3">
                 <label className="form-label">From Date</label>
-                <DatePicker className="form-control" id="fromdateid" selected={fromDate} onChange={(date) => setFromDate(date)} />
+                <DatePicker
+                  className="form-control"
+                  id="fromdateid"
+                  selected={fromDate}
+                  onChange={(date) => setFromDate(date)}
+                />
               </div>
               <div className="col-md-3">
                 <label className="form-label">To Date</label>
-                <DatePicker className="form-control" id="todateid" selected={toDate} onChange={(date) => setToDate(date)} />
+                <DatePicker
+                  className="form-control"
+                  id="todateid"
+                  selected={toDate}
+                  onChange={(date) => setToDate(date)}
+                />
               </div>
               <div className="col-md-3 mt-4">
-                <button type="button" className="btn btn-primary mx-1" onClick={() => GetUserLog()}>Filter</button>
-                <button type="button" className="btn btn-secondary mx-1" onClick={() => GetUserLog('reset')}>Reset</button>
+                <button
+                  type="button"
+                  className="btn btn-primary mx-1"
+                  onClick={() => GetUserLog()}
+                >
+                  Filter
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-secondary mx-1"
+                  onClick={() => GetUserLog("reset")}
+                >
+                  Reset
+                </button>
               </div>
-              </div>
-              <div className="jsGrid" ref={gridRefjsgridreport} />
+            </div>
+            <div className="jsGrid" ref={gridRefjsgridreport} />
           </div>
           <div className="col-md-4">
             <div className="row">
-            <div id="loader" className="loader"></div>
+              <div id="loader" className="loader"></div>
             </div>
           </div>
         </section>
         <br></br>
-       
-       { ListUsersLog.length > 0 && (   
-          <div align="center">            
-           <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
-           <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button>  
-          </div>   
-         )}
 
+        {ListUsersLog.length > 0 && (
+          <div align="center">
+            <button
+              type="button"
+              className="btn btn-primary datashow me-0"
+              onClick={() => DownloadExcel("excel")}
+            >
+              Download Excel
+            </button>{" "}
+            &nbsp;
+            <button
+              type="button"
+              className="btn btn-primary datashow me-0"
+              onClick={() => DownloadExcel("csv")}
+            >
+              Download Csv
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );
