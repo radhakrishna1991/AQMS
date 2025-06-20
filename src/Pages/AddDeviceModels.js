@@ -497,193 +497,209 @@ function AddDeviceModels() {
   return (
     <main id="main" className="main">
       <div className="container">
-        <div className="pagetitle">
-          {!InstrumentList && Instrumentid == 0 && <h1>Add Device Model</h1>}
-          {!InstrumentList && Instrumentid != 0 && <h1>Update Device Model</h1>}
-          {InstrumentList && <h1>Device Models List</h1>}
+        <div className="row my-3">
+          <div className="pagetitle col">
+            {!InstrumentList && Instrumentid == 0 && <h1>Add Device Model</h1>}
+            {!InstrumentList && Instrumentid != 0 && (
+              <h1>Update Device Model</h1>
+            )}
+            {InstrumentList && <h1>Device Models List</h1>}
+          </div>
+          <div className="text-end col">
+            {InstrumentList ? (
+              <span
+                className="operation_class mx-2"
+                onClick={() => AddStationchange()}
+              >
+                <i className="bi bi-plus-circle-fill"></i>{" "}
+                <span>Create New Device Model</span>
+              </span>
+            ) : (
+              <span
+                className="operation_class mx-2"
+                onClick={() => AddStationchange("gridlist")}
+              >
+                <i className="bi bi-card-list"></i>{" "}
+                <span>View All Device Models</span>
+              </span>
+            )}
+          </div>
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {InstrumentList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange()}
-                >
-                  <i className="bi bi-plus-circle-fill"></i>{" "}
-                  <span>Create New Device Model</span>
-                </span>
-              )}
-              {!InstrumentList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange("gridlist")}
-                >
-                  <i className="bi bi-card-list"></i>{" "}
-                  <span>View All Device Models</span>
-                </span>
-              )}
-            </div>
+          <div>
             {!InstrumentList && (
-              <form id="AddInstrumentform" className="row" noValidate>
-                <div className="col-md-12 mb-3">
-                  <label for="instrumentname" className="form-label">
-                    Device Model Name:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="instrumentname"
-                    placeholder="Enter Device Model"
-                    value={value.nameid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 50, "nameid")
-                    }
-                    required
-                  />
-                  <div
-                    id="nameid"
-                    style={{ display: display.nameid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 50 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter Device Model Name
-                  </div>
+              <>
+                <div
+                  className="text-danger mb-3 text-start"
+                  style={{ fontSize: "12px" }}
+                >
+                  * Mark fields are mandatory to fill
                 </div>
-                <div className="col-md-12 mb-3">
-                  <label for="tcpipport" className="form-label">
-                    TcpIp Port:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="tcpipport"
-                    placeholder="Enter TcpIp Port number"
-                    value={value.tcpipportid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "tcpipportid")
-                    }
-                  />
-                  <div
-                    id="tcpipportid"
-                    style={{ display: display.tcpipportid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter TcpIp Port number
-                  </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="modbuscode" className="form-label">
-                    Modbus Code:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="modbuscode"
-                    placeholder="Enter Modbus Code"
-                    value={value.modbuscodeid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "modbuscodeid")
-                    }
-                  />
-                  <div
-                    id="modbuscodeid"
-                    style={{ display: display.modbuscodeid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter Modbus Code</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="modbuscommandtype" className="form-label">
-                    Modbus Command Type:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="modbuscommandtype"
-                    placeholder="Enter Modbus Command Type"
-                    value={value.modbuscommandtypeid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "modbuscommandtypeid")
-                    }
-                  />
-                  <div
-                    id="modbuscommandtypeid"
-                    style={{ display: display.modbuscommandtypeid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter Modbus Command Type
-                  </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="defaulttimeout" className="form-label">
-                    Default Timeout:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="defaulttimeout"
-                    placeholder="Enter Default Timeout"
-                    value={value.defaulttimeoutid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "defaulttimeoutid")
-                    }
-                  />
-                  <div
-                    id="defaulttimeoutid"
-                    style={{ display: display.defaulttimeoutid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter Default Timeout
-                  </div>
-                </div>
-                <div className="form-check">
-                  <input
-                    type="checkbox"
-                    className="form-check-input"
-                    defaultChecked={false}
-                    id="forcemultiplecoils"
-                  />
-                  &nbsp;
-                  <label for="forcemultiplecoils" className="form-label">
-                    Supports Force Multiple Coils
-                  </label>
-                </div>
-                <br></br>
-                <div className="col-md-12 text-center">
-                  {!InstrumentList && Instrumentid == 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={Instrumentadd}
-                      type="button"
+                <form id="AddInstrumentform" className="row" noValidate>
+                  <div className="col-md-6 mb-3">
+                    <label for="instrumentname" className="form-label">
+                      <span className="text-danger">*</span> Device Model Name:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="instrumentname"
+                      placeholder="Enter Device Model"
+                      value={value.nameid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 50, "nameid")
+                      }
+                      required
+                    />
+                    <div
+                      id="nameid"
+                      style={{ display: display.nameid }}
+                      className="invalid-feedback"
                     >
-                      Add Device Model
-                    </button>
-                  )}
-                  {!InstrumentList && Instrumentid != 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={UpdateInstrument}
-                      type="button"
+                      Character limit exceeded! Maximum 50 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">
+                      Please enter Device Model Name
+                    </div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label for="tcpipport" className="form-label">
+                      TcpIp Port:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="tcpipport"
+                      placeholder="Enter TcpIp Port number"
+                      value={value.tcpipportid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "tcpipportid")
+                      }
+                    />
+                    <div
+                      id="tcpipportid"
+                      style={{ display: display.tcpipportid }}
+                      className="invalid-feedback"
                     >
-                      Update Device Model
-                    </button>
-                  )}
-                </div>
-              </form>
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">
+                      Please enter TcpIp Port number
+                    </div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label for="modbuscode" className="form-label">
+                      Modbus Code:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="modbuscode"
+                      placeholder="Enter Modbus Code"
+                      value={value.modbuscodeid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "modbuscodeid")
+                      }
+                    />
+                    <div
+                      id="modbuscodeid"
+                      style={{ display: display.modbuscodeid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">Please enter Modbus Code</div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label for="modbuscommandtype" className="form-label">
+                      Modbus Command Type:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="modbuscommandtype"
+                      placeholder="Enter Modbus Command Type"
+                      value={value.modbuscommandtypeid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "modbuscommandtypeid")
+                      }
+                    />
+                    <div
+                      id="modbuscommandtypeid"
+                      style={{ display: display.modbuscommandtypeid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">
+                      Please enter Modbus Command Type
+                    </div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label for="defaulttimeout" className="form-label">
+                      Default Timeout:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="defaulttimeout"
+                      placeholder="Enter Default Timeout"
+                      value={value.defaulttimeoutid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "defaulttimeoutid")
+                      }
+                    />
+                    <div
+                      id="defaulttimeoutid"
+                      style={{ display: display.defaulttimeoutid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">
+                      Please enter Default Timeout
+                    </div>
+                  </div>
+                  <div className="col-md-6 mt-md-4 mb-3 form-check">
+                    <input
+                      type="checkbox"
+                      className="form-check-input mx-0"
+                      defaultChecked={false}
+                      id="forcemultiplecoils"
+                    />
+                    &nbsp;
+                    <label for="forcemultiplecoils" className="form-label ms-2">
+                      Supports Force Multiple Coils
+                    </label>
+                  </div>
+                  <br></br>
+                  <div className="col-md-12 text-center">
+                    {!InstrumentList && Instrumentid == 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={Instrumentadd}
+                        type="button"
+                      >
+                        Add Device Model
+                      </button>
+                    )}
+                    {!InstrumentList && Instrumentid != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={UpdateInstrument}
+                        type="button"
+                      >
+                        Update Device Model
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </>
             )}
             {InstrumentList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />

@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState, useRef } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 import CommonFunctions from "../utils/CommonFunctions";
 //import bcrypt from 'bcryptjs';
@@ -13,111 +13,135 @@ function Adduser() {
   const [Notification, setNotification] = useState(true);
   const [IsNotification, setIsNotification] = useState(window.notifications);
   const [ChangePasswordState, setChangePasswordState] = useState(false);
-  const [gridLoad,setgridLoad]= useState(false);
+  const [gridLoad, setgridLoad] = useState(false);
   const [display, setDisplay] = useState({
-    usernameid: 'none',
-    useremailid: 'none',
-    userpwdid: 'none',
-    newpwdid: 'none',
+    usernameid: "none",
+    useremailid: "none",
+    userpwdid: "none",
+    newpwdid: "none",
   });
   const [value, setValue] = useState({
-    usernameid: '',
-    useremailid: '',
-    userpwdid: '',
-    newpwdid: '',
+    usernameid: "",
+    useremailid: "",
+    userpwdid: "",
+    newpwdid: "",
   });
 
-  const Useraddvalidation = function (UserName, UserEmail, UserPassword, UserRole) {
+  const Useraddvalidation = function (
+    UserName,
+    UserEmail,
+    UserPassword,
+    UserRole
+  ) {
     let isvalid = true;
-    let form = document.querySelectorAll('#AddUserform')[0];
-    $("#invalidemail")[0].style.display="none";
-   /*  $("#lblPassword")[0].style.display="none"; */
-    let validmail=validateEmail(UserEmail);
+    let form = document.querySelectorAll("#AddUserform")[0];
+    $("#invalidemail")[0].style.display = "none";
+    /*  $("#lblPassword")[0].style.display="none"; */
+    let validmail = validateEmail(UserEmail);
     if (UserName == "") {
       //toast.warning('Please enter user name');
-      form.classList.add('was-validated');
+      form.classList.add("was-validated");
       isvalid = false;
     } else if (UserEmail == "" || !validmail) {
       //toast.warning('Please enter user email');
-      form.classList.add('was-validated');
-      $("#invalidemail")[0].style.display="block";
+      form.classList.add("was-validated");
+      $("#invalidemail")[0].style.display = "block";
       return false;
       isvalid = false;
     } else if (UserPassword == "") {
       //toast.warning('Please enter user email');
-      form.classList.add('was-validated');
+      form.classList.add("was-validated");
       isvalid = false;
     } else if (UserRole == "") {
       //toast.warning('Please select user role');
-      form.classList.add('was-validated');
+      form.classList.add("was-validated");
       isvalid = false;
     }
     return isvalid;
-  }
+  };
 
   const validateEmail = (email) => {
     return String(email)
-    .toLowerCase()
-    .match(
-      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
+      .toLowerCase()
+      .match(
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+      );
   };
   const UserEditvalidation = function (UserEmail, UserRole) {
     let isvalid = true;
-    let form = document.querySelectorAll('#AddUserform')[0];
-    $("#invalidemail")[0].style.display="none";
-    let validmail=validateEmail(UserEmail);
+    let form = document.querySelectorAll("#AddUserform")[0];
+    $("#invalidemail")[0].style.display = "none";
+    let validmail = validateEmail(UserEmail);
     if (UserEmail == "" || !validmail) {
-      form.classList.add('was-validated');
-      $("#invalidemail")[0].style.display="block";
+      form.classList.add("was-validated");
+      $("#invalidemail")[0].style.display = "block";
       return false;
       isvalid = false;
     } else if (UserRole == "") {
-      form.classList.add('was-validated');
+      form.classList.add("was-validated");
       isvalid = false;
     }
     return isvalid;
-  }
-  const Useradd = async(event) => {
+  };
+  const Useradd = async (event) => {
     let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
     let UserPassword = document.getElementById("userpwd").value;
     let UserRole = document.getElementById("userrole").value;
-    let validation = Useraddvalidation(UserName, UserEmail, UserPassword, UserRole);
+    let validation = Useraddvalidation(
+      UserName,
+      UserEmail,
+      UserPassword,
+      UserRole
+    );
     if (!validation) {
       return false;
     }
     //let encryptPassword=await handleEncrypt(UserPassword);
-    if(UserPassword.length<8){
-      $("#lblPassword")[0].style.display="block";
+    if (UserPassword.length < 8) {
+      $("#lblPassword")[0].style.display = "block";
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    let FinalNotification=IsNotification?Notification:false;
-    await fetch(CommonFunctions.getWebApiUrl() + 'api/Users/' + FinalNotification, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: authHeader.Authorization,
-        'app-origin':authHeader["app-origin"]
-      },
-      body: JSON.stringify({ UserName: UserName, UserEmail: UserEmail, Password:UserPassword, Role: UserRole }),
-    }).then((response) => response.json())
+    let FinalNotification = IsNotification ? Notification : false;
+    await fetch(
+      CommonFunctions.getWebApiUrl() + "api/Users/" + FinalNotification,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: authHeader.Authorization,
+          "app-origin": authHeader["app-origin"],
+        },
+        body: JSON.stringify({
+          UserName: UserName,
+          UserEmail: UserEmail,
+          Password: UserPassword,
+          Role: UserRole,
+        }),
+      }
+    )
+      .then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "useradd") {
-          toast.success('User added successfully');
+          toast.success("User added successfully");
           GetUser();
           setUserList(true);
         } else if (responseJson == "userexist") {
-          toast.error('User already exist with given user name. Please try with another user name.');
+          toast.error(
+            "User already exist with given user name. Please try with another user name."
+          );
         } else {
-          toast.error('Unable to add the user. Please contact adminstrator');
+          toast.error("Unable to add the user. Please contact adminstrator");
         }
-      }).catch((error) => toast.error('Unable to add the user. Please contact adminstrator'));
-  }
+      })
+      .catch((error) =>
+        toast.error("Unable to add the user. Please contact adminstrator")
+      );
+  };
 
- /*  const handleEncrypt = async (password) => {
+  /*  const handleEncrypt = async (password) => {
 
     // Generate a salt (number of rounds determines the complexity)
     const saltRounds = 10;
@@ -136,156 +160,181 @@ function Adduser() {
     setTimeout(() => {
       //document.getElementById("username").value = param.userName;
       document.getElementById("useremail").value = param.userEmail;
-           document.getElementById("userrole").value = param.role;
+      document.getElementById("userrole").value = param.role;
     }, 10);
-   
-  }
+  };
 
-  const UpdateUser=async(event) => {
+  const UpdateUser = async (event) => {
     //let UserName = document.getElementById("username").value;
     let UserEmail = document.getElementById("useremail").value;
-        let UserRole = document.getElementById("userrole").value;
-    
-    let validation = UserEditvalidation(UserEmail,UserRole);
+    let UserRole = document.getElementById("userrole").value;
+
+    let validation = UserEditvalidation(UserEmail, UserRole);
     if (!validation) {
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/' + UserId, {
-      method: 'PUT',
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Users/" + UserId, {
+      method: "PUT",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: authHeader.Authorization,
-        'app-origin':authHeader["app-origin"]
+        "app-origin": authHeader["app-origin"],
       },
-      body: JSON.stringify({ UserEmail: UserEmail,Role: UserRole,ID:UserId }),
-    }).then((response) => response.json())
+      body: JSON.stringify({
+        UserEmail: UserEmail,
+        Role: UserRole,
+        ID: UserId,
+      }),
+    })
+      .then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-          toast.success('User Updated successfully');
+          toast.success("User Updated successfully");
           GetUser();
           setUserList(true);
-        }else if (responseJson == 2) {
-          toast.error('User already exist with given email. Please try with another email.');
+        } else if (responseJson == 2) {
+          toast.error(
+            "User already exist with given email. Please try with another email."
+          );
         } else {
-          toast.error('Unable to update the user. Please contact adminstrator');
+          toast.error("Unable to update the user. Please contact adminstrator");
         }
-      }).catch((error) => toast.error('Unable to update the user. Please contact adminstrator'));
-  }
+      })
+      .catch((error) =>
+        toast.error("Unable to update the user. Please contact adminstrator")
+      );
+  };
 
   const ChangePassword = function (param) {
     setUserList(false);
     setChangePasswordState(true);
     setUserId(param.id);
-  }
+  };
 
-  const Passwordvalidation = function ( NewPassword, ConfirmPassword) {
+  const Passwordvalidation = function (NewPassword, ConfirmPassword) {
     let isvalid = true;
-    let form = document.querySelectorAll('#AddUserform')[0];
+    let form = document.querySelectorAll("#AddUserform")[0];
     if (NewPassword == "") {
-      form.classList.add('was-validated');
+      form.classList.add("was-validated");
       isvalid = false;
-    }else if(NewPassword.length<8){
-      form.classList.add('was-validated');
-      $("#lblPassword")[0].style.display="block";
+    } else if (NewPassword.length < 8) {
+      form.classList.add("was-validated");
+      $("#lblPassword")[0].style.display = "block";
       isvalid = false;
-    }else if (ConfirmPassword == "") {
-      form.classList.add('was-validated');
+    } else if (ConfirmPassword == "") {
+      form.classList.add("was-validated");
       isvalid = false;
-    }else if (NewPassword != ConfirmPassword) {            
-      $("#lblbothmatch")[0].style.display="block";            
+    } else if (NewPassword != ConfirmPassword) {
+      $("#lblbothmatch")[0].style.display = "block";
       isvalid = false;
-  }
+    }
     return isvalid;
-  }
+  };
 
-  const UpdateUserPassword=async(event) => {
+  const UpdateUserPassword = async (event) => {
     //let UserName = document.getElementById("username").value;
     let Newpassword = document.getElementById("userpwd").value;
-    let ConfirmNewpassword = document.getElementById("confirmNewPassword").value;
-    $("#lblPassword")[0].style.display="none";
-    $("#lblbothmatch")[0].style.display="none";  
-    let validation = Passwordvalidation(Newpassword,ConfirmNewpassword);
+    let ConfirmNewpassword =
+      document.getElementById("confirmNewPassword").value;
+    $("#lblPassword")[0].style.display = "none";
+    $("#lblbothmatch")[0].style.display = "none";
+    let validation = Passwordvalidation(Newpassword, ConfirmNewpassword);
     if (!validation) {
       return false;
     }
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ 'api/Users/ChangePassword', {
-      method: 'POST',
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Users/ChangePassword", {
+      method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: authHeader.Authorization,
-        'app-origin':authHeader["app-origin"]
+        "app-origin": authHeader["app-origin"],
       },
-      body: JSON.stringify({ Newpassword: Newpassword,ID:UserId }),
-    }).then((response) => response.json())
+      body: JSON.stringify({ Newpassword: Newpassword, ID: UserId }),
+    })
+      .then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == 1) {
-          toast.success('Password changed successfully');
+          toast.success("Password changed successfully");
           GetUser();
           setUserList(true);
-        }else {
-          toast.error('Unable to change the password. Please contact adminstrator');
+        } else {
+          toast.error(
+            "Unable to change the password. Please contact adminstrator"
+          );
         }
-      }).catch((error) => toast.error('Unable to change the password. Please contact adminstrator'));
-  }
+      })
+      .catch((error) =>
+        toast.error(
+          "Unable to change the password. Please contact adminstrator"
+        )
+      );
+  };
 
   const DeleteUser = function (item) {
     Swal.fire({
       title: "Are you sure?",
-      text: ("You want to delete this User !"),
+      text: "You want to delete this User !",
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#5cb85c",
       confirmButtonText: "Yes",
-      closeOnConfirm: false
-    })
-      .then(async function (isConfirm) {
-        if (isConfirm.isConfirmed) {
-          let id = item.id;
-          let authHeader = await CommonFunctions.getAuthHeader();
-          await fetch(CommonFunctions.getWebApiUrl() + 'api/Users/' + id, {
-            method: 'DELETE',
-            headers:authHeader
-          }).then((response) => response.json())
-            .then((responseJson) => {
-              if (responseJson == 1) {
-                toast.success('User deleted successfully')
-                GetUser();
-              } else {
-                toast.error('Unable to delete user. Please contact adminstrator');
-              }
-            }).catch((error) => toast.error('Unable to delete user. Please contact adminstrator'));
-        }
-      });
-  }
+      closeOnConfirm: false,
+    }).then(async function (isConfirm) {
+      if (isConfirm.isConfirmed) {
+        let id = item.id;
+        let authHeader = await CommonFunctions.getAuthHeader();
+        await fetch(CommonFunctions.getWebApiUrl() + "api/Users/" + id, {
+          method: "DELETE",
+          headers: authHeader,
+        })
+          .then((response) => response.json())
+          .then((responseJson) => {
+            if (responseJson == 1) {
+              toast.success("User deleted successfully");
+              GetUser();
+            } else {
+              toast.error("Unable to delete user. Please contact adminstrator");
+            }
+          })
+          .catch((error) =>
+            toast.error("Unable to delete user. Please contact adminstrator")
+          );
+      }
+    });
+  };
   const GetUser = async function () {
-    document.getElementById('loader').style.display = "block";
+    document.getElementById("loader").style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/Users", {
-      method: 'GET',
-      headers:authHeader
-    }).then((response) => response.json())
+    await fetch(CommonFunctions.getWebApiUrl() + "api/Users", {
+      method: "GET",
+      headers: authHeader,
+    })
+      .then((response) => response.json())
       .then((data) => {
         if (data) {
           setListUsers(data);
         }
-      }).catch((error) => toast.error('Unable to get the users list. Please contact adminstrator'))
+      })
+      .catch((error) =>
+        toast.error("Unable to get the users list. Please contact adminstrator")
+      )
       .finally(() => {
         setgridLoad(true);
-        document.getElementById('loader').style.display = "none";
-    });
-  }
+        document.getElementById("loader").style.display = "none";
+      });
+  };
   useEffect(() => {
-    if(gridLoad){
+    if (gridLoad) {
       initializeJsGrid();
     }
   });
   useEffect(() => {
     GetUser();
-  }, [])
+  }, []);
   const initializeJsGrid = function () {
     window.jQuery(gridRefjsgridreport.current).jsGrid({
       width: "100%",
@@ -301,75 +350,108 @@ function Adduser() {
       controller: {
         data: ListUsers,
         loadData: function (filter) {
-          $(".jsgrid-filter-row input:text").addClass("form-control").addClass("form-control-sm");
-          $(".jsgrid-filter-row select").addClass("custom-select").addClass("custom-select-sm");
+          $(".jsgrid-filter-row input:text")
+            .addClass("form-control")
+            .addClass("form-control-sm");
+          $(".jsgrid-filter-row select")
+            .addClass("custom-select")
+            .addClass("custom-select-sm");
           return $.grep(this.data, function (item) {
-            return ((!filter.userName || item.userName.toUpperCase().indexOf(filter.userName.toUpperCase()) >= 0)
-              && (!filter.userEmail || item.userEmail.toUpperCase().indexOf(filter.userEmail.toUpperCase()) >= 0)
-              && (!filter.role || item.role.toUpperCase().indexOf(filter.role.toUpperCase()) >= 0)
+            return (
+              (!filter.userName ||
+                item.userName
+                  .toUpperCase()
+                  .indexOf(filter.userName.toUpperCase()) >= 0) &&
+              (!filter.userEmail ||
+                item.userEmail
+                  .toUpperCase()
+                  .indexOf(filter.userEmail.toUpperCase()) >= 0) &&
+              (!filter.role ||
+                item.role.toUpperCase().indexOf(filter.role.toUpperCase()) >= 0)
             );
           });
-        }
+        },
       },
       fields: [
         { name: "userName", title: "User Name", type: "text" },
-        { name: "userEmail", title: "User Email", type: "text" },
-        { name: "role", title: "Role", type: "text", },
+        { name: "userEmail", title: "User Email", type: "text", width: 200 },
+        { name: "role", title: "Role", type: "text" },
         {
-          type: "control", width: 100, editButton: false, deleteButton: false,
+          type: "control",
+          width: 100,
+          editButton: false,
+          deleteButton: false,
           itemTemplate: function (value, item) {
             // var $result = gridRefjsgrid.current.fields.control.prototype.itemTemplate.apply(this, arguments);
 
-            var $customEditButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button jsgrid-edit-button",title: "Edit" })
+            var $customEditButton = $("<button>")
+              .attr({
+                class: "customGridEditbutton jsgrid-button jsgrid-edit-button",
+                title: "Edit",
+              })
               .click(function (e) {
                 EditUser(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
-              var $customResetButton = $("<button>").attr({ class: "customGridEditbutton jsgrid-button_custom bi bi-lock-fill",title: "Change password" })
+            var $customResetButton = $("<button>")
+              .attr({
+                class:
+                  "customGridEditbutton jsgrid-button_custom bi bi-lock-fill",
+                title: "Change password",
+              })
               .click(function (e) {
                 ChangePassword(item);
                 /* alert("ID: " + item.id); */
                 e.stopPropagation();
               });
-            var $customDeleteButton = $("<button>").attr({ class: "customGridDeletebutton jsgrid-button jsgrid-delete-button",title: "Delete" })
+            var $customDeleteButton = $("<button>")
+              .attr({
+                class:
+                  "customGridDeletebutton jsgrid-button jsgrid-delete-button",
+                title: "Delete",
+              })
               .click(function (e) {
                 DeleteUser(item);
                 e.stopPropagation();
               });
 
-            return $("<div>").append($customEditButton).append($customResetButton).append($customDeleteButton);
+            return $("<div>")
+              .append($customEditButton)
+              .append($customResetButton)
+              .append($customDeleteButton);
             //return $result.add($customButton);
-          }
+          },
         },
-      ]
+      ],
     });
-  }
+  };
   const Adduserchange = function (param) {
     if (param) {
       setUserList(true);
+      setChangePasswordState(false);
     } else {
       setUserList(false);
       setUserId(0);
       resetState();
     }
-  }
+  };
 
   const resetState = () => {
     const newState = { ...value };
     for (const key in newState) {
       if (newState.hasOwnProperty(key)) {
-        newState[key] = '';
+        newState[key] = "";
       }
     }
     setValue(newState);
   };
 
-  const handleTextBox = (value, characterLimit, elementId) => { 
+  const handleTextBox = (value, characterLimit, elementId) => {
     if (value.length <= characterLimit) {
       setDisplay((prevDisplay) => ({
         ...prevDisplay,
-        [elementId]: 'none',
+        [elementId]: "none",
       }));
       setValue((prevDisplay) => ({
         ...prevDisplay,
@@ -378,161 +460,347 @@ function Adduser() {
     } else {
       setDisplay((prevDisplay) => ({
         ...prevDisplay,
-        [elementId]: 'block',
+        [elementId]: "block",
       }));
     }
-  }
+  };
 
-  const DownloadExcel = async function (filetype) {      
-    let params = new URLSearchParams({ filetype : filetype });
+  const DownloadExcel = async function (filetype) {
+    let params = new URLSearchParams({ filetype: filetype });
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl()+ "api/UsersListExportToExcel?" + params,{
-      method: 'GET',
-      headers: authHeader ,
-    }).then(response => response.blob())
-      .then(blob => {
+    await fetch(
+      CommonFunctions.getWebApiUrl() + "api/UsersListExportToExcel?" + params,
+      {
+        method: "GET",
+        headers: authHeader,
+      }
+    )
+      .then((response) => response.blob())
+      .then((blob) => {
         // Create a link element and trigger a click on it to download the file
-        var link = document.createElement('a');
+        var link = document.createElement("a");
         link.href = window.URL.createObjectURL(blob);
-        if(filetype=='excel'){
-       link.download = Date.now()+".xlsx";
-        }else{
-          link.download = Date.now()+".csv";
+        if (filetype == "excel") {
+          link.download = Date.now() + ".xlsx";
+        } else {
+          link.download = Date.now() + ".csv";
         }
         link.click();
       })
-      .catch(error => console.error('Error:', error));
-  }
+      .catch((error) => console.error("Error:", error));
+  };
 
   return (
-    <main id="main" className="main" >
+    <main id="main" className="main">
       <div className="container">
-        <div className="pagetitle">
-          {!UserList && UserId==0 && (
-            <h1>Add User</h1>
-          )}
-           {!UserList && UserId!=0 && !ChangePasswordState &&  (
-            <h1>Update User</h1>
-          )}
-           {!UserList && UserId!=0 && ChangePasswordState && (
-            <h1>Change Password</h1>
-          )}
-          {UserList && (
-            <h1>Users List</h1>
-          )}
+        <div className="row my-2">
+          <div className="pagetitle col">
+            {!UserList && UserId == 0 && <h1>Add User</h1>}
+            {!UserList && UserId != 0 && !ChangePasswordState && (
+              <h1>Update User</h1>
+            )}
+            {!UserList && UserId != 0 && ChangePasswordState && (
+              <h1>Change Password</h1>
+            )}
+            {UserList && <h1>Users List</h1>}
+          </div>
+          <div className="col text-end">
+            {UserList ? (
+              <span
+                className="operation_class mx-2"
+                onClick={() => Adduserchange()}
+              >
+                <i className="bi bi-plus-circle-fill"></i>{" "}
+                <span>Create New User</span>
+              </span>
+            ) : (
+              <span
+                className="operation_class mx-2"
+                onClick={() => Adduserchange("gridlist")}
+              >
+                <i className="bi bi-card-list"></i> <span>View All Users</span>
+              </span>
+            )}
+          </div>
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {UserList && (
-                <span className="operation_class mx-2" onClick={() => Adduserchange()}><i className="bi bi-plus-circle-fill"></i> <span>Add</span></span>
-              )}
-              {!UserList && (
-                <span className="operation_class mx-2" onClick={() => Adduserchange('gridlist')}><i className="bi bi-card-list"></i> <span>List</span></span>
-              )}
-            </div>
+          <div>
             {!UserList && (
-              <form id="AddUserform" className="row">
-                {!UserList && UserId==0 && (
+              <>
+                <div
+                  className="text-danger mb-3 text-start"
+                  style={{ fontSize: "12px" }}
+                >
+                  * Mark fields are mandatory to fill
+                </div>
+                <form id="AddUserform" className="row">
+                  {!UserList && UserId == 0 && (
+                    <div className="col-md-6 mb-3">
+                      <label for="username" className="form-label">
+                        <span className="text-danger">*</span> User Name:
+                      </label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        id="username"
+                        placeholder="Enter user name"
+                        value={value.usernameid}
+                        onChange={(e) =>
+                          handleTextBox(e.target.value, 50, "usernameid")
+                        }
+                        required
+                      />
+                      <div
+                        id="usernameid"
+                        style={{ display: display.usernameid }}
+                        className="invalid-feedback"
+                      >
+                        Character limit exceeded! Maximum 50 characters are
+                        allowed.
+                      </div>
+                      <div class="invalid-feedback">
+                        Please enter user name.
+                      </div>
+                    </div>
+                  )}
+                  {!ChangePasswordState && (
+                    <div className="col-md-6 mb-3">
+                      <label for="useremail" className="form-label">
+                        <span className="text-danger">*</span> User Email:
+                      </label>
+                      <input
+                        type="email"
+                        className="form-control"
+                        id="useremail"
+                        placeholder="Enter user email"
+                        value={value.useremailid}
+                        onChange={(e) =>
+                          handleTextBox(e.target.value, 50, "useremailid")
+                        }
+                        required
+                      />
+                      <div
+                        id="useremailid"
+                        style={{ display: display.useremailid }}
+                        className="invalid-feedback"
+                      >
+                        Character limit exceeded! Maximum 50 characters are
+                        allowed.
+                      </div>
+                      <div class="invalid-feedback" id="invalidemail">
+                        Please enter valid user email.
+                      </div>
+                    </div>
+                  )}
+                  {!UserList && UserId == 0 && (
+                    <div className="col-md-6 mb-3">
+                      <label for="userpassword" className="form-label">
+                        <span className="text-danger">*</span> Password:
+                      </label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="userpwd"
+                        placeholder="Enter password"
+                        value={value.userpwdid}
+                        onChange={(e) =>
+                          handleTextBox(e.target.value, 20, "userpwdid")
+                        }
+                        required
+                      />
+                      <div
+                        id="userpwdid"
+                        style={{ display: display.userpwdid }}
+                        className="invalid-feedback"
+                      >
+                        Character limit exceeded! Maximum 20 characters are
+                        allowed.
+                      </div>
+                      <div class="invalid-feedback">Please enter Password.</div>
+                      <div
+                        id="lblPassword"
+                        style={{ display: "none" }}
+                        className="invalid-feedback"
+                      >
+                        Password must contain 8 characters
+                      </div>
+                    </div>
+                  )}
+                  {ChangePasswordState && (
+                    <div className="col-md-6 mb-3">
+                      <label for="userpassword" className="form-label">
+                        <span className="text-danger">*</span> New Password:
+                      </label>
+                      <input
+                        type="password"
+                        className="form-control"
+                        id="userpwd"
+                        placeholder="Enter new password"
+                        value={value.newpwdid}
+                        onChange={(e) =>
+                          handleTextBox(e.target.value, 20, "newpwdid")
+                        }
+                        required
+                      />
+                      <div
+                        id="newpwdid"
+                        style={{ display: display.userpwdid }}
+                        className="invalid-feedback"
+                      >
+                        Character limit exceeded! Maximum 20 characters are
+                        allowed.
+                      </div>
+                      <div class="invalid-feedback">Please enter Password.</div>
+                      <div
+                        id="lblPassword"
+                        style={{ display: "none" }}
+                        className="invalid-feedback"
+                      >
+                        Password must contain 8 characters
+                      </div>
+                    </div>
+                  )}
+                  {ChangePasswordState && (
+                    <div className="col-md-6 mb-3">
+                      <label
+                        htmlFor="yourConfirmNewPassword"
+                        className="form-label"
+                      >
+                        <span className="text-danger">*</span> Confirm New
+                        Password:
+                      </label>
+                      <input
+                        type="password"
+                        name="password"
+                        className="form-control"
+                        placeholder="Enter confirm new password"
+                        id="confirmNewPassword"
+                        required
+                      />
+                      <div className="invalid-feedback">
+                        Please enter Confrim new password!
+                      </div>
+                      <div
+                        id="lblbothmatch"
+                        style={{ display: "none" }}
+                        className="invalid-feedback"
+                      >
+                        New Password and Confirm Password should Match
+                      </div>
+                    </div>
+                  )}
+                  {!ChangePasswordState && (
+                    <div className="col-md-6 mb-3">
+                      <label for="userrole" className="form-label">
+                        <span className="text-danger">*</span> User Role:
+                      </label>
+                      <select className="form-select" id="userrole" required>
+                        <option value="" selected>
+                          Select user role
+                        </option>
+                        <option value="admin">Admin</option>
+                        <option value="guest">Guest</option>
+                        {/*  <option value="dataentry">Data Entry</option> */}
+                      </select>
+                      <div class="invalid-feedback">
+                        Please select user role.
+                      </div>
+                    </div>
+                  )}
+                  {!UserList && UserId == 0 && IsNotification && (
                     <div className="col-md-12 mb-3">
-                      <label for="username" className="form-label">User Name:</label>
-                      <input type="text" className="form-control" id="username" placeholder="Enter user name" value={value.usernameid} onChange={(e) => handleTextBox(e.target.value, 50, "usernameid" )} required />
-                      <div id="usernameid" style={{ display: display.usernameid}} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
-                      <div class="invalid-feedback">Please enter user name.</div>
-                    </div>
-                )}
-                {!ChangePasswordState && (
-                <div className="col-md-12 mb-3">
-                  <label for="useremail" className="form-label">User Email:</label>
-                  <input type="email" className="form-control" id="useremail" placeholder="Enter user email" value={value.useremailid} onChange={(e) => handleTextBox(e.target.value, 50, "useremailid" )} required />
-                  <div id="useremailid" style={{ display: display.useremailid}} className="invalid-feedback">Character limit exceeded! Maximum 50 characters are allowed.</div>
-                  <div class="invalid-feedback" id="invalidemail">Please enter valid user email.</div>
-                </div>
-                )}
-                {!UserList && UserId==0 && (
-                      <div className="col-md-12 mb-3">
-                          <label for="userpassword" className="form-label">Password:</label>
-                          <input type="password" className="form-control" id="userpwd" placeholder="Enter password" value={value.userpwdid} onChange={(e) => handleTextBox(e.target.value, 20, "userpwdid" )} required />
-                          <div id="userpwdid" style={{ display: display.userpwdid}} className="invalid-feedback">Character limit exceeded! Maximum 20 characters are allowed.</div>
-                          <div class="invalid-feedback">Please enter Password.</div>
-                          <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
+                      <label for="Notification" className="form-label">
+                        Notification:{" "}
+                      </label>
+                      <div className="form-check d-inline-block form-switch ms-2">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          id="Notification"
+                          onChange={(e) => setNotification(e.target.checked)}
+                          defaultChecked={Notification}
+                        />
+                        {Notification && (
+                          <label
+                            className="form-check-label"
+                            for="flexSwitchCheckChecked"
+                          >
+                            On
+                          </label>
+                        )}
+                        {!Notification && (
+                          <label
+                            className="form-check-label"
+                            for="flexSwitchCheckChecked"
+                          >
+                            Off
+                          </label>
+                        )}
                       </div>
-                )}
-                 {ChangePasswordState && (
-                      <div className="col-md-12 mb-3">
-                          <label for="userpassword" className="form-label">New Password:</label>
-                          <input type="password" className="form-control" id="userpwd" placeholder="Enter new password" value={value.newpwdid} onChange={(e) => handleTextBox(e.target.value, 20, "newpwdid" )} required />
-                          <div id="newpwdid" style={{ display: display.userpwdid}} className="invalid-feedback">Character limit exceeded! Maximum 20 characters are allowed.</div>
-                          <div class="invalid-feedback">Please enter Password.</div>
-                          <div id="lblPassword" style={{display:"none"}} className="invalid-feedback">Password must contain 8 characters</div>
-                      </div>
-                )}
-                 {ChangePasswordState && (
-                      <div className="col-md-12 mb-3">
-                          <label htmlFor="yourConfirmNewPassword" className="form-label">Confirm New Password:</label>
-                        <input type="password" name="password" className="form-control" placeholder="Enter confirm new password" id="confirmNewPassword" required />
-                        <div className="invalid-feedback">Please enter Confrim new password!</div>                        
-                        <div id="lblbothmatch" style={{display:"none"}} className="invalid-feedback">New Password and Confirm Password should Match</div>
-                        </div>
-                )}
-                 {!ChangePasswordState && (
-                <div className="col-md-12 mb-3">
-                  <label for="userrole" className="form-label">User Role:</label>
-                  <select className="form-select" id="userrole" required>
-                    <option value="" selected>select user role</option>
-                    <option value="admin">Admin</option>
-                    <option value="guest">Guest</option>
-                   {/*  <option value="dataentry">Data Entry</option> */}
-                  </select>
-                  <div class="invalid-feedback">Please select user role.</div>
-                </div>
-                 )}
-                {!UserList && UserId==0 && IsNotification && (
-                  <div className="col-md-12 mb-3">
-                    <label for="Notification" className="form-label">Notification: </label>
-                    <div className="form-check d-inline-block form-switch ms-2">
-                      <input className="form-check-input" type="checkbox" role="switch" id="Notification" onChange={(e) => setNotification(e.target.checked)} defaultChecked={Notification} />
-                      {Notification && (
-                        <label className="form-check-label" for="flexSwitchCheckChecked">On</label>
-                      )}
-                      {!Notification && (
-                        <label className="form-check-label" for="flexSwitchCheckChecked">Off</label>
-                      )}
                     </div>
+                  )}
+                  <div className="col-md-12 mt-2 text-center">
+                    {!UserList && UserId == 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={Useradd}
+                        type="button"
+                      >
+                        Add User
+                      </button>
+                    )}
+                    {!ChangePasswordState && !UserList && UserId != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={UpdateUser}
+                        type="button"
+                      >
+                        Update User
+                      </button>
+                    )}
+                    {ChangePasswordState && UserId != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={UpdateUserPassword}
+                        type="button"
+                      >
+                        Change Password
+                      </button>
+                    )}
                   </div>
-                )}
-                <div className="col-md-12 text-center">
-                {!UserList && UserId==0 && (
-                  <button className="btn btn-primary" onClick={Useradd} type="button">Add User</button>
-                  )}
-                  {!ChangePasswordState && !UserList && UserId!=0 && (
-                      <button className="btn btn-primary" onClick={UpdateUser} type="button">Update User</button>
-                  )}
-                   {ChangePasswordState && UserId!=0 && (
-                      <button className="btn btn-primary" onClick={UpdateUserPassword} type="button">Change Password</button>
-                  )}
-                </div>
-              </form>
+                </form>
+              </>
             )}
-            {UserList && (
-              <div className="jsGrid" ref={gridRefjsgridreport} />
-            )}
+            {UserList && <div className="jsGrid" ref={gridRefjsgridreport} />}
           </div>
           <div className="col-md-4">
             <div className="row">
-            <div id="loader" className="loader"></div>
+              <div id="loader" className="loader"></div>
             </div>
           </div>
         </section>
-        <br></br>          
-            
-          {UserList && ListUsers.length > 0 && (
-            <div align="center">
-                 <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('excel')} >Download Excel</button> &nbsp;
-                 <button type="button" className="btn btn-primary datashow me-0" onClick={() => DownloadExcel('csv')} >Download Csv</button> 
-            </div>     
-          )}
+        <br></br>
 
+        {UserList && ListUsers.length > 0 && (
+          <div align="center">
+            <button
+              type="button"
+              className="btn btn-primary datashow me-0"
+              onClick={() => DownloadExcel("excel")}
+            >
+              Download Excel
+            </button>{" "}
+            &nbsp;
+            <button
+              type="button"
+              className="btn btn-primary datashow me-0"
+              onClick={() => DownloadExcel("csv")}
+            >
+              Download Csv
+            </button>
+          </div>
+        )}
       </div>
     </main>
   );

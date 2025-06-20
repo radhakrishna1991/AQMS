@@ -481,7 +481,7 @@ function Dashboard() {
           },
         },
       },
-      // maintainAspectRatio: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: {
           position: "top",
@@ -967,7 +967,7 @@ function Dashboard() {
         id="infomodal"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
@@ -1064,7 +1064,7 @@ function Dashboard() {
         id="alertmodal"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
@@ -1126,7 +1126,7 @@ function Dashboard() {
         id="alarmmodal"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
@@ -1211,7 +1211,7 @@ function Dashboard() {
         id="alertcode"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
@@ -1329,7 +1329,7 @@ function Dashboard() {
         id="calibrationmodal"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
@@ -1350,7 +1350,10 @@ function Dashboard() {
               <div className="calibrationmodal">
                 <div className="row">
                   <div className="col-md-2">
-                    <label for="formGroupExampleInput" class="form-label">
+                    <label
+                      htmlFor="formGroupExampleInput"
+                      className="form-label"
+                    >
                       Measure
                     </label>
                   </div>
@@ -1484,7 +1487,7 @@ function Dashboard() {
                                           />
                                           <label
                                             className="form-check-label"
-                                            for="enable"
+                                            htmlFor="enable"
                                           >
                                             Enable
                                           </label>
@@ -1996,7 +1999,7 @@ function Dashboard() {
             <div className="modal-footer">
               <button
                 type="button"
-                class="btn btn-secondary"
+                className="btn btn-secondary"
                 data-bs-dismiss="modal"
               >
                 Cancel
@@ -2015,7 +2018,7 @@ function Dashboard() {
       <div className="pagetitle d-flex justify-content-between">
         <h1>Dashboard</h1>
         <div className="col-md-3 mb-3 d-inline-flex">
-          <label for="Interval" className="form-label me-3">
+          <label htmlFor="Interval" className="form-label me-3">
             Date & Time:
           </label>
           <span className="dashboard_date"> {currentdatetime} </span>
@@ -2106,7 +2109,7 @@ function Dashboard() {
                                   title="Service Mode"
                                   onClick={() => DeviceServiceMode(x)}
                                 >
-                                  <i class="bi bi-modem"></i>&nbsp;
+                                  <i className="bi bi-modem"></i>&nbsp;
                                 </div>
                               )}
                               {x.serviceMode && (
@@ -2117,7 +2120,8 @@ function Dashboard() {
                                   title="Service Mode"
                                   onClick={() => DeviceServiceMode(x)}
                                 >
-                                  <i class="bi bi-modem text-danger"></i>&nbsp;
+                                  <i className="bi bi-modem text-danger"></i>
+                                  &nbsp;
                                 </div>
                               )}
                               <div
@@ -2125,14 +2129,14 @@ function Dashboard() {
                                 title="Calibration"
                                 onClick={() => Devicecalibration(x)}
                               >
-                                <i class="bi bi-gear"></i>&nbsp;
+                                <i className="bi bi-gear"></i>&nbsp;
                               </div>
                               <div
                                 className="icons"
                                 title="Alarm"
                                 onClick={() => Devicealarm(x)}
                               >
-                                <i class="bi bi-alarm"></i>&nbsp;{" "}
+                                <i className="bi bi-alarm"></i>&nbsp;{" "}
                               </div>
                               {ListAllData.listAlarms.filter(
                                 (z) =>
@@ -2279,11 +2283,11 @@ function Dashboard() {
                     )
                 )}
               </div>
-              <div class="row mt-3 justify-content-center">
-                <label class="col-sm-2 col-form-label text-end">
+              <div className="row my-3 justify-content-center">
+                <label className="col-sm-2 col-form-label text-end">
                   Select Interval
                 </label>
-                <div class="col-sm-2">
+                <div className="col-sm-2">
                   <select
                     className="form-select"
                     id="criteriaid"
@@ -2301,19 +2305,19 @@ function Dashboard() {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-11">
+                <div className="col-md-11 align-self-start">
                   <Line
                     ref={chartRef}
                     options={ChartOptions}
                     data={ChartData}
-                    height={100}
+                    height={400}
                   />
                 </div>
                 <div className="col-md-1 mt-5">
-                  <div class="form-check">
+                  <div className="form-check">
                     <input
                       type="checkbox"
-                      class="form-check-input"
+                      className="form-check-input"
                       id="selectall"
                       defaultChecked={
                         LiveChartStatus.filter((x) => x.ChartStatus == false)
@@ -2323,28 +2327,30 @@ function Dashboard() {
                       }
                       onChange={() => selects(ListAllData.listPollutents)}
                     ></input>
-                    <label class="form-check-label" htmlFor="selectall">
+                    <label className="form-check-label" htmlFor="selectall">
                       Select All
                     </label>
                   </div>
-                  {ListAllData.listPollutents.map((i, j) => (
-                    <div class="form-check">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        id={i.id}
-                        value={i.id}
-                        defaultChecked={LiveChartStatus[j].ChartStatus}
-                        onChange={() => DeviceGraph(i)}
-                      />
-                      {/* <input class="form-check-input" type="checkbox" name="paramtername" value={i.id}  onChange={() => DeviceGraph(i)}/> */}
-                      <label class="form-check-label" htmlFor={i.id}>
-                        {i.parameterName}
-                      </label>
-                    </div>
-                  ))}
+                  <div className="row mx-0 gap-1">
+                    {ListAllData.listPollutents.map((i, j) => (
+                      <div className="form-check col">
+                        <input
+                          className="form-check-input"
+                          type="checkbox"
+                          id={i.id}
+                          value={i.id}
+                          defaultChecked={LiveChartStatus[j].ChartStatus}
+                          onChange={() => DeviceGraph(i)}
+                        />
+                        {/* <input className="form-check-input" type="checkbox" name="paramtername" value={i.id}  onChange={() => DeviceGraph(i)}/> */}
+                        <label className="form-check-label" htmlFor={i.id}>
+                          {i.parameterName}
+                        </label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="text-center">
+                <div className="text-center mt-2">
                   <button
                     type="button"
                     className="btn btn-primary mx-1"

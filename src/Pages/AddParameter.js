@@ -107,7 +107,7 @@ function AddParameter() {
     return isvalid;
   };
   const parameteradd = async function () {
-    debugger;
+    // debugger;
     let StationID = document.getElementById("stationname").value;
     let DeviceID = document.getElementById("devicename").value;
     let DriverID = document.getElementById("drivername").value;
@@ -557,7 +557,6 @@ function AddParameter() {
       controller: {
         data: Listparameters,
         loadData: function (filter) {
-          console.log(filter);
           $(".jsgrid-filter-row input:text")
             .addClass("form-control")
             .addClass("form-control-sm");
@@ -788,614 +787,664 @@ function AddParameter() {
   return (
     <main id="main" className="main">
       <div className="container">
-        <div className="pagetitle">
-          {!parameterList && parameterId == 0 && <h1>Add parameter</h1>}
-          {!parameterList && parameterId != 0 && <h1>Update parameter</h1>}
-          {parameterList && <h1>Parameters List</h1>}
+        <div className="row my-2">
+          <div className="pagetitle col">
+            {!parameterList && parameterId == 0 && <h1>Add Parameter</h1>}
+            {!parameterList && parameterId != 0 && <h1>Update Parameter</h1>}
+            {parameterList && <h1>Parameters List</h1>}
+          </div>
+          <div className="col text-end">
+            {parameterList ? (
+              <span
+                className="operation_class mx-2"
+                onClick={() => Addparameterchange()}
+              >
+                <i className="bi bi-plus-circle-fill"></i>{" "}
+                <span>Create New Parameter</span>
+              </span>
+            ) : (
+              <span
+                className="operation_class mx-2"
+                onClick={() => Addparameterchange("gridlist")}
+              >
+                <i className="bi bi-card-list"></i>{" "}
+                <span>View All Parameters</span>
+              </span>
+            )}
+          </div>
         </div>
+
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {parameterList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => Addparameterchange()}
-                >
-                  <i className="bi bi-plus-circle-fill"></i> <span>Add</span>
-                </span>
-              )}
-              {!parameterList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => Addparameterchange("gridlist")}
-                >
-                  <i className="bi bi-card-list"></i> <span>List</span>
-                </span>
-              )}
-            </div>
+          <div>
             {!parameterList && (
-              <form id="AddParametersform" className="row" noValidate>
-                <div className="col-md-12 mb-3">
-                  <label for="StationName" className="form-label">
-                    Station Name:
-                  </label>
-                  <select className="form-select" id="stationname" required>
-                    <option selected value="">
-                      Select station name
-                    </option>
-                    {ListStations.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.stationName}
+              <>
+                <div
+                  className="text-danger mb-3 text-start"
+                  style={{ fontSize: "12px" }}
+                >
+                  * Mark fields are mandatory to fill
+                </div>
+                <form id="AddParametersform" className="row" noValidate>
+                  <div className="col-md-4 mb-3">
+                    <label for="StationName" className="form-label">
+                      <span className="text-danger">*</span> Station Name:
+                    </label>
+                    <select className="form-select" id="stationname" required>
+                      <option selected value="">
+                        Select station name
                       </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select station name</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="devicename" className="form-label">
-                    Device Name:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="devicename"
-                    onChange={Deviceschange}
-                    required
-                  >
-                    <option selected value="">
-                      Select device name
-                    </option>
-                    {ListDevices.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.deviceName}
-                      </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select device name</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="devicename" className="form-label">
-                    Driver Name:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="drivername"
-                    onChange={(e) => DriverChange(e, e.target.selectedIndex)}
-                    required
-                  >
-                    <option selected value="">
-                      Select driver name
-                    </option>
-                    {ListdeviceDrivers.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.driverName}
-                      </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select driver name</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="parametername" className="form-label">
-                    Parameter Name:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="parametername"
-                    placeholder="Enter parameter name"
-                    value={value.parameternameid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 50, "parameternameid")
-                    }
-                    required
-                  />
-                  <div
-                    id="parameternameid"
-                    style={{ display: display.parameternameid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 50 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter parameter name
-                  </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="units" className="form-label">
-                    Units:
-                  </label>
-                  <select className="form-select" id="unit" required>
-                    <option selected value="" title="Select Units">
-                      Select unit
-                    </option>
-                    {ListReportedUnits.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.unitName}
-                      </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select units</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="scalefactor" className="form-label">
-                    Scale Factor:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="scalefactor"
-                    placeholder="Enter scale factor"
-                    value={value.scalefactorid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "scalefactorid")
-                    }
-                    required
-                  />
-                  <div
-                    id="scalefactorid"
-                    style={{ display: display.scalefactorid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter scale factor</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="coefa" className="form-label">
-                    COEF A:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="coefa"
-                    placeholder="Enter COEF A"
-                    defaultValue="1"
-                    value={value.coefaid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "coefaid")
-                    }
-                    required
-                  />
-                  <div
-                    id="coefaid"
-                    style={{ display: display.coefaid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter COEF A</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="coefb" className="form-label">
-                    COEF B:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="coefb"
-                    placeholder="Enter COEF B"
-                    defaultValue="0"
-                    value={value.coefbid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "coefbid")
-                    }
-                    required
-                  />
-                  <div
-                    id="coefbid"
-                    style={{ display: display.coefbid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter COEF B</div>
-                </div>
-                <div className="col-md-12">
-                  <div className="row">
-                    <div className="col-md-8 mb-3">
-                      <label for="frequency" className="form-label">
-                        Frequency:
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="frequency"
-                        placeholder="Enter Frequency"
-                        value={value.frequencyid}
-                        onChange={(e) =>
-                          handleTextBox(e.target.value, 7, "frequencyid")
-                        }
-                        required
-                      />
-                      <div
-                        id="frequencyid"
-                        style={{ display: display.frequencyid }}
-                        className="invalid-feedback"
-                      >
-                        Character limit exceeded! Maximum 7 characters are
-                        allowed.
-                      </div>
-                      <div class="invalid-feedback">Please enter Frequency</div>
-                    </div>
-                    <div className="col-md-4 Frequency1 mb-3">
-                      <select className="form-select" id="frequency1">
-                        <option value="M">Minutes</option>
-                        <option value="H">Hours</option>
-                      </select>
+                      {ListStations.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.stationName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select station name
                     </div>
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="pollinginterval" className="form-label">
-                    Polling Interval:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="pollinginterval"
-                    placeholder="Enter polling interval"
-                    value={value.pollingintervalid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 10, "pollingintervalid")
-                    }
-                    required
-                  />
-                  <div
-                    id="pollingintervalid"
-                    style={{ display: display.pollingintervalid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 10 characters are allowed.
+                  <div className="col-md-4 mb-3">
+                    <label for="devicename" className="form-label">
+                      <span className="text-danger">*</span> Device Name:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="devicename"
+                      onChange={Deviceschange}
+                      required
+                    >
+                      <option selected value="">
+                        Select device name
+                      </option>
+                      {ListDevices.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.deviceName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select device name
+                    </div>
                   </div>
-                  <div class="invalid-feedback">
-                    Please enter polling interval
+                  <div className="col-md-4 mb-3">
+                    <label for="devicename" className="form-label">
+                      <span className="text-danger">*</span> Driver Name:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="drivername"
+                      onChange={(e) => DriverChange(e, e.target.selectedIndex)}
+                      required
+                    >
+                      <option selected value="">
+                        Select driver name
+                      </option>
+                      {ListdeviceDrivers.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.driverName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select driver name
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="avginterval" className="form-label">
-                    Average Interval:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="avginterval"
-                    placeholder="Enter average interval"
-                    value={value.averageintervalid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 50, "averageintervalid")
-                    }
-                    required
-                  />
-                  <div
-                    id="averageintervalid"
-                    style={{ display: display.averageintervalid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 50 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter average interval
-                  </div>
-                </div>
-
-                <div className="col-md-12 mb-3">
-                  <label for="registerindex" className="form-label">
-                    Register Index:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="registerindex"
-                    placeholder="Enter Register Index"
-                    value={value.registerindexid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "registerindexid")
-                    }
-                  />
-                  <div
-                    id="registerindexid"
-                    style={{ display: display.registerindexid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter average interval
-                  </div>
-                </div>
-
-                <div className="col-md-12 mb-3">
-                  <label for="parsefunciton" className="form-label">
-                    Parse Function:
-                  </label>
-                  <textarea
-                    class="form-control"
-                    id="parsefunciton"
-                    placeholder="Enter Parse Function"
-                    rows="3"
-                    value={value.parsefuncitonid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 1000, "parsefuncitonid")
-                    }
-                  ></textarea>
-                  <div
-                    id="parsefuncitonid"
-                    style={{ display: display.parsefuncitonid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 1000 characters are
-                    allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter parse function
-                  </div>
-                </div>
-
-                <div className="col-md-12 mb-3">
-                  <label for="sendcommand" className="form-label">
-                    Send Command:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="sendcommand"
-                    placeholder="Enter send command"
-                    value={value.sendcommandid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 150, "sendcommandid")
-                    }
-                  />
-                  <div
-                    id="sendcommandid"
-                    style={{ display: display.sendcommandid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 150 characters are
-                    allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter send command</div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label for="sendcommand" className="form-label">
-                    High High Limit:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="highhighlimit"
-                    placeholder="high high limit"
-                    value={value.highhighlimitid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "highhighlimitid")
-                    }
-                  />
-                  <div
-                    id="highhighlimitid"
-                    style={{ display: display.highhighlimitid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter High High Limit
-                  </div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label for="sendcommand" className="form-label">
-                    High Limit:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="highlimit"
-                    placeholder="high limit"
-                    value={value.highlimitid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "highlimitid")
-                    }
-                  />
-                  <div
-                    id="highlimitid"
-                    style={{ display: display.highlimitid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter High Limit</div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label for="sendcommand" className="form-label">
-                    Low Low Limit:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="lowlowlimit"
-                    placeholder="Enter low low limit"
-                    value={value.lowlowlimitid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "lowlowlimitid")
-                    }
-                  />
-                  <div
-                    id="lowlowlimitid"
-                    style={{ display: display.lowlowlimitid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter Low Low Limit:
-                  </div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label for="sendcommand" className="form-label">
-                    Low Limit:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="lowlimit"
-                    placeholder="Enter low limit"
-                    value={value.lowlimitid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "lowlimitid")
-                    }
-                  />
-                  <div
-                    id="lowlimitid"
-                    style={{ display: display.lowlimitid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter Low Limit:</div>
-                </div>
-                <div className="col-md-6 mb-3">
-                  <label for="sendcommand" className="form-label">
-                    Threshold Limit:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="thresholdlimit"
-                    placeholder="Enter threshold limit"
-                    value={value.thresholdlimitid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "thresholdlimitid")
-                    }
-                  />
-                  <div
-                    id="thresholdlimitid"
-                    style={{ display: display.thresholdlimitid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
-                  </div>
-                  <div class="invalid-feedback">
-                    Please enter Threshold Limit
-                  </div>
-                </div>
-                <div className="col-md-6 mt-4 mb-3">
-                  <div className="form-check mt-2">
+                  <div className="col-md-4 mb-3">
+                    <label for="parametername" className="form-label">
+                      <span className="text-danger">*</span> Parameter Name:
+                    </label>
                     <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="enableparametersalarms"
+                      type="text"
+                      className="form-control"
+                      id="parametername"
+                      placeholder="Enter parameter name"
+                      value={value.parameternameid}
                       onChange={(e) =>
-                        setEnableParametersAlarms(e.target.checked)
+                        handleTextBox(e.target.value, 50, "parameternameid")
                       }
-                      defaultChecked={EnableParametersAlarms}
+                      required
                     />
-                    <label
-                      className="form-check-label form-label"
-                      for="isderived"
+                    <div
+                      id="parameternameid"
+                      style={{ display: display.parameternameid }}
+                      className="invalid-feedback"
                     >
-                      EnableParametersAlarms
+                      Character limit exceeded! Maximum 50 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter parameter name
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="units" className="form-label">
+                      <span className="text-danger">*</span> Units:
                     </label>
+                    <select className="form-select" id="unit" required>
+                      <option selected value="" title="Select Units">
+                        Select unit
+                      </option>
+                      {ListReportedUnits.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.unitName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">Please select units</div>
                   </div>
-                </div>
-                <div className="col-md-4 mb-3">
-                  <label for="parseparamvalue" className="form-label">
-                    Parse Param Value:{" "}
-                  </label>
-                  <div className="form-check d-inline-block form-switch ms-2">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="parseparamvalue"
-                      onChange={(e) => setParseParamValue(e.target.checked)}
-                      defaultChecked={ParseParamValue}
-                    />
-                    {ParseParamValue && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
-                      >
-                        Enable
-                      </label>
-                    )}
-                    {!ParseParamValue && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
-                      >
-                        Disable
-                      </label>
-                    )}
-                  </div>
-                </div>
-
-                <div className="col-md-4 mb-3">
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="isderived"
-                      onChange={(e) => setIsDerived(e.target.checked)}
-                      defaultChecked={IsDerived}
-                    />
-                    <label
-                      className="form-check-label form-label"
-                      for="isderived"
-                    >
-                      IsDerived
+                  <div className="col-md-4 mb-3">
+                    <label for="scalefactor" className="form-label">
+                      <span className="text-danger">*</span> Scale Factor:
                     </label>
-                  </div>
-                </div>
-
-                <div className="col-md-4 mb-3">
-                  <label for="Status" className="form-label">
-                    Status:{" "}
-                  </label>
-                  <div className="form-check d-inline-block form-switch ms-2">
                     <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="Status"
-                      onChange={(e) => setStatus(e.target.checked)}
-                      defaultChecked={Status}
+                      type="number"
+                      className="form-control"
+                      id="scalefactor"
+                      placeholder="Enter scale factor"
+                      value={value.scalefactorid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "scalefactorid")
+                      }
+                      required
                     />
-                    {Status && (
+                    <div
+                      id="scalefactorid"
+                      style={{ display: display.scalefactorid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter scale factor
+                    </div>
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label for="coefa" className="form-label">
+                      <span className="text-danger">*</span> COEF A:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="coefa"
+                      placeholder="Enter COEF A"
+                      defaultValue="1"
+                      value={value.coefaid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "coefaid")
+                      }
+                      required
+                    />
+                    <div
+                      id="coefaid"
+                      style={{ display: display.coefaid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">Please enter COEF A</div>
+                  </div>
+                  <div className="col-md-3 mb-3">
+                    <label for="coefb" className="form-label">
+                      <span className="text-danger">*</span> COEF B:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="coefb"
+                      placeholder="Enter COEF B"
+                      defaultValue="0"
+                      value={value.coefbid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "coefbid")
+                      }
+                      required
+                    />
+                    <div
+                      id="coefbid"
+                      style={{ display: display.coefbid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">Please enter COEF B</div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="row">
+                      <div className="col-8 mb-3">
+                        <label for="frequency" className="form-label">
+                          Frequency:
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="frequency"
+                          placeholder="Enter Frequency"
+                          value={value.frequencyid}
+                          onChange={(e) =>
+                            handleTextBox(e.target.value, 7, "frequencyid")
+                          }
+                          // required
+                        />
+                        <div
+                          id="frequencyid"
+                          style={{ display: display.frequencyid }}
+                          className="invalid-feedback"
+                        >
+                          Character limit exceeded! Maximum 7 characters are
+                          allowed.
+                        </div>
+                        <div className="invalid-feedback">
+                          Please enter Frequency
+                        </div>
+                      </div>
+                      <div className="col-4 Frequency1 mb-3">
+                        <select
+                          className="form-select"
+                          id="frequency1"
+                          // required
+                        >
+                          <option value="" selected hidden>
+                            Select units
+                          </option>
+                          <option value="M">Minutes</option>
+                          <option value="H">Hours</option>
+                        </select>
+                        <div className="invalid-feedback">
+                          Please select units
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="pollinginterval" className="form-label">
+                      <span className="text-danger">*</span> Polling Interval:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="pollinginterval"
+                      placeholder="Enter polling interval"
+                      value={value.pollingintervalid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 10, "pollingintervalid")
+                      }
+                      required
+                    />
+                    <div
+                      id="pollingintervalid"
+                      style={{ display: display.pollingintervalid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 10 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter polling interval
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="avginterval" className="form-label">
+                      <span className="text-danger">*</span> Average Interval:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="avginterval"
+                      placeholder="Enter average interval"
+                      value={value.averageintervalid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 50, "averageintervalid")
+                      }
+                      required
+                    />
+                    <div
+                      id="averageintervalid"
+                      style={{ display: display.averageintervalid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 50 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter average interval
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 mb-3">
+                    <label for="registerindex" className="form-label">
+                      Register Index:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="registerindex"
+                      placeholder="Enter Register Index"
+                      value={value.registerindexid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "registerindexid")
+                      }
+                    />
+                    <div
+                      id="registerindexid"
+                      style={{ display: display.registerindexid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter register index
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 mb-3">
+                    <label for="parsefunciton" className="form-label">
+                      Parse Function:
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="parsefunciton"
+                      placeholder="Enter Parse Function"
+                      rows="3"
+                      value={value.parsefuncitonid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 1000, "parsefuncitonid")
+                      }
+                    ></textarea>
+                    <div
+                      id="parsefuncitonid"
+                      style={{ display: display.parsefuncitonid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 1000 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter parse function
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 mb-3">
+                    <label for="sendcommand" className="form-label">
+                      Send Command:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="sendcommand"
+                      placeholder="Enter send command"
+                      value={value.sendcommandid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 150, "sendcommandid")
+                      }
+                    />
+                    <div
+                      id="sendcommandid"
+                      style={{ display: display.sendcommandid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 150 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter send command
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="sendcommand" className="form-label">
+                      High High Limit:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="highhighlimit"
+                      placeholder="Enter high high limit"
+                      value={value.highhighlimitid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "highhighlimitid")
+                      }
+                    />
+                    <div
+                      id="highhighlimitid"
+                      style={{ display: display.highhighlimitid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter High High Limit
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="sendcommand" className="form-label">
+                      High Limit:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="highlimit"
+                      placeholder="Enter high limit"
+                      value={value.highlimitid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "highlimitid")
+                      }
+                    />
+                    <div
+                      id="highlimitid"
+                      style={{ display: display.highlimitid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter High Limit
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="sendcommand" className="form-label">
+                      Low Low Limit:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="lowlowlimit"
+                      placeholder="Enter low low limit"
+                      value={value.lowlowlimitid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "lowlowlimitid")
+                      }
+                    />
+                    <div
+                      id="lowlowlimitid"
+                      style={{ display: display.lowlowlimitid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter Low Low Limit:
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="sendcommand" className="form-label">
+                      Low Limit:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="lowlimit"
+                      placeholder="Enter low limit"
+                      value={value.lowlimitid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "lowlimitid")
+                      }
+                    />
+                    <div
+                      id="lowlimitid"
+                      style={{ display: display.lowlimitid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter Low Limit:
+                    </div>
+                  </div>
+                  <div className="col-md-4 mb-3">
+                    <label for="sendcommand" className="form-label">
+                      Threshold Limit:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="thresholdlimit"
+                      placeholder="Enter threshold limit"
+                      value={value.thresholdlimitid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "thresholdlimitid")
+                      }
+                    />
+                    <div
+                      id="thresholdlimitid"
+                      style={{ display: display.thresholdlimitid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter Threshold Limit
+                    </div>
+                  </div>
+                  <div className="offset-md-1 col-md-3 col-6 align-self-end mb-3">
+                    <div className="form-check mt-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="enableparametersalarms"
+                        onChange={(e) =>
+                          setEnableParametersAlarms(e.target.checked)
+                        }
+                        defaultChecked={EnableParametersAlarms}
+                      />
                       <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
+                        className="form-check-label form-label"
+                        for="enableparametersalarms"
                       >
-                        Active
+                        EnableParametersAlarms
                       </label>
+                    </div>
+                  </div>
+                  <div className="col-md-4 col-6 mb-3 align-self-end text-md-center text-end">
+                    <label for="parseparamvalue" className="form-label">
+                      Parse Param Value:{" "}
+                    </label>
+                    <div className="form-check d-inline-block form-switch ms-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="parseparamvalue"
+                        onChange={(e) => setParseParamValue(e.target.checked)}
+                        defaultChecked={ParseParamValue}
+                      />
+                      {ParseParamValue && (
+                        <label
+                          className="form-check-label"
+                          for="flexSwitchCheckChecked"
+                        >
+                          Enable
+                        </label>
+                      )}
+                      {!ParseParamValue && (
+                        <label
+                          className="form-check-label"
+                          for="flexSwitchCheckChecked"
+                        >
+                          Disable
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-6 mb-3">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id="isderived"
+                        onChange={(e) => setIsDerived(e.target.checked)}
+                        defaultChecked={IsDerived}
+                      />
+                      <label
+                        className="form-check-label form-label"
+                        for="isderived"
+                      >
+                        IsDerived
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 col-6 text-md-center text-end mb-3">
+                    <label for="Status" className="form-label">
+                      Status:{" "}
+                    </label>
+                    <div className="form-check d-inline-block form-switch ms-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="Status"
+                        onChange={(e) => setStatus(e.target.checked)}
+                        defaultChecked={Status}
+                      />
+                      {Status && (
+                        <label
+                          className="form-check-label"
+                          for="flexSwitchCheckChecked"
+                        >
+                          Active
+                        </label>
+                      )}
+                      {!Status && (
+                        <label
+                          className="form-check-label"
+                          for="flexSwitchCheckChecked"
+                        >
+                          Inactive
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-md-12 text-center">
+                    {!parameterList && parameterId == 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={parameteradd}
+                        type="button"
+                      >
+                        Add Parameter
+                      </button>
                     )}
-                    {!Status && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
+                    {!parameterList && parameterId != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={Updateparameter}
+                        type="button"
                       >
-                        Inactive
-                      </label>
+                        Update Parameter
+                      </button>
                     )}
                   </div>
-                </div>
-                <div className="col-md-12 text-center">
-                  {!parameterList && parameterId == 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={parameteradd}
-                      type="button"
-                    >
-                      Add Parameter
-                    </button>
-                  )}
-                  {!parameterList && parameterId != 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={Updateparameter}
-                      type="button"
-                    >
-                      Update Parameter
-                    </button>
-                  )}
-                </div>
-              </form>
+                </form>
+              </>
             )}
             {parameterList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />

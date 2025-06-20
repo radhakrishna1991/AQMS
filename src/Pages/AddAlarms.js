@@ -417,122 +417,131 @@ function AddAlarms() {
   return (
     <main id="main" className="main">
       <div className="container">
-        <div className="pagetitle">
-          {!DriverList && Driverid == 0 && <h1>Add Alarm</h1>}
-          {!DriverList && Driverid != 0 && <h1>Update Alarm</h1>}
-          {DriverList && <h1>Alarms List</h1>}
+        <div className="row my-3">
+          <div className="pagetitle col">
+            {!DriverList && Driverid == 0 && <h1>Add Alarm</h1>}
+            {!DriverList && Driverid != 0 && <h1>Update Alarm</h1>}
+            {DriverList && <h1>Alarms List</h1>}
+          </div>
+          <div className="text-end col">
+            {DriverList ? (
+              <span
+                className="operation_class mx-2"
+                onClick={() => AddStationchange()}
+              >
+                <i className="bi bi-plus-circle-fill"></i>{" "}
+                <span>Create New Alarm</span>
+              </span>
+            ) : (
+              <span
+                className="operation_class mx-2"
+                onClick={() => AddStationchange("gridlist")}
+              >
+                <i className="bi bi-card-list"></i> <span>View All Alarms</span>
+              </span>
+            )}
+          </div>
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {DriverList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange()}
-                >
-                  <i className="bi bi-plus-circle-fill"></i>{" "}
-                  <span>Create New Alarm</span>
-                </span>
-              )}
-              {!DriverList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange("gridlist")}
-                >
-                  <i className="bi bi-card-list"></i>{" "}
-                  <span>View All Alarms</span>
-                </span>
-              )}
-            </div>
+          <div>
             {!DriverList && (
-              <form id="AddDriverform" className="row" noValidate>
-                <div className="col-md-12 mb-3">
-                  <label for="drivername" className="form-label">
-                    Alarm Name:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="driverdigitalentryname"
-                    placeholder="Enter Alarm Name"
-                    value={value.alarmnameid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 100, "alarmnameid")
-                    }
-                    required
-                  />
-                  <div
-                    id="alarmnameid"
-                    style={{ display: display.alarmnameid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 100 characters are
-                    allowed.
-                  </div>
-                  <div class="invalid-feedback">Please enter Alarm Name</div>
+              <>
+                <div
+                  className="text-danger mb-3 text-start"
+                  style={{ fontSize: "12px" }}
+                >
+                  * Mark fields are mandatory to fill
                 </div>
-                <div className="col-md-12 mb-3">
-                  <label for="instrument" className="form-label">
-                    Associated Device Model:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="associatedinstrument"
-                    required
-                  >
-                    <option selected value="">
-                      Select Associated Device Model
-                    </option>
-                    {ListDeviceModels.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.deviceModelName}
+                <form id="AddDriverform" className="row" noValidate>
+                  <div className="col-md-6 mb-3">
+                    <label for="drivername" className="form-label">
+                      <span className="text-danger">*</span> Alarm Name:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="driverdigitalentryname"
+                      placeholder="Enter Alarm Name"
+                      value={value.alarmnameid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 100, "alarmnameid")
+                      }
+                      required
+                    />
+                    <div
+                      id="alarmnameid"
+                      style={{ display: display.alarmnameid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 100 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">Please enter Alarm Name</div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label for="instrument" className="form-label">
+                      <span className="text-danger">*</span> Associated Device
+                      Model:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="associatedinstrument"
+                      required
+                    >
+                      <option selected value="">
+                        Select Associated Device Model
                       </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">
-                    Please select Associated Device Model
+                      {ListDeviceModels.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.deviceModelName}
+                        </option>
+                      ))}
+                    </select>
+                    <div class="invalid-feedback">
+                      Please select Associated Device Model
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="coilnumber" className="form-label">
-                    Coil Number:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="coilnumber"
-                    placeholder="Enter Coil Number"
-                    value={value.coilnumberid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "coilnumberid")
-                    }
-                  />
-                  <div
-                    id="coilnumberid"
-                    style={{ display: display.coilnumberid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
+                  <div className="col-md-6 mb-3">
+                    <label for="coilnumber" className="form-label">
+                      Coil Number:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="coilnumber"
+                      placeholder="Enter Coil Number"
+                      value={value.coilnumberid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "coilnumberid")
+                      }
+                    />
+                    <div
+                      id="coilnumberid"
+                      style={{ display: display.coilnumberid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div class="invalid-feedback">Please enter Coil Number</div>
                   </div>
-                  <div class="invalid-feedback">Please enter Coil Number</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="instrument" className="form-label">
-                    Flag:
-                  </label>
-                  <select className="form-select" id="flag" required>
-                    <option selected value="">
-                      Select Flag
-                    </option>
-                    {ListFlags.map((x, y) => (
-                      <option value={x.name} key={y}>
-                        {x.name}
+                  <div className="col-md-6 mb-4">
+                    <label for="instrument" className="form-label">
+                      <span className="text-danger">*</span> Flag:
+                    </label>
+                    <select className="form-select" id="flag" required>
+                      <option selected value="">
+                        Select Flag
                       </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select Flag</div>
-                </div>
-                {/*  <div className="col-md-12 mb-3">
+                      {ListFlags.map((x, y) => (
+                        <option value={x.name} key={y}>
+                          {x.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div class="invalid-feedback">Please select Flag</div>
+                  </div>
+                  {/*  <div className="col-md-12 mb-3">
                 <label for="type" className="form-label">Input/Output Type:</label><br></br>
                   <input className="form-check-input" type="radio" name="type" id="inputradio" defaultValue={false}  />&nbsp;&nbsp;
                   <label className="form-label" for="inputradio">Input</label><br></br>
@@ -561,27 +570,28 @@ function AddAlarms() {
                   <div class="invalid-feedback">Please enter Open Value</div>
                 </div>  */}
 
-                <div className="col-md-12 text-center">
-                  {!DriverList && Driverid == 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={Alarmadd}
-                      type="button"
-                    >
-                      Add Alarm
-                    </button>
-                  )}
-                  {!DriverList && Driverid != 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={UpdateAlarm}
-                      type="button"
-                    >
-                      Update Alarm
-                    </button>
-                  )}
-                </div>
-              </form>
+                  <div className="col-md-12 text-center">
+                    {!DriverList && Driverid == 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={Alarmadd}
+                        type="button"
+                      >
+                        Add Alarm
+                      </button>
+                    )}
+                    {!DriverList && Driverid != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={UpdateAlarm}
+                        type="button"
+                      >
+                        Update Alarm
+                      </button>
+                    )}
+                  </div>
+                </form>
+              </>
             )}
             {DriverList && <div className="jsGrid" ref={gridRefjsgridreport} />}
           </div>

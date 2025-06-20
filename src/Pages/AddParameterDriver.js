@@ -339,7 +339,6 @@ function AddParameterTemplates() {
       controller: {
         data: ListDrivers,
         loadData: function (filter) {
-          console.log(filter);
           $(".jsgrid-filter-row input:text")
             .addClass("form-control")
             .addClass("form-control-sm");
@@ -509,260 +508,275 @@ function AddParameterTemplates() {
   return (
     <main id="main" className="main">
       <div className="container">
-        <div className="pagetitle">
-          {!InstrumentList && Instrumentid == 0 && (
-            <h1>Add Parameter Driver</h1>
-          )}
-          {!InstrumentList && Instrumentid != 0 && (
-            <h1>Update Parameter Driver</h1>
-          )}
-          {InstrumentList && <h1>Parameter Drivers List</h1>}
+        <div className="row my-3">
+          <div className="pagetitle col">
+            {!InstrumentList && Instrumentid == 0 && (
+              <h1>Add Parameter Driver</h1>
+            )}
+            {!InstrumentList && Instrumentid != 0 && (
+              <h1>Update Parameter Driver</h1>
+            )}
+            {InstrumentList && <h1>Parameter Drivers List</h1>}
+          </div>
+          <div className="text-end col">
+            {InstrumentList ? (
+              <span
+                className="operation_class mx-2"
+                onClick={() => AddStationchange()}
+              >
+                <i className="bi bi-plus-circle-fill"></i>{" "}
+                <span>Create New Parameter Driver</span>
+              </span>
+            ) : (
+              <span
+                className="operation_class mx-2"
+                onClick={() => AddStationchange("gridlist")}
+              >
+                <i className="bi bi-card-list"></i>{" "}
+                <span>View All Parameter Drivers</span>
+              </span>
+            )}
+          </div>
         </div>
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {InstrumentList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange()}
-                >
-                  <i className="bi bi-plus-circle-fill"></i>{" "}
-                  <span>Create New Parameter Driver</span>
-                </span>
-              )}
-              {!InstrumentList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange("gridlist")}
-                >
-                  <i className="bi bi-card-list"></i>{" "}
-                  <span>View All Parameter Drivers</span>
-                </span>
-              )}
-            </div>
+          <div>
             {!InstrumentList && (
-              <form id="AddParameterDriverForm" className="row" noValidate>
-                <div className="col-md-12 mb-3">
-                  <label for="instrument" className="form-label">
-                    Associated Device Model:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="associatedinstrument"
-                    required
-                  >
-                    <option selected value="">
-                      Select Associated Device Model
-                    </option>
-                    {ListDeviceModels.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.deviceModelName}
+              <>
+                <div
+                  className="text-danger mb-3 text-start"
+                  style={{ fontSize: "12px" }}
+                >
+                  * Mark fields are mandatory to fill
+                </div>
+                <form id="AddParameterDriverForm" className="row" noValidate>
+                  <div className="col-md-6 mb-3">
+                    <label for="instrument" className="form-label">
+                      <span className="text-danger">*</span> Associated Device
+                      Model:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="associatedinstrument"
+                      required
+                    >
+                      <option selected value="">
+                        Select Associated Device Model
                       </option>
-                    ))}
-                  </select>
-                  <div className="invalid-feedback">
-                    Please select Associated Device Model
+                      {ListDeviceModels.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.deviceModelName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select Associated Device Model
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="ParameterDriver" className="form-label">
-                    Parameter Driver Name:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="ParameterDriver"
-                    placeholder="Enter Parameter Driver Name"
-                    value={value.ParameterDriverid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 50, "ParameterDriverid")
-                    }
-                    required
-                  />
-                  <div
-                    id="ParameterDriverid"
-                    style={{ display: display.ParameterDriverid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 50 characters are allowed.
+                  <div className="col-md-6 mb-3">
+                    <label for="ParameterDriver" className="form-label">
+                      <span className="text-danger">*</span> Parameter Driver
+                      Name:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="ParameterDriver"
+                      placeholder="Enter Parameter Driver Name"
+                      value={value.ParameterDriverid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 50, "ParameterDriverid")
+                      }
+                      required
+                    />
+                    <div
+                      id="ParameterDriverid"
+                      style={{ display: display.ParameterDriverid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 50 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">Parameter Name</div>
                   </div>
-                  <div className="invalid-feedback">Parameter Name</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="DataType" className="form-label">
-                    Data Type:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="DataType"
-                    onChange={(e) => DataTypeChange(e, e.target.selectedIndex)}
-                  >
-                    <option selected value="">
-                      Select Data Type
-                    </option>
-                    {ParameterDataType.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.name}
+                  <div className="col-md-6 mb-3">
+                    <label for="DataType" className="form-label">
+                      Data Type:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="DataType"
+                      onChange={(e) =>
+                        DataTypeChange(e, e.target.selectedIndex)
+                      }
+                    >
+                      <option selected value="">
+                        Select Data Type
                       </option>
-                    ))}
-                  </select>
-                  <div className="invalid-feedback">Please Data Type</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="DataFormat" className="form-label">
-                    Data Format:
-                  </label>
-                  <select className="form-select" id="DataFormat">
-                    <option selected value="">
-                      Select Data Format
-                    </option>
-                    {ListDataFormat.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.name}
+                      {ParameterDataType.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">Please Data Type</div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label for="DataFormat" className="form-label">
+                      Data Format:
+                    </label>
+                    <select className="form-select" id="DataFormat">
+                      <option selected value="">
+                        Select Data Format
                       </option>
-                    ))}
-                  </select>
-                  <div className="invalid-feedback">
-                    Please select Data Format
+                      {ListDataFormat.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select Data Format
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="ModusRegisterIndex" className="form-label">
-                    Modus Register Index:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="ModusRegisterIndex"
-                    placeholder="Enter Modus Register Index"
-                    value={value.ModusRegisterIndexid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "ModusRegisterIndexid")
-                    }
-                  />
-                  <div
-                    id="ModusRegisterIndexid"
-                    style={{ display: display.ModusRegisterIndexid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
+                  <div className="col-md-6 mb-3">
+                    <label for="ModusRegisterIndex" className="form-label">
+                      Modus Register Index:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="ModusRegisterIndex"
+                      placeholder="Enter Modus Register Index"
+                      value={value.ModusRegisterIndexid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "ModusRegisterIndexid")
+                      }
+                    />
+                    <div
+                      id="ModusRegisterIndexid"
+                      style={{ display: display.ModusRegisterIndexid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter Modus Register Index
+                    </div>
                   </div>
-                  <div className="invalid-feedback">
-                    Please enter Modus Register Index
+                  <div className="col-md-6 mb-3">
+                    <label for="SendCommand" className="form-label">
+                      Send Command:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="SendCommand"
+                      placeholder="Enter Send Command"
+                      value={value.SendCommandid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 150, "SendCommandid")
+                      }
+                    />
+                    <div
+                      id="SendCommandid"
+                      style={{ display: display.SendCommandid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 150 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter Send Command
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="SendCommand" className="form-label">
-                    Send Command:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="SendCommand"
-                    placeholder="Enter Send Command"
-                    value={value.SendCommandid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 150, "SendCommandid")
-                    }
-                  />
-                  <div
-                    id="SendCommandid"
-                    style={{ display: display.SendCommandid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 150 characters are
-                    allowed.
+                  <div className="col-md-6">
+                    <div className="row me-0">
+                      <div className="col-8 mb-3">
+                        <label for="SendInterval" className="form-label">
+                          Send Interval:
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="SendInterval"
+                          placeholder="Enter Send Interval"
+                          value={value.SendIntervalid}
+                          onChange={(e) =>
+                            handleTextBox(e.target.value, 20, "SendIntervalid")
+                          }
+                        />
+                        <div
+                          id="SendIntervalid"
+                          style={{ display: display.SendIntervalid }}
+                          className="invalid-feedback"
+                        >
+                          Character limit exceeded! Maximum 20 characters are
+                          allowed.
+                        </div>
+                        <div className="invalid-feedback">
+                          Please enter Send Interval
+                        </div>
+                      </div>
+                      <div className="col-4 SendInterval1 mb-3">
+                        <select className="form-select" id="SendInterval1">
+                          <option selected value=""></option>
+                          <option value="S">Seconds</option>
+                          <option value="M">Minutes</option>
+                          <option value="H">Hours</option>
+                          <option value="D">Days</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
-                  <div className="invalid-feedback">
-                    Please enter Send Command
+                  <div className="col-md-6 mb-4">
+                    <label for="ParseFunction" className="form-label">
+                      Parse Function:
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="ParseFunction"
+                      placeholder="Enter Parse Function"
+                      value={value.ParseFunctionid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 1000, "ParseFunctionid")
+                      }
+                    ></textarea>
+                    <div
+                      id="ParseFunctionid"
+                      style={{ display: display.ParseFunctionid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 1000 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter Parse Function
+                    </div>
                   </div>
-                </div>
-                <div className="col-md-12">
-                  <div className="row">
-                    <div className="col-md-8 mb-3">
-                      <label for="SendInterval" className="form-label">
-                        Send Interval:
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="SendInterval"
-                        placeholder="Enter Send Interval"
-                        value={value.SendIntervalid}
-                        onChange={(e) =>
-                          handleTextBox(e.target.value, 20, "SendIntervalid")
-                        }
-                      />
-                      <div
-                        id="SendIntervalid"
-                        style={{ display: display.SendIntervalid }}
-                        className="invalid-feedback"
+                  <br></br>
+                  <div className="col-md-12 text-center">
+                    {!InstrumentList && Instrumentid == 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={ParameterDriveradd}
+                        type="button"
                       >
-                        Character limit exceeded! Maximum 20 characters are
-                        allowed.
-                      </div>
-                      <div className="invalid-feedback">
-                        Please enter Send Interval
-                      </div>
-                    </div>
-                    <div className="col-md-4 SendInterval1 mb-3">
-                      <select className="form-select" id="SendInterval1">
-                        <option selected value=""></option>
-                        <option value="S">Seconds</option>
-                        <option value="M">Minutes</option>
-                        <option value="H">Hours</option>
-                        <option value="D">Days</option>
-                      </select>
-                    </div>
+                        Add Parameter Driver
+                      </button>
+                    )}
+                    {!InstrumentList && Instrumentid != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={UpdateParameterDriver}
+                        type="button"
+                      >
+                        Update Parameter Driver
+                      </button>
+                    )}
                   </div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="ParseFunction" className="form-label">
-                    Parse Function:
-                  </label>
-                  <textarea
-                    className="form-control"
-                    id="ParseFunction"
-                    placeholder="Enter Parse Function"
-                    value={value.ParseFunctionid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 1000, "ParseFunctionid")
-                    }
-                  ></textarea>
-                  <div
-                    id="ParseFunctionid"
-                    style={{ display: display.ParseFunctionid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 1000 characters are
-                    allowed.
-                  </div>
-                  <div className="invalid-feedback">
-                    Please enter Parse Function
-                  </div>
-                </div>
-                <br></br>
-                <div className="col-md-12 text-center">
-                  {!InstrumentList && Instrumentid == 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={ParameterDriveradd}
-                      type="button"
-                    >
-                      Add Parameter Driver
-                    </button>
-                  )}
-                  {!InstrumentList && Instrumentid != 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={UpdateParameterDriver}
-                      type="button"
-                    >
-                      Update Parameter Driver
-                    </button>
-                  )}
-                </div>
-              </form>
+                </form>
+              </>
             )}
             {InstrumentList && (
               <div className="jsGrid" ref={gridRefjsgridreport} />

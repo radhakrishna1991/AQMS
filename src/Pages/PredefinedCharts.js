@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from "react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 import DatePicker from "react-datepicker";
 import CommonFunctions from "../utils/CommonFunctions";
 import {
@@ -13,9 +13,9 @@ import {
   Title,
   Tooltip,
   Legend,
-  defaults
-} from 'chart.js';
-import { Chart, Bar, Line, Scatter } from 'react-chartjs-2';
+  defaults,
+} from "chart.js";
+import { Chart, Bar, Line, Scatter } from "react-chartjs-2";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -42,51 +42,81 @@ function PredefinedCharts() {
   const [Pollutents, setPollutents] = useState([]);
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
-  const colorArray = ["#96cdf5", "#fbaec1", "#00ff00", "#800000", "#808000", "#008000", "#008080", "#000080", "#FF00FF", "#800080",
-    "#CD5C5C", "#FF5733", "#1ABC9C", "#F8C471", "#196F3D", "#707B7C", "#9A7D0A", "#B03A2E", "#F8C471", "#7E5109"];
+  const colorArray = [
+    "#96cdf5",
+    "#fbaec1",
+    "#00ff00",
+    "#800000",
+    "#808000",
+    "#008000",
+    "#008080",
+    "#000080",
+    "#FF00FF",
+    "#800080",
+    "#CD5C5C",
+    "#FF5733",
+    "#1ABC9C",
+    "#F8C471",
+    "#196F3D",
+    "#707B7C",
+    "#9A7D0A",
+    "#B03A2E",
+    "#F8C471",
+    "#7E5109",
+  ];
   useEffect(() => {
     GenarateChart();
   }, []);
   const GenarateChart = async function () {
-    document.getElementById('loader').style.display = "block";
-    let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/getPredefinedchartData";
-    let Pollutent = $("input[type='radio'][name='parametersradio']:checked").val();
+    document.getElementById("loader").style.display = "block";
+    let url =
+      CommonFunctions.getWebApiUrl() + "api/AirQuality/getPredefinedchartData";
+    let Pollutent = $(
+      "input[type='radio'][name='parametersradio']:checked"
+    ).val();
     let DataFilter = 60;
     let authHeader = await CommonFunctions.getAuthHeader();
     fetch(url, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+        Accept: "application/json",
+        "Content-Type": "application/json",
         Authorization: authHeader.Authorization,
-        'app-origin':authHeader["app-origin"]
+        "app-origin": authHeader["app-origin"],
       },
-      body: JSON.stringify({ DataFilter: DataFilter, Pollutant: Pollutent.toString() }),
-    }).then((response) => response.json())
+      body: JSON.stringify({
+        DataFilter: DataFilter,
+        Pollutant: Pollutent.toString(),
+      }),
+    })
+      .then((response) => response.json())
       .then((data) => {
         if (data) {
           let data1 = JSON.parse(data);
-          getchartdata(data1, Pollutent, ChartType, Criteria)
+          getchartdata(data1, Pollutent, ChartType, Criteria);
         }
-      }).catch((error) => console.log(error))
+      })
+      .catch((error) => console.log(error))
       .finally(() => {
-        document.getElementById('loader').style.display = "none";
+        document.getElementById("loader").style.display = "none";
       });
-  }
+  };
 
   /* Barchart Start */
   const hexToRgbA = function (hex) {
     var c;
     if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
-      c = hex.substring(1).split('');
+      c = hex.substring(1).split("");
       if (c.length == 3) {
         c = [c[0], c[0], c[1], c[1], c[2], c[2]];
       }
-      c = '0x' + c.join('');
-      return 'rgba(' + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(',') + ',0.5)';
+      c = "0x" + c.join("");
+      return (
+        "rgba(" + [(c >> 16) & 255, (c >> 8) & 255, c & 255].join(",") + ",0.5)"
+      );
     }
-    throw new Error('Bad Hex');
-  }
+    throw new Error("Bad Hex");
+  };
 
   const getchartdata = function (data, pollutent, charttype, criteria) {
     if (chartRef.current != null) {
@@ -104,23 +134,26 @@ function PredefinedCharts() {
       let index = labels.indexOf(pollutentdata[k].Period);
       let index1 = Stations.indexOf(pollutentdata[k].StationName);
       if (index == -1) {
-        labels.push(pollutentdata[k].Period)
+        labels.push(pollutentdata[k].Period);
       }
       if (index1 == -1) {
-        Stations.push(pollutentdata[k].StationName)
+        Stations.push(pollutentdata[k].StationName);
       }
     }
     for (let i = 0; i < Stations.length; i++) {
       chartdata = [];
       for (let j = 0; j < pollutentdata.length; j++) {
         if (pollutentdata[j].StationName === Stations[i]) {
-          chartdata.push(pollutentdata[j].PollutantValue)
+          chartdata.push(pollutentdata[j].PollutantValue);
         }
       }
-      datasets.push({ label: Stations[i] + " - " + pollutent, data: chartdata, borderColor: colorArray[(colorArray.length) - (i + 1)], backgroundColor: colorArray[(colorArray.length) - (i + 1)] })
+      datasets.push({
+        label: Stations[i] + " - " + pollutent,
+        data: chartdata,
+        borderColor: colorArray[colorArray.length - (i + 1)],
+        backgroundColor: colorArray[colorArray.length - (i + 1)],
+      });
     }
-
-
 
     setChartOptions({
       responsive: true,
@@ -128,76 +161,125 @@ function PredefinedCharts() {
         mode: 'index',
         intersect: false,
       }, */
-    maintainAspectRatio: true,
-    /* scales: {
-      y: {
-        beginAtZero: true,
-      },
-    }, */
+      maintainAspectRatio: false,
+      /* scales: {
+        y: {
+          beginAtZero: true,
+        },
+      }, */
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
         title: {
           display: true,
-          text: pollutent+' ANNUAL TENDENCY DIAGRAM',
+          text: pollutent + " ANNUAL TENDENCY DIAGRAM",
         },
       },
     });
     setTimeout(() => {
       setChartData({
         labels,
-        datasets: datasets
-      })
+        datasets: datasets,
+      });
     }, 10);
-  }
+  };
 
   /* Barchart End */
   return (
-    <main id="main" className="main" >
-      <div className="container">
-        <section>
+    <main id="main" className="main">
+      <section className="section">
+        <div className="container">
           <div>
-            <div>
-              <div>
-                <h6 className="my-3">Select Parameter(To Genarate Chart)</h6>
-              </div>
-              <div className="">
-                <div className="form-check form-check-inline">
-                  <input className="form-check-input" type="radio" name="parametersradio" onChange={GenarateChart} id="coradio" value="CO" />
-                  <label className="form-check-label" for="coradio">CO</label>
-                </div>
-                <div className="form-check form-check-inline">
-                  <input className="form-check-input" type="radio" name="parametersradio" onChange={GenarateChart} id="no2radio" value="NO2" />
-                  <label className="form-check-label" for="no2radio">NO2</label>
-                </div>
-                <div className="form-check form-check-inline">
-                  <input className="form-check-input" type="radio" name="parametersradio" onChange={GenarateChart} defaultChecked={true} id="so2radio" value="SO2" />
-                  <label className="form-check-label" for="so2radio">SO2</label>
-                </div>
-                <div className="form-check form-check-inline">
-                  <input className="form-check-input" type="radio" name="parametersradio" onChange={GenarateChart} id="o3radio" value="O3" />
-                  <label className="form-check-label" for="o3radio">O3</label>
-                </div>
-                <div className="form-check form-check-inline">
-                  <input className="form-check-input" type="radio" name="parametersradio" onChange={GenarateChart} id="pm10radio" value="PM10" />
-                  <label className="form-check-label" for="pm10radio">PM10</label>
-                </div>
-              </div>
-              {ChartData && (
-                <div className="col-md-12">
-                  <Line ref={chartRef} options={ChartOptions} data={ChartData}  height={120}/>
-                </div>
-              )}
-              <div className="col-md-4">
-                    <div className="row">
-                      <div id="loader" className="loader"></div>
-                    </div>
-                  </div>
+            <h6 className="my-3">Select Parameter(To Genarate Chart)</h6>
+          </div>
+          <div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="parametersradio"
+                onChange={GenarateChart}
+                id="coradio"
+                value="CO"
+              />
+              <label className="form-check-label" for="coradio">
+                CO
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="parametersradio"
+                onChange={GenarateChart}
+                id="no2radio"
+                value="NO2"
+              />
+              <label className="form-check-label" for="no2radio">
+                NO2
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="parametersradio"
+                onChange={GenarateChart}
+                defaultChecked={true}
+                id="so2radio"
+                value="SO2"
+              />
+              <label className="form-check-label" for="so2radio">
+                SO2
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="parametersradio"
+                onChange={GenarateChart}
+                id="o3radio"
+                value="O3"
+              />
+              <label className="form-check-label" for="o3radio">
+                O3
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="parametersradio"
+                onChange={GenarateChart}
+                id="pm10radio"
+                value="PM10"
+              />
+              <label className="form-check-label" for="pm10radio">
+                PM10
+              </label>
             </div>
           </div>
-        </section>
-      </div>
+
+          {ChartData?.datasets?.length > 0 && (
+            <div className="col-md-12 mt-5">
+              <Line
+                ref={chartRef}
+                options={ChartOptions}
+                data={ChartData}
+                height={400}
+              />
+            </div>
+          )}
+
+          <div className="col-md-4">
+            <div className="row">
+              <div id="loader" className="loader"></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   );
 }

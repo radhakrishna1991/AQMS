@@ -38,6 +38,8 @@ function UserLogHistory() {
               floatWidth: 200,
               selectAll: true,
               search: true,
+              nativeOnDevice: [],
+              forceCustomRendering: true,
             });
           }, 100);
         }
@@ -128,7 +130,6 @@ function UserLogHistory() {
       controller: {
         data: ListUsersLog,
         loadData: function (filter) {
-          console.log(filter);
           $(".jsgrid-filter-row input:text")
             .addClass("form-control")
             .addClass("form-control-sm");

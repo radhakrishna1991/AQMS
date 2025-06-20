@@ -84,7 +84,7 @@ function AddDevice() {
     let StopBits = "";
     let DataBits = "";
     let SerialRtuMode = "";
-    let DataCollectionMode = 1;
+    let DataCollectionMode = "";
     let Type = document.getElementById("type").value;
     if (Type == "Tcp/IP") {
       IPAddress = document.getElementById("ipaddress").value;
@@ -566,13 +566,13 @@ function AddDevice() {
   };
 
   const DeviceModelChange = (event, index) => {
-    debugger;
+    // debugger;
     let DeviceModel = ListDeviceModels[index - 1];
     setTimeout(() => {
       let deviceid = document.getElementById("deviceid");
       let port = document.getElementById("port");
       if (deviceid != null) {
-        deviceid.value = DeviceModel.modbusCode;
+        deviceid.value = DeviceModel.modbusCode ?? "";
         setValue((prevDisplay) => ({
           ...prevDisplay,
           ["instrumentid"]: DeviceModel.modbusCode,
@@ -635,412 +635,451 @@ function AddDevice() {
   return (
     <main id="main" className="main">
       <div className="container">
-        <div className="pagetitle">
-          {!DeviceList && Deviceid == 0 && <h1>Add Device</h1>}
-          {!DeviceList && Deviceid != 0 && <h1>Update Device</h1>}
-          {DeviceList && <h1>Devices List</h1>}
+        <div className="row my-2">
+          <div className="pagetitle col">
+            {!DeviceList && Deviceid == 0 && <h1>Add Device</h1>}
+            {!DeviceList && Deviceid != 0 && <h1>Update Device</h1>}
+            {DeviceList && <h1>Devices List</h1>}
+          </div>
+          <div className="col text-end">
+            {DeviceList ? (
+              <span
+                className="operation_class"
+                onClick={() => AddStationchange()}
+              >
+                <i className="bi bi-plus-circle-fill"></i>{" "}
+                <span>Create New Device</span>
+              </span>
+            ) : (
+              <span
+                className="operation_class"
+                onClick={() => AddStationchange("gridlist")}
+              >
+                <i className="bi bi-card-list"></i>{" "}
+                <span>View All Devices</span>
+              </span>
+            )}
+          </div>
         </div>
+
         <section className="section">
-          <div className="container">
-            <div className="me-2 mb-2 float-end">
-              {DeviceList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange()}
-                >
-                  <i className="bi bi-plus-circle-fill"></i>{" "}
-                  <span>Create New Device</span>
-                </span>
-              )}
-              {!DeviceList && (
-                <span
-                  className="operation_class mx-2"
-                  onClick={() => AddStationchange("gridlist")}
-                >
-                  <i className="bi bi-card-list"></i>{" "}
-                  <span>View All Devices</span>
-                </span>
-              )}
-            </div>
+          <div>
             {!DeviceList && (
-              <form id="AddDeviceform" className="row" noValidate>
-                <div className="col-md-12 mb-3">
-                  <label for="StationName" className="form-label">
-                    Station Name:
-                  </label>
-                  <select className="form-select" id="stationname" required>
-                    <option selected value="">
-                      Select station name
-                    </option>
-                    {ListStations.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.stationName}
+              <>
+                <div
+                  className="text-danger mb-3 text-start"
+                  style={{ fontSize: "12px" }}
+                >
+                  * Mark fields are mandatory to fill
+                </div>
+                <form id="AddDeviceform" className="row" noValidate>
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="StationName" className="form-label">
+                      <span className="text-danger">*</span> Station Name:
+                    </label>
+                    <select className="form-select" id="stationname" required>
+                      <option selected value="">
+                        Select station name
                       </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select station name</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="devicename" className="form-label">
-                    Device Name:
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="devicename"
-                    placeholder="Enter device name"
-                    value={value.name}
-                    onChange={(e) => handleTextBox(e.target.value, 50, "name")}
-                    required
-                  />
-                  <div
-                    id="name"
-                    style={{ display: display.name }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 50 characters are allowed.
+                      {ListStations.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.stationName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select station name
+                    </div>
                   </div>
-                  <div class="invalid-feedback">Please enter device name</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="devicemodel" className="form-label">
-                    Device Model:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="devicemodel"
-                    required
-                    onChange={(e) =>
-                      DeviceModelChange(e, e.target.selectedIndex)
-                    }
-                  >
-                    <option selected value="">
-                      Select device model
-                    </option>
-                    {ListDeviceModels.map((x, y) => (
-                      <option value={x.id} key={y}>
-                        {x.deviceModelName}
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="devicename" className="form-label">
+                      <span className="text-danger">*</span> Device Name:
+                    </label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="devicename"
+                      placeholder="Enter device name"
+                      value={value.name}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 50, "name")
+                      }
+                      required
+                    />
+                    <div
+                      id="name"
+                      style={{ display: display.name }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 50 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">
+                      Please enter device name
+                    </div>
+                  </div>
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="devicemodel" className="form-label">
+                      <span className="text-danger">*</span> Device Model:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="devicemodel"
+                      required
+                      onChange={(e) =>
+                        DeviceModelChange(e, e.target.selectedIndex)
+                      }
+                    >
+                      <option selected value="">
+                        Select device model
                       </option>
-                    ))}
-                  </select>
-                  <div class="invalid-feedback">Please select device model</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="deviceid" className="form-label">
-                    Instrument ID:
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id="deviceid"
-                    placeholder="Enter instrument id"
-                    value={value.instrumentid}
-                    onChange={(e) =>
-                      handleTextBox(e.target.value, 9, "instrumentid")
-                    }
-                    required
-                  />
-                  <div
-                    id="instrumentid"
-                    style={{ display: display.instrumentid }}
-                    className="invalid-feedback"
-                  >
-                    Character limit exceeded! Maximum 9 characters are allowed.
+                      {ListDeviceModels.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.deviceModelName}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select device model
+                    </div>
                   </div>
-                  <div class="invalid-feedback">Please enter id</div>
-                </div>
-                <div className="col-md-12 mb-3">
-                  <label for="type" className="form-label">
-                    Type:
-                  </label>
-                  <select
-                    className="form-select"
-                    id="type"
-                    onChange={(e) => setTypechange(e.target.value)}
-                    required
-                  >
-                    <option selected value="">
-                      Select type
-                    </option>
-                    <option value="Serial">Serial</option>
-                    <option value="Tcp/IP">Tcp/IP</option>
-                    <option value="Analog">Analog</option>
-                    {/*  <option value="modbus"  >Modbus</option> */}
-                  </select>
-                  <div class="invalid-feedback">Please select type</div>
-                </div>
-                {Type == "Serial" && (
-                  <div className="row mx-0 px-0">
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="commport" className="form-label">
-                        Comm Port:
-                      </label>
-                      <select className="form-select" id="commport" required>
-                        {window.CommPort.map((x, y) => (
-                          <option value={x}>{x}</option>
-                        ))}
-                      </select>
-                      <div class="invalid-feedback">
-                        Please select comm port
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="deviceid" className="form-label">
+                      <span className="text-danger">*</span> Instrument ID:
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      id="deviceid"
+                      placeholder="Enter instrument id"
+                      value={value.instrumentid}
+                      onChange={(e) =>
+                        handleTextBox(e.target.value, 9, "instrumentid")
+                      }
+                      required
+                    />
+                    <div
+                      id="instrumentid"
+                      style={{ display: display.instrumentid }}
+                      className="invalid-feedback"
+                    >
+                      Character limit exceeded! Maximum 9 characters are
+                      allowed.
+                    </div>
+                    <div className="invalid-feedback">Please enter id</div>
+                  </div>
+                  <div className="col-md-12 mb-3">
+                    <label htmlFor="type" className="form-label">
+                      <span className="text-danger">*</span> Type:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="type"
+                      onChange={(e) => setTypechange(e.target.value)}
+                      required
+                    >
+                      <option selected value="">
+                        Select type
+                      </option>
+                      <option value="Serial">Serial</option>
+                      <option value="Tcp/IP">Tcp/IP</option>
+                      <option value="Analog">Analog</option>
+                      {/*  <option value="modbus"  >Modbus</option> */}
+                    </select>
+                    <div className="invalid-feedback">Please select type</div>
+                  </div>
+                  {Type == "Serial" && (
+                    <div className="row mx-0 px-0">
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="commport" className="form-label">
+                          <span className="text-danger">*</span> Comm Port:
+                        </label>
+                        <select className="form-select" id="commport" required>
+                          <option selected value="">
+                            Select comm port
+                          </option>
+                          {window.CommPort.map((x, y) => (
+                            <option value={x}>{x}</option>
+                          ))}
+                        </select>
+                        <div className="invalid-feedback">
+                          Please select comm port
+                        </div>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="baudrate" className="form-label">
+                          <span className="text-danger">*</span> Baud Rate:
+                        </label>
+                        <select className="form-select" id="baudrate" required>
+                          <option selected value="">
+                            Select baud rate
+                          </option>
+                          {window.BaudRate.map((x, y) => (
+                            <option value={x}>{x}</option>
+                          ))}
+                        </select>
+                        <div className="invalid-feedback">
+                          Please select Baud Rate
+                        </div>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="parity" className="form-label">
+                          <span className="text-danger">*</span> Parity:
+                        </label>
+                        <select className="form-select" id="parity" required>
+                          <option selected value="">
+                            Select parity
+                          </option>
+                          {window.Parity.map((x, y) => (
+                            <option value={x}>{x}</option>
+                          ))}
+                        </select>
+                        <div className="invalid-feedback">
+                          Please select parity
+                        </div>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="stopbits" className="form-label">
+                          <span className="text-danger">*</span> Stop Bits:
+                        </label>
+                        <select className="form-select" id="stopbits" required>
+                          <option selected value="">
+                            Select bits
+                          </option>
+                          {window.StopBits.map((x, y) => (
+                            <option value={x}>{x}</option>
+                          ))}
+                        </select>
+                        <div className="invalid-feedback">
+                          Please select stop bits
+                        </div>
+                      </div>
+                      <div className="col-md-4 mb-3">
+                        <label htmlFor="databits" className="form-label">
+                          <span className="text-danger">*</span> Data Bits:
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="databits"
+                          placeholder="Enter IP Data Bits"
+                          defaultValue="8"
+                          value={value.databitsid}
+                          onChange={(e) =>
+                            handleTextBox(e.target.value, 9, "databitsid")
+                          }
+                          required
+                        />
+                        <div
+                          id="databitsid"
+                          style={{ display: display.databitsid }}
+                          className="invalid-feedback"
+                        >
+                          Character limit exceeded! Maximum 9 characters are
+                          allowed.
+                        </div>
+                        <div className="invalid-feedback">
+                          Please enter data bits
+                        </div>
+                      </div>
+                      <div className="col-md-4 mb-3">
+                        <label
+                          htmlFor="datacollectionmode"
+                          className="form-label"
+                        >
+                          Data Collection Mode:
+                        </label>
+                        <select className="form-select" id="datacollectionmode">
+                          <option selected value="">
+                            Select mode
+                          </option>
+                          {window.DataCollectionMode.map((x, y) => (
+                            <option value={x.Value}>{x.Name}</option>
+                          ))}
+                        </select>
+                        <div className="invalid-feedback">
+                          Please select data collection mode
+                        </div>
+                      </div>
+                      <div className="col-md-3 offset-md-1 mb-3">
+                        <div className="mt-md-4 mt-2 form-check">
+                          <input
+                            className="form-check-input"
+                            type="checkbox"
+                            id="serialrtumode"
+                            defaultChecked={false}
+                          />
+                          <label
+                            className="form-check-label"
+                            htmlFor="serialrtumode"
+                          >
+                            Serial RTU Mode
+                          </label>
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="baudrate" className="form-label">
-                        Baud Rate:
-                      </label>
-                      <select className="form-select" id="baudrate" required>
-                        {window.BaudRate.map((x, y) => (
-                          <option value={x}>{x}</option>
-                        ))}
-                      </select>
-                      <div class="invalid-feedback">
-                        Please select Baud Rate
+                  )}
+                  {Type == "Tcp/IP" && (
+                    <div className="row mx-0 px-0">
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="port" className="form-label">
+                          <span className="text-danger">*</span> Port:
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          id="port"
+                          placeholder="Enter port"
+                          value={value.portid}
+                          onChange={(e) =>
+                            handleTextBox(e.target.value, 9, "portid")
+                          }
+                          required
+                        />
+                        <div
+                          id="portid"
+                          style={{ display: display.portid }}
+                          className="invalid-feedback"
+                        >
+                          Character limit exceeded! Maximum 9 characters are
+                          allowed.
+                        </div>
+                        <div className="invalid-feedback">
+                          Please enter port
+                        </div>
+                      </div>
+                      <div className="col-md-6 mb-3">
+                        <label htmlFor="ipaddress" className="form-label">
+                          <span className="text-danger">*</span> IP Address:
+                        </label>
+                        <input
+                          type="text"
+                          className="form-control"
+                          id="ipaddress"
+                          placeholder="Enter IP address"
+                          value={value.ipaddressid}
+                          onChange={(e) =>
+                            handleTextBox(e.target.value, 30, "ipaddressid")
+                          }
+                          required
+                        />
+                        <div
+                          id="ipaddressid"
+                          style={{ display: display.ipaddressid }}
+                          className="invalid-feedback"
+                        >
+                          Character limit exceeded! Maximum 30 characters are
+                          allowed.
+                        </div>
+                        <div className="invalid-feedback">
+                          Please enter IP address
+                        </div>
+                        <div
+                          className="invalid-feedback"
+                          style={{ display: "none" }}
+                          id="invalidIPaddress"
+                        >
+                          Please enter valid IPaddress.
+                        </div>
                       </div>
                     </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="parity" className="form-label">
-                        Parity:
-                      </label>
-                      <select className="form-select" id="parity" required>
-                        {window.Parity.map((x, y) => (
-                          <option value={x}>{x}</option>
-                        ))}
-                      </select>
-                      <div class="invalid-feedback">Please select parity</div>
-                    </div>
-                    <div className="col-md-6 mb-3">
-                      <label htmlFor="stopbits" className="form-label">
-                        Stop Bits:
-                      </label>
-                      <select className="form-select" id="stopbits" required>
-                        {window.StopBits.map((x, y) => (
-                          <option value={x}>{x}</option>
-                        ))}
-                      </select>
-                      <div class="invalid-feedback">
-                        Please select stop bits
-                      </div>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label htmlFor="databits" className="form-label">
-                        Data Bits:
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="databits"
-                        placeholder="Enter IP Data Bits"
-                        defaultValue="8"
-                        value={value.databitsid}
-                        onChange={(e) =>
-                          handleTextBox(e.target.value, 9, "databitsid")
-                        }
-                        required
-                      />
-                      <div
-                        id="databitsid"
-                        style={{ display: display.databitsid }}
-                        className="invalid-feedback"
-                      >
-                        Character limit exceeded! Maximum 9 characters are
-                        allowed.
-                      </div>
-                      <div class="invalid-feedback">Please enter data bits</div>
-                    </div>
-                    <div className="col-md-4 mb-3">
-                      <label
-                        htmlFor="datacollectionmode"
-                        className="form-label"
-                      >
-                        Data Collection Mode:
-                      </label>
-                      <select
-                        className="form-select"
-                        id="datacollectionmode"
-                        required
-                      >
-                        {window.DataCollectionMode.map((x, y) => (
-                          <option value={x.Value}>{x.Name}</option>
-                        ))}
-                      </select>
-                      <div class="invalid-feedback">
-                        Please select data collection mode
-                      </div>
-                    </div>
-                    <div className="col-md-4 serialrtumode mb-3 form-check">
+                  )}
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="servicemode" className="form-label">
+                      Service Mode:{" "}
+                    </label>
+                    <div className="form-check d-inline-block form-switch ms-2">
                       <input
                         className="form-check-input"
                         type="checkbox"
-                        id="serialrtumode"
-                        defaultChecked={false}
+                        role="switch"
+                        id="servicemode"
+                        onChange={(e) => setServiceMode(e.target.checked)}
+                        defaultChecked={ServiceMode}
                       />
-                      <label
-                        className="form-check-label"
-                        htmlFor="serialrtumode"
-                      >
-                        Serial RTU Mode
-                      </label>
+                      {ServiceMode && (
+                        <label
+                          className="form-check-label"
+                          htmlFor="flexSwitchCheckChecked"
+                        >
+                          On
+                        </label>
+                      )}
+                      {!ServiceMode && (
+                        <label
+                          className="form-check-label"
+                          htmlFor="flexSwitchCheckChecked"
+                        >
+                          Off
+                        </label>
+                      )}
                     </div>
                   </div>
-                )}
-                {Type == "Tcp/IP" && (
-                  <div>
-                    <div className="col-md-12 mb-3">
-                      <label for="port" className="form-label">
-                        Port:
-                      </label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        id="port"
-                        placeholder="Enter port"
-                        value={value.portid}
-                        onChange={(e) =>
-                          handleTextBox(e.target.value, 9, "portid")
-                        }
-                        required
-                      />
-                      <div
-                        id="portid"
-                        style={{ display: display.portid }}
-                        className="invalid-feedback"
-                      >
-                        Character limit exceeded! Maximum 9 characters are
-                        allowed.
-                      </div>
-                      <div class="invalid-feedback">Please enter port</div>
-                    </div>
-                    <div className="col-md-12 mb-3">
-                      <label for="ipaddress" className="form-label">
-                        IP Address:
-                      </label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        id="ipaddress"
-                        placeholder="Enter IP address"
-                        value={value.ipaddressid}
-                        onChange={(e) =>
-                          handleTextBox(e.target.value, 30, "ipaddressid")
-                        }
-                        required
-                      />
-                      <div
-                        id="ipaddressid"
-                        style={{ display: display.ipaddressid }}
-                        className="invalid-feedback"
-                      >
-                        Character limit exceeded! Maximum 30 characters are
-                        allowed.
-                      </div>
-                      <div class="invalid-feedback">
-                        Please enter IP address
-                      </div>
-                      <div
-                        class="invalid-feedback"
-                        style={{ display: "none" }}
-                        id="invalidIPaddress"
-                      >
-                        Please enter valid IPaddress.
-                      </div>
-                    </div>
-                  </div>
-                )}
-                <div className="col-md-4 mb-3">
-                  <label for="Status" className="form-label">
-                    Service Mode:{" "}
-                  </label>
-                  <div className="form-check d-inline-block form-switch ms-2">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="servicemode"
-                      onChange={(e) => setServiceMode(e.target.checked)}
-                      defaultChecked={ServiceMode}
-                    />
-                    {ServiceMode && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
-                      >
-                        On
-                      </label>
-                    )}
-                    {!ServiceMode && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
-                      >
-                        Off
-                      </label>
-                    )}
-                  </div>
-                </div>
-                {/*  <div className="col-md-4 mb-3">
-                  <label for="Status" className="form-label">Enabled: </label>
+                  {/*  <div className="col-md-4 mb-3">
+                  <label htmlFor="Status" className="form-label">Enabled: </label>
                   <div className="form-check d-inline-block form-switch ms-2">
                     <input className="form-check-input" type="checkbox" role="switch" id="enabled" onChange={(e) => setEnable(e.target.checked)} defaultChecked={Enable} />
                     {Enable && (
-                      <label className="form-check-label" for="flexSwitchCheckChecked">Yes</label>
+                      <label className="form-check-label" htmlFor="flexSwitchCheckChecked">Yes</label>
                     )}
                     {!Enable && (
-                      <label className="form-check-label" for="flexSwitchCheckChecked">No</label>
+                      <label className="form-check-label" htmlFor="flexSwitchCheckChecked">No</label>
                     )}
                   </div>
                 </div> */}
-                <div className="col-md-4 mb-3">
-                  <label for="Status" className="form-label">
-                    Status:{" "}
-                  </label>
-                  <div className="form-check d-inline-block form-switch ms-2">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      role="switch"
-                      id="Status"
-                      onChange={(e) => setStatus(e.target.checked)}
-                      defaultChecked={Status}
-                    />
-                    {Status && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
+                  <div className="col-md-4 mb-3">
+                    <label htmlFor="Status" className="form-label">
+                      Status:{" "}
+                    </label>
+                    <div className="form-check d-inline-block form-switch ms-2">
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        role="switch"
+                        id="Status"
+                        onChange={(e) => setStatus(e.target.checked)}
+                        defaultChecked={Status}
+                      />
+                      {Status && (
+                        <label
+                          className="form-check-label"
+                          htmlFor="flexSwitchCheckChecked"
+                        >
+                          Active
+                        </label>
+                      )}
+                      {!Status && (
+                        <label
+                          className="form-check-label"
+                          htmlFor="flexSwitchCheckChecked"
+                        >
+                          Inactive
+                        </label>
+                      )}
+                    </div>
+                  </div>
+                  <div className="col-md-12 text-center">
+                    {!DeviceList && Deviceid == 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={Deviceadd}
+                        type="button"
                       >
-                        Active
-                      </label>
+                        Add Device
+                      </button>
                     )}
-                    {!Status && (
-                      <label
-                        className="form-check-label"
-                        for="flexSwitchCheckChecked"
+                    {!DeviceList && Deviceid != 0 && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={UpdateDevice}
+                        type="button"
                       >
-                        Inactive
-                      </label>
+                        Update Device
+                      </button>
                     )}
                   </div>
-                </div>
-                <div className="col-md-12 text-center">
-                  {!DeviceList && Deviceid == 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={Deviceadd}
-                      type="button"
-                    >
-                      Add Device
-                    </button>
-                  )}
-                  {!DeviceList && Deviceid != 0 && (
-                    <button
-                      className="btn btn-primary"
-                      onClick={UpdateDevice}
-                      type="button"
-                    >
-                      Update Device
-                    </button>
-                  )}
-                </div>
-              </form>
+                </form>
+              </>
             )}
             {DeviceList && <div className="jsGrid" ref={gridRefjsgridreport} />}
           </div>

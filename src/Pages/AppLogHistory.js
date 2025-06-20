@@ -128,7 +128,6 @@ function AppLogHistory() {
       controller: {
         data: ListAppLog,
         loadData: function (filter) {
-          console.log(filter);
           $(".jsgrid-filter-row input:text")
             .addClass("form-control")
             .addClass("form-control-sm");
@@ -161,12 +160,14 @@ function AppLogHistory() {
           title: "App ID",
           align: "left",
           type: "text",
+          width: 50,
         },
         {
           name: "logDescription",
           align: "left",
           title: "Description",
           type: "text",
+          width: 200,
         },
         { name: "logSource", align: "left", title: "Source", type: "text" },
         {
@@ -187,7 +188,7 @@ function AppLogHistory() {
           <h1>Application Log List</h1>
         </div>
         <section className="section">
-          <div className="container">
+          <div className="container px-0">
             <div className="row my-4">
               <div className="col-md-3">
                 <label className="form-label">From Date</label>

@@ -9,98 +9,99 @@
 # General
 --------------------------------------------------------------*/
 @font-face {
-  font-family: 'Roboto Regular';
+  font-family: "Roboto Regular";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Regular'), url('/public/fonts/Roboto-Regular.woff') format('woff');
+  src: local("Roboto Regular"),
+    url("/public/fonts/Roboto-Regular.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Italic';
+  font-family: "Roboto Italic";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Italic'), url('/public/fonts/Roboto-Italic.woff') format('woff');
+  src: local("Roboto Italic"),
+    url("/public/fonts/Roboto-Italic.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Bold';
+  font-family: "Roboto Bold";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Bold'), url('/public/fonts/Roboto-Bold.woff') format('woff');
+  src: local("Roboto Bold"),
+    url("/public/fonts/Roboto-Bold.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Bold Italic';
+  font-family: "Roboto Bold Italic";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Bold Italic'), url('/public/fonts/Roboto-BoldItalic.woff') format('woff');
+  src: local("Roboto Bold Italic"),
+    url("/public/fonts/Roboto-BoldItalic.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Thin';
+  font-family: "Roboto Thin";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Thin'), url('/public/fonts/Roboto-Thin.woff') format('woff');
+  src: local("Roboto Thin"),
+    url("/public/fonts/Roboto-Thin.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Thin Italic';
+  font-family: "Roboto Thin Italic";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Thin Italic'), url('/public/fonts/Roboto-ThinItalic.woff') format('woff');
+  src: local("Roboto Thin Italic"),
+    url("/public/fonts/Roboto-ThinItalic.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Light';
+  font-family: "Roboto Light";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Light'), url('/public/fonts/Roboto-Light.woff') format('woff');
+  src: local("Roboto Light"),
+    url("/public/fonts/Roboto-Light.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Light Italic';
+  font-family: "Roboto Light Italic";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Light Italic'), url('/public/fonts/Roboto-LightItalic.woff') format('woff');
+  src: local("Roboto Light Italic"),
+    url("/public/fonts/Roboto-LightItalic.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Medium';
+  font-family: "Roboto Medium";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Medium'), url('/public/fonts/Roboto-Medium.woff') format('woff');
+  src: local("Roboto Medium"),
+    url("/public/fonts/Roboto-Medium.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Medium Italic';
+  font-family: "Roboto Medium Italic";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Medium Italic'), url('/public/fonts/Roboto-MediumItalic.woff') format('woff');
+  src: local("Roboto Medium Italic"),
+    url("/public/fonts/Roboto-MediumItalic.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Black';
+  font-family: "Roboto Black";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Black'), url('/public/fonts/Roboto-Black.woff') format('woff');
+  src: local("Roboto Black"),
+    url("/public/fonts/Roboto-Black.woff") format("woff");
 }
 
-
 @font-face {
-  font-family: 'Roboto Black Italic';
+  font-family: "Roboto Black Italic";
   font-style: normal;
   font-weight: normal;
-  src: local('Roboto Black Italic'), url('/public/fonts/Roboto-BlackItalic.woff') format('woff');
+  src: local("Roboto Black Italic"),
+    url("/public/fonts/Roboto-BlackItalic.woff") format("woff");
 }
 
 :root {
@@ -111,7 +112,7 @@ body {
   background: #f6f9ff;
   color: #444444;
   line-height: 1.25rem;
-  font-family: 'Roboto Light';
+  font-family: "Roboto Light";
   font-style: normal;
   font-weight: normal;
   height: 100%;
@@ -146,7 +147,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Roboto Light';
+  font-family: "Roboto Light";
 }
 
 /*--------------------------------------------------------------
@@ -359,7 +360,7 @@ h6 {
 
 .ag-root.ag-layout-normal {
   height: 100%;
-  font-family: 'Roboto Light';
+  font-family: "Roboto Light";
   font-style: normal;
   font-weight: normal;
 }
@@ -431,10 +432,10 @@ h6 {
 .accordion-item {
   border: 1px solid #ebeef4;
 }
-.accordion-button{
+.accordion-button {
   padding: 0.5rem 0.75rem;
   font-size: 0.8rem;
-  font-family: 'Roboto Medium';
+  font-family: "Roboto Medium";
   font-weight: normal;
 }
 .accordion-button:focus {
@@ -623,7 +624,7 @@ h6 {
   list-style: none;
 }
 
-.header-nav>ul {
+.header-nav > ul {
   margin: 0;
   padding: 0;
 }
@@ -731,7 +732,7 @@ h6 {
 }
 
 .header-nav .profile .dropdown-header h6 {
-  font-size: 13px!important;
+  font-size: 13px !important;
   margin-bottom: 0;
   font-weight: 600;
   color: #444444;
@@ -796,7 +797,6 @@ h6 {
 }
 
 @media (min-width: 1200px) {
-
   #main,
   #footer {
     margin-left: 280px;
@@ -810,7 +810,6 @@ h6 {
 }
 
 @media (min-width: 1200px) {
-
   .toggle-sidebar #main,
   .toggle-sidebar #footer {
     margin-left: 0;
@@ -872,7 +871,6 @@ h6 {
   font-size: 16px;
   margin-right: 10px;
   color: rgb(255 255 255);
-  ;
 }
 
 .sidebar-nav .nav-link.collapsed {
@@ -934,44 +932,44 @@ h6 {
 .animation-forwards {
   opacity: 0;
   transform: translate(50px, 0) rotate(0) skew(0) skewY(0) scaleX(1) scaleY(1);
-  animation: .4s ease-in-out .1s intro-menu;
+  animation: 0.4s ease-in-out 0.1s intro-menu;
   animation-fill-mode: forwards;
 }
 
 .animate-delay-1 {
-  animation-delay: .1s !important;
+  animation-delay: 0.1s !important;
 }
 
 .animate-delay-2 {
-  animation-delay: .2s !important;
+  animation-delay: 0.2s !important;
 }
 
 .animate-delay-3 {
-  animation-delay: .3s !important;
+  animation-delay: 0.3s !important;
 }
 
 .animate-delay-4 {
-  animation-delay: .4s !important;
+  animation-delay: 0.4s !important;
 }
 
 .animate-delay-5 {
-  animation-delay: .5s !important;
+  animation-delay: 0.5s !important;
 }
 
 .animate-delay-6 {
-  animation-delay: .6s !important;
+  animation-delay: 0.6s !important;
 }
 
 .animate-delay-7 {
-  animation-delay: .7s !important;
+  animation-delay: 0.7s !important;
 }
 
 .animate-delay-8 {
-  animation-delay: .8s !important;
+  animation-delay: 0.8s !important;
 }
 
 .animate-delay-9 {
-  animation-delay: .9s !important;
+  animation-delay: 0.9s !important;
 }
 
 .animate-delay-10 {
@@ -1001,7 +999,7 @@ h6 {
 @keyframes intro-menu {
   to {
     opacity: 1;
-    transform: translate(0)
+    transform: translate(0);
   }
 }
 
@@ -1028,9 +1026,10 @@ h6 {
 }
 
 /* grid start*/
-.grid_section .form-control,.grid_section  .form-select {
+.grid_section .form-control,
+.grid_section .form-select {
   line-height: 1.2;
-   margin: 0.5rem 0rem; 
+  margin: 0.5rem 0rem;
 }
 
 .grid_section .form-label,
@@ -1174,7 +1173,7 @@ h6 {
 }
 
 /* News & Updates */
-.dashboard .news .post-item+.post-item {
+.dashboard .news .post-item + .post-item {
   margin-top: 15px;
 }
 
@@ -1303,7 +1302,6 @@ h6 {
   max-width: 120px;
 }
 
-
 @keyframes animate-loading {
   0% {
     transform: rotate(0deg);
@@ -1317,40 +1315,39 @@ h6 {
 /*--------------------------------------------------------------
 # Tab System
 --------------------------------------------------------------*/
-button.nav-link{
+button.nav-link {
   font-weight: 600;
 }
-.tab-content{
+.tab-content {
   margin-top: 1rem;
 }
-.operation_class{
+.operation_class {
   cursor: pointer;
   font-weight: 600;
 }
-.operation_class i{
+.operation_class i {
   font-size: 1.5rem;
 }
-.operation_class span{
+.operation_class span {
   vertical-align: 0.2rem;
   font-size: 13px;
 }
-.btn{
+.btn {
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
-.jsgrid-header-row>.jsgrid-header-cell {
-  background-color: #2a4068!important;
+.jsgrid-header-row > .jsgrid-header-cell {
+  background-color: #2a4068 !important;
   color: #fff;
   font-size: 12px;
-  letter-spacing: .5px;
+  letter-spacing: 0.5px;
 }
 .jsgrid .jsgrid-mode-button {
   width: 20px;
   height: 20px;
 }
 .jsgrid-cell {
-
   font-size: 12px;
   letter-spacing: 0.5px;
 }
@@ -1365,55 +1362,61 @@ button.nav-link{
   background-position: right calc(0.375em + 0.1875rem) center;
   background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
-.jsgrid-cell .multiselect-container{
+.jsgrid-cell .multiselect-container {
   position: fixed !important;
   /* inset: auto !important; */
 }
-.jsgrid-cell .btn-group{
+.jsgrid-cell .btn-group {
   width: 100%;
 }
-.jsgrid-cell .multiselect-selected-text{
+.jsgrid-cell .multiselect-selected-text {
   font-size: 0.75rem;
 }
-.jsgrid{
-font-size: calc(0.75rem) !important;
-font-weight: 600;
+.jsgrid {
+  font-size: calc(0.75rem) !important;
+  font-weight: 600;
 }
-.jsgrid-header-cell{
+.jsgrid-header-cell {
   font-size: calc(0.8rem) !important;
 }
-.inputpicker-wrapped-list .table{
-  font-size: calc(0.75rem) !important; 
+.inputpicker-wrapped-list .table {
+  font-size: calc(0.75rem) !important;
 }
-.was-validated .form-control:valid,.was-validated .form-select:valid,
-.was-validated .form-select:valid:not([multiple]):not([size]),.was-validated .form-check-input:valid~.form-check-label,
-.was-validated .form-check-input.is-valid:checked, .was-validated .form-check-input:valid:checked,.was-validated .form-check-input:valid{
-  border-color:#ced4da;
+.was-validated .form-control:valid,
+.was-validated .form-select:valid,
+.was-validated .form-select:valid:not([multiple]):not([size]),
+.was-validated .form-check-input:valid ~ .form-check-label,
+.was-validated .form-check-input.is-valid:checked,
+.was-validated .form-check-input:valid:checked,
+.was-validated .form-check-input:valid {
+  border-color: #ced4da;
   background-image: none;
   background-color: inherit;
   color: inherit;
 }
-.was-validated .form-check-input.is-valid:checked, .was-validated .form-check-input:valid:checked{
-  border-color:#0d6efd;
+.was-validated .form-check-input.is-valid:checked,
+.was-validated .form-check-input:valid:checked {
+  border-color: #0d6efd;
   background-color: #0d6efd;
   background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-4 -4 8 8%27%3e%3ccircle r=%272%27 fill=%27%23fff%27/%3e%3c/svg%3e");
 }
-.was-validated .form-check-input:valid:checked{
-background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27%3e%3cpath fill=%27none%27 stroke=%27%23fff%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%273%27 d=%27m6 10 3 3 6-6%27/%3e%3c/svg%3e");
+.was-validated .form-check-input:valid:checked {
+  background-image: url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 20 20%27%3e%3cpath fill=%27none%27 stroke=%27%23fff%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27 stroke-width=%273%27 d=%27m6 10 3 3 6-6%27/%3e%3c/svg%3e");
 }
-.form-control,.form-select{
+.form-control,
+.form-select {
   font-size: 0.75rem !important;
-  font-family: 'Roboto Light';
+  font-family: "Roboto Light";
 }
-.form-control:focus{
+.form-control:focus {
   box-shadow: none !important;
 }
-.mt25r{
-  margin-top:2.5rem !important;
+.mt25r {
+  margin-top: 2.5rem !important;
 }
 
 .loader {
-  display : none;
+  display: none;
   position: absolute;
   left: 50%;
   border: 8px solid #f3f3f3;
@@ -1428,38 +1431,47 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
 }
 
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
-.repeatedinterval .form-control,.repeatedinterval .form-select{
+.repeatedinterval .form-control,
+.repeatedinterval .form-select {
   display: inline-block;
   width: 50%;
-  margin-left:2px
-  }
-  .react-datetime-picker__wrapper {
-    border: 1px solid #ced4da !important;
-    border-radius: 4px;
-    font-family: 'Roboto Light';
-    font-size: 0.75rem !important;
-  }
-.react-calendar{
-  font-family: 'Roboto Light';
+  margin-left: 2px;
 }
-.form-check-label{
+.react-datetime-picker__wrapper {
+  border: 1px solid #ced4da !important;
+  border-radius: 4px;
+  font-family: "Roboto Light";
+  font-size: 0.75rem !important;
+}
+.react-calendar {
+  font-family: "Roboto Light";
+}
+.form-check-label {
   font-size: 0.75rem;
   letter-spacing: 0.5px;
 }
 .react-datepicker {
-  font-family: 'Roboto Light'!important;
-  font-size: 11px!important;
+  font-family: "Roboto Light" !important;
+  font-size: 11px !important;
 }
-.cursor_pointer{
+.cursor_pointer {
   cursor: pointer !important;
 }
 
@@ -1473,10 +1485,10 @@ background-image:url("data:image/svg+xml,%3csvg xmlns=%27http://www.w3.org/2000/
   background-color: transparent;
   font-size: 1rem;
 }
-.SendInterval1{
+.SendInterval1 {
   margin-top: 1.75rem;
   padding: 0px;
 }
-.Frequency1{
+.Frequency1 {
   margin-top: 1.75rem;
 }
