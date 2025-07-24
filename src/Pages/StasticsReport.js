@@ -240,13 +240,14 @@ function StasticsReport() {
       .then((data) => {
         if (data) {
           let data1 = JSON.parse(data);
-          console.log(data1);
+          // console.log(data1);
           const pollutantDataArray = Object.entries(data1).some(
             ([key, val]) => key !== "StationNames" && val.length > 0
           );
-          setDownloadBtn(pollutantDataArray);
-          setLoadMessage(!pollutantDataArray);
-          console.log(pollutantDataArray);
+        pollutantDataArray?setDownloadBtn(true):setLoadMessage(true);
+          // setDownloadBtn(pollutantDataArray);
+          // setLoadMessage(!pollutantDataArray);
+          // console.log(pollutantDataArray);
           getchartdata(data1, Pollutent, ChartType, Criteria);
         }
       })
@@ -584,7 +585,6 @@ function StasticsReport() {
         labels,
         datasets: datasets,
       });
-      console.log(datasets);
     }, 10);
   };
   const getChartTitle = function () {

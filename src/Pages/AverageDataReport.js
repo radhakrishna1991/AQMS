@@ -502,6 +502,7 @@ function AverageDataReport() {
   };
 
   const getdtareport = function () {
+    setReportData([]);
     let Pollutent = $("#pollutentid").val();
 
     setSelectedPollutents(Pollutent);
