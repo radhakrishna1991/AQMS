@@ -78,6 +78,8 @@ function AddDevice() {
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
     let deviceId = document.getElementById("deviceid").value;
+    let commandTypeId = document.getElementById("modbusCommandType").value;
+    let dataFormatTypeId = document.getElementById("dataFormatType").value;
     let IPAddress = "";
     let Port = "";
     let CommPort = "";
@@ -145,6 +147,8 @@ function AddDevice() {
         ModifiedBy: ModifiedBy,
         IsEnable: enable,
         DataCollectionMode: DataCollectionMode,
+        DataFormatType: dataFormatTypeId,
+        ModbusCommandType: commandTypeId
       }),
     })
       .then((response) => response.json())
@@ -209,6 +213,8 @@ function AddDevice() {
         document.getElementById("datacollectionmode").value =
           param.dataCollectionMode;
       }
+      document.getElementById("dataFormatType").value = param.dataFormatType ?? "";
+      document.getElementById("modbusCommandType").value = param.modbusCommandType ?? "";
     }, 10);
   };
 
@@ -217,6 +223,8 @@ function AddDevice() {
     let DeviceName = document.getElementById("devicename").value;
     let DeviceModel = document.getElementById("devicemodel").value;
     let deviceId = document.getElementById("deviceid").value;
+    let commandTypeId = document.getElementById("modbusCommandType").value;
+    let dataFormatTypeId = document.getElementById("dataFormatType").value;
     let IPAddress = "";
     let Port = "";
     let CommPort = "";
@@ -277,6 +285,8 @@ function AddDevice() {
         CreatedBy: CreatedBy,
         ModifiedBy: ModifiedBy,
         DataCollectionMode: DataCollectionMode,
+        DataFormatType: dataFormatTypeId,
+        ModbusCommandType: commandTypeId
       }),
     })
       .then((response) => response.json())
@@ -437,14 +447,14 @@ function AddDevice() {
                   : item.port.toString().indexOf(filter.port) >= 0)) &&
               (!filter.type ||
                 item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0) &&
-                (!filter.modbusCommandType ||
-                  (item.modbusCommandType == null
-                    ? false
-                    : item.modbusCommandType.indexOf(filter.modbusCommandType) >= 0)) &&
-                    (!filter.dataFormatType ||
-                      (item.dataFormatType == null
-                        ? false
-                        : item.dataFormatType.indexOf(filter.dataFormatType) >= 0))
+              (!filter.modbusCommandType ||
+                (item.modbusCommandType == null
+                  ? false
+                  : item.modbusCommandType === filter.modbusCommandType)) &&
+              (!filter.dataFormatType ||
+                (item.dataFormatType == null
+                  ? false
+                  : item.dataFormatType === filter.dataFormatType))
             );
           });
         },
@@ -1012,6 +1022,44 @@ function AddDevice() {
                       </div>
                     </div>
                   )}
+                  <div className="col-md-6 mb-3">
+                    <label htmlFor="modbusCommandType" className="form-label">
+                       Modbus Command Type:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="modbusCommandType"
+                      // required
+                    >
+                      <option selected value="">
+                        Select Modbus Command Type
+                      </option>
+                      {ListCommandType.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.commandType}
+                        </option>
+                      ))}
+                    </select>
+                  </div>  
+                   <div className="col-md-6 mb-3">
+                    <label htmlFor="dataFormatType" className="form-label">
+                       Data Format Type:
+                    </label>
+                    <select
+                      className="form-select"
+                      id="dataFormatType"
+                      // required
+                    >
+                      <option selected value="">
+                        Select Data Format Type
+                      </option>
+                      {ListParameterDataFormat.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div className="col-md-4 mb-3">
                     <label htmlFor="servicemode" className="form-label">
                       Service Mode:{" "}
