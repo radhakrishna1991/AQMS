@@ -8,6 +8,8 @@ function AddDevice() {
   const gridRefjsgridreport = useRef();
   const [ListStations, setListStations] = useState([]);
   const [ListDevices, setListDevices] = useState([]);
+  const [ListCommandType, setListCommandType] = useState([]);
+  const [ListParameterDataFormat, setListParameterDataFormat] = useState([]);
   const [DeviceList, setDeviceList] = useState(true);
   const [ListDeviceModels, setListDeviceModels] = useState([]);
   const [Deviceid, setDeviceid] = useState(0);
@@ -345,6 +347,8 @@ function AddDevice() {
           setListStations(data.listStations);
           setListDevices(data.listDevices);
           setListDeviceModels(data.listDeviceModels);
+          setListCommandType(data.listCommandType);
+          setListParameterDataFormat(data.listDataFormat);
         }
       })
       .catch((error) =>
@@ -432,7 +436,15 @@ function AddDevice() {
                   ? false
                   : item.port.toString().indexOf(filter.port) >= 0)) &&
               (!filter.type ||
-                item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0)
+                item.type.toUpperCase().indexOf(filter.type.toUpperCase()) >= 0) &&
+                (!filter.modbusCommandType ||
+                  (item.modbusCommandType == null
+                    ? false
+                    : item.modbusCommandType.indexOf(filter.modbusCommandType) >= 0)) &&
+                    (!filter.dataFormatType ||
+                      (item.dataFormatType == null
+                        ? false
+                        : item.dataFormatType.indexOf(filter.dataFormatType) >= 0))
             );
           });
         },
@@ -446,7 +458,6 @@ function AddDevice() {
           items: ListStations,
           valueField: "id",
           textField: "stationName",
-          width: 200,
         },
         {
           name: "deviceName",
@@ -462,11 +473,28 @@ function AddDevice() {
           items: ListDeviceModels,
           valueField: "id",
           textField: "deviceModelName",
-          width: 200,
         },
         { name: "ipAddress", title: "IP Address", align: "left", type: "text" },
         { name: "port", title: "Port", align: "left", type: "text" },
         { name: "type", title: "Type", align: "left", type: "text" },
+        {
+          name: "modbusCommandType",
+          title: "Modbus Command Type",
+          align: "left",
+          type: "select",
+          items: ListCommandType,
+          valueField: "id",
+          textField: "commandType",
+        },
+        {
+          name: "dataFormatType",
+          title: "Data Format Type",
+          align: "left",
+          type: "select",
+          items: ListParameterDataFormat,
+          valueField: "id",
+          textField: "name",
+        },
         {
           type: "control",
           width: 100,
