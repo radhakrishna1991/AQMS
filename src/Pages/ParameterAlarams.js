@@ -66,7 +66,7 @@ function ParameterAlarams() {
       })
       .catch((error) => {
         toast.error(
-          "Unable to get the Devices lookup list. Please contact adminstrator"
+          "Unable to get the Parameter lookup list. Please contact adminstrator"
         );
       })
       .finally(() => {
@@ -163,7 +163,7 @@ function ParameterAlarams() {
   const DeleteParameterAlarm = function (item) {
     Swal.fire({
       title: "Are you sure?",
-      text: "You want to delete this Device Alarm !",
+      text: "You want to delete this Parameter Alarm !",
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#5cb85c",
@@ -279,22 +279,22 @@ function ParameterAlarams() {
       .then((response) => response.json())
       .then((responseJson) => {
         if (responseJson == "ParameterAlarmadd") {
-          toast.success("Device Alarm added successfully");
+          toast.success("Parameter Alarm added successfully");
           GetParameterAlarmsLookup();
           setParameterAlarmList(true);
         } else if (responseJson == "ParameterAlarmexist") {
           toast.error(
-            "Device Alarm already exist with given Device Name. Please try with another Device Name."
+            "Parameter Alarm already exist with given Device Name. Please try with another Device Name."
           );
         } else {
           toast.error(
-            "Unable to add the Device Alarm. Please contact adminstrator"
+            "Unable to add the Parameter Alarm. Please contact adminstrator"
           );
         }
       })
       .catch((error) =>
         toast.error(
-          "Unable to add the Device Alarm. Please contact adminstrator"
+          "Unable to add the Parameter Alarm. Please contact adminstrator"
         )
       );
   };

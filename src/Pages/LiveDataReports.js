@@ -142,22 +142,15 @@ function LiveDataReports() {
           ? SelectedPollutents[i].parameterName.replace(/\./g, "_@_")
           : SelectedPollutents[i].parameterName;
 
-      layout.push({
-        name: Selectedparameter,
-        title: gridheadertitle,
-        type: "text",
-        width: "100px",
-        sorting: false,
-        cellRenderer: function (item, value) {
-          let flag = AllLookpdata.listFlagCodes.filter(
-            (x) => x.id == value[Selectedparameter + "flag"]
-          );
-          //let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
-          console.log(item, value, value[Selectedparameter]);
-          let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF";
-          return $("<td>").css("background-color", bgcolor).append(item);
-        },
-      });
+          layout.push({
+            name: Selectedparameter, title: gridheadertitle, type: "text", width: "100px", sorting: false, cellRenderer: function (item, value) {
+            let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Selectedparameter + "flag"]);
+              //let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
+              console.log(item, value,value[Selectedparameter]); 
+              let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
+              return $("<td>").css("background-color", bgcolor).append(item);
+            }
+          });
     }
     if (SelectedPollutents.length < 10) {
       for (var p = SelectedPollutents.length; p < 10; p++) {
@@ -337,7 +330,8 @@ function LiveDataReports() {
     $(".pollutentid")[0].sumo.reload();
     $(".pollutentid")[0].sumo.unSelectAll();
     //setGridcall(false);
-    getdtareport("reset");
+   // getdtareport("reset");
+   setSelectedPollutents(Pollutents);
   };
   return (
     <main id="main" className="main">
