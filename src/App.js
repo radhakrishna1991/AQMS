@@ -42,6 +42,8 @@ const PollutionRose =lazy(() => import("./Pages/PollutionRose"));
 const AddDeviceModels =lazy(() => import("./Pages/AddDeviceModels"));
 const AddAlarms =lazy(() => import("./Pages/AddAlarms"));
 const AddParameterDriver =lazy(() => import("./Pages/AddParameterDriver"));
+const FTPData =lazy(() => import("./Pages/FTP/FtpData"));
+const TaskScheduler =lazy(() => import("./Pages/TaskScheduler/TaskScheduler"));
 function App() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const location = useLocation();
@@ -86,6 +88,8 @@ function App() {
             <Route path="/LiveDataReports" exact element={currentUser != null ? <LiveDataReports /> : (<Navigate to="/Login" />)} />
             <Route path="/DeviceAlarams" exact element={currentUser != null ? <DeviceAlarams /> : (<Navigate to="/" />)} />
             <Route path="/ParameterAlarams" exact element={currentUser != null ? <ParameterAlarams /> : (<Navigate to="/" />)} />
+            <Route path="/FtpData" exact element={currentUser != null ? <FTPData /> : (<Navigate to="/" />)} />
+            <Route path="/TaskScheduler" exact element={currentUser != null ? <TaskScheduler /> : (<Navigate to="/" />)} />
             <Route path="/AlarmsHistory" exact element={currentUser != null ? <AlarmHistory /> : (<Navigate to="/" />)} />
             <Route path="/WindRose" exact element={currentUser != null ? <WindRose /> : (<Navigate to="/" />)} />
             <Route path="/PollutionRose" exact element={currentUser != null ? <PollutionRose /> : (<Navigate to="/" />)} />

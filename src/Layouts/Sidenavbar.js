@@ -169,6 +169,24 @@ function Sidenavbar() {
                 <span>Parameter Alarms</span>
               </NavLink>
             </li>
+                   <li>
+              <NavLink
+                to="/FtpData"
+                className="animation-forwards animate-delay-3"
+              >
+                <i className="bi bi-circle"></i>
+                <span>Ftp Configuration</span>
+              </NavLink>
+            </li>
+             <li>
+              <NavLink
+                to="/TaskScheduler"
+                className="animation-forwards animate-delay-3"
+              >
+                <i className="bi bi-circle"></i>
+                <span>Task Scheduler</span>
+              </NavLink>
+            </li>
 
             {/*  <li>
                   <NavLink to="/AverageAlarm" className="animation-forwards animate-delay-2" >

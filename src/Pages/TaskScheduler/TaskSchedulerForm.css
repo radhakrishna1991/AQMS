@@ -1,0 +1,356 @@
+.tsf-calendar-popup .react-datepicker__time-list-item--selected {
+  background: #2563eb !important;
+  color: #fff !important;
+  border: 1px solid #111 !important;
+  border-radius: 6px !important;
+}
+.tsf-time-input {
+  background: #fff;
+  color: #111;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 8px 10px;
+  transition: border 0.2s, color 0.2s;
+}
+.tsf-time-input:focus {
+  border-color: #111;
+  color: #111;
+  outline: none;
+}
+.tsf-calendar-popup .react-calendar {
+  width: 100% !important;
+  font-size: 14px;
+  border: none;
+  background: transparent;
+}
+.tsf-calendar-popup .react-calendar__tile {
+  border-radius: 8px;
+  padding: 7px 0;
+  color: #2563eb;
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+.tsf-calendar-popup .react-calendar__tile:enabled:hover {
+  background: #e0e7ff;
+  color: #1d4ed8;
+}
+.tsf-calendar-popup .react-calendar__tile--active {
+  background: #fff;
+  color: #111;
+  border: none;
+}
+.tsf-calendar-popup .react-calendar__tile--now {
+  background: #bae6fd;
+  color: #2563eb;
+}
+.tsf-calendar-popup .react-calendar__navigation button {
+  color: #2563eb;
+  font-weight: 600;
+  border-radius: 8px;
+  background: transparent;
+  transition: background 0.2s, color 0.2s;
+}
+.tsf-calendar-popup .react-calendar__navigation button:enabled:hover {
+  background: #e0e7ff;
+  color: #1d4ed8;
+}
+/* ===== Page Container ===== */
+.tsf-container {
+  background: #f5f7fb;
+  min-height: 100vh;
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.tsf-card {
+  width: 100%;
+  max-width: 1200px;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+/* ===== Header ===== */
+.tsf-header {
+  background: #2a4068;
+  color: #fff;
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tsf-header-left {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.tsf-header-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tsf-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.tsf-subtitle {
+  margin: 0;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.tsf-close-btn {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* ===== Form ===== */
+.tsf-form {
+  padding: 20px;
+}
+
+/* ===== Sections ===== */
+.tsf-section {
+  background: #eef5ff;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.tsf-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tsf-section-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #34405a;
+}
+
+/* ===== Rows ===== */
+.tsf-row {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+
+.tsf-input,
+.tsf-textarea,
+.tsf-select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.tsf-textarea {
+  resize: none;
+}
+
+.tsf-input:focus,
+.tsf-textarea:focus,
+.tsf-select:focus {
+  outline: none;
+  border-color: #2a4068;
+}
+
+.tsf-input-error {
+  border-color: #dc2626;
+}
+
+.tsf-input-group {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.tsf-input-repeat {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+    font-size: 14px;
+}
+
+.tsf-input-repeat-number {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.tsf-flex {
+  display: flex;
+  gap: 10px;
+}
+
+.tsf-flex-1 {
+  flex: 1;
+}
+
+.tsf-relative {
+  position: relative;
+}
+
+.tsf-input-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+}
+
+/* ===== Checkbox ===== */
+.tsf-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+.tsf-checkbox {
+  accent-color: #2a4068;
+  width: 19px !important;
+}
+
+/* ===== Errors ===== */
+.tsf-error-text {
+  font-size: 12px;
+  color: #dc2626;
+  margin-top: 4px;
+}
+
+/* ===== Days To Run ===== */
+.tsf-days-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+
+.tsf-day-label {
+  background: #fff;
+  color: #2a4068;
+  border: 2px solid #2a4068;
+  border-radius: 6px;
+  padding: 10px 0;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tsf-day-checkbox {
+  display: none;
+}
+
+.tsf-day-label.tsf-day-selected {
+  background: #2a4068;
+  color: #fff;
+  border: 2px solid #2a4068;
+}
+
+.tsf-day-check {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+
+/* ===== Time Restriction ===== */
+.tsf-time-restriction-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tsf-radio-label {
+  background: #2a4068;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tsf-radio {
+  accent-color: white;
+}
+
+.tsf-between-time-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.tsf-between-label {
+  font-size: 12px;
+  color: #374151;
+}
+
+.tsf-between-and {
+  font-size: 13px;
+  color: #374151;
+  padding-top: 22px;
+}
+
+/* ===== Actions ===== */
+.tsf-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding-top: 10px;
+}
+
+.tsf-btn {
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.tsf-btn-cancel {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.tsf-btn-submit {
+  background: #2563eb;
+  color: white;
+}
+
+.tsf-input-icon-clickable {
+  cursor: pointer;
+  pointer-events: auto;
+  transition: color 0.2s;
+}
+.tsf-input-icon-clickable:hover {
+  color: #1d4ed8;
+}

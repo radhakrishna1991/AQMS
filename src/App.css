@@ -23,6 +23,17 @@
   transform: translateY(50%);
 }
 
+.password-icon {
+  position: relative;
+  font-size: 14px;
+  color: #8b8b8b;
+  cursor: pointer;
+  bottom: 26px;
+  left: 95%;
+  top:28px !important;
+  transform: translateY(50%);
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
