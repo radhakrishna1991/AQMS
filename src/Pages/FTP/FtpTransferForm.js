@@ -259,7 +259,7 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
 </div> */}
 
 
-      <div className="col-md-6 mt-md-4 mb-3">
+      <div className="col-md-6 mb-3">
         <label className="form-label">Enable:</label>
         <div className="form-check form-switch ms-2 d-inline-block">
           <input

@@ -43,7 +43,21 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
   });
 
   const updateConfig = (field, value) => {
-    setConfig(prev => ({ ...prev, [field]: value }));
+    // If exportFormat changes, update fileExtension too
+    if (field === 'exportFormat') {
+      let ext = '';
+      switch (value) {
+        case 'txt': ext = 'TXT'; break;
+        case 'csv': ext = 'CSV'; break;
+        case 'json': ext = 'JSON'; break;
+        case 'xml': ext = 'XML'; break;
+        case 'pdf': ext = 'PDF'; break;
+        default: ext = '';
+      }
+      setConfig(prev => ({ ...prev, exportFormat: value, fileExtension: ext }));
+    } else {
+      setConfig(prev => ({ ...prev, [field]: value }));
+    }
   };
 
   const [errors, setErrors] = useState({});
@@ -177,8 +191,8 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                 <option value="ISTHYDPC36">ISTHYDPC36</option>
               </select>
             </div>
-            <div className='d-flex'>
-            <div className="tsf-row col-6">
+            <div className='time-enable-row'>
+            <div className="tsf-row">
               <label className="form-label">Start Time:</label>
               <div className="tsf-input-group tsf-relative">
                 <div style={{ width: '100%' }}>
@@ -223,7 +237,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
               )}
               </div>
             </div>
-            <div className="col-6">
+            <div className='job-switch'>
                <label className="form-label">Job Enabled:</label>
                <div className="form-check form-switch ms-2 d-inline-block">
                  <input
@@ -387,257 +401,221 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
               </div>
             </div>
           </section>
-            <section className="tsf-section">
-            <div className="tsf-section-header">
-              <FontAwesomeIcon icon={faFileAlt} className="tsf-section-faicon" />
-              <h4 className="tsf-section-title">Report Data</h4>
-            </div>
-                  <div className="px-6 py-5 border-b border-slate-200 bg-slate-50">
-        <div className="flex items-center gap-4 flex-wrap">
-          <div className="flex-1 min-w-[250px]">
-            <label className="block text-sm text-slate-600 mb-2">Data Source:</label>
+
+<section className="tsf-section">
+  {/* ===== Section Header ===== */}
+  <div className="tsf-section-header">
+    <FontAwesomeIcon icon={faFileAlt} className="tsf-section-faicon" />
+    <h4 className="tsf-section-title">Report Data</h4>
+  </div>
+
+  {/* ===== Top Bar: Data Source + Export Filters ===== */}
+
+  <div className="tsf-topbar-grid" aria-label="Report Data Source and Export Filters" style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '8px 0 16px' }}>
+    <label className="form-label" htmlFor="dataSourceSelect" style={{ margin: 0, whiteSpace: 'nowrap' }}>Report:</label>
+    <select
+      id="dataSourceSelect"
+      value={config.reportType}
+      onChange={(e) => updateConfig('reportType', e.target.value)}
+      className="tsf-select tsf-select-legacy"
+      style={{ minWidth: '200px' }}
+    >
+      <option value="system-logs">System Logs</option>
+      <option value="event-history">Event History</option>
+      <option value="activity-records">Activity Records</option>
+      <option value="performance-metrics">Performance Metrics</option>
+    </select>
+    <button
+      type="button"
+      className="tsf-btn tsf-btn-legacy"
+      aria-label="Configure Report Query"
+      onClick={() => alert('Configure Report Query clicked')} // Placeholder action
+      style={{ whiteSpace: 'nowrap' }}
+    >
+      <FontAwesomeIcon icon={faCog} className="tsf-btn-icon" />
+      Configure Report Query
+    </button>
+  </div>
+
+
+  {/* ===== Tabs ===== */}
+  <div className="tsf-row tsf-row-tabs" role="tablist" aria-label="Report tabs">
+    <button
+      type="button"
+      role="tab"
+      aria-selected={true}
+      aria-controls="tab-file-output"
+      className="tsf-tab-btn tsf-tab-btn-active"
+      tabIndex={0}
+    >
+      File Output Settings
+    </button>
+  </div>
+
+  {/* ===== Tab Content ===== */}
+  <div className="tsf-tab-content">
+    <div id="tab-file-output" role="tabpanel" className="tsf-file-output-settings">
+        {/* Export Format */}
+        <div className="tsf-row">
+          <label className="form-label" htmlFor="exportFormat">Export Format:</label>
+          <div className="tsf-input-group">
             <select
-              value={config.reportType}
-              onChange={(e) => updateConfig('reportType', e.target.value)}
-              className="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              id="exportFormat"
+              value={config.exportFormat}
+              onChange={(e) => updateConfig('exportFormat', e.target.value)}
+              className="tsf-select"
             >
-              <option value="system-logs">System Logs</option>
-              <option value="event-history">Event History</option>
-              <option value="activity-records">Activity Records</option>
-              <option value="performance-metrics">Performance Metrics</option>
+              <option value="">Select format...</option>
+              <option value="txt">Text File (.txt)</option>
+              <option value="csv">CSV (.csv)</option>
+              <option value="json">JSON (.json)</option>
+              <option value="xml">XML (.xml)</option>
+              <option value="pdf">PDF (.pdf)</option>
             </select>
           </div>
-          <button className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 mt-auto">
-            <FontAwesomeIcon icon={faCog} className="w-4 h-4" />
-            Set Export Filters
-          </button>
         </div>
-              <div className="border-b border-slate-200 bg-slate-50">
-        <div className="flex gap-1 px-6">
-          <button
-            onClick={() => setActiveTab('printing')}
-            className={`px-5 py-3 transition-colors relative ${
-              activeTab === 'printing'
-                ? 'text-blue-700 bg-white border-t-2 border-blue-600'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Print Settings
-          </button>
-          <button
-            onClick={() => setActiveTab('notification')}
-            className={`px-5 py-3 transition-colors relative ${
-              activeTab === 'notification'
-                ? 'text-blue-700 bg-white border-t-2 border-blue-600'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            Notification Settings
-          </button>
-          <button
-            onClick={() => setActiveTab('file-output')}
-            className={`px-5 py-3 transition-colors relative ${
-              activeTab === 'file-output'
-                ? 'text-blue-700 bg-white border-t-2 border-blue-600'
-                : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            File Output Settings
-          </button>
-        </div>
-      </div>
 
-      {/* Tab Content */}
-      <div className="p-6">
-        {activeTab === 'printing' && (
-          <div className="text-center py-12 text-slate-500">
-            <FontAwesomeIcon icon={faFile} className="w-16 h-16 mx-auto mb-4 opacity-30" />
-            <p>Print settings configuration</p>
-          </div>
-        )}
-
-        {activeTab === 'notification' && (
-          <div className="text-center py-12 text-slate-500">
-            <FontAwesomeIcon icon={faFile} className="w-16 h-16 mx-auto mb-4 opacity-30" />
-            <p>Notification settings configuration</p>
-          </div>
-        )}
-
-        {activeTab === 'file-output' && (
-          <div className="space-y-6">
-            {/* Export Format */}
-            <div className="bg-slate-50 rounded-lg p-5">
-              <label className="block text-slate-700 mb-3">Export Format:</label>
-              <select
-                value={config.exportFormat}
-                onChange={(e) => updateConfig('exportFormat', e.target.value)}
-                className="w-full px-4 py-2.5 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              >
-                <option value="">Select format...</option>
-                <option value="txt">Text File (.txt)</option>
-                <option value="csv">CSV (.csv)</option>
-                <option value="json">JSON (.json)</option>
-                <option value="xml">XML (.xml)</option>
-                <option value="pdf">PDF (.pdf)</option>
-              </select>
+        {/* File Naming Settings */}
+        <div className="tsf-row-group">
+          <div className="tsf-row tsf-row-half">
+            <label className="form-label" htmlFor="baseFilename">Base Filename:</label>
+            <div className="tsf-input-group">
+              <input
+                id="baseFilename"
+                type="text"
+                value={config.baseFilename}
+                onChange={(e) => updateConfig('baseFilename', e.target.value)}
+                className="tsf-input"
+                placeholder="Enter base filename"
+              />
             </div>
+          </div>
 
-            {/* File Naming Settings */}
-            <div className="border border-slate-200 rounded-lg p-5">
-              <h3 className="text-slate-800 mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faFile} className="w-5 h-5 text-blue-600" />
-                File Naming Settings
-              </h3>
-              
-              <div className="grid md:grid-cols-2 gap-5">
-                <div>
-                  <label className="block text-sm text-slate-600 mb-2">Base Filename:</label>
-                  <input
-                    type="text"
-                    value={config.baseFilename}
-                    onChange={(e) => updateConfig('baseFilename', e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    placeholder="Enter base filename"
-                  />
-                </div>
+          <div className="tsf-row tsf-row-half">
+            <label className="form-label" htmlFor="fileExtension">File Extension:</label>
+            <div className="tsf-input-group">
+              <input
+                id="fileExtension"
+                type="text"
+                value={config.fileExtension}
+                onChange={(e) => updateConfig('fileExtension', e.target.value)}
+                className="tsf-input"
+                placeholder="TXT"
+              />
+            </div>
+          </div>
 
-                <div>
-                  <label className="block text-sm text-slate-600 mb-2">File Extension:</label>
-                  <input
-                    type="text"
-                    value={config.fileExtension}
-                    onChange={(e) => updateConfig('fileExtension', e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-                    placeholder="TXT"
-                  />
-                </div>
-              </div>
-
-              <div className="mt-5 bg-blue-50 rounded-lg p-4">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <div className="relative flex items-center justify-center mt-0.5">
-                    <input
-                      type="checkbox"
-                      checked={config.includeTimestamp}
-                      onChange={(e) => updateConfig('includeTimestamp', e.target.checked)}
-                      className="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <span className="text-slate-700 group-hover:text-slate-900">Include Timestamp in Filename</span>
-                    {config.includeTimestamp && (
-                      <div className="mt-3">
-                        <label className="block text-sm text-slate-600 mb-2 flex items-center gap-2">
-                          <FontAwesomeIcon icon={faCalendar} className="w-4 h-4" />
-                          Timestamp Format:
-                        </label>
-                        <input
-                          type="text"
-                          value={config.timestampFormat}
-                          onChange={(e) => updateConfig('timestampFormat', e.target.value)}
-                          className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                          placeholder="yyyyMMddHHmm"
-                        />
-                        <p className="text-xs text-slate-500 mt-2">
-                          Example: {config.baseFilename}_20231215143022.{config.fileExtension.toLowerCase()}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+          <div className="tsf-row tsf-row-checkbox tsf-row-checkbox-bg">
+            <label className="form-checkbox-label">
+              <input
+                type="checkbox"
+                checked={config.includeTimestamp}
+                onChange={(e) => updateConfig('includeTimestamp', e.target.checked)}
+                className="form-checkbox tsf-checkbox"
+              />
+               <label className="form-label" htmlFor="includeTimestamp">Enable Timestamp :</label>
+            </label>
+            {config.includeTimestamp && (
+              <div className="tsf-row tsf-row-timestamp">
+                <label className="form-label" htmlFor="timestampFormat">
+                  <FontAwesomeIcon icon={faCalendar} className="tsf-row-timestamp-icon" />
+                  Timestamp Format in Filename:
                 </label>
+                <div className="tsf-input-group">
+                  <input
+                    id="timestampFormat"
+                    type="text"
+                    value={config.timestampFormat}
+                    onChange={(e) => updateConfig('timestampFormat', e.target.value)}
+                    className="tsf-input"
+                    placeholder="yyyyMMddHHmm"
+                  />
+                   <p className="tsf-help-text">
+                  Example: {config.baseFilename}_20231215143022.{(config.fileExtension || '').toLowerCase()}
+                </p>
+                </div>
               </div>
-            </div>
-
-            {/* Local Storage Options */}
-            <div className="border border-slate-200 rounded-lg p-5">
-              <h3 className="text-slate-800 mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faFolder} className="w-5 h-5 text-blue-600" />
-                Local Storage Options
-              </h3>
-
-              <label className="flex items-start gap-3 cursor-pointer group mb-4">
-                <div className="relative flex items-center justify-center mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={config.enableLocalSave}
-                    onChange={(e) => updateConfig('enableLocalSave', e.target.checked)}
-                    className="w-5 h-5 text-blue-600 border-slate-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  />
-                </div>
-                <span className="text-slate-700 group-hover:text-slate-900">Enable Local Save</span>
-              </label>
-
-              {config.enableLocalSave && (
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <label className="block text-sm text-slate-600 mb-2">Destination Folder:</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={config.destinationFolder}
-                      onChange={(e) => updateConfig('destinationFolder', e.target.value)}
-                      className="flex-1 px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                      placeholder="Select destination folder"
-                    />
-                    <input
-                      id="folderInput"
-                      type="file"
-                      webkitdirectory=""
-                      directory=""
-                      multiple
-                      onChange={handleFolderInputChange}
-                      className="hidden"
-                    />
-                    <button 
-                      onClick={handleBrowseFolder}
-                      className="px-5 py-2.5 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-colors"
-                    >
-                      Browse
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Remote Upload Settings */}
-            <div className="border border-slate-200 rounded-lg p-5">
-              <h3 className="text-slate-800 mb-4 flex items-center gap-2">
-                <FontAwesomeIcon icon={faUpload} className="w-5 h-5 text-blue-600" />
-                Remote Upload Settings
-              </h3>
-
-              <label className="flex items-start gap-3 cursor-pointer group mb-4">
-                <div className="relative flex items-center justify-center mt-0.5">
-                  <input
-                    type="checkbox"
-                    checked={config.enableRemoteUpload}
-                    onChange={(e) => updateConfig('enableRemoteUpload', e.target.checked)}
-                    className="w-5 h-5 text-blue-600 border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  />
-                </div>
-                <span className="text-slate-700 group-hover:text-slate-900">Enable Remote Upload</span>
-              </label>
-
-              {config.enableRemoteUpload && (
-                <div className="bg-slate-50 rounded-lg p-4">
-                  <label className="block text-sm text-slate-600 mb-2">Upload Protocol:</label>
-                  <select
-                    value={config.uploadProtocol}
-                    onChange={(e) => updateConfig('uploadProtocol', e.target.value)}
-                    className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white"
-                  >
-                    <option value="sftp-secure">SFTP - Secure</option>
-                    <option value="ftp-standard">FTP - Standard</option>
-                    <option value="ftps-ssl">FTPS - SSL/TLS</option>
-                    <option value="scp-protocol">SCP - Protocol</option>
-                  </select>
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        )}
+
+          {/* Local Storage Option (moved here) */}
+          <div className="tsf-row tsf-row-folder" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                checked={config.enableLocalSave}
+                onChange={(e) => updateConfig('enableLocalSave', e.target.checked)}
+                className="form-checkbox tsf-checkbox"
+                style={{ marginRight: '8px' }}
+              />
+              <label className="form-label" htmlFor="enableLocalSave">Enable Local Save</label>
+            </label>
+            {config.enableLocalSave && <>
+              <label className="form-label" htmlFor="destinationFolder" style={{ margin: 0, whiteSpace: 'nowrap' }}>Directory:</label>
+              <input
+                id="destinationFolder"
+                type="text"
+                value={config.destinationFolder}
+                onChange={(e) => updateConfig('destinationFolder', e.target.value)}
+                className="tsf-input"
+                placeholder="Select destination folder"
+                style={{ flex: 1, marginBottom: 0, minWidth: 0 }}
+                disabled={!config.enableLocalSave}
+              />
+              <input
+                id="folderInput"
+                type="file"
+                webkitdirectory=""
+                directory=""
+                multiple
+                onChange={handleFolderInputChange}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={handleBrowseFolder}
+                className="tsf-btn tsf-btn-secondary tsf-btn-inline"
+                style={{ marginBottom: 0, whiteSpace: 'nowrap' }}
+                disabled={!config.enableLocalSave}
+              >
+                Browse
+              </button>
+            </>}
+          </div>
+
+          {/* Remote Upload Option (moved here) */}
+          <div className="tsf-row tsf-row-upload" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+              <input
+                type="checkbox"
+                checked={config.enableRemoteUpload}
+                onChange={(e) => updateConfig('enableRemoteUpload', e.target.checked)}
+                className="form-checkbox tsf-checkbox"
+                style={{ marginRight: '8px' }}
+              />
+              <label className="form-label" htmlFor="enableRemoteUpload">Enable Remote Upload</label>
+            </label>
+            {config.enableRemoteUpload && <>
+              <label className="form-label" htmlFor="uploadProtocol" style={{ margin: 0, whiteSpace: 'nowrap' }}>Protocol:</label>
+              <select
+                id="uploadProtocol"
+                value={config.uploadProtocol}
+                onChange={(e) => updateConfig('uploadProtocol', e.target.value)}
+                className="tsf-select"
+                style={{ minWidth: '180px' }}
+              >
+                <option value="sftp-secure">SFTP - Secure</option>
+                <option value="ftp-standard">FTP - Standard</option>
+                <option value="ftps-ssl">FTPS - SSL/TLS</option>
+                <option value="scp-protocol">SCP - Protocol</option>
+              </select>
+            </>}
+          </div>
+        </div>
       </div>
-      </div>
-          </section>
+    </div>
+</section>
+
           {/* Actions */}
           <div className="tsf-actions">
             <button

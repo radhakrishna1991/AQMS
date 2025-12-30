@@ -285,6 +285,7 @@ table.table .avatar {
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.5px;
+  margin-top: 0.5rem !important;
 }
 
 .SumoSelect {
