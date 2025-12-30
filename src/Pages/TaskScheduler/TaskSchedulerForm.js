@@ -5,6 +5,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import './TaskSchedulerForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarAlt, faClock, faRedoAlt, faCheckCircle, faCheck, faTimes, faFileAlt, faCog, faFile, faCalendar, faFolder, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { ReportSelectionModal } from './ReportSelectionModal';
 
 export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
@@ -61,7 +62,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
   };
 
   const [errors, setErrors] = useState({});
-  const [showCalendar, setShowCalendar] = useState(false);
+   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -429,7 +430,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
       type="button"
       className="tsf-btn tsf-btn-legacy"
       aria-label="Configure Report Query"
-      onClick={() => alert('Configure Report Query clicked')} // Placeholder action
+      onClick={() => setIsModalOpen(true)} // Placeholder action
       style={{ whiteSpace: 'nowrap' }}
     >
       <FontAwesomeIcon icon={faCog} className="tsf-btn-icon" />
@@ -634,6 +635,10 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
           </div>
         </form>
       </div>
+      <ReportSelectionModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
