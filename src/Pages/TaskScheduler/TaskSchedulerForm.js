@@ -465,13 +465,12 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
             </div>
 
             {/* ===== Accordion (Bootstrap flush style) ===== */}
-            {/* 🔧 CHANGE: Replace your tsf-accordion block with the Bootstrap markup below */}
             <div className="accordion accordion-flush" id="reportQueryAccordion">
               <div className="accordion-item">
                 <h2 className="accordion-header" id="reportQueryHeading">
                   {showAccordionHeader && (
                     <button
-                      className={`accordion-button ${showAccordion ? '' : 'collapsed'}`}
+                      className={`accordion-header-button accordion-button ${showAccordion ? '' : 'collapsed'}`}
                       type="button"
                       aria-expanded={showAccordion}
                       aria-controls="report-query-collapse"
@@ -495,12 +494,9 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                   aria-labelledby="reportQueryHeading"
                   data-bs-parent="#reportQueryAccordion"
                 >
-                  {/* Remove padding so your panel’s own spacing applies */}
                   <div className="accordion-body p-0">
                     <ReportSelectionModal
-                      // 🔧 CHANGE: pass down any saved values
                       initialValue={config.reportQuery}
-                      // Save should store the payload & collapse
                       onSave={(payload) => {
                         updateConfig('reportQuery', payload);
                         setShowAccordion(false);

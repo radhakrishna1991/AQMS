@@ -447,3 +447,366 @@
   background: #2563eb;
   color: white;
 }
+.content-grid {
+  display: flex;
+  gap: 24px;
+  padding:15px
+}
+
+.date-section {
+  width: 30%;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+}
+
+.parameter-section {
+  width: 70%;
+}
+
+.icon-small {
+  width: 16px;
+  height: 16px;
+  padding-right: 5px;
+}
+
+/* ===== DATE RANGE SELECTOR STYLES ===== */
+
+/* Date Range Container */
+.date-range-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+}
+
+/* Header */
+.date-range-header {
+  padding: 20px;
+  background-color: #eef2ff;
+  border-bottom: 1px solid #e0e7ff;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-icon {
+  width: 20px;
+  height: 20px;
+  color: #4f46e5;
+}
+
+.header-title {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.header-subtitle {
+  color: #475569;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Body */
+.date-range-body {
+  padding: 20px;
+}
+
+/* Dropdown Container */
+.dropdown-container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+
+.radio-input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4f46e5;
+  border-color: #cbd5e1;
+  cursor: pointer;
+}
+
+/* Date Inputs */
+.date-inputs {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.date-input {
+  width: 100% !important;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  display: block;
+  font-size: 14px;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.date-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.date-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Lookback Input */
+.lookback-input-container {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.input-wrapper {
+  position: relative;
+}
+
+.number-input {
+  width: 100%;
+  padding: 8px 12px;
+  padding-right: 36px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.number-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+/* ===== PARAMETER GRID STYLES ===== */
+
+/* Parameter Grid Container */
+.parameter-grid-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+/* Header */
+.parameter-grid-header {
+  padding: 20px;
+  background-color: #eef2ff;
+  border-bottom: 1px solid #e0e7ff;
+}
+
+.header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.table-icon {
+  width: 20px;
+  height: 20px;
+  color: #4f46e5;
+}
+
+.parameter-title {
+  color: #0f172a;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.add-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-size: 14px;
+}
+
+.add-button:hover {
+  background-color: #4338ca;
+}
+
+.button-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Search */
+.search-wrapper {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 8px 16px 8px 36px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+/* Table */
+/* Optional: make table look cleaner */
+
+.modern-table-wrapper{
+  background: #fff;
+    padding: 20px 25px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.custom-close-btn {
+  background: none;
+  border: none;
+  padding: 0 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+.custom-close-icon {
+  font-size: 1rem;      /* Increase size */
+  color: #ffffff;       /* Example: rose red, change as needed */
+  transition: color 0.2s;
+}
+/* Accordion frame */
+.rq-accordion-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rq-panel-footer {
+    display: flex;
+    align-items: center;
+    justify-content: end;
+    gap: 10px;
+}
+
+.rq-panel-body {
+  padding: 0;
+}
+
+.modern-table-header {
+  background: linear-gradient(90deg, #e0e7ef 0%, #f1f3f4 100%);
+}
+
+.modern-table-th {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 600;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modern-table-checkbox {
+  width: 48px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.modern-checkbox {
+  width: 18px;
+  height: 18px;
+}
+
+.modern-table-row-even {
+  background: #fff;
+  transition: background 0.2s;
+}
+
+.modern-table-row-odd {
+  background: #f8fafc;
+  transition: background 0.2s;
+}
+
+.modern-table-row-even:hover,
+.modern-table-row-odd:hover {
+  background: #e6f0fa;
+}
+
+.modern-table-td {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 500;
+  padding: 10px 8px;
+}
+
+.modern-table-td.description {
+  font-weight: 400;
+  color: #64748b;
+}
+
+.modern-table-empty {
+  text-align: center;
+  color: #64748b;
+  font-size: 16px;
+  background: #f9fafb;
+  padding: 32px 0;
+}
+
+.accordion-header-button{
+  font-size: 1.25rem !important;
+  padding: 10px 20px !important;
+}

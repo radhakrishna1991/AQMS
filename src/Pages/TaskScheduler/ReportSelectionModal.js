@@ -8,7 +8,6 @@ import {
   faSearch,
 } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
-import "./ReportSelection.css";
 
 export function ReportSelectionModal({ initialValue, onSave, onClose }) {
   const [selectedRows, setSelectedRows] = useState([]);
@@ -71,6 +70,14 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
   };
 
   const [searchTerm, setSearchTerm] = useState("");
+  // Average interval dropdown state
+  const [averageInterval, setAverageInterval] = useState(null);
+  const averageIntervalOptions = [
+    { value: "1min", label: "1min average" },
+    { value: "15min", label: "15min average" },
+    { value: "1hr", label: "1hr average" },
+    { value: "1day", label: "1day average" },
+  ];
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -89,7 +96,14 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
   useEffect(() => { setCurrentPage(1); }, [searchTerm, parameters.length]);
 
   const handleSave = () => {
-    const payload = { mode: selectedOption, startDate, endDate, lookbackValue, parameters };
+    const payload = {
+      mode: selectedOption,
+      startDate,
+      endDate,
+      lookbackValue,
+      averageInterval,
+      selectedRows
+    };
     onSave?.(payload);   // parent will collapse
   };
 
@@ -164,7 +178,19 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
                     </div>
                   </div>
                 )}
-              </div>
+                <div className="dropdown-container" style={{ marginTop: 16 }}>
+                  <label className="input-label">Average Interval</label>
+                  <Select
+                    options={averageIntervalOptions}
+                    value={averageIntervalOptions.find(opt => opt.value === averageInterval)}
+                    onChange={option => setAverageInterval(option.value)}
+                    classNamePrefix="average-interval"
+                    isSearchable={false}
+                    styles={customStyles}
+                    placeholder="Select average interval"
+                  />
+                </div>
+              </div>          
             </div>
           </div>
 
