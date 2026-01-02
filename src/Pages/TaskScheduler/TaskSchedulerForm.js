@@ -4,7 +4,16 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TaskSchedulerForm.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarAlt, faClock, faRedoAlt, faCheckCircle, faCheck, faTimes, faFileAlt, faCog, faFile, faCalendar, faFolder, faUpload } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCalendarAlt,
+  faClock,
+  faCheckCircle,
+  faCheck,
+  faTimes,
+  faFileAlt,
+  faCog,
+  faCalendar
+} from '@fortawesome/free-solid-svg-icons';
 import { ReportSelectionModal } from './ReportSelectionModal';
 
 export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
@@ -29,7 +38,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
     timeFrom: initialData?.timeFrom || '',
     timeTo: initialData?.timeTo || '',
   });
-    const [activeTab, setActiveTab] = useState('file-output');
+  const [activeTab, setActiveTab] = useState('file-output');
   const [config, setConfig] = useState({
     reportType: 'system-logs',
     exportFormat: 'txt',
@@ -40,11 +49,12 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
     enableLocalSave: true,
     destinationFolder: 'C:\\Users\\Documents\\Exports',
     enableRemoteUpload: false,
-    uploadProtocol: 'sftp-secure'
+    uploadProtocol: 'sftp-secure',
+    // Will hold accordion selections
+    reportQuery: initialData?.reportQuery || null,
   });
 
   const updateConfig = (field, value) => {
-    // If exportFormat changes, update fileExtension too
     if (field === 'exportFormat') {
       let ext = '';
       switch (value) {
@@ -62,22 +72,22 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
   };
 
   const [errors, setErrors] = useState({});
-   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAccordion, setShowAccordion] = useState(false);
+  const [showAccordionHeader, setShowAccordionHeader] = useState(false);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }));
   };
 
-    const handleBrowseFolder = async () => {
-    // Trigger the hidden file input for folder selection
-    document.getElementById('folderInput').click();
+  const handleBrowseFolder = async () => {
+    const input = document.getElementById('folderInput');
+    if (input) input.click();
   };
 
   const handleFolderInputChange = (e) => {
     const files = e.target.files;
     if (files.length > 0) {
-      // Get the path from the first file
       const path = files[0].webkitRelativePath || files[0].name;
       const folderName = path.split('/')[0];
       updateConfig('destinationFolder', folderName);
@@ -119,33 +129,39 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validateForm()) return;
-    onSubmit(formData);
+
+    // Return full data: formData + config (including reportQuery)
+    onSubmit?.({
+      ...formData,
+      config,
+    });
   };
 
   const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
   const dayLabels = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
-  return (
-    <div className="tsf-container">
-      <div className="tsf-card">
-        <div className="tsf-header">
-          <div className="tsf-header-left">
-            <div className="tsf-header-icon">
-              <FontAwesomeIcon icon={faCalendarAlt} className="tsf-header-faicon" />
+    return (
+      <>
+        <div className="tsf-container">
+          <div className="tsf-card">
+            <div className="tsf-header">
+              <div className="tsf-header-left">
+                <div className="tsf-header-icon">
+                  <FontAwesomeIcon icon={faCalendarAlt} className="tsf-header-faicon" />
+                </div>
+                <div>
+                  <h3 className="tsf-title">Create New Schedule</h3>
+                  <p className="tsf-subtitle">Configure job scheduling parameters</p>
+                </div>
+              </div>
             </div>
-            <div>
-              <h3 className="tsf-title">Create New Schedule</h3>
-              <p className="tsf-subtitle">Configure job scheduling parameters</p>
-            </div>
-          </div>
-        </div>
-        <form onSubmit={handleSubmit} className="tsf-form">
+            <form onSubmit={handleSubmit} className="tsf-form">
           {/* Task Information Section */}
-          <section className="tsf-section">
-            <div className="tsf-section-header">
-              <FontAwesomeIcon icon={faCheckCircle} className="tsf-section-faicon" />
-              <h4 className="tsf-section-title">Job Information</h4>
-            </div>
+              <section className="tsf-section">
+                <div className="tsf-section-header">
+                  <FontAwesomeIcon icon={faCheckCircle} className="tsf-section-faicon" />
+                  <h4 className="tsf-section-title">Job Information</h4>
+                </div>
             <div className="tsf-row">
               <label className="form-label">Job Name:</label>
               <div className="tsf-input-group">
@@ -158,9 +174,9 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                   aria-invalid={!!errors.taskName}
                   aria-describedby={errors.taskName ? 'taskName-error' : undefined}
                 />
-                 {errors.taskName && (
+                {errors.taskName && (
                 <p id="taskName-error" className="tsf-error-text"> {errors.taskName}</p>
-              )}
+                )}
               </div>
             </div>
             <div className="tsf-row">
@@ -193,68 +209,68 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
               </select>
             </div>
             <div className='time-enable-row'>
-            <div className="tsf-row">
-              <label className="form-label">Start Time:</label>
-              <div className="tsf-input-group tsf-relative">
-                <div style={{ width: '100%' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <DatePicker
-                      selected={formData.startTime ? new Date(formData.startTime) : null}
-                      onChange={(date) => {
-                        if (date) {
-                          const pad = (n) => n.toString().padStart(2, '0');
-                          const datePart = `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
-                          const timePart = formData.startTime ? formData.startTime.split('T')[1] : '00:00:00';
-                          handleChange('startTime', `${datePart}T${timePart}`);
-                        } else {
-                          handleChange('startTime', '');
-                        }
-                      }}
-                      dateFormat="yyyy-MM-dd"
-                      placeholderText="Select date"
-                      className={`tsf-input${errors.startTime ? ' tsf-input-error' : ''}`}
-                      popperClassName="tsf-calendar-popup"
-                      showTimeSelect={false}
-                    />
-                    {formData.startTime && formData.startTime.split('T')[0] ? (
-                      <input
-                        type="time"
-                        step="1"
-                        value={formData.startTime ? formData.startTime.split('T')[1] : ''}
-                        onChange={(e) => {
-                          const datePart = formData.startTime ? formData.startTime.split('T')[0] : '';
-                          handleChange('startTime', `${datePart}T${e.target.value}`);
+              <div className="tsf-row">
+                <label className="form-label">Start Time:</label>
+                <div className="tsf-input-group tsf-relative">
+                  <div style={{ width: '100%' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <DatePicker
+                        selected={formData.startTime ? new Date(formData.startTime) : null}
+                        onChange={(date) => {
+                          if (date) {
+                            const pad = (n) => n.toString().padStart(2, '0');
+                            const datePart = `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}`;
+                            const timePart = formData.startTime ? formData.startTime.split('T')[1] : '00:00:00';
+                            handleChange('startTime', `${datePart}T${timePart}`);
+                          } else {
+                            handleChange('startTime', '');
+                          }
                         }}
-                        className={`tsf-input tsf-time-input${errors.startTime ? ' tsf-input-error' : ''}`}
-                        style={{ width: '120px' }}
-                        aria-invalid={!!errors.startTime}
-                        aria-describedby={errors.startTime ? 'startTime-error' : undefined}
+                        dateFormat="yyyy-MM-dd"
+                        placeholderText="Select date"
+                        className={`tsf-input${errors.startTime ? ' tsf-input-error' : ''}`}
+                        popperClassName="tsf-calendar-popup"
+                        showTimeSelect={false}
                       />
-                    ) : null}
+                      {formData.startTime && formData.startTime.split('T')[0] ? (
+                        <input
+                          type="time"
+                          step="1"
+                          value={formData.startTime ? formData.startTime.split('T')[1] : ''}
+                          onChange={(e) => {
+                            const datePart = formData.startTime ? formData.startTime.split('T')[0] : '';
+                            handleChange('startTime', `${datePart}T${e.target.value}`);
+                          }}
+                          className={`tsf-input tsf-time-input${errors.startTime ? ' tsf-input-error' : ''}`}
+                          style={{ width: '120px' }}
+                          aria-invalid={!!errors.startTime}
+                          aria-describedby={errors.startTime ? 'startTime-error' : undefined}
+                        />
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-                {errors.startTime && (
+                  {errors.startTime && (
                 <p id="startTime-error" className="tsf-error-text"> {errors.startTime}</p>
-              )}
+                  )}
+                </div>
               </div>
-            </div>
             <div className='job-switch'>
-               <label className="form-label">Job Enabled:</label>
-               <div className="form-check form-switch ms-2 d-inline-block">
-                 <input
-                   className="form-check-input"
-                   type="checkbox"
-                   role="switch"
-                   id="enabledSwitch"
-                   checked={formData.enabled}
-                   onChange={e => handleChange('enabled', e.target.checked)}
-                 />
-                 <label className="form-check-label" htmlFor="enabledSwitch">
-                   {formData.enabled ? 'True' : 'False'}
-                 </label>
-               </div>
+                <label className="form-label">Job Enabled:</label>
+                <div className="form-check form-switch ms-2 d-inline-block">
+                  <input
+                    className="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="enabledSwitch"
+                    checked={formData.enabled}
+                    onChange={e => handleChange('enabled', e.target.checked)}
+                  />
+                  <label className="form-check-label" htmlFor="enabledSwitch">
+                    {formData.enabled ? 'True' : 'False'}
+                  </label>
+                </div>
               
-            </div>
+              </div>
             </div>
             <div className="tsf-row">
               <label className="form-label">Repeat Interval:</label>
@@ -280,13 +296,13 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                   onChange={(e) => handleChange('intervalUnit', e.target.value)}
                   className="tsf-select"
                 >
-                    <option value="Seconds">Seconds</option>
-                    <option value="Minutes">Minutes</option>
-                     <option value="Hours">Hours</option>
-                    <option value="Days">Days</option>
-                    <option value="Weeks">Weeks</option>
-                    <option value="Months">Months</option>
-                    <option value="Years">Years</option>
+                  <option value="Seconds">Seconds</option>
+                  <option value="Minutes">Minutes</option>
+                  <option value="Hours">Hours</option>
+                  <option value="Days">Days</option>
+                  <option value="Weeks">Weeks</option>
+                  <option value="Months">Months</option>
+                  <option value="Years">Years</option>
 
                 </select>
               </div>
@@ -335,11 +351,11 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
               <h4 className="tsf-section-title">Time of Day Restriction</h4>
             </div>
             <div className="tsf-time-restriction-group">
-             <label
-  className={`tsf-radio-label tsf-radio-full ${
-    formData.timeRestriction === 'unrestricted' ? 'tsf-radio-selected' : ''
-  }`}
->
+              <label
+                className={`tsf-radio-label tsf-radio-full ${
+                  formData.timeRestriction === 'unrestricted' ? 'tsf-radio-selected' : ''
+                }`}
+              >
                 <input
                   type="radio"
                   name="timeRestriction"
@@ -350,11 +366,11 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                 <span className="tsf-radio-text">Unrestricted</span>
               </label>
               <div className={`tsf-radio-between${formData.timeRestriction === 'between' ? ' tsf-radio-selected' : ''}`}>
-              <label
-  className={`tsf-radio-label tsf-radio-full ${
-    formData.timeRestriction === 'between' ? 'tsf-radio-selected' : ''
-  }`}
->
+                <label
+                  className={`tsf-radio-label tsf-radio-full ${
+                    formData.timeRestriction === 'between' ? 'tsf-radio-selected' : ''
+                  }`}
+                >
                   <input
                     type="radio"
                     name="timeRestriction"
@@ -403,221 +419,289 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
             </div>
           </section>
 
-<section className="tsf-section">
-  {/* ===== Section Header ===== */}
-  <div className="tsf-section-header">
-    <FontAwesomeIcon icon={faFileAlt} className="tsf-section-faicon" />
-    <h4 className="tsf-section-title">Report Data</h4>
-  </div>
-
-  {/* ===== Top Bar: Data Source + Export Filters ===== */}
-
-  <div className="tsf-topbar-grid" aria-label="Report Data Source and Export Filters" style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '8px 0 16px' }}>
-    <label className="form-label" htmlFor="dataSourceSelect" style={{ margin: 0, whiteSpace: 'nowrap' }}>Report:</label>
-    <select
-      id="dataSourceSelect"
-      value={config.reportType}
-      onChange={(e) => updateConfig('reportType', e.target.value)}
-      className="tsf-select tsf-select-legacy"
-      style={{ minWidth: '200px' }}
-    >
-      <option value="system-logs">System Logs</option>
-      <option value="event-history">Event History</option>
-      <option value="activity-records">Activity Records</option>
-      <option value="performance-metrics">Performance Metrics</option>
-    </select>
-    <button
-      type="button"
-      className="tsf-btn tsf-btn-legacy"
-      aria-label="Configure Report Query"
-      onClick={() => setIsModalOpen(true)} // Placeholder action
-      style={{ whiteSpace: 'nowrap' }}
-    >
-      <FontAwesomeIcon icon={faCog} className="tsf-btn-icon" />
-      Configure Report Query
-    </button>
-  </div>
+          {/* ===== Report Data Section ===== */}
+          <section className="tsf-section">
+            <div className="tsf-section-header">
+              <FontAwesomeIcon icon={faFileAlt} className="tsf-section-faicon" />
+              <h4 className="tsf-section-title">Report Data</h4>
+            </div>
 
 
-  {/* ===== Tabs ===== */}
-  <div className="tsf-row tsf-row-tabs" role="tablist" aria-label="Report tabs">
-    <button
-      type="button"
-      role="tab"
-      aria-selected={true}
-      aria-controls="tab-file-output"
-      className="tsf-tab-btn tsf-tab-btn-active"
-      tabIndex={0}
-    >
-      File Output Settings
-    </button>
-  </div>
-
-  {/* ===== Tab Content ===== */}
-  <div className="tsf-tab-content">
-    <div id="tab-file-output" role="tabpanel" className="tsf-file-output-settings">
-        {/* Export Format */}
-        <div className="tsf-row">
-          <label className="form-label" htmlFor="exportFormat">Export Format:</label>
-          <div className="tsf-input-group">
-            <select
-              id="exportFormat"
-              value={config.exportFormat}
-              onChange={(e) => updateConfig('exportFormat', e.target.value)}
-              className="tsf-select"
+            <div
+              className="tsf-topbar-grid"
+              aria-label="Report Data Source and Export Filters"
+              style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '8px 0 16px' }}
             >
-              <option value="">Select format...</option>
-              <option value="txt">Text File (.txt)</option>
-              <option value="csv">CSV (.csv)</option>
-              <option value="json">JSON (.json)</option>
-              <option value="xml">XML (.xml)</option>
-              <option value="pdf">PDF (.pdf)</option>
-            </select>
-          </div>
-        </div>
-
-        {/* File Naming Settings */}
-        <div className="tsf-row-group">
-          <div className="tsf-row tsf-row-half">
-            <label className="form-label" htmlFor="baseFilename">Base Filename:</label>
-            <div className="tsf-input-group">
-              <input
-                id="baseFilename"
-                type="text"
-                value={config.baseFilename}
-                onChange={(e) => updateConfig('baseFilename', e.target.value)}
-                className="tsf-input"
-                placeholder="Enter base filename"
-              />
-            </div>
-          </div>
-
-          <div className="tsf-row tsf-row-half">
-            <label className="form-label" htmlFor="fileExtension">File Extension:</label>
-            <div className="tsf-input-group">
-              <input
-                id="fileExtension"
-                type="text"
-                value={config.fileExtension}
-                onChange={(e) => updateConfig('fileExtension', e.target.value)}
-                className="tsf-input"
-                placeholder="TXT"
-              />
-            </div>
-          </div>
-
-          <div className="tsf-row tsf-row-checkbox tsf-row-checkbox-bg">
-            <label className="form-checkbox-label">
-              <input
-                type="checkbox"
-                checked={config.includeTimestamp}
-                onChange={(e) => updateConfig('includeTimestamp', e.target.checked)}
-                className="form-checkbox tsf-checkbox"
-              />
-               <label className="form-label" htmlFor="includeTimestamp">Enable Timestamp :</label>
-            </label>
-            {config.includeTimestamp && (
-              <div className="tsf-row tsf-row-timestamp">
-                <label className="form-label" htmlFor="timestampFormat">
-                  <FontAwesomeIcon icon={faCalendar} className="tsf-row-timestamp-icon" />
-                  Timestamp Format in Filename:
-                </label>
-                <div className="tsf-input-group">
-                  <input
-                    id="timestampFormat"
-                    type="text"
-                    value={config.timestampFormat}
-                    onChange={(e) => updateConfig('timestampFormat', e.target.value)}
-                    className="tsf-input"
-                    placeholder="yyyyMMddHHmm"
-                  />
-                   <p className="tsf-help-text">
-                  Example: {config.baseFilename}_20231215143022.{(config.fileExtension || '').toLowerCase()}
-                </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Local Storage Option (moved here) */}
-          <div className="tsf-row tsf-row-folder" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
-              <input
-                type="checkbox"
-                checked={config.enableLocalSave}
-                onChange={(e) => updateConfig('enableLocalSave', e.target.checked)}
-                className="form-checkbox tsf-checkbox"
-                style={{ marginRight: '8px' }}
-              />
-              <label className="form-label" htmlFor="enableLocalSave">Enable Local Save</label>
-            </label>
-            {config.enableLocalSave && <>
-              <label className="form-label" htmlFor="destinationFolder" style={{ margin: 0, whiteSpace: 'nowrap' }}>Directory:</label>
-              <input
-                id="destinationFolder"
-                type="text"
-                value={config.destinationFolder}
-                onChange={(e) => updateConfig('destinationFolder', e.target.value)}
-                className="tsf-input"
-                placeholder="Select destination folder"
-                style={{ flex: 1, marginBottom: 0, minWidth: 0 }}
-                disabled={!config.enableLocalSave}
-              />
-              <input
-                id="folderInput"
-                type="file"
-                webkitdirectory=""
-                directory=""
-                multiple
-                onChange={handleFolderInputChange}
-                className="hidden"
-              />
+              <label className="form-label" htmlFor="dataSourceSelect" style={{ margin: 0, whiteSpace: 'nowrap' }}>
+                Report:
+              </label>
+              <select
+                id="dataSourceSelect"
+                value={config.reportType}
+                onChange={(e) => updateConfig('reportType', e.target.value)}
+                className="tsf-select tsf-select-legacy"
+                style={{ minWidth: '200px' }}
+              >
+                <option value="system-logs">System Logs</option>
+                <option value="event-history">Event History</option>
+                <option value="activity-records">Activity Records</option>
+                <option value="performance-metrics">Performance Metrics</option>
+              </select>
               <button
                 type="button"
-                onClick={handleBrowseFolder}
-                className="tsf-btn tsf-btn-secondary tsf-btn-inline"
-                style={{ marginBottom: 0, whiteSpace: 'nowrap' }}
-                disabled={!config.enableLocalSave}
+                className="tsf-btn tsf-btn-legacy"
+                aria-label="Configure Report Query"
+                aria-expanded={showAccordion}
+                aria-controls="report-query-collapse"
+                onClick={() => {
+                  setShowAccordionHeader(true);
+                  setShowAccordion(true);
+                }}
+                style={{ whiteSpace: 'nowrap' }}
               >
-                Browse
+                <FontAwesomeIcon icon={faCog} className="tsf-btn-icon" />
+                Configure Report Query
               </button>
-            </>}
-          </div>
+            </div>
+
+            {/* ===== Accordion (Bootstrap flush style) ===== */}
+            {/* 🔧 CHANGE: Replace your tsf-accordion block with the Bootstrap markup below */}
+            <div className="accordion accordion-flush" id="reportQueryAccordion">
+              <div className="accordion-item">
+                <h2 className="accordion-header" id="reportQueryHeading">
+                  {showAccordionHeader && (
+                    <button
+                      className={`accordion-button ${showAccordion ? '' : 'collapsed'}`}
+                      type="button"
+                      aria-expanded={showAccordion}
+                      aria-controls="report-query-collapse"
+                      onClick={() => {
+                        if (showAccordion) {
+                          setShowAccordion(false);
+                          setShowAccordionHeader(false);
+                        } else {
+                          setShowAccordion(true);
+                        }
+                      }}
+                    >
+                      Report Query Configuration
+                    </button>
+                  )}
+                </h2>
+
+                <div
+                  id="report-query-collapse"
+                  className={`accordion-collapse collapse ${showAccordion ? 'show' : ''}`}
+                  aria-labelledby="reportQueryHeading"
+                  data-bs-parent="#reportQueryAccordion"
+                >
+                  {/* Remove padding so your panel’s own spacing applies */}
+                  <div className="accordion-body p-0">
+                    <ReportSelectionModal
+                      // 🔧 CHANGE: pass down any saved values
+                      initialValue={config.reportQuery}
+                      // Save should store the payload & collapse
+                      onSave={(payload) => {
+                        updateConfig('reportQuery', payload);
+                        setShowAccordion(false);
+                        setShowAccordionHeader(false);
+                      }}
+                      onClose={() => {
+                        setShowAccordion(false);
+                        setShowAccordionHeader(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+            {/* Tabs and File Output Settings: Only show when accordion is closed */}
+            {!showAccordion && (
+              <>
+                <div className="tsf-row tsf-row-tabs" role="tablist" aria-label="Report tabs">
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={true}
+                    aria-controls="tab-file-output"
+                    className="tsf-tab-btn tsf-tab-btn-active"
+                    tabIndex={0}
+                  >
+                    File Output Settings
+                  </button>
+                </div>
+
+  {/* ===== Tab Content ===== */}
+                <div className="tsf-tab-content">
+                  <div id="tab-file-output" role="tabpanel" className="tsf-file-output-settings">
+                    {/* Export Format */}
+                    <div className="tsf-row">
+                      <label className="form-label" htmlFor="exportFormat">Export Format:</label>
+                      <div className="tsf-input-group">
+                        <select
+                          id="exportFormat"
+                          value={config.exportFormat}
+                          onChange={(e) => updateConfig('exportFormat', e.target.value)}
+                          className="tsf-select"
+                        >
+                          <option value="">Select format...</option>
+                          <option value="txt">Text File (.txt)</option>
+                          <option value="csv">CSV (.csv)</option>
+                          <option value="json">JSON (.json)</option>
+                          <option value="xml">XML (.xml)</option>
+                          <option value="pdf">PDF (.pdf)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                {/* File Naming Settings */}
+                <div className="tsf-row-group">
+                  <div className="tsf-row tsf-row-half">
+                    <label className="form-label" htmlFor="baseFilename">Base Filename:</label>
+                    <div className="tsf-input-group">
+                      <input
+                        id="baseFilename"
+                        type="text"
+                        value={config.baseFilename}
+                        onChange={(e) => updateConfig('baseFilename', e.target.value)}
+                        className="tsf-input"
+                        placeholder="Enter base filename"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="tsf-row tsf-row-half">
+                    <label className="form-label" htmlFor="fileExtension">File Extension:</label>
+                    <div className="tsf-input-group">
+                      <input
+                        id="fileExtension"
+                        type="text"
+                        value={config.fileExtension}
+                        onChange={(e) => updateConfig('fileExtension', e.target.value)}
+                        className="tsf-input"
+                        placeholder="TXT"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="tsf-row tsf-row-checkbox tsf-row-checkbox-bg">
+                    <label className="form-checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={config.includeTimestamp}
+                        onChange={(e) => updateConfig('includeTimestamp', e.target.checked)}
+                        className="form-checkbox tsf-checkbox"
+                      />
+                      <label className="form-label" htmlFor="includeTimestamp">Enable Timestamp :</label>
+                    </label>
+                    {config.includeTimestamp && (
+                      <div className="tsf-row tsf-row-timestamp">
+                        <label className="form-label" htmlFor="timestampFormat">
+                          <FontAwesomeIcon icon={faCalendar} className="tsf-row-timestamp-icon" />
+                          Timestamp Format in Filename:
+                        </label>
+                        <div className="tsf-input-group">
+                          <input
+                            id="timestampFormat"
+                            type="text"
+                            value={config.timestampFormat}
+                            onChange={(e) => updateConfig('timestampFormat', e.target.value)}
+                            className="tsf-input"
+                            placeholder="yyyyMMddHHmm"
+                          />
+                          <p className="tsf-help-text">
+                            Example: {config.baseFilename}_20231215143022.{(config.fileExtension || '').toLowerCase()}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+          {/* Local Storage Option (moved here) */}
+                  <div className="tsf-row tsf-row-folder" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={config.enableLocalSave}
+                        onChange={(e) => updateConfig('enableLocalSave', e.target.checked)}
+                        className="form-checkbox tsf-checkbox"
+                        style={{ marginRight: '8px' }}
+                      />
+                      <label className="form-label" htmlFor="enableLocalSave">Enable Local Save</label>
+                    </label>
+                    {config.enableLocalSave && <>
+                      <label className="form-label" htmlFor="destinationFolder" style={{ margin: 0, whiteSpace: 'nowrap' }}>Directory:</label>
+                      <input
+                        id="destinationFolder"
+                        type="text"
+                        value={config.destinationFolder}
+                        onChange={(e) => updateConfig('destinationFolder', e.target.value)}
+                        className="tsf-input"
+                        placeholder="Select destination folder"
+                        style={{ flex: 1, marginBottom: 0, minWidth: 0 }}
+                        disabled={!config.enableLocalSave}
+                      />
+                      <input
+                        id="folderInput"
+                        type="file"
+                        webkitdirectory=""
+                        directory=""
+                        multiple
+                        onChange={handleFolderInputChange}
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleBrowseFolder}
+                        className="tsf-btn tsf-btn-secondary tsf-btn-inline"
+                        style={{ marginBottom: 0, whiteSpace: 'nowrap' }}
+                        disabled={!config.enableLocalSave}
+                      >
+                        Browse
+                      </button>
+                    </>}
+                  </div>
 
           {/* Remote Upload Option (moved here) */}
-          <div className="tsf-row tsf-row-upload" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
-              <input
-                type="checkbox"
-                checked={config.enableRemoteUpload}
-                onChange={(e) => updateConfig('enableRemoteUpload', e.target.checked)}
-                className="form-checkbox tsf-checkbox"
-                style={{ marginRight: '8px' }}
-              />
-              <label className="form-label" htmlFor="enableRemoteUpload">Enable Remote Upload</label>
-            </label>
-            {config.enableRemoteUpload && <>
-              <label className="form-label" htmlFor="uploadProtocol" style={{ margin: 0, whiteSpace: 'nowrap' }}>Protocol:</label>
-              <select
-                id="uploadProtocol"
-                value={config.uploadProtocol}
-                onChange={(e) => updateConfig('uploadProtocol', e.target.value)}
-                className="tsf-select"
-                style={{ minWidth: '180px' }}
-              >
-                <option value="sftp-secure">SFTP - Secure</option>
-                <option value="ftp-standard">FTP - Standard</option>
-                <option value="ftps-ssl">FTPS - SSL/TLS</option>
-                <option value="scp-protocol">SCP - Protocol</option>
-              </select>
-            </>}
-          </div>
-        </div>
-      </div>
-    </div>
-</section>
+                  <div className="tsf-row tsf-row-upload" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                      <input
+                        type="checkbox"
+                        checked={config.enableRemoteUpload}
+                        onChange={(e) => updateConfig('enableRemoteUpload', e.target.checked)}
+                        className="form-checkbox tsf-checkbox"
+                        style={{ marginRight: '8px' }}
+                      />
+                      <label className="form-label" htmlFor="enableRemoteUpload">Enable Remote Upload</label>
+                    </label>
+                    {config.enableRemoteUpload && <>
+                      <label className="form-label" htmlFor="uploadProtocol" style={{ margin: 0, whiteSpace: 'nowrap' }}>Protocol:</label>
+                      <select
+                        id="uploadProtocol"
+                        value={config.uploadProtocol}
+                        onChange={(e) => updateConfig('uploadProtocol', e.target.value)}
+                        className="tsf-select"
+                        style={{ minWidth: '180px' }}
+                      >
+                        <option value="sftp-secure">SFTP - Secure</option>
+                        <option value="ftp-standard">FTP - Standard</option>
+                        <option value="ftps-ssl">FTPS - SSL/TLS</option>
+                        <option value="scp-protocol">SCP - Protocol</option>
+                      </select>
+                    </>}
+                  </div>
+                </div>
+              </div>
+            </div>
+            </>
+          )}
+          </section>
+
 
           {/* Actions */}
+          {!showAccordion && (
           <div className="tsf-actions">
             <button
               type="button"
@@ -633,12 +717,10 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
               {initialData ? '✓ Update' : '+ Create'}
             </button>
           </div>
+          )}
         </form>
-      </div>
-      <ReportSelectionModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-      />
+       </div>
     </div>
+    </>
   );
 }
