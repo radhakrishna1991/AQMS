@@ -617,7 +617,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
 
           {/* Local Storage Option (moved here) */}
                   <div className="tsf-row tsf-row-folder" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                    <label className="form-checkbox-label" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                       <input
                         type="checkbox"
                         checked={config.enableLocalSave}
@@ -628,7 +628,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                       <label className="form-label" htmlFor="enableLocalSave">Enable Local Save</label>
                     </label>
                     {config.enableLocalSave && <>
-                      <label className="form-label" htmlFor="destinationFolder" style={{ margin: 0, whiteSpace: 'nowrap' }}>Directory:</label>
+                      <label className="form-label" htmlFor="destinationFolder">Directory:</label>
                       <input
                         id="destinationFolder"
                         type="text"
@@ -662,7 +662,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
 
           {/* Remote Upload Option (moved here) */}
                   <div className="tsf-row tsf-row-upload" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <label className="form-checkbox-label" style={{ margin: 0, whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
+                    <label className="form-checkbox-label" style={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center' }}>
                       <input
                         type="checkbox"
                         checked={config.enableRemoteUpload}
@@ -673,7 +673,7 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                       <label className="form-label" htmlFor="enableRemoteUpload">Enable Remote Upload</label>
                     </label>
                     {config.enableRemoteUpload && <>
-                      <label className="form-label" htmlFor="uploadProtocol" style={{ margin: 0, whiteSpace: 'nowrap' }}>Protocol:</label>
+                      <label className="form-label" htmlFor="uploadProtocol">Protocol:</label>
                       <select
                         id="uploadProtocol"
                         value={config.uploadProtocol}
