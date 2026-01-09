@@ -4,29 +4,21 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
 export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
-    programName: initialData?.programName || '',
-    transferMethod: initialData?.transferMethod || 'FTP',
-    ftpHost: initialData?.ftpHost || '',
-    directory: initialData?.directory || '',
-    userName: initialData?.userName || '',
-    password: initialData?.password || '',
-    enable: initialData?.enable ?? true,
-    port: initialData?.port || '21',
+    FtpName: initialData?.ftpName || '',
+    TransferMethod: initialData?.transferMethod || '',
+    FtpHost: initialData?.ftpHost || '',
+    Directory: initialData?.directory || '',
+    UserName: initialData?.userName || '',
+    UserPassword: initialData?.userPassword || '',
+    Enabled: initialData?.enabled ?? true,
+    Port: initialData?.port || '',
   });
 
-  const [rePassword, setRePassword] = useState(initialData?.password || '');
   const [showPassword, setShowPassword] = useState(false);
-  const [showRePassword, setShowRePassword] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
   const [errors, setErrors] = useState({});
 
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
-
-    if (field === 'password') {
-      setPasswordError('');
-    }
-
     if (errors[field]) {
       setErrors({ ...errors, [field]: '' });
     }
@@ -35,52 +27,43 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.programName.trim()) {
-      newErrors.programName = 'Program name is required';
+    if (!formData.FtpName.trim()) {
+      newErrors.FtpName = 'Program name is required';
     }
 
-    if (!formData.ftpHost.trim()) {
-      newErrors.ftpHost = 'FTP host is required';
+    if (!formData.FtpHost.trim()) {
+      newErrors.FtpHost = 'FTP host is required';
     } else {
       const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
       const hostnamePattern =
         /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-      if (ipPattern.test(formData.ftpHost)) {
-        const octets = formData.ftpHost.split('.');
+      if (ipPattern.test(formData.FtpHost)) {
+        const octets = formData.FtpHost.split('.');
         if (octets.some((o) => parseInt(o) > 255)) {
-          newErrors.ftpHost = 'Invalid IP address';
+          newErrors.FtpHost = 'Invalid IP address';
         }
-      } else if (!hostnamePattern.test(formData.ftpHost)) {
-        newErrors.ftpHost = 'Invalid host address';
+      } else if (!hostnamePattern.test(formData.FtpHost)) {
+        newErrors.FtpHost = 'Invalid host address';
       }
     }
 
-    if (!formData.port.trim()) {
-      newErrors.port = 'Port is required';
+    if (!(formData.Port)?.toString().trim()) {
+      newErrors.Port = 'Port is required';
     } else {
-      const portNum = parseInt(formData.port);
+      const portNum = parseInt(formData.Port, 10);
       if (isNaN(portNum) || portNum < 1 || portNum > 65535) {
-        newErrors.port = 'Port must be between 1 and 65535';
+        newErrors.Port = 'Port must be between 1 and 65535';
       }
     }
 
-    if (!formData.userName.trim()) {
-      newErrors.userName = 'User name is required';
+    if (!formData.UserName.trim()) {
+      newErrors.UserName = 'User name is required';
     }
 
-    if (!formData.password || !formData.password.trim()) {
-      newErrors.password = 'Password is required';
-      setPasswordError('Password is required');
-    } else if (!rePassword || !rePassword.trim()) {
-      newErrors.password = 'Please re-enter password for confirmation';
-      setPasswordError('Please re-enter password for confirmation');
-    } else if (formData.password !== rePassword) {
-      newErrors.password = 'Passwords do not match';
-      setPasswordError('Passwords do not match');
-    } else {
-      setPasswordError('');
-    }
+    if (!formData.UserPassword || !formData.UserPassword.trim()) {
+      newErrors.UserPassword = 'Password is required';
+    } 
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -90,7 +73,6 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
     e.preventDefault();
 
     if (!validateForm()) return;
-
     onSubmit(formData);
   };
 
@@ -105,19 +87,19 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
         </label>
         <input
           type="text"
-          className={`form-control${errors.programName ? ' is-invalid' : ''}`}
-          value={formData.programName}
-          onChange={e => handleChange('programName', e.target.value)}
+          className={`form-control${errors.FtpName ? ' is-invalid' : ''}`}
+          value={formData.FtpName}
+          onChange={e => handleChange('FtpName', e.target.value)}
           required
         />
-        {errors.programName && <div className="invalid-feedback">{errors.programName}</div>}
+        {errors.FtpName && <div className="invalid-feedback">{errors.FtpName}</div>}
       </div>
       <div className="col-md-6 mb-3">
         <label className="form-label">Transfer Protocol:</label>
         <select
           className="form-select"
-          value={formData.transferMethod}
-          onChange={e => handleChange('transferMethod', e.target.value)}
+          value={formData.TransferMethod}
+          onChange={e => handleChange('TransferMethod', e.target.value)}
         >
             <option value="FTP">FTP</option>
             <option value="FTPS_IMPLICIT">FTP/SSL implicit</option>
@@ -131,12 +113,12 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
         </label>
         <input
           type="text"
-          className={`form-control${errors.ftpHost ? ' is-invalid' : ''}`}
-          value={formData.ftpHost}
-          onChange={e => handleChange('ftpHost', e.target.value)}
+          className={`form-control${errors.FtpHost ? ' is-invalid' : ''}`}
+          value={formData.FtpHost}
+          onChange={e => handleChange('FtpHost', e.target.value)}
           required
         />
-        {errors.ftpHost && <div className="invalid-feedback">{errors.ftpHost}</div>}
+        {errors.FtpHost && <div className="invalid-feedback">{errors.FtpHost}</div>}
       </div>
       <div className="col-md-6 mb-3">
         <label className="form-label">
@@ -144,12 +126,12 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
         </label>
         <input
           type="number"
-          className={`form-control${errors.port ? ' is-invalid' : ''}`}
-          value={formData.port}
-          onChange={e => handleChange('port', e.target.value)}
+          className={`form-control${errors.Port ? ' is-invalid' : ''}`}
+          value={formData.Port}
+          onChange={e => handleChange('Port', e.target.value)}
           required
         />
-        {errors.port && <div className="invalid-feedback">{errors.port}</div>}
+        {errors.Port && <div className="invalid-feedback">{errors.Port}</div>}
       </div>
       <div className="col-md-6 mb-3">
         <label className="form-label">
@@ -157,12 +139,12 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
         </label>
         <input
           type="text"
-          className={`form-control${errors.userName ? ' is-invalid' : ''}`}
-          value={formData.userName}
-          onChange={e => handleChange('userName', e.target.value)}
+          className={`form-control${errors.UserName ? ' is-invalid' : ''}`}
+          value={formData.UserName}
+          onChange={e => handleChange('UserName', e.target.value)}
           required
         />
-        {errors.userName && <div className="invalid-feedback">{errors.userName}</div>}
+        {errors.UserName && <div className="invalid-feedback">{errors.UserName}</div>}
       </div>
       <div className="col-md-6 mb-3">
         <label className="form-label">
@@ -170,9 +152,9 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
         </label>
         <input
           type={showPassword ? 'text' : 'password'}
-          className={`form-control${errors.password ? ' is-invalid' : ''}`}
-          value={formData.password}
-          onChange={e => handleChange('password', e.target.value)}
+          className={`form-control${errors.UserPassword ? ' is-invalid' : ''}`}
+          value={formData.UserPassword}
+          onChange={e => handleChange('UserPassword', e.target.value)}
           required
         />
         <span
@@ -183,80 +165,19 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
         >
           <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
         </span>
-        {errors.password && <div className="invalid-feedback">{errors.password}</div>}
-      </div>
-      <div className="col-md-6 mb-3 position-relative">
-        <label className="form-label">
-          <span className="text-danger">*</span> Re-enter Password:
-        </label>
-        <input
-          type={showRePassword ? 'text' : 'password'}
-          className={`form-control${passwordError ? ' is-invalid' : ''}`}
-          value={rePassword}
-          onChange={e => setRePassword(e.target.value)}
-          required
-        />
-        <span
-          className="password-toggle-icon"
-          onClick={() => setShowRePassword((prev) => !prev)}
-          style={{ position: 'absolute', top: '38px', right: '16px', cursor: 'pointer', fontSize: '1.2rem' }}
-          title={showRePassword ? 'Hide Password' : 'Show Password'}
-        >
-          <FontAwesomeIcon icon={showRePassword ? faEyeSlash : faEye} />
-        </span>
-        {passwordError && <div className="invalid-feedback">{passwordError}</div>}
+        {errors.UserPassword && <div className="invalid-feedback">{errors.UserPassword}</div>}
       </div>
       <div className="col-md-6 mb-3">
         <label className="form-label">Directory:</label>
         <input
           type="text"
           className="form-control"
-          value={formData.directory}
-          onChange={e => handleChange('directory', e.target.value)}
+          value={formData.Directory}
+          onChange={e => handleChange('Directory', e.target.value)}
         />
       </div>
     
 
-{/* <div className="col-md-6 mb-3 d-flex align-items-center">
-  <label className="form-label mb-0 me-4" htmlFor="useKeyFile">
-    Use Key File
-  </label>
-
-  <input
-    id="useKeyFile"
-    type="checkbox"
-    className="form-check-input me-3"
-    checked={formData.useKeyFile}
-    onChange={e => handleChange('useKeyFile', e.target.checked)}
-    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-  />
-
-  <div className="d-flex flex-column">
-    <button
-      type="button"
-      className="btn btn-outline-primary px-5"
-      disabled={!formData.useKeyFile}
-      onClick={() => document.getElementById('keyFileInput')?.click()}
-    >
-      Import Key File
-    </button>
-
-    <small className="form-text text-muted mt-1">
-      If key file is encrypted, set the password above
-    </small>
-  </div>
-
-  <input
-    id="keyFileInput"
-    type="file"
-    accept=".ppk,.pem,.key,.txt"
-    style={{ display: 'none' }}
-    onChange={e => {
-      const file = e.target.files?.[0];
-      handleChange('keyFileName', file ? file.name : '');
-    }}
-  />
-</div> */}
 
 
       <div className="col-md-6 mb-3">
@@ -267,11 +188,11 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
             type="checkbox"
             role="switch"
             id="enableSwitch"
-            checked={formData.enable}
-            onChange={e => handleChange('enable', e.target.checked)}
+            checked={formData.Enabled}
+            onChange={e => handleChange('Enabled', e.target.checked)}
           />
           <label className="form-check-label" htmlFor="enableSwitch">
-            {formData.enable ? 'True' : 'False'}
+            {formData.Enabled ? 'True' : 'False'}
           </label>
         </div>
       </div>
