@@ -78,6 +78,14 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
     { value: "1hr", label: "1hr average" },
     { value: "1day", label: "1day average" },
   ];
+
+  // Multi-select for flags/null/invalid
+  const [showOptions, setShowOptions] = useState([]);
+  const showOptionsList = [
+    { value: 'showFlags', label: 'Show Flags' },
+    { value: 'showNullCodes', label: 'Show Null Codes' },
+    { value: 'showInvalidValues', label: 'Show Invalid Values' },
+  ];
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -95,14 +103,42 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
 
   useEffect(() => { setCurrentPage(1); }, [searchTerm, parameters.length]);
 
+  // Helper: map selectedOption to TimePeriodTypeID (customize as needed)
+  const mapTimePeriodTypeID = (option) => {
+    // Example mapping, adjust as per backend logic
+    const map = {
+      'current-day': 1,
+      'yesterday': 2,
+      'current-week': 3,
+      'current-month': 4,
+      'current-quarter': 5,
+      'current-year': 6,
+      'last-week': 7,
+      'last-month': 8,
+      'last-quarter': 9,
+      'last-year': 10,
+      'fixed-range': 11,
+      'lookback-days': 12,
+      'lookback-hours': 13,
+      'lookback-minutes': 14,
+    };
+    return map[option] ?? null;
+  };
+
   const handleSave = () => {
+    // Map showOptions to booleans
+    const ShowFlag = showOptions.includes('showFlags');
+    const ShowNullCodes = showOptions.includes('showNullCodes');
+    const ShowInvalidValues = showOptions.includes('showInvalidValues');
+
     const payload = {
-      mode: selectedOption,
-      startDate,
-      endDate,
-      lookbackValue,
-      averageInterval,
-      selectedRows
+      TimePeriodTypeID: mapTimePeriodTypeID(selectedOption),
+      LookbackInterval: lookbackValue || null,
+      ParametersID: selectedRows.join(','),
+      AverageInterval: averageInterval || '',
+      ShowFlag,
+      ShowNullCodes,
+      ShowInvalidValues,
     };
     onSave?.(payload);   // parent will collapse
   };
@@ -188,6 +224,44 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
                     isSearchable={false}
                     styles={customStyles}
                     placeholder="Select average interval"
+                  />
+                </div>
+                {/* Multi-select for flags/null/invalid */}
+                <div className="dropdown-container" style={{ marginTop: 16 }}>
+                  <label className="input-label">Show Options</label>
+                  <Select
+                    options={showOptionsList}
+                    value={showOptionsList.filter(opt => showOptions.includes(opt.value))}
+                    onChange={opts => setShowOptions((opts || []).map(o => o.value))}
+                    isMulti
+                    closeMenuOnSelect={false}
+                    hideSelectedOptions={false}
+                    classNamePrefix="show-options"
+                    styles={customStyles}
+                    placeholder="Select options..."
+                    isSearchable={false}
+                    components={{
+                      Option: (props) => {
+                        return (
+                          <div
+                            onClick={e => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              props.innerProps.onClick(e);
+                            }}
+                            style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', padding: '8px 12px' }}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={props.isSelected}
+                              readOnly
+                              style={{ marginRight: 8 }}
+                            />
+                            <span>{props.label}</span>
+                          </div>
+                        );
+                      }
+                    }}
                   />
                 </div>
               </div>          

@@ -15,15 +15,19 @@ import {
   faCalendar
 } from '@fortawesome/free-solid-svg-icons';
 import { ReportSelectionModal } from './ReportSelectionModal';
+import CommonFunctions from "../../utils/CommonFunctions";
+import { toast } from "react-toastify";
 
 export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
   const [formData, setFormData] = useState({
     taskName: initialData?.taskName || '',
     description: initialData?.description || '',
-    executive: initialData?.executive || 'ISTHYDPC34',
     startTime: initialData?.startTime || '',
-    repeatInterval: initialData?.repeatInterval || '6',
-    intervalUnit: initialData?.intervalUnit || 'Days',
+    repeatInterval: initialData?.repeatInterval || '',
+    intervalUnit: initialData?.intervalUnit || '',
+    numberOfRetries: initialData?.numberOfRetries || '',
+    intervalBetweenRetries: initialData?.intervalBetweenRetries || '',
+    intervalBetweenRetriesUnit: initialData?.intervalBetweenRetriesUnit || 'Seconds',
     enabled: initialData?.enabled ?? true,
     daysToRun: initialData?.daysToRun || {
       sunday: true,
@@ -34,10 +38,11 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
       friday: true,
       saturday: true,
     },
-    timeRestriction: initialData?.timeRestriction || 'unrestricted',
+    timeRestriction: initialData?.timeRestriction || '',
     timeFrom: initialData?.timeFrom || '',
     timeTo: initialData?.timeTo || '',
   });
+  const currentUser = JSON.parse(sessionStorage.getItem("UserData"));
   const [activeTab, setActiveTab] = useState('file-output');
   const [config, setConfig] = useState({
     reportType: 'system-logs',
@@ -105,7 +110,6 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
     const newErrors = {};
     if (!formData.taskName.trim()) newErrors.taskName = 'Task name is required';
     if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.executive.trim()) newErrors.executive = 'Executive is required';
     if (!formData.startTime.trim()) newErrors.startTime = 'Start time is required';
     if (!formData.repeatInterval.trim()) {
       newErrors.repeatInterval = 'Repeat interval is required';
@@ -125,16 +129,90 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  const formatTime = (t) => t && t.length <= 5 ? t + ':00' : t;
 
-  const handleSubmit = (e) => {
+// Helper to ensure datetime is in yyyy-MM-ddTHH:mm:ss
+const formatDateTime = (dt) => {
+  if (!dt) return null;
+  // If already has seconds, return as is
+  if (dt.length === 19) return dt;
+  // If missing seconds, add :00
+  if (dt.length === 16) return dt + ':00';
+  return dt;
+};
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // Return full data: formData + config (including reportQuery)
-    onSubmit?.({
-      ...formData,
-      config,
+    // Map frontend state to backend model
+    const payload = {
+      JobName: formData.taskName,
+      JobDescription: formData.description,
+      IsActive: formData.enabled,
+      RetryLimit: parseInt(formData.numberOfRetries, 10) || 0,
+      RetryDelayMinutes: formData.intervalBetweenRetries,
+      EffectiveStartDateTime: formatDateTime(formData.startTime),
+      ExecutionIntervalMinutes: formData.repeatInterval,
+      ExecuteOnSunday: formData.daysToRun.sunday,
+      ExecuteOnMonday: formData.daysToRun.monday,
+      ExecuteOnTuesday: formData.daysToRun.tuesday,
+      ExecuteOnWednesday: formData.daysToRun.wednesday,
+      ExecuteOnThursday: formData.daysToRun.thursday,
+      ExecuteOnFriday: formData.daysToRun.friday,
+      ExecuteOnSaturday: formData.daysToRun.saturday,
+      DailyExecutionStartTime: formData.timeFrom ? `${new Date().toISOString().slice(0,10)}T${formatTime(formData.timeFrom)}` : null,
+      DailyExecutionEndTime: formData.timeTo ? `${new Date().toISOString().slice(0,10)}T${formatTime(formData.timeTo)}` : null,
+      ...(config.reportQuery || {}),
+      TimePeriodTypeID: config.reportQuery?.TimePeriodTypeID ?? null,
+      LookbackInterval: config.reportQuery?.LookbackInterval ?? null,
+      ParametersID: config.reportQuery?.ParametersID ?? '',
+      AverageInterval: config.reportQuery?.AverageInterval ?? '',
+      ShowFlag: config.reportQuery?.ShowFlag ?? null,
+      ShowNullCodes: config.reportQuery?.ShowNullCodes ?? null,
+      ShowInvalidValues: config.reportQuery?.ShowInvalidValues ?? null,
+      LocalFileDownload: config.enableLocalSave,
+      LocalFileDownloadPath: config.destinationFolder,
+      DownloadedFileName: config.baseFilename,
+      IsDateFormatAppend: config.includeTimestamp,
+      DateFormatAppend: config.timestampFormat,
+      FileDownloadFormat: config.exportFormat,
+      FtpFileDownload: config.enableRemoteUpload,
+      FtpConfigID: config.ftpConfigId ?? null,
+      CreatedBy:currentUser.id,
+      // Add more fields as needed
+    };
+    try {
+       let authHeader = await CommonFunctions.getAuthHeader();
+      const response = await fetch(
+      CommonFunctions.getWebApiUrl() + "api/ScheduleTask",
+      {
+        method: 'POST',
+        headers: {
+        "Content-Type": "application/json",
+        Authorization: authHeader.Authorization,
+      },
+      body: JSON.stringify(payload),
     });
+      const responseJson = await response.text();
+      if (responseJson == "Success") {
+      toast.success("Job added successfully");
+    } else if (responseJson == "JobExists") {
+      toast.error(
+        "Job already exists with the given name. Please try with another name."
+      );
+      return false;
+    } else {
+      toast.error(
+        "Unable to add the Job. Please contact administrator"
+      );
+      return false;
+    }
+    } catch (error) {
+      toast.error(
+        "Unable to schedule the task. Please contact adminstrator"
+      );
+    }
   };
 
   const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -195,18 +273,6 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
                   <p id="description-error" className="tsf-error-text"> {errors.description}</p>
                 )}
               </div>
-            </div>
-            <div className="tsf-row">
-              <label className="form-label">Executive:</label>
-              <select
-                value={formData.executive}
-                onChange={(e) => handleChange('executive', e.target.value)}
-                className="tsf-select"
-              >
-                <option value="ISTHYDPC34">ISTHYDPC34</option>
-                <option value="ISTHYDPC35">ISTHYDPC35</option>
-                <option value="ISTHYDPC36">ISTHYDPC36</option>
-              </select>
             </div>
             <div className='time-enable-row'>
               <div className="tsf-row">
@@ -306,9 +372,51 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
 
                 </select>
               </div>
-              {errors.repeatInterval && (
+                {errors.repeatInterval && (
                 <p id="repeatInterval-error" className="tsf-error-text"> {errors.repeatInterval}</p>
               )}
+            </div>
+
+            {/* Number of Retries and Interval Between Retries in one row */}
+            <div className="tsf-row" style={{ display: 'flex', gap: '16px', alignItems: 'flex-end' }}>
+              {/* Number of Retries */}
+              <div style={{ flex: 1 }}>
+                <label className="form-label">Number of Retries:</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={formData.numberOfRetries}
+                  onChange={e => handleChange('numberOfRetries', e.target.value.replace(/[^0-9]/g, ''))}
+                  className="tsf-input-repeat-number"
+                  placeholder="0"
+                />
+              </div>
+              {/* Interval Between Retries */}
+                <label className="form-label">Interval Between Retries:</label>
+              <div style={{ flex: 1 }}>
+                <div className="tsf-input-repeat tsf-flex flex">
+                  <div className="tsf-relative tsf-flex-1">
+                    <input
+                      type="number"
+                      min="1"
+                      value={formData.intervalBetweenRetries}
+                      onChange={e => handleChange('intervalBetweenRetries', e.target.value.replace(/[^0-9]/g, ''))}
+                      className="tsf-input-repeat-number"
+                      placeholder="1"
+                    />
+                  </div>
+                  <select
+                    value={formData.intervalBetweenRetriesUnit}
+                    onChange={e => handleChange('intervalBetweenRetriesUnit', e.target.value)}
+                    className="tsf-select"
+                  >
+                    <option value="Seconds">Seconds</option>
+                    <option value="Minutes">Minutes</option>
+                    <option value="Hours">Hours</option>
+                    <option value="Days">Days</option>
+                  </select>
+                </div>
+              </div>
             </div>
           </section>
           {/* Days to Run Section */}
