@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { TaskSchedulerForm } from './TaskSchedulerForm';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import CommonFunctions from "../../utils/CommonFunctions";
+import { toast } from "react-toastify";
 
 export default function TaskScheduler() {
   const $ = window.jQuery;
@@ -30,6 +32,30 @@ export default function TaskScheduler() {
       timeTo: '',
     },
   ]);
+
+    useEffect(() => {
+    fetchTaskSchedulerLookup();
+  }, []);
+
+  const fetchTaskSchedulerLookup = async () => {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/GetTaskSchedulerLookup", {
+      method: "GET",
+      headers: authHeader,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          console.log(data, "task scheduler data");
+        }
+      })
+      .catch(() => {
+        toast.error(
+          "Unable to get the FTP Configuration list. Please contact adminstrator"
+        );
+      });
+  };
+
 
   const [currentView, setCurrentView] = useState('list'); // 'list' | 'form'
     // jsGrid initialization for FTP data (must be after state declarations)
