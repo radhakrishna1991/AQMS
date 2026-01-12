@@ -747,6 +747,10 @@
   padding: 0;
 }
 
+table {
+  width: 100%;
+}
+
 .modern-table-header {
   background: linear-gradient(90deg, #e0e7ef 0%, #f1f3f4 100%);
 }
@@ -763,7 +767,6 @@
   width: 48px;
   text-align: center;
   vertical-align: middle;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .modern-checkbox {

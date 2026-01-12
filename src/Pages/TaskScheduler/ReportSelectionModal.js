@@ -9,7 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Select from "react-select";
 
-export function ReportSelectionModal({ initialValue, onSave, onClose }) {
+export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData }) {
   const [selectedRows, setSelectedRows] = useState([]);
   const handleSelectRow = (id) => {
     setSelectedRows((prev) =>
@@ -17,48 +17,58 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
     );
   };
 
-  const [selectedOption, setSelectedOption] = useState(initialValue?.mode || "current-day");
+  const [selectedOption, setSelectedOption] = useState("");
   const [startDate, setStartDate] = useState(initialValue?.startDate || "");
   const [endDate, setEndDate] = useState(initialValue?.endDate || "");
   const [lookbackValue, setLookbackValue] = useState(initialValue?.lookbackValue || "");
+  const [parameters, setParameters] = useState(lookUpData?.listParameters || []);
 
-  const [parameters, setParameters] = useState(
-    initialValue?.parameters?.length
-      ? initialValue.parameters
-      : [
-          { id: "1", siteName: "North Plant", parameterName: "Temperature Sensor 1", templateName: "Industrial Temp Sensor", description: "Main production floor ambient temperature" },
-          { id: "2", siteName: "North Plant", parameterName: "Humidity Monitor", templateName: "Digital Humidity Sensor", description: "Relative humidity percentage in storage area" },
-          { id: "3", siteName: "South Facility", parameterName: "Pressure Gauge A1", templateName: "High-Precision Pressure", description: "Atmospheric pressure in clean room environment" },
-          { id: "4", siteName: "South Facility", parameterName: "Flow Meter 3", templateName: "Liquid Flow Sensor", description: "Water flow rate in cooling system" },
-          { id: "5", siteName: "East Warehouse", parameterName: "Temperature Sensor 2", templateName: "Cold Storage Temp Monitor", description: "Temperature monitoring for refrigerated goods" },
-          { id: "6", siteName: "East Warehouse", parameterName: "Motion Detector", templateName: "PIR Motion Sensor", description: "Security motion detection system" },
-          { id: "7", siteName: "West Laboratory", parameterName: "pH Level Sensor", templateName: "Chemical pH Monitor", description: "pH level monitoring in testing tanks" },
-          { id: "8", siteName: "West Laboratory", parameterName: "Light Intensity", templateName: "Lux Meter", description: "Ambient light measurement for experiments" },
-        ]
-  );
 
-  const dateOptions = [
-    { label: "Current Period", options: [
-      { value: "current-day", label: "🌞 Current Day" },
-      { value: "yesterday", label: "🕒 Yesterday" },
-      { value: "current-week", label: "📅 Current Week" },
-      { value: "current-month", label: "🗓️ Current Month" },
-      { value: "current-quarter", label: "📊 Current Quarter" },
-      { value: "current-year", label: "📆 Current Year" },
-    ]},
-    { label: "Previous Period", options: [
-      { value: "last-week", label: "Last Week" },
-      { value: "last-month", label: "Last Month" },
-      { value: "last-quarter", label: "Last Quarter" },
-      { value: "last-year", label: "Last Year" },
-    ]},
-    { label: "Custom", options: [{ value: "fixed-range", label: "🛠️ Fixed Date Range" }]},
-    { label: "Lookback", options: [
-      { value: "lookback-days", label: "🔁 Lookback Days" },
-      { value: "lookback-hours", label: "⏰ Lookback Hours" },
-      { value: "lookback-minutes", label: "⏳ Lookback Minutes" },
-    ]},
-  ];
+const groupTimePeriodOptions = (listTimePeriodType = []) => {
+  const groupMap = {
+    "Current Period": [
+      "CurrentDay", "Yesterday", "CurrentWeek", "CurrentMonth", "CurrentQuarter", "CurrentYear"
+    ],
+    "Previous Period": [
+      "LastWeek", "LastMonth", "LastQuarter", "LastYear"
+    ],
+    "Custom": [
+      "FixedRange"
+    ],
+    "Lookback": [
+      "LookbackDays", "LookbackHours", "LookbackMinutes"
+    ]
+  };
+
+  // Emoji map for labels
+  const emojiMap = {
+    "CurrentDay": "🌞",
+    "Yesterday": "🕒",
+    "CurrentWeek": "📅",
+    "CurrentMonth": "🗓️",
+    "CurrentQuarter": "📊",
+    "CurrentYear": "📆",
+    "FixedRange": "🛠️",
+    "LookbackDays": "🔁",
+    "LookbackHours": "⏰",
+    "LookbackMinutes": "⏳"
+  };
+
+  // Build grouped options
+  return Object.entries(groupMap).map(([groupLabel, codes]) => ({
+    label: groupLabel,
+    options: listTimePeriodType
+      .filter(opt => codes.includes(opt.timePeriodCode))
+      .map(opt => ({
+        value: opt.timePeriodTypeID,
+        label: `${emojiMap[opt.timePeriodCode] || ""} ${opt.timePeriodName}`.trim()
+      }))
+  })).filter(group => group.options.length > 0);
+};
+
+const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
+
+console.log(selectedOption, 'selectedOption in ReportSelectionModal');
 
   const customStyles = {
     option: (provided) => ({
@@ -89,12 +99,10 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const isLookbackOption = selectedOption.startsWith("lookback-");
-  const showDateInputs = selectedOption === "fixed-range";
+  const isLookbackOption = [1, 2, 13].includes(selectedOption);
+  const showDateInputs = selectedOption === 9; // Fixed Range
 
-  const filteredParameters = parameters.filter((p) =>
-    Object.values(p).some((val) => (val || "").toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const filteredParameters = parameters.filter(x => x.parameterName.toLowerCase().includes(searchTerm.toLowerCase()))
   const totalPages = Math.ceil(filteredParameters.length / itemsPerPage);
   const paginatedParameters = filteredParameters.slice(
     (currentPage - 1) * itemsPerPage,
@@ -300,8 +308,6 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
                       <th className="modern-table-checkbox">#</th>
                       <th className="modern-table-th">Site Name</th>
                       <th className="modern-table-th">Parameter Name</th>
-                      <th className="modern-table-th">Template Name</th>
-                      <th className="modern-table-th">Description</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -328,8 +334,6 @@ export function ReportSelectionModal({ initialValue, onSave, onClose }) {
                           </td>
                           <td className="modern-table-td">{param.siteName}</td>
                           <td className="modern-table-td">{param.parameterName}</td>
-                          <td className="modern-table-td">{param.templateName}</td>
-                          <td className="modern-table-td description">{param.description}</td>
                         </tr>
                       ))
                     )}

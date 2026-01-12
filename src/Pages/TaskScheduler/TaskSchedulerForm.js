@@ -18,46 +18,33 @@ import { ReportSelectionModal } from './ReportSelectionModal';
 import CommonFunctions from "../../utils/CommonFunctions";
 import { toast } from "react-toastify";
 
-export function TaskSchedulerForm({ initialData, onSubmit, onCancel }) {
+export function TaskSchedulerForm({ initialData, onSubmit, onCancel, fetchTaskSchedulerLookup, lookUpData }) {
   const [formData, setFormData] = useState({
-    taskName: initialData?.taskName || '',
-    description: initialData?.description || '',
-    startTime: initialData?.startTime || '',
-    repeatInterval: initialData?.repeatInterval || '',
+    taskName: initialData?.jobName || '',
+    description: initialData?.jobDescription || '',
+    startTime: initialData?.effectiveStartDateTime || '',
+    repeatInterval: initialData?.executionIntervalMinutes || '',
     intervalUnit: initialData?.intervalUnit || '',
-    numberOfRetries: initialData?.numberOfRetries || '',
-    intervalBetweenRetries: initialData?.intervalBetweenRetries || '',
-    intervalBetweenRetriesUnit: initialData?.intervalBetweenRetriesUnit || 'Seconds',
-    enabled: initialData?.enabled ?? true,
-    daysToRun: initialData?.daysToRun || {
-      sunday: true,
-      monday: true,
-      tuesday: true,
-      wednesday: true,
-      thursday: true,
-      friday: true,
-      saturday: true,
+    numberOfRetries: initialData?.retryLimit || '',
+    intervalBetweenRetries: initialData?.retryDelayMinutes || '',
+    intervalBetweenRetriesUnit: initialData?.intervalBetweenRetriesUnit || '',
+    enabled: initialData?.isActive ?? true,
+    daysToRun: {
+      sunday: initialData?.days?.executeOnSunday ?? true,
+      monday: initialData?.days?.executeOnMonday ?? true,
+      tuesday: initialData?.days?.executeOnTuesday ?? true,
+      wednesday: initialData?.days?.executeOnWednesday ?? true,
+      thursday: initialData?.days?.executeOnThursday ?? true,
+      friday: initialData?.days?.executeOnFriday ?? true,
+      saturday: initialData?.days?.executeOnSaturday ?? true,
     },
     timeRestriction: initialData?.timeRestriction || '',
-    timeFrom: initialData?.timeFrom || '',
-    timeTo: initialData?.timeTo || '',
+    timeFrom: initialData?.dailyExecutionStartTime || '',
+    timeTo: initialData?.dailyExecutionEndTime || '',
   });
   const currentUser = JSON.parse(sessionStorage.getItem("UserData"));
   const [activeTab, setActiveTab] = useState('file-output');
-  const [config, setConfig] = useState({
-    reportType: 'system-logs',
-    exportFormat: 'txt',
-    baseFilename: 'export',
-    fileExtension: 'TXT',
-    includeTimestamp: true,
-    timestampFormat: 'yyyyMMddHHmm',
-    enableLocalSave: true,
-    destinationFolder: 'C:\\Users\\Documents\\Exports',
-    enableRemoteUpload: false,
-    uploadProtocol: 'sftp-secure',
-    // Will hold accordion selections
-    reportQuery: initialData?.reportQuery || null,
-  });
+  const [config, setConfig] = useState({});
 
   const updateConfig = (field, value) => {
     if (field === 'exportFormat') {
@@ -151,9 +138,12 @@ const formatDateTime = (dt) => {
       JobDescription: formData.description,
       IsActive: formData.enabled,
       RetryLimit: parseInt(formData.numberOfRetries, 10) || 0,
-      RetryDelayMinutes: formData.intervalBetweenRetries,
+      // Concatenate intervalBetweenRetries and intervalBetweenRetriesUnit
+      RetryDelayMinutes: formData.intervalBetweenRetries && formData.intervalBetweenRetriesUnit
+        ? `${formData.intervalBetweenRetries}-${formData.intervalBetweenRetriesUnit}`
+        : '',
       EffectiveStartDateTime: formatDateTime(formData.startTime),
-      ExecutionIntervalMinutes: formData.repeatInterval,
+      ExecutionIntervalMinutes: formData.repeatInterval && formData.intervalUnit ? `${formData.repeatInterval}-${formData.intervalUnit}` : '',
       ExecuteOnSunday: formData.daysToRun.sunday,
       ExecuteOnMonday: formData.daysToRun.monday,
       ExecuteOnTuesday: formData.daysToRun.tuesday,
@@ -175,7 +165,7 @@ const formatDateTime = (dt) => {
       LocalFileDownloadPath: config.destinationFolder,
       DownloadedFileName: config.baseFilename,
       IsDateFormatAppend: config.includeTimestamp,
-      DateFormatAppend: config.timestampFormat,
+      DateFormatAppend: "yyyyMMddHHmm",
       FileDownloadFormat: config.exportFormat,
       FtpFileDownload: config.enableRemoteUpload,
       FtpConfigID: config.ftpConfigId ?? null,
@@ -197,6 +187,7 @@ const formatDateTime = (dt) => {
       const responseJson = await response.text();
       if (responseJson == "Success") {
       toast.success("Job added successfully");
+      fetchTaskSchedulerLookup();
     } else if (responseJson == "JobExists") {
       toast.error(
         "Job already exists with the given name. Please try with another name."
@@ -362,13 +353,13 @@ const formatDateTime = (dt) => {
                   onChange={(e) => handleChange('intervalUnit', e.target.value)}
                   className="tsf-select"
                 >
-                  <option value="Seconds">Seconds</option>
-                  <option value="Minutes">Minutes</option>
-                  <option value="Hours">Hours</option>
-                  <option value="Days">Days</option>
-                  <option value="Weeks">Weeks</option>
-                  <option value="Months">Months</option>
-                  <option value="Years">Years</option>
+                  <option value="S">Seconds</option>
+                  <option value="M">Minutes</option>
+                  <option value="H">Hours</option>
+                  <option value="D">Days</option>
+                  <option value="W">Weeks</option>
+                  <option value="M">Months</option>
+                  <option value="Y">Years</option>
 
                 </select>
               </div>
@@ -410,10 +401,10 @@ const formatDateTime = (dt) => {
                     onChange={e => handleChange('intervalBetweenRetriesUnit', e.target.value)}
                     className="tsf-select"
                   >
-                    <option value="Seconds">Seconds</option>
-                    <option value="Minutes">Minutes</option>
-                    <option value="Hours">Hours</option>
-                    <option value="Days">Days</option>
+                    <option value="S">Seconds</option>
+                    <option value="M">Minutes</option>
+                    <option value="H">Hours</option>
+                    <option value="D">Days</option>
                   </select>
                 </div>
               </div>
@@ -610,6 +601,7 @@ const formatDateTime = (dt) => {
                         setShowAccordion(false);
                         setShowAccordionHeader(false);
                       }}
+                      lookUpData={lookUpData}
                       onClose={() => {
                         setShowAccordion(false);
                         setShowAccordionHeader(false);
@@ -710,7 +702,7 @@ const formatDateTime = (dt) => {
                           <input
                             id="timestampFormat"
                             type="text"
-                            value={config.timestampFormat}
+                            value={"yyyyMMddHHmm"}
                             onChange={(e) => updateConfig('timestampFormat', e.target.value)}
                             className="tsf-input"
                             placeholder="yyyyMMddHHmm"

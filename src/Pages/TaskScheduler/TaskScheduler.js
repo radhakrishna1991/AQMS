@@ -4,34 +4,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import CommonFunctions from "../../utils/CommonFunctions";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 export default function TaskScheduler() {
   const $ = window.jQuery;
   const gridRefjsgridftp = useRef();
-  const [tasks, setTasks] = useState([
-    {
-      id: '1',
-      taskName: 'Sample Task',
-      description: 'This is a sample scheduled task.',
-      executive: 'ISTHYDPC34',
-      startTime: '2025-12-26T09:00:00',
-      repeatInterval: '6',
-      intervalUnit: 'Days',
-      enabled: true,
-      daysToRun: {
-        sunday: true,
-        monday: true,
-        tuesday: true,
-        wednesday: true,
-        thursday: true,
-        friday: true,
-        saturday: true,
-      },
-      timeRestriction: 'unrestricted',
-      timeFrom: '',
-      timeTo: '',
-    },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [lookUpData, setLookupData] = useState([]);
 
     useEffect(() => {
     fetchTaskSchedulerLookup();
@@ -46,7 +25,8 @@ export default function TaskScheduler() {
       .then((response) => response.json())
       .then((data) => {
         if (data) {
-          console.log(data, "task scheduler data");
+          setLookupData(data);
+          setTasks(data.listScheduleTasks || []);
         }
       })
       .catch(() => {
@@ -56,9 +36,7 @@ export default function TaskScheduler() {
       });
   };
 
-
   const [currentView, setCurrentView] = useState('list'); // 'list' | 'form'
-    // jsGrid initialization for FTP data (must be after state declarations)
     useEffect(() => {
       if (currentView === 'list') {
         $(function () {
@@ -76,14 +54,13 @@ export default function TaskScheduler() {
             pageSize: 100,
             data: tasks,
             fields: [
-              { name: 'taskName', title: 'Task Name', type: 'text', align: 'left' },
-              { name: 'description', title: 'Description', type: 'text', align: 'left' },
-              { name: 'executive', title: 'Executive', type: 'text', align: 'left' },
-              { name: 'startTime', title: 'Start Time', type: 'text', align: 'left', itemTemplate: (value) => value ? new Date(value).toLocaleString() : '' },
-              { name: 'repeatInterval', title: 'Repeat', type: 'text', align: 'center', itemTemplate: (value, item) => `${value} ${item.intervalUnit}` },
-              { name: 'enabled', title: 'Status', align: 'center', itemTemplate: (value) => value ? 'Enabled' : 'Disabled' },
-              { name: 'daysToRun', title: 'Days', align: 'center', itemTemplate: (value) => Object.entries(value).filter(([k, v]) => v).map(([k]) => k.substring(0, 3)).join(', ') },
-              { name: 'timeRestriction', title: 'Time Restriction', align: 'center', itemTemplate: (value, item) => value === 'between' ? `${item.timeFrom} - ${item.timeTo}` : 'Unrestricted' },
+              { name: 'jobName', title: 'Task Name', type: 'text', align: 'left' },
+              { name: 'jobDescription', title: 'Description', type: 'text', align: 'left' },
+              { name: 'effectiveStartDateTime', title: 'Start Time', type: 'text', align: 'left', itemTemplate: (value) => value ? new Date(value).toLocaleString() : '' },
+              { name: 'executionIntervalMinutes', title: 'Repeat', type: 'text', align: 'center', itemTemplate: (value, item) => `${value}` },
+              { name: 'isActive', title: 'Status', align: 'center', itemTemplate: (value) => value ? 'Enabled' : 'Disabled' },
+              { name: 'days', title: 'Days', align: 'center'},
+              { name: 'timeRestriction', title: 'Time Restriction', align: 'center', itemTemplate: (value, item) => value !== undefined ? value : 'Unrestricted' },
               {
                 type: 'control',
                 width: 100,
@@ -95,7 +72,7 @@ export default function TaskScheduler() {
                     .click((e) => { handleEdit(item); e.stopPropagation(); });
                   const $deleteBtn = $('<button>')
                     .attr({ class: 'customGridDeletebutton jsgrid-button jsgrid-delete-button' })
-                    .click((e) => { handleDelete(item.id); e.stopPropagation(); });
+                    .click((e) => { handleDelete(item.jobID); e.stopPropagation(); });
                   return $('<div>').append($editBtn).append($deleteBtn);
                 },
               },
@@ -123,18 +100,97 @@ export default function TaskScheduler() {
     setCurrentView('list');
   };
 
-  const handleUpdate = (id, data) => {
-    setTasks(
-      tasks.map((t) =>
-        t.id === id ? { ...data, id } : t
-      )
+  useEffect(() => {
+    GetScheduledTaskById(editingTask?.jobID).then((data) => {
+      setEditingTask(data[0]);
+    });
+  }, [editingTask?.jobID]);
+
+
+  const GetScheduledTaskById = async (id) => {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    const response = await fetch(
+      CommonFunctions.getWebApiUrl() + "api/GetScheduledTask/" + id,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader.Authorization,
+        },
+      }
     );
-    setEditingTask(null);
-    setCurrentView('list');
+    const responseJson = await response.json();
+    return responseJson;
+  }
+
+  const handleUpdate = async(id, data) => {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    const response = await fetch(
+      CommonFunctions.getWebApiUrl() + "api/ScheduleTask/" + id,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader.Authorization,
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const responseJson = await response.json();
+    if (responseJson == 1) {
+      toast.success("Scheduled task updated successfully");
+      fetchTaskSchedulerLookup();
+      setCurrentView("list");
+    } else if (responseJson == 2) {
+      toast.error(
+        "Scheduled task already exist with given Name. Please try with another Scheduled task Name."
+      );
+    } else {
+      toast.error(
+        "Unable to update the Scheduled task. Please contact administrator"
+      );
+      return false;
+    }
   };
 
   const handleDelete = (id) => {
-    setTasks(tasks.filter((t) => t.id !== id));
+  Swal.fire({
+      title: "Are you sure?",
+      text: "You want to delete this Parameter Alarm !",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#5cb85c",
+      confirmButtonText: "Yes",
+      closeOnConfirm: false,
+    }).then(async function (isConfirm) {
+      if (isConfirm.isConfirmed) {
+        let authHeader = await CommonFunctions.getAuthHeader();
+        await fetch(
+          CommonFunctions.getWebApiUrl() + "api/ScheduleTask/" + id,
+          {
+            method: "DELETE",
+            headers: authHeader,
+          }
+        )
+          .then((response) => response.json())
+          .then((responseJson) => {
+            if (responseJson == 1) {
+              toast.success("Scheduled task deleted successfully");
+              const updated = fetchTaskSchedulerLookup();
+              setTasks(Array.isArray(updated) ? updated : []);
+            } else {
+              toast.error(
+                "Unable to delete Scheduled task. Please contact adminstrator"
+              );
+            }
+          })
+          .catch((error) =>
+            toast.error(
+              "Unable to delete Scheduled task. Please contact adminstrator"
+            )
+          );
+      }
+    });
   };
 
   const handleEdit = (task) => {
@@ -188,6 +244,7 @@ export default function TaskScheduler() {
             {currentView === 'form' ? (
               <TaskSchedulerForm
                 initialData={editingTask}
+                lookUpData={lookUpData}
                 onSubmit={(data) => {
                   if (editingTask) {
                     handleUpdate(editingTask.id, data);
@@ -195,6 +252,7 @@ export default function TaskScheduler() {
                     handleCreate(data);
                   }
                 }}
+                fetchTaskSchedulerLookup={fetchTaskSchedulerLookup}
                 onCancel={handleCancel}
               />
             ) : (
