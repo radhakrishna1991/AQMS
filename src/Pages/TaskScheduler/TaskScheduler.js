@@ -31,7 +31,7 @@ export default function TaskScheduler() {
       })
       .catch(() => {
         toast.error(
-          "Unable to get the FTP Configuration list. Please contact adminstrator"
+          "Unable to get the Task Scheduler list. Please contact adminstrator"
         );
       });
   };
@@ -101,9 +101,11 @@ export default function TaskScheduler() {
   };
 
   useEffect(() => {
+    if (editingTask && editingTask?.jobID) {
     GetScheduledTaskById(editingTask?.jobID).then((data) => {
       setEditingTask(data[0]);
     });
+  }
   }, [editingTask?.jobID]);
 
 

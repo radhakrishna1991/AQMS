@@ -23,6 +23,27 @@ export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData
   const [lookbackValue, setLookbackValue] = useState(initialValue?.lookbackValue || "");
   const [parameters, setParameters] = useState(lookUpData?.listParameters || []);
 
+useEffect(() => {
+  if (initialValue?.parametersID) {
+    setSelectedRows(
+      initialValue.parametersID
+        .split(',')
+        .map(id => isNaN(Number(id)) ? id : Number(id))
+    );
+  }
+  if (initialValue?.averageInterval) {
+    setAverageInterval(initialValue.averageInterval);
+  }
+  if (initialValue?.timePeriodTypeID) {
+    setSelectedOption(initialValue.timePeriodTypeID);
+  }
+  // Show options
+  const opts = [];
+  if (initialValue.showFlag) opts.push('showFlags');
+  if (initialValue.showNullCodes) opts.push('showNullCodes');
+  if (initialValue.showInvalidValues) opts.push('showInvalidValues');
+  setShowOptions(opts);
+}, [initialValue]);
 
 const groupTimePeriodOptions = (listTimePeriodType = []) => {
   const groupMap = {
@@ -68,7 +89,6 @@ const groupTimePeriodOptions = (listTimePeriodType = []) => {
 
 const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
 
-console.log(selectedOption, 'selectedOption in ReportSelectionModal');
 
   const customStyles = {
     option: (provided) => ({

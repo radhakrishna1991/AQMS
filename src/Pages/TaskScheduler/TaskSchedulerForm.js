@@ -1,5 +1,4 @@
-
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TaskSchedulerForm.css';
@@ -30,30 +29,128 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel, fetchTaskSc
     intervalBetweenRetriesUnit: initialData?.intervalBetweenRetriesUnit || '',
     enabled: initialData?.isActive ?? true,
     daysToRun: {
-      sunday: initialData?.days?.executeOnSunday ?? true,
-      monday: initialData?.days?.executeOnMonday ?? true,
-      tuesday: initialData?.days?.executeOnTuesday ?? true,
-      wednesday: initialData?.days?.executeOnWednesday ?? true,
-      thursday: initialData?.days?.executeOnThursday ?? true,
-      friday: initialData?.days?.executeOnFriday ?? true,
-      saturday: initialData?.days?.executeOnSaturday ?? true,
+      sunday: initialData?.executeOnSunday || true,
+      monday: initialData?.executeOnMonday || true,
+      tuesday: initialData?.executeOnTuesday || true,
+      wednesday: initialData?.executeOnWednesday || true,
+      thursday: initialData?.executeOnThursday || true,
+      friday: initialData?.executeOnFriday || true,
+      saturday: initialData?.executeOnSaturday || true,
     },
-    timeRestriction: initialData?.timeRestriction || '',
+    timeRestriction:
+      (!initialData?.dailyExecutionStartTime && !initialData?.dailyExecutionEndTime)
+        ? 'unrestricted'
+        : 'between',
     timeFrom: initialData?.dailyExecutionStartTime || '',
     timeTo: initialData?.dailyExecutionEndTime || '',
   });
   const currentUser = JSON.parse(sessionStorage.getItem("UserData"));
   const [activeTab, setActiveTab] = useState('file-output');
   const [config, setConfig] = useState({});
+    // State for reportQuery to send to ReportSelectionModal
+  const [reportQuery, setReportQuery] = useState({});
+
+  useEffect(() => {
+    if (initialData) {
+      setReportQuery({
+        parametersID: initialData.parametersID || "",
+        timePeriodTypeID: initialData.timePeriodTypeID || "",
+        averageInterval: initialData.averageInterval || "",
+        showFlag: initialData.showFlag || false,
+        showNullCodes: initialData.showNullCodes || false,
+        showInvalidValues: initialData.showInvalidValues || false,
+        lookbackValue: initialData.lookbackInterval || "",
+        startDate: initialData.startDate || "",
+        endDate: initialData.endDate || ""
+      });
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    if (initialData?.retryDelayMinutes) {
+      const [interval, unit] = initialData.retryDelayMinutes.split('-');
+      setFormData(prev => ({
+        ...prev,
+        repeatInterval: interval,
+        intervalUnit: unit
+      }));
+    }
+    if (initialData?.executionIntervalMinutes) {
+      const [interval, unit] = initialData.executionIntervalMinutes.split('-');
+      setFormData(prev => ({
+        ...prev,
+        intervalBetweenRetries: interval,
+        intervalBetweenRetriesUnit: unit
+      }));
+    }
+    if (initialData?.retryLimit !== undefined) {
+      setFormData(prev => ({
+        ...prev,
+        numberOfRetries: initialData.retryLimit
+      }));
+    }
+    if (
+      initialData?.executeOnSunday !== undefined ||
+      initialData?.executeOnMonday !== undefined ||
+      initialData?.executeOnTuesday !== undefined ||
+      initialData?.executeOnWednesday !== undefined ||
+      initialData?.executeOnThursday !== undefined ||
+      initialData?.executeOnFriday !== undefined ||
+      initialData?.executeOnSaturday !== undefined
+    ) {
+      setFormData(prev => ({
+        ...prev,
+        daysToRun: {
+          sunday: initialData.executeOnSunday ?? true,
+          monday: initialData.executeOnMonday ?? true,
+          tuesday: initialData.executeOnTuesday ?? true,
+          wednesday: initialData.executeOnWednesday ?? true,
+          thursday: initialData.executeOnThursday ?? true,
+          friday: initialData.executeOnFriday ?? true,
+          saturday: initialData.executeOnSaturday ?? true,
+        }
+      }));
+    }
+    if (!initialData?.dailyExecutionStartTime && !initialData?.dailyExecutionEndTime) {
+      setFormData(prev => ({
+        ...prev,
+        timeRestriction: 'unrestricted'
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        timeRestriction: 'between',
+        timeFrom: initialData.dailyExecutionStartTime || '',
+        timeTo: initialData.dailyExecutionEndTime || '',
+      }));
+    }
+    if (initialData?.downloadedFileName) {
+      setConfig(prev => ({
+        ...prev,
+        baseFilename: initialData.downloadedFileName
+      }));
+    }
+        if (initialData?.localFileDownload !== undefined) {
+      setConfig(prev => ({
+        ...prev,
+        enableLocalSave: !!initialData.localFileDownload
+      }));
+    }
+    if (initialData?.ftpFileDownload !== undefined) {
+      setConfig(prev => ({
+        ...prev,
+        enableRemoteUpload: !!initialData.ftpFileDownload
+      }));
+    }
+
+  }, [initialData]);
 
   const updateConfig = (field, value) => {
     if (field === 'exportFormat') {
       let ext = '';
       switch (value) {
-        case 'txt': ext = 'TXT'; break;
+        case 'xls': ext = 'XLS'; break;
         case 'csv': ext = 'CSV'; break;
-        case 'json': ext = 'JSON'; break;
-        case 'xml': ext = 'XML'; break;
         case 'pdf': ext = 'PDF'; break;
         default: ext = '';
       }
@@ -116,7 +213,6 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel, fetchTaskSc
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  const formatTime = (t) => t && t.length <= 5 ? t + ':00' : t;
 
 // Helper to ensure datetime is in yyyy-MM-ddTHH:mm:ss
 const formatDateTime = (dt) => {
@@ -138,7 +234,6 @@ const formatDateTime = (dt) => {
       JobDescription: formData.description,
       IsActive: formData.enabled,
       RetryLimit: parseInt(formData.numberOfRetries, 10) || 0,
-      // Concatenate intervalBetweenRetries and intervalBetweenRetriesUnit
       RetryDelayMinutes: formData.intervalBetweenRetries && formData.intervalBetweenRetriesUnit
         ? `${formData.intervalBetweenRetries}-${formData.intervalBetweenRetriesUnit}`
         : '',
@@ -541,10 +636,10 @@ const formatDateTime = (dt) => {
                 className="tsf-select tsf-select-legacy"
                 style={{ minWidth: '200px' }}
               >
-                <option value="system-logs">System Logs</option>
-                <option value="event-history">Event History</option>
-                <option value="activity-records">Activity Records</option>
-                <option value="performance-metrics">Performance Metrics</option>
+                <option value="1">System Logs</option>
+                <option value="2">Event History</option>
+                <option value="3">Activity Records</option>
+                <option value="4">Performance Metrics</option>
               </select>
               <button
                 type="button"
@@ -595,7 +690,7 @@ const formatDateTime = (dt) => {
                 >
                   <div className="accordion-body p-0">
                     <ReportSelectionModal
-                      initialValue={config.reportQuery}
+                      initialValue={reportQuery}
                       onSave={(payload) => {
                         updateConfig('reportQuery', payload);
                         setShowAccordion(false);
@@ -643,11 +738,11 @@ const formatDateTime = (dt) => {
                           className="tsf-select"
                         >
                           <option value="">Select format...</option>
-                          <option value="txt">Text File (.txt)</option>
-                          <option value="csv">CSV (.csv)</option>
-                          <option value="json">JSON (.json)</option>
-                          <option value="xml">XML (.xml)</option>
-                          <option value="pdf">PDF (.pdf)</option>
+                          {lookUpData?.listReportFormat?.map((format) => (
+                            <option key={format.reportFormatID} value={format.fileExtensionType.toLowerCase()}>
+                              {format.formatName} (.{format.fileExtensionType.toLowerCase()})
+                            </option>
+                          ))}
                         </select>
                       </div>
                     </div>
@@ -781,10 +876,12 @@ const formatDateTime = (dt) => {
                         className="tsf-select"
                         style={{ minWidth: '180px' }}
                       >
-                        <option value="sftp-secure">SFTP - Secure</option>
-                        <option value="ftp-standard">FTP - Standard</option>
-                        <option value="ftps-ssl">FTPS - SSL/TLS</option>
-                        <option value="scp-protocol">SCP - Protocol</option>
+                        <option value="">Select protocol...</option>
+                        {lookUpData?.listFileTransferType?.map((type) => (
+                          <option key={type.fileTransferTypeID} value={type.fileTransferTypeID}>
+                            {type.fileTransferTypeName} ({type.fileTransferTypeDescription})
+                          </option>
+                        ))}
                       </select>
                     </>}
                   </div>
