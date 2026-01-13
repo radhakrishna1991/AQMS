@@ -94,10 +94,9 @@ export default function TaskScheduler() {
   const handleCreate = (data) => {
     const newTask = {
       ...data,
-      id: Date.now().toString(),
     };
     setTasks([...tasks, newTask]);
-    setCurrentView('list');
+    setCurrentView("list");
   };
 
   useEffect(() => {
@@ -247,12 +246,9 @@ export default function TaskScheduler() {
               <TaskSchedulerForm
                 initialData={editingTask}
                 lookUpData={lookUpData}
-                onSubmit={(data) => {
-                  if (editingTask) {
-                    handleUpdate(editingTask.id, data);
-                  } else {
-                    handleCreate(data);
-                  }
+                onSubmit={() => {
+                  setEditingTask(null);
+                  setCurrentView('list');
                 }}
                 fetchTaskSchedulerLookup={fetchTaskSchedulerLookup}
                 onCancel={handleCancel}

@@ -67,82 +67,73 @@ export function TaskSchedulerForm({ initialData, onSubmit, onCancel, fetchTaskSc
   }, [initialData]);
 
   useEffect(() => {
-    if (initialData?.retryDelayMinutes) {
+    if (!initialData) return;
+
+    // Helper to update formData fields
+    const updateForm = (fields) => setFormData(prev => ({ ...prev, ...fields }));
+    // Helper to update config fields
+    const updateCfg = (fields) => setConfig(prev => ({ ...prev, ...fields }));
+
+    // Split interval/unit fields
+    if (initialData.retryDelayMinutes) {
       const [interval, unit] = initialData.retryDelayMinutes.split('-');
-      setFormData(prev => ({
-        ...prev,
-        repeatInterval: interval,
-        intervalUnit: unit
-      }));
+      updateForm({ repeatInterval: interval, intervalUnit: unit });
     }
-    if (initialData?.executionIntervalMinutes) {
+    if (initialData.executionIntervalMinutes) {
       const [interval, unit] = initialData.executionIntervalMinutes.split('-');
-      setFormData(prev => ({
-        ...prev,
-        intervalBetweenRetries: interval,
-        intervalBetweenRetriesUnit: unit
-      }));
-    }
-    if (initialData?.retryLimit !== undefined) {
-      setFormData(prev => ({
-        ...prev,
-        numberOfRetries: initialData.retryLimit
-      }));
-    }
-    if (
-      initialData?.executeOnSunday !== undefined ||
-      initialData?.executeOnMonday !== undefined ||
-      initialData?.executeOnTuesday !== undefined ||
-      initialData?.executeOnWednesday !== undefined ||
-      initialData?.executeOnThursday !== undefined ||
-      initialData?.executeOnFriday !== undefined ||
-      initialData?.executeOnSaturday !== undefined
-    ) {
-      setFormData(prev => ({
-        ...prev,
-        daysToRun: {
-          sunday: initialData.executeOnSunday ?? true,
-          monday: initialData.executeOnMonday ?? true,
-          tuesday: initialData.executeOnTuesday ?? true,
-          wednesday: initialData.executeOnWednesday ?? true,
-          thursday: initialData.executeOnThursday ?? true,
-          friday: initialData.executeOnFriday ?? true,
-          saturday: initialData.executeOnSaturday ?? true,
-        }
-      }));
-    }
-    if (!initialData?.dailyExecutionStartTime && !initialData?.dailyExecutionEndTime) {
-      setFormData(prev => ({
-        ...prev,
-        timeRestriction: 'unrestricted'
-      }));
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        timeRestriction: 'between',
-        timeFrom: initialData.dailyExecutionStartTime || '',
-        timeTo: initialData.dailyExecutionEndTime || '',
-      }));
-    }
-    if (initialData?.downloadedFileName) {
-      setConfig(prev => ({
-        ...prev,
-        baseFilename: initialData.downloadedFileName
-      }));
-    }
-        if (initialData?.localFileDownload !== undefined) {
-      setConfig(prev => ({
-        ...prev,
-        enableLocalSave: !!initialData.localFileDownload
-      }));
-    }
-    if (initialData?.ftpFileDownload !== undefined) {
-      setConfig(prev => ({
-        ...prev,
-        enableRemoteUpload: !!initialData.ftpFileDownload
-      }));
+      updateForm({ intervalBetweenRetries: interval, intervalBetweenRetriesUnit: unit });
     }
 
+    // Simple assignments
+    if (initialData.retryLimit !== undefined) updateForm({ numberOfRetries: initialData.retryLimit });
+
+    // Days to run
+    const days = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    if (days.some(day => initialData[`executeOn${day.charAt(0).toUpperCase() + day.slice(1)}`] !== undefined)) {
+      updateForm({
+        daysToRun: Object.fromEntries(
+          days.map(day => [
+            day,
+            initialData[`executeOn${day.charAt(0).toUpperCase() + day.slice(1)}`] ?? true
+          ])
+        )
+      });
+    }
+
+    // Time restriction
+    updateForm(
+      !initialData.dailyExecutionStartTime && !initialData.dailyExecutionEndTime
+        ? { timeRestriction: 'unrestricted' }
+        : {
+            timeRestriction: 'between',
+            timeFrom: initialData.dailyExecutionStartTime || '',
+            timeTo: initialData.dailyExecutionEndTime || ''
+          }
+    );
+
+    // Config assignments
+    if (initialData.downloadedFileName) updateCfg({ baseFilename: initialData.downloadedFileName });
+    if (initialData.localFileDownloadPath) updateCfg({ destinationFolder: initialData.localFileDownloadPath });
+    if (initialData.localFileDownload !== undefined) updateCfg({ enableLocalSave: !!initialData.localFileDownload });
+    if (initialData.ftpFileDownload !== undefined) updateCfg({ enableRemoteUpload: !!initialData.ftpFileDownload });
+    if (initialData.ftpConfigID) updateCfg({ uploadProtocol: initialData.ftpConfigID });
+
+    if (initialData.fileDownloadFormat !== undefined) {
+      const extMap = { xls: 'XLS', csv: 'CSV', pdf: 'PDF' };
+      updateCfg({
+        exportFormat: initialData.fileDownloadFormat,
+        fileExtension: extMap[(initialData.fileDownloadFormat || '').toLowerCase()] || ''
+      });
+    }
+    if (initialData.isDateFormatAppend !== undefined) updateCfg({ includeTimestamp: initialData.isDateFormatAppend });
+
+    // Report query
+    if (initialData.timePeriodTypeID !== undefined) {
+      setReportQuery(prev => ({
+        ...prev,
+        timePeriodTypeID: initialData.timePeriodTypeID || "",
+      }));
+    }
   }, [initialData]);
 
   const updateConfig = (field, value) => {
@@ -228,7 +219,6 @@ const formatDateTime = (dt) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    // Map frontend state to backend model
     const payload = {
       JobName: formData.taskName,
       JobDescription: formData.description,
@@ -263,40 +253,56 @@ const formatDateTime = (dt) => {
       DateFormatAppend: "yyyyMMddHHmm",
       FileDownloadFormat: config.exportFormat,
       FtpFileDownload: config.enableRemoteUpload,
-      FtpConfigID: config.ftpConfigId ?? null,
+      FtpConfigID: config.uploadProtocol ?? null,
+      ReportTypeId: config?.reportType ?? null,
       CreatedBy:currentUser.id,
-      // Add more fields as needed
     };
-    try {
-       let authHeader = await CommonFunctions.getAuthHeader();
-      const response = await fetch(
-      CommonFunctions.getWebApiUrl() + "api/ScheduleTask",
-      {
-        method: 'POST',
-        headers: {
-        "Content-Type": "application/json",
-        Authorization: authHeader.Authorization,
-      },
-      body: JSON.stringify(payload),
-    });
-      const responseJson = await response.text();
-      if (responseJson == "Success") {
-      toast.success("Job added successfully");
-      fetchTaskSchedulerLookup();
-    } else if (responseJson == "JobExists") {
-      toast.error(
-        "Job already exists with the given name. Please try with another name."
-      );
-      return false;
-    } else {
-      toast.error(
-        "Unable to add the Job. Please contact administrator"
-      );
-      return false;
+
+    // Determine if this is an update or create
+    const isEdit = initialData && (initialData.jobID);
+    let url = CommonFunctions.getWebApiUrl() + "api/ScheduleTask";
+    let method = 'POST';
+    if (isEdit) {
+      // For update, add jobID or id to payload and use PUT
+      if (initialData.jobID) payload.JobID = initialData.jobID;
+      else if (initialData.id) payload.JobID = initialData.id;
+      url = CommonFunctions.getWebApiUrl() + "api/ScheduleTask/" + `${initialData.jobID}`;
+      method = 'PUT';
     }
+
+    try {
+      let authHeader = await CommonFunctions.getAuthHeader();
+      const response = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authHeader.Authorization,
+        },
+        body: JSON.stringify(payload),
+      });
+      const responseJson = await response.text();
+      if (responseJson == "Success" || responseJson == 1) {
+        toast.success(isEdit ? "Job updated successfully" : "Job added successfully");
+        fetchTaskSchedulerLookup();
+        if (onSubmit) onSubmit();
+      } else if (responseJson == "JobExists" || responseJson == 2) {
+        toast.error(
+          "Job already exists with the given name. Please try with another name."
+        );
+        return false;
+      } else {
+        toast.error(
+          isEdit
+            ? "Unable to update the Job. Please contact administrator"
+            : "Unable to add the Job. Please contact administrator"
+        );
+        return false;
+      }
     } catch (error) {
       toast.error(
-        "Unable to schedule the task. Please contact adminstrator"
+        isEdit
+          ? "Unable to update the task. Please contact administrator"
+          : "Unable to schedule the task. Please contact administrator"
       );
     }
   };
