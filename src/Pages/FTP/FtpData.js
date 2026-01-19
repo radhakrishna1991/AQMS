@@ -8,6 +8,7 @@ export default function FtpData() {
   const $ = window.jQuery;
   const gridRefjsgridftp = useRef();
   const [transfers, setTransfers] = useState([]);
+  const [lookUpData, setLookupData] = useState([]);
   const [currentView, setCurrentView] = useState("list"); // 'list' | 'form'
   useEffect(() => {
     if (currentView === "list") {
@@ -115,6 +116,30 @@ export default function FtpData() {
         );
       });
   };
+
+      useEffect(() => {
+    fetchTaskSchedulerLookup();
+  }, []);
+
+  const fetchTaskSchedulerLookup = async () => {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/GetTaskSchedulerLookup", {
+      method: "GET",
+      headers: authHeader,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setLookupData(data.listFileTransferType);
+        }
+      })
+      .catch(() => {
+        toast.error(
+          "Unable to get the Task Scheduler list. Please contact adminstrator"
+        );
+      });
+  };
+
 
   const handleCreate = async (data) => {
     let authHeader = await CommonFunctions.getAuthHeader();
@@ -282,6 +307,7 @@ export default function FtpData() {
                   }
                 }}
                 onCancel={handleCancel}
+                lookUpData={lookUpData}
               />
             ) : (
               <div className="jsGrid" ref={gridRefjsgridftp} />

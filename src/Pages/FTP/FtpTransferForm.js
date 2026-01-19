@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
+export function FtpTransferForm({ initialData, onSubmit, onCancel, lookUpData }) {
   const [formData, setFormData] = useState({
     FtpName: initialData?.ftpName || '',
     TransferMethod: initialData?.transferMethod || '',
@@ -29,6 +29,10 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
 
     if (!formData.FtpName.trim()) {
       newErrors.FtpName = 'Program name is required';
+    }
+
+    if (!formData.TransferMethod || formData.TransferMethod === '') {
+      newErrors.TransferMethod = 'Transfer protocol is required';
     }
 
     if (!formData.FtpHost.trim()) {
@@ -97,15 +101,18 @@ export function FtpTransferForm({ initialData, onSubmit, onCancel }) {
       <div className="col-md-6 mb-3">
         <label className="form-label">Transfer Protocol:</label>
         <select
-          className="form-select"
+          className={`form-select${errors.TransferMethod ? ' is-invalid' : ''}`}
           value={formData.TransferMethod}
           onChange={e => handleChange('TransferMethod', e.target.value)}
         >
-            <option value="FTP">FTP</option>
-            <option value="FTPS_IMPLICIT">FTP/SSL implicit</option>
-            <option value="FTPS_EXPLICIT">FTP/SSL explicit</option>
-            <option value="SFTP">SFTP</option>
+          <option value="">Select protocol...</option>
+            {lookUpData?.map((type) => (
+              <option key={type.fileTransferTypeID} value={type.fileTransferTypeName}>
+                {type.fileTransferTypeName} ({type.fileTransferTypeDescription})
+              </option>
+            ))}
         </select>
+        {errors.TransferMethod && <div className="invalid-feedback">{errors.TransferMethod}</div>}
       </div>
       <div className="col-md-6 mb-3">
         <label className="form-label">
