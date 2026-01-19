@@ -22,6 +22,41 @@ export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData
   const [endDate, setEndDate] = useState(initialValue?.endDate || "");
   const [lookbackValue, setLookbackValue] = useState(initialValue?.lookbackValue || "");
   const [parameters, setParameters] = useState(lookUpData?.listParameters || []);
+  const [averageInterval, setAverageInterval] = useState(null);
+  const [showOptions, setShowOptions] = useState([]);
+  const [errors, setErrors] = useState({});
+  
+    // Error clearing handlers
+    const handleDateRangeChange = (option) => {
+      setSelectedOption(option.value);
+      setErrors(errors => ({ ...errors, dateRange: undefined }));
+    };
+    const handleStartDateChange = (e) => {
+      setStartDate(e.target.value);
+      setErrors(errors => ({ ...errors, startDate: undefined, endDate: undefined }));
+    };
+    const handleEndDateChange = (e) => {
+      setEndDate(e.target.value);
+      setErrors(errors => ({ ...errors, endDate: undefined, startDate: undefined }));
+    };
+    const handleLookbackValueChange = (e) => {
+      setLookbackValue(e.target.value);
+      setErrors(errors => ({ ...errors, lookbackValue: undefined }));
+    };
+    const handleAverageIntervalChange = (option) => {
+      setAverageInterval(option.value);
+      setErrors(errors => ({ ...errors, averageInterval: undefined }));
+    };
+    const handleShowOptionsChange = (opts) => {
+      setShowOptions((opts || []).map(o => o.value));
+      setErrors(errors => ({ ...errors, showOptions: undefined }));
+    };
+    const handleSelectRowWithErrorClear = (id) => {
+      setSelectedRows((prev) =>
+        prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+      );
+      setErrors(errors => ({ ...errors, parameters: undefined }));
+    };
 
 useEffect(() => {
   if (initialValue?.parametersID) {
@@ -36,6 +71,9 @@ useEffect(() => {
   }
   if (initialValue?.timePeriodTypeID) {
     setSelectedOption(initialValue.timePeriodTypeID);
+  }
+  if (initialValue?.lookbackValue) {
+    setLookbackValue(initialValue.lookbackValue);
   }
   // Show options
   const opts = [];
@@ -97,17 +135,12 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
   };
 
   const [searchTerm, setSearchTerm] = useState("");
-  // Average interval dropdown state
-  const [averageInterval, setAverageInterval] = useState(null);
   const averageIntervalOptions = [
     { value: "1min", label: "1min average" },
     { value: "15min", label: "15min average" },
     { value: "1hr", label: "1hr average" },
     { value: "1day", label: "1day average" },
   ];
-
-  // Multi-select for flags/null/invalid
-  const [showOptions, setShowOptions] = useState([]);
   const showOptionsList = [
     { value: 'showFlags', label: 'Show Flags' },
     { value: 'showNullCodes', label: 'Show Null Codes' },
@@ -129,6 +162,38 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
   useEffect(() => { setCurrentPage(1); }, [searchTerm, parameters.length]);
 
   const handleSave = () => {
+    const newErrors = {};
+    // Date range (time period) validation
+    if (!selectedOption) {
+      newErrors.dateRange = 'Date range selection is required';
+    }
+    // If FixedRange, require start and end date
+    if (selectedOption === 9) {
+      if (!startDate) newErrors.startDate = 'Start date is required';
+      if (!endDate) newErrors.endDate = 'End date is required';
+      if (startDate && endDate && startDate > endDate) newErrors.endDate = 'End date must be after start date';
+    }
+    // If lookback, require lookback value
+    if ([1, 2, 13].includes(selectedOption)) {
+      if (!lookbackValue || isNaN(Number(lookbackValue)) || Number(lookbackValue) < 1) {
+        newErrors.lookbackValue = 'Lookback interval must be a positive number';
+      }
+    }
+    // Average interval validation
+    if (!averageInterval) {
+      newErrors.averageInterval = 'Average interval is required';
+    }
+    // Show options validation (at least one must be selected)
+    if (!showOptions || showOptions.length === 0) {
+      newErrors.showOptions = 'At least one show option must be selected';
+    }
+    // Parameter selection validation
+    if (!selectedRows || selectedRows.length === 0) {
+      newErrors.parameters = 'At least one parameter must be selected';
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) return;
+
     // Map showOptions to booleans
     const ShowFlag = showOptions.includes('showFlags');
     const ShowNullCodes = showOptions.includes('showNullCodes');
@@ -171,11 +236,14 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                   <Select
                     options={dateOptions}
                     value={dateOptions.flatMap(g => g.options).find(opt => opt.value === selectedOption)}
-                    onChange={(option) => setSelectedOption(option.value)}
+                    onChange={handleDateRangeChange}
                     classNamePrefix="date-range"
                     isSearchable={false}
                     styles={customStyles}
                   />
+                  {errors.dateRange && (
+                    <p className="tsf-error-text">{errors.dateRange}</p>
+                  )}
                 </div>
 
                 {showDateInputs && (
@@ -185,18 +253,24 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                       <input
                         type="datetime-local"
                         value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
+                        onChange={handleStartDateChange}
                         className="form-control date-input"
                       />
+                      {errors.startDate && (
+                        <p className="tsf-error-text">{errors.startDate}</p>
+                      )}
                     </div>
                     <div className="input-group">
                       <label className="input-label">End Time</label>
                       <input
                         type="datetime-local"
                         value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
+                        onChange={handleEndDateChange}
                         className="form-control date-input"
                       />
+                      {errors.endDate && (
+                        <p className="tsf-error-text">{errors.endDate}</p>
+                      )}
                     </div>
                   </div>
                 )}
@@ -208,13 +282,16 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                       <input
                         type="number"
                         value={lookbackValue}
-                        onChange={(e) => setLookbackValue(e.target.value)}
+                        onChange={handleLookbackValueChange}
                         placeholder="Enter value"
                         className="form-control"
                         min="1"
                       />
                       <FontAwesomeIcon icon={faClock} className="input-icon" />
                     </div>
+                    {errors.lookbackValue && (
+                      <p className="tsf-error-text">{errors.lookbackValue}</p>
+                    )}
                   </div>
                 )}
                 <div className="dropdown-container" style={{ marginTop: 16 }}>
@@ -222,12 +299,15 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                   <Select
                     options={averageIntervalOptions}
                     value={averageIntervalOptions.find(opt => opt.value === averageInterval)}
-                    onChange={option => setAverageInterval(option.value)}
+                    onChange={handleAverageIntervalChange}
                     classNamePrefix="average-interval"
                     isSearchable={false}
                     styles={customStyles}
                     placeholder="Select average interval"
                   />
+                  {errors.averageInterval && (
+                    <p className="tsf-error-text">{errors.averageInterval}</p>
+                  )}
                 </div>
                 {/* Multi-select for flags/null/invalid */}
                 <div className="dropdown-container" style={{ marginTop: 16 }}>
@@ -235,7 +315,7 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                   <Select
                     options={showOptionsList}
                     value={showOptionsList.filter(opt => showOptions.includes(opt.value))}
-                    onChange={opts => setShowOptions((opts || []).map(o => o.value))}
+                    onChange={handleShowOptionsChange}
                     isMulti
                     closeMenuOnSelect={false}
                     hideSelectedOptions={false}
@@ -266,6 +346,9 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                       }
                     }}
                   />
+                  {errors.showOptions && (
+                    <p className="tsf-error-text">{errors.showOptions}</p>
+                  )}
                 </div>
               </div>          
             </div>
@@ -322,7 +405,7 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                             <input
                               type="checkbox"
                               checked={selectedRows.includes(param.id)}
-                              onChange={() => handleSelectRow(param.id)}
+                              onChange={() => handleSelectRowWithErrorClear(param.id)}
                               aria-label="Select row"
                               className="modern-checkbox"
                             />
@@ -377,6 +460,9 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                     </nav>
                   )}
                 </table>
+                {errors.parameters && (
+                  <p className="tsf-error-text">{errors.parameters}</p>
+                )}
               </div>
             </div>
           </div>
