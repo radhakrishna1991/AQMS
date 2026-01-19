@@ -245,6 +245,7 @@ export function TaskSchedulerForm({
       ...prev,
       daysToRun: { ...prev.daysToRun, [day]: !prev.daysToRun[day] },
     }));
+    if (errors.daysToRun) setErrors((prev) => ({ ...prev, daysToRun: "" }));
   };
 
   const validateForm = () => {
@@ -325,7 +326,7 @@ export function TaskSchedulerForm({
 
     // Report Query Modal validation (require at least one key field)
     const rq = config.reportQuery || {};
-    if (!rq.TimePeriodTypeID || !rq.ParametersID || !rq.AverageInterval || !rq.LookbackInterval ) {
+    if (!rq.TimePeriodTypeID || !rq.ParametersID || !rq.AverageInterval ) {
       newErrors.reportQueryModal = "Please enter data in Configure Report Query.";
     }
 
