@@ -74,7 +74,6 @@ const groupTimePeriodOptions = (listTimePeriodType = []) => {
     "LookbackHours": "⏰",
     "LookbackMinutes": "⏳"
   };
-
   // Build grouped options
   return Object.entries(groupMap).map(([groupLabel, codes]) => ({
     label: groupLabel,
@@ -86,9 +85,7 @@ const groupTimePeriodOptions = (listTimePeriodType = []) => {
       }))
   })).filter(group => group.options.length > 0);
 };
-
 const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
-
 
   const customStyles = {
     option: (provided) => ({
@@ -131,28 +128,6 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
 
   useEffect(() => { setCurrentPage(1); }, [searchTerm, parameters.length]);
 
-  // Helper: map selectedOption to TimePeriodTypeID (customize as needed)
-  const mapTimePeriodTypeID = (option) => {
-    // Example mapping, adjust as per backend logic
-    const map = {
-      'current-day': 1,
-      'yesterday': 2,
-      'current-week': 3,
-      'current-month': 4,
-      'current-quarter': 5,
-      'current-year': 6,
-      'last-week': 7,
-      'last-month': 8,
-      'last-quarter': 9,
-      'last-year': 10,
-      'fixed-range': 11,
-      'lookback-days': 12,
-      'lookback-hours': 13,
-      'lookback-minutes': 14,
-    };
-    return map[option] ?? null;
-  };
-
   const handleSave = () => {
     // Map showOptions to booleans
     const ShowFlag = showOptions.includes('showFlags');
@@ -160,7 +135,7 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
     const ShowInvalidValues = showOptions.includes('showInvalidValues');
 
     const payload = {
-      TimePeriodTypeID: mapTimePeriodTypeID(selectedOption),
+      TimePeriodTypeID: selectedOption || null,
       LookbackInterval: lookbackValue || null,
       ParametersID: selectedRows.join(','),
       AverageInterval: averageInterval || '',
