@@ -28,10 +28,10 @@ export function TaskSchedulerForm({
     taskName: initialData?.jobName || "",
     description: initialData?.jobDescription || "",
     startTime: initialData?.effectiveStartDateTime || "",
-    repeatInterval: initialData?.retryDelayMinutes || "",
+    repeatInterval: initialData?.executionIntervalMinutes || "",
     intervalUnit: initialData?.intervalUnit || "",
     numberOfRetries: initialData?.retryLimit || "",
-    intervalBetweenRetries: initialData?.executionIntervalMinutes || "",
+    intervalBetweenRetries: initialData?.retryDelayMinutes || "",
     intervalBetweenRetriesUnit: initialData?.intervalBetweenRetriesUnit || "",
     enabled: initialData?.isActive ?? true,
     daysToRun: {
@@ -86,13 +86,13 @@ export function TaskSchedulerForm({
     // Split interval/unit fields
     if (initialData.retryDelayMinutes) {
       const [retryinterval, retryunit] = initialData.retryDelayMinutes.split("-");
-      updateForm({ repeatInterval: retryinterval, intervalUnit: retryunit });
+      updateForm({ intervalBetweenRetries: retryinterval, intervalBetweenRetriesUnit: retryunit });
     }
     if (initialData.executionIntervalMinutes) {
       const [executioninterval, executionunit] = initialData.executionIntervalMinutes.split("-");
       updateForm({
-        intervalBetweenRetries: executioninterval,
-        intervalBetweenRetriesUnit: executionunit,
+        repeatInterval: executioninterval,
+        intervalUnit: executionunit,
       });
     }
 
