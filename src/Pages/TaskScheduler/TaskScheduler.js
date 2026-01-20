@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
 import { TaskSchedulerForm } from './TaskSchedulerForm';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import CommonFunctions from "../../utils/CommonFunctions";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
@@ -89,15 +87,6 @@ export default function TaskScheduler() {
       // eslint-disable-next-line
     }, [currentView, tasks]);
   const [editingTask, setEditingTask] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
-  const handleCreate = (data) => {
-    const newTask = {
-      ...data,
-    };
-    setTasks([...tasks, newTask]);
-    setCurrentView("list");
-  };
 
   useEffect(() => {
     if (editingTask && editingTask?.jobID) {
@@ -123,36 +112,6 @@ export default function TaskScheduler() {
     const responseJson = await response.json();
     return responseJson;
   }
-
-  const handleUpdate = async(id, data) => {
-    let authHeader = await CommonFunctions.getAuthHeader();
-    const response = await fetch(
-      CommonFunctions.getWebApiUrl() + "api/ScheduleTask/" + id,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: authHeader.Authorization,
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    const responseJson = await response.json();
-    if (responseJson == 1) {
-      toast.success("Scheduled task updated successfully");
-      fetchTaskSchedulerLookup();
-      setCurrentView("list");
-    } else if (responseJson == 2) {
-      toast.error(
-        "Scheduled task already exist with given Name. Please try with another Scheduled task Name."
-      );
-    } else {
-      toast.error(
-        "Unable to update the Scheduled task. Please contact administrator"
-      );
-      return false;
-    }
-  };
 
   const handleDelete = (id) => {
   Swal.fire({

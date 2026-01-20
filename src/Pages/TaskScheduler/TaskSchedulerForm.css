@@ -359,6 +359,12 @@
   gap: 10px;
 }
 
+.tsf-div{
+  display: flex;
+  flex-direction: column;
+  width:100% !important
+}
+
 
 .tsf-day-label {
   background: #fff;

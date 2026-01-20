@@ -28,10 +28,10 @@ export function TaskSchedulerForm({
     taskName: initialData?.jobName || "",
     description: initialData?.jobDescription || "",
     startTime: initialData?.effectiveStartDateTime || "",
-    repeatInterval: initialData?.executionIntervalMinutes || "",
+    repeatInterval: initialData?.retryDelayMinutes || "",
     intervalUnit: initialData?.intervalUnit || "",
     numberOfRetries: initialData?.retryLimit || "",
-    intervalBetweenRetries: initialData?.retryDelayMinutes || "",
+    intervalBetweenRetries: initialData?.executionIntervalMinutes || "",
     intervalBetweenRetriesUnit: initialData?.intervalBetweenRetriesUnit || "",
     enabled: initialData?.isActive ?? true,
     daysToRun: {
@@ -52,10 +52,11 @@ export function TaskSchedulerForm({
     timeTo: initialData?.dailyExecutionEndTime || "",
   });
   const currentUser = JSON.parse(sessionStorage.getItem("UserData"));
-  const [activeTab, setActiveTab] = useState("file-output");
   const [config, setConfig] = useState({});
-  // State for reportQuery to send to ReportSelectionModal
   const [reportQuery, setReportQuery] = useState({});
+  const [errors, setErrors] = useState({});
+  const [showAccordion, setShowAccordion] = useState(false);
+  const [showAccordionHeader, setShowAccordionHeader] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -84,18 +85,17 @@ export function TaskSchedulerForm({
 
     // Split interval/unit fields
     if (initialData.retryDelayMinutes) {
-      const [interval, unit] = initialData.retryDelayMinutes.split("-");
-      updateForm({ repeatInterval: interval, intervalUnit: unit });
+      const [retryinterval, retryunit] = initialData.retryDelayMinutes.split("-");
+      updateForm({ repeatInterval: retryinterval, intervalUnit: retryunit });
     }
     if (initialData.executionIntervalMinutes) {
-      const [interval, unit] = initialData.executionIntervalMinutes.split("-");
+      const [executioninterval, executionunit] = initialData.executionIntervalMinutes.split("-");
       updateForm({
-        intervalBetweenRetries: interval,
-        intervalBetweenRetriesUnit: unit,
+        intervalBetweenRetries: executioninterval,
+        intervalBetweenRetriesUnit: executionunit,
       });
     }
 
-    // Simple assignments
     if (initialData.retryLimit !== undefined)
       updateForm({ numberOfRetries: initialData.retryLimit });
 
@@ -212,17 +212,17 @@ export function TaskSchedulerForm({
       if (errors.exportFormat) setErrors((prev) => ({ ...prev, exportFormat: "" }));
     } else {
       setConfig((prev) => ({ ...prev, [field]: value }));
-      // Clear error for the config field if present
       if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   };
 
-  const [errors, setErrors] = useState({});
-  const [showAccordion, setShowAccordion] = useState(false);
-  const [showAccordionHeader, setShowAccordionHeader] = useState(false);
 
   const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (field === "timeRestriction" && value === "unrestricted") {
+      setFormData((prev) => ({ ...prev, timeRestriction: value, timeFrom: "", timeTo: "" }));
+    } else {
+      setFormData((prev) => ({ ...prev, [field]: value }));
+    }
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
   };
 
@@ -915,7 +915,11 @@ export function TaskSchedulerForm({
                 </div>
               </div>
             </section>
-
+               {errors.reportQueryModal && (
+                    <div className="tsf-error-text text-center">
+                      {errors.reportQueryModal}
+                    </div>
+                  )}
             {/* ===== Report Data Section ===== */}
             <section className="tsf-section">
               <div className="tsf-section-header">
@@ -943,23 +947,29 @@ export function TaskSchedulerForm({
                 >
                   Report:
                 </label>
-                <select
-                  id="dataSourceSelect"
-                  value={config.reportType}
-                  onChange={(e) => updateConfig("reportType", e.target.value)}
-                  className={`tsf-select tsf-select-legacy${errors.reportType ? " tsf-input-error" : ""}`}
-                  style={{ minWidth: "200px" }}
-                  aria-invalid={!!errors.reportType}
-                  aria-describedby={
-                    errors.reportType ? "reportType-error" : undefined
-                  }
-                >
-                  <option value="">Select report...</option>
-                  <option value="1">System Logs</option>
-                  <option value="2">Event History</option>
-                  <option value="3">Activity Records</option>
-                  <option value="4">Performance Metrics</option>
-                </select>
+                <div className="tsf-div">
+                  <select
+                    id="dataSourceSelect"
+                    value={config.reportType}
+                    onChange={(e) => updateConfig("reportType", e.target.value)}
+                    className={`tsf-select tsf-select-legacy${errors.reportType ? " tsf-input-error" : ""}`}
+                    aria-invalid={!!errors.reportType}
+                    aria-describedby={
+                      errors.reportType ? "reportType-error" : undefined
+                    }
+                  >
+                    <option value="">Select report...</option>
+                    <option value="1">System Logs</option>
+                    <option value="2">Event History</option>
+                    <option value="3">Activity Records</option>
+                    <option value="4">Performance Metrics</option>
+                  </select>
+                  {errors.reportType && (
+                    <p  className="tsf-error-text">
+                      {errors.reportType}
+                    </p>
+                  )}
+                </div>
                 <button
                   type="button"
                   className="tsf-btn tsf-btn-legacy"
@@ -976,12 +986,6 @@ export function TaskSchedulerForm({
                   Configure Report Query
                 </button>
               </div>
-              {errors.reportType && (
-                <p id="reportType-error" className="tsf-error-text">
-                  {" "}
-                  {errors.reportType}
-                </p>
-              )}
 
               {/* ===== Accordion (Bootstrap flush style) ===== */}
               <div
@@ -1008,11 +1012,6 @@ export function TaskSchedulerForm({
                         Report Query Configuration
                       </button>
                     )}
-                      {errors.reportQueryModal && (
-                    <div className="tsf-error-text mt-2 mb-2">
-                      {errors.reportQueryModal}
-                    </div>
-                  )}
                   </h2>
 
                   <div
@@ -1208,6 +1207,7 @@ export function TaskSchedulerForm({
                                   }
                                   className="tsf-input"
                                   placeholder="yyyyMMddHHmm"
+                                  disabled
                                 />
                                 <p className="tsf-help-text">
                                   Example: {config.baseFilename}_20231215143022.
@@ -1262,31 +1262,39 @@ export function TaskSchedulerForm({
                               >
                                 Directory:
                               </label>
-                              <input
-                                id="destinationFolder"
-                                type="text"
-                                value={config.destinationFolder}
-                                onChange={(e) =>
-                                  updateConfig(
-                                    "destinationFolder",
-                                    e.target.value,
-                                  )
-                                }
-                                className={`tsf-input${errors.destinationFolder ? " tsf-input-error" : ""}`}
-                                placeholder="Select destination folder"
-                                style={{
-                                  flex: 1,
-                                  marginBottom: 0,
-                                  minWidth: 0,
-                                }}
-                                disabled={!config.enableLocalSave}
-                                aria-invalid={!!errors.destinationFolder}
-                                aria-describedby={
-                                  errors.destinationFolder
-                                    ? "destinationFolder-error"
-                                    : undefined
-                                }
-                              />
+                              <div className="tsf-div">
+                                <input
+                                  id="destinationFolder"
+                                  type="text"
+                                  value={config.destinationFolder}
+                                  onChange={(e) =>
+                                    updateConfig(
+                                      "destinationFolder",
+                                      e.target.value,
+                                    )
+                                  }
+                                  className={`tsf-input${errors.destinationFolder ? " tsf-input-error" : ""}`}
+                                  placeholder="Select destination folder"
+                                  style={{
+                                    marginBottom: 0,
+                                    minWidth: 0,
+                                  }}
+                                  disabled={!config.enableLocalSave}
+                                  aria-invalid={!!errors.destinationFolder}
+                                  aria-describedby={
+                                    errors.destinationFolder
+                                      ? "destinationFolder-error"
+                                      : undefined
+                                  }
+                                />
+                                {errors.destinationFolder && (
+                                  <p
+                                    className="tsf-error-text"
+                                  >
+                                    {errors.destinationFolder}
+                                  </p>
+                                )}
+                              </div>
                               <input
                                 id="folderInput"
                                 type="file"
@@ -1311,15 +1319,6 @@ export function TaskSchedulerForm({
                             </>
                           )}
                         </div>
-                        {errors.destinationFolder && (
-                          <p
-                            id="destinationFolder-error"
-                            className="tsf-error-text"
-                          >
-                            {" "}
-                            {errors.destinationFolder}
-                          </p>
-                        )}
 
                         {/* Remote Upload Option (moved here) */}
                         <div
@@ -1365,46 +1364,46 @@ export function TaskSchedulerForm({
                               >
                                 Protocol:
                               </label>
-                              <select
-                                id="uploadProtocol"
-                                value={config.uploadProtocol}
-                                onChange={(e) =>
-                                  updateConfig("uploadProtocol", e.target.value)
-                                }
-                                className={`tsf-select${errors.uploadProtocol ? " tsf-input-error" : ""}`}
-                                style={{ minWidth: "180px" }}
-                                aria-invalid={!!errors.uploadProtocol}
-                                aria-describedby={
-                                  errors.uploadProtocol
-                                    ? "uploadProtocol-error"
-                                    : undefined
-                                }
-                              >
-                                <option value="">Select protocol...</option>
-                                {lookUpData?.listFileTransferType?.map(
-                                  (type) => (
-                                    <option
-                                      key={type.fileTransferTypeID}
-                                      value={type.fileTransferTypeID}
-                                    >
-                                      {type.fileTransferTypeName} (
-                                      {type.fileTransferTypeDescription})
-                                    </option>
-                                  ),
+                              <div className="tsf-div">
+                                <select
+                                  id="uploadProtocol"
+                                  value={config.uploadProtocol}
+                                  onChange={(e) =>
+                                    updateConfig("uploadProtocol", e.target.value)
+                                  }
+                                  className={`tsf-select${errors.uploadProtocol ? " tsf-input-error" : ""}`}
+                                  style={{ minWidth: "180px" }}
+                                  aria-invalid={!!errors.uploadProtocol}
+                                  aria-describedby={
+                                    errors.uploadProtocol
+                                      ? "uploadProtocol-error"
+                                      : undefined
+                                  }
+                                >
+                                  <option value="">Select protocol...</option>
+                                  {lookUpData?.listFileTransferType?.map(
+                                    (type) => (
+                                      <option
+                                        key={type.fileTransferTypeID}
+                                        value={type.fileTransferTypeID}
+                                      >
+                                        {type.fileTransferTypeName} (
+                                        {type.fileTransferTypeDescription})
+                                      </option>
+                                    ),
+                                  )}
+                                </select>
+                                {errors.uploadProtocol && (
+                                  <p
+                                    className="tsf-error-text"
+                                  >
+                                    {errors.uploadProtocol}
+                                  </p>
                                 )}
-                              </select>
+                              </div>
                             </>
                           )}
                         </div>
-                        {errors.uploadProtocol && (
-                          <p
-                            id="uploadProtocol-error"
-                            className="tsf-error-text"
-                          >
-                            {" "}
-                            {errors.uploadProtocol}
-                          </p>
-                        )}
                       </div>
                     </div>
                   </div>
