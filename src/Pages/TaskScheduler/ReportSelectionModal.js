@@ -11,12 +11,6 @@ import Select from "react-select";
 
 export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData }) {
   const [selectedRows, setSelectedRows] = useState([]);
-  const handleSelectRow = (id) => {
-    setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-    );
-  };
-
   const [selectedOption, setSelectedOption] = useState("");
   const [startDate, setStartDate] = useState(initialValue?.startDate || "");
   const [endDate, setEndDate] = useState(initialValue?.endDate || "");
