@@ -25,16 +25,16 @@ export default function FtpData() {
           pageLoading: true,
           pageButtonCount: 5,
           pageSize: 100,
-          data: transfers,
+          data: formattedTransfers,
           fields: [
             {
-              name: "ftpName",
+              name: "name",
               title: "Configuration Name",
               type: "text",
               align: "left",
             },
             {
-              name: "transferMethod",
+              name: "storageType",
               title: "Method",
               type: "text",
               align: "left",
@@ -48,7 +48,7 @@ export default function FtpData() {
             },
             { name: "port", title: "Port", type: "text", align: "left" },
             {
-              name: "enabled",
+              name: "isActive",
               title: "Status",
               align: "center",
               itemTemplate: (value) => (value ? "Enabled" : "Disabled"),
@@ -100,7 +100,7 @@ export default function FtpData() {
 
   const fetchFtpConfigurations = async () => {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/FTPConfigurarion", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/StorageConnection", {
       method: "GET",
       headers: authHeader,
     })
@@ -112,10 +112,86 @@ export default function FtpData() {
       })
       .catch(() => {
         toast.error(
-          "Unable to get the FTP Configuration list. Please contact adminstrator"
+          "Unable to get the StorageConnection list. Please contact adminstrator"
         );
       });
   };
+
+  const formattedTransfers = transfers.map(item => {
+    let parsed = {};
+  
+    try {
+      const json = JSON.parse(item.connectionJson || "{}");
+  
+      // Normalize storage type
+      const type = (item.storageType || "").toLowerCase();
+  
+      /* ======================
+         FTP
+      ====================== */
+      if (type === "ftp") {
+        const ftp = json.Ftp || json.ftp || {};
+  
+        parsed = {
+          ftpHost: ftp.Host || ftp.host || "",
+          userName: ftp.Username || ftp.username || "",
+          port: ftp.Port || ftp.port || "",
+          sslMode: ftp.SslMode || ftp.sslMode || "",
+          useSsl: ftp.UseSsl ?? ftp.useSsl ?? "",
+          passiveMode: ftp.PassiveMode ?? ftp.passiveMode ?? ""
+        };
+      }
+  
+      /* ======================
+         NETWORK (UNC)
+      ====================== */
+      else if (type.includes("network (unc)")) {
+        const network = json.network || json.Network || {};
+  
+        parsed = {
+          userName: network.Username || network.username || "",
+          networkPassword: network.Password || network.password || ""
+        };
+      }
+  
+      /* ======================
+         ONEDRIVE
+      ====================== */
+      else if (type === "onedrive") {
+        const oneDrive = json.oneDrive || json.OneDrive || {};
+  
+        parsed = {
+          tenantId: oneDrive.TenantId || oneDrive.tenantId || "",
+          clientId: oneDrive.ClientId || oneDrive.clientId || "",
+          clientSecret: oneDrive.ClientSecret || oneDrive.clientSecret || "",
+          driveId: oneDrive.DriveId || oneDrive.driveId || "",
+          folderId: oneDrive.FolderId || oneDrive.folderId || ""
+        };
+      }
+  
+      /* ======================
+         LOCAL
+      ====================== */
+      else if (type === "local") {
+        const local = json.local || json.Local || {};
+  
+        parsed = {
+          createDirectoryIfNotExists:
+            local.CreateDirectoryIfNotExists ??
+            local.createDirectoryIfNotExists ??
+            ""
+        };
+      }
+  
+    } catch (e) {
+      console.error("Invalid connectionJson", e);
+    }
+  
+    return {
+      ...item,
+      ...parsed
+    };
+  });
 
       useEffect(() => {
     fetchTaskSchedulerLookup();
@@ -130,7 +206,7 @@ export default function FtpData() {
       .then((response) => response.json())
       .then((data) => {
         if (data) {
-          setLookupData(data.listFileTransferType);
+          setLookupData(data);
         }
       })
       .catch(() => {
@@ -144,7 +220,7 @@ export default function FtpData() {
   const handleCreate = async (data) => {
     let authHeader = await CommonFunctions.getAuthHeader();
     const response = await fetch(
-      CommonFunctions.getWebApiUrl() + "api/FTPConfigurarion",
+      CommonFunctions.getWebApiUrl() + "api/StorageConnection",
       {
         method: "POST",
         headers: {
@@ -156,17 +232,17 @@ export default function FtpData() {
     );
     const responseJson = await response.text();
     if (responseJson == "Success") {
-      toast.success("FTP configuration added successfully");
+      toast.success("Storage Connection added successfully");
       fetchFtpConfigurations();
       setCurrentView("list");
     } else if (responseJson == "AlreadyExist") {
       toast.error(
-        "FTP configuration already exists with the given name. Please try with another name."
+        "Storage Connection already exists with the given name. Please try with another name."
       );
       return false;
     } else {
       toast.error(
-        "Unable to add the FTP configuration. Please contact administrator"
+        "Unable to add the Storage Connection. Please contact administrator"
       );
       return false;
     }
@@ -176,7 +252,7 @@ export default function FtpData() {
   const handleUpdate = async (id, data) => {
     let authHeader = await CommonFunctions.getAuthHeader();
     const response = await fetch(
-      CommonFunctions.getWebApiUrl() + "api/FTPConfigurarion/" + id,
+      CommonFunctions.getWebApiUrl() + "api/StorageConnection/" + id,
       {
         method: "PUT",
         headers: {
@@ -188,16 +264,16 @@ export default function FtpData() {
     );
     const responseJson = await response.json();
     if (responseJson == 1) {
-      toast.success("FTP configuration updated successfully");
+      toast.success("Storage Connection updated successfully");
       fetchFtpConfigurations();
       setCurrentView("list");
     } else if (responseJson == 2) {
       toast.error(
-        "FTP configuration already exist with given Name. Please try with another Ftp Name."
+        "Storage Connection already exist with given Name. Please try with another Ftp Name."
       );
     } else {
       toast.error(
-        "Unable to update the FTP configuration. Please contact administrator"
+        "Unable to update the Storage Connection. Please contact administrator"
       );
       return false;
     }
@@ -206,7 +282,7 @@ export default function FtpData() {
   const handleDelete = function (item) {
     Swal.fire({
       title: "Are you sure?",
-      text: "You want to delete this Parameter Alarm !",
+      text: "You want to delete this Storage Connection !",
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#5cb85c",
@@ -217,7 +293,7 @@ export default function FtpData() {
         let id = item;
         let authHeader = await CommonFunctions.getAuthHeader();
         await fetch(
-          CommonFunctions.getWebApiUrl() + "api/FTPConfigurarion/" + id,
+          CommonFunctions.getWebApiUrl() + "api/StorageConnection/" + id,
           {
             method: "DELETE",
             headers: authHeader,
@@ -226,26 +302,105 @@ export default function FtpData() {
           .then((response) => response.json())
           .then((responseJson) => {
             if (responseJson == 1) {
-              toast.success("FTP configuration deleted successfully");
+              toast.success("Storage Connection deleted successfully");
               const updated = fetchFtpConfigurations();
               setTransfers(Array.isArray(updated) ? updated : []);
             } else {
               toast.error(
-                "Unable to delete FTP configuration. Please contact adminstrator"
+                "Unable to delete Storage Connection. Please contact adminstrator"
               );
             }
           })
           .catch((error) =>
             toast.error(
-              "Unable to delete FTP configuration. Please contact adminstrator"
+              "Unable to delete Storage Connection. Please contact adminstrator"
             )
           );
       }
     });
   };
 
+  // const handleEdit = (transfer) => {
+  //   setEditingTransfer(transfer);
+  //   setCurrentView("form");
+  // };
+
   const handleEdit = (transfer) => {
-    setEditingTransfer(transfer);
+    let parsedJson = {};
+  
+    try {
+      parsedJson = JSON.parse(transfer.connectionJson || "{}");
+    } catch (e) {
+      console.error("Invalid JSON", e);
+    }
+  
+    const type = (transfer.storageType || "").toLowerCase();
+  
+    let formData = {
+      Id: transfer.id,
+      ConfigName: transfer.name,
+      StorageType: transfer.storageType,
+      Enabled: transfer.isActive
+    };
+  
+    /* ================= FTP ================= */
+    if (type === "ftp") {
+      const ftp = parsedJson.Ftp || parsedJson.ftp || {};
+  
+      formData = {
+        ...formData,
+        Protocol: ftp.Protocol || ftp.protocol || "",
+        FtpHost: ftp.Host || ftp.host || "",
+        Port: ftp.Port || ftp.port || "",
+        UserName: ftp.Username || ftp.username || "",
+        UserPassword: ftp.Password || ftp.password || "",
+        PrivateKeyPath: ftp.privateKeyPath || ftp.privateKeyPath || "",
+        PrivateKeyPassphrase: ftp.privateKeyPassphrase || ftp.PrivateKeyPassphrase || "",
+        SslMode: ftp.SslMode || ftp.sslMode || "",
+        UseSsl: ftp.UseSsl ?? ftp.useSsl ?? false,
+        PassiveMode: ftp.PassiveMode ?? ftp.passiveMode ?? false
+      };
+    }
+  
+    /* ================= NETWORK ================= */
+    else if (type.includes("network (unc)")) {
+      const network = parsedJson.network || parsedJson.Network || {};
+  
+      formData = {
+        ...formData,
+        NetworkUserName: network.UserName || network.username || "",
+        NetworkPassword: network.Password || network.password || ""
+      };
+    }
+  
+    /* ================= ONEDRIVE ================= */
+    else if (type === "onedrive") {
+      const oneDrive = parsedJson.oneDrive || parsedJson.OneDrive || {};
+  
+      formData = {
+        ...formData,
+        TenantId: oneDrive.TenantId || oneDrive.tenantId || "",
+        ClientId: oneDrive.ClientId || oneDrive.clientId || "",
+        ClientSecret: oneDrive.ClientSecret || oneDrive.clientSecret || "",
+        DriveId: oneDrive.DriveId || oneDrive.driveId || "",
+        FolderId: oneDrive.FolderId || oneDrive.folderId || ""
+      };
+    }
+  
+    /* ================= LOCAL ================= */
+    else if (type === "local") {
+      const local = parsedJson.local || parsedJson.Local || {};
+  
+      formData = {
+        ...formData,
+        CreateDirectoryIfNotExists:
+          local.CreateDirectoryIfNotExists ??
+          local.createDirectoryIfNotExists ??
+          false
+      };
+    }
+  
+    setEditingTransfer(formData);
     setCurrentView("form");
   };
 
@@ -265,12 +420,12 @@ export default function FtpData() {
         <div className="row my-2">
           <div className="pagetitle col">
             {currentView === "form" && !editingTransfer && (
-              <h1>Add FTP Configuration</h1>
+              <h1>Add Storage Connection</h1>
             )}
             {currentView === "form" && editingTransfer && (
-              <h1>Update FTP Configuration</h1>
+              <h1>Update Storage Connection</h1>
             )}
-            {currentView === "list" && <h1>FTP Configuration List</h1>}
+            {currentView === "list" && <h1>Storage Connections List</h1>}
           </div>
           <div className="col text-end">
             {currentView === "list" ? (
@@ -280,7 +435,7 @@ export default function FtpData() {
                 style={{ cursor: "pointer" }}
               >
                 <i className="bi bi-plus-circle-fill"></i>{" "}
-                <span>Create New FTP Configuration</span>
+                <span>Create New Storage Connection</span>
               </span>
             ) : (
               <span
@@ -289,7 +444,7 @@ export default function FtpData() {
                 style={{ cursor: "pointer" }}
               >
                 <i className="bi bi-card-list"></i>{" "}
-                <span>View FTP Configurations</span>
+                <span>View Storage Connection</span>
               </span>
             )}
           </div>
@@ -301,7 +456,7 @@ export default function FtpData() {
                 initialData={editingTransfer}
                 onSubmit={(data) => {
                   if (editingTransfer) {
-                    handleUpdate(editingTransfer.id, data);
+                    handleUpdate(editingTransfer.Id, data);
                   } else {
                     handleCreate(data);
                   }

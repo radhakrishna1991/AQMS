@@ -54,23 +54,93 @@ export function TaskSchedulerForm({
   const currentUser = JSON.parse(sessionStorage.getItem("UserData"));
   const [config, setConfig] = useState({});
   const [reportQuery, setReportQuery] = useState({});
+  const [importConfig, setImportConfig] = useState({});
   const [errors, setErrors] = useState({});
   const [showAccordion, setShowAccordion] = useState(false);
   const [showAccordionHeader, setShowAccordionHeader] = useState(false);
+  const [deliveryLocations, setDeliveryLocations] = useState([
+    {
+      directory: "",
+      storageConnectionId: ""
+    }
+  ]);
 
   useEffect(() => {
     if (initialData) {
-      setReportQuery({
-        parametersID: initialData.parametersID || "",
-        timePeriodTypeID: initialData.timePeriodTypeID || "",
-        averageInterval: initialData.averageInterval || "",
-        showFlag: initialData.showFlag || false,
-        showNullCodes: initialData.showNullCodes || false,
-        showInvalidValues: initialData.showInvalidValues || false,
-        lookbackValue: initialData.lookbackInterval || "",
-        startDate: initialData.startDate || "",
-        endDate: initialData.endDate || "",
-      });
+      if (initialData.reportType === "Import" && initialData.configJson) {
+        const config = JSON.parse(initialData.configJson);
+    
+        setImportConfig({
+          stationId: config.StationId ?? "",
+          importType: config.ImportType ?? "",
+          apiUrl: config.Url ?? "",
+          method: config.Method ?? "GET",
+
+          Authentication: {
+            Type: importConfig.Authentication?.Type ?? "none",
+          
+            ...(importConfig.Authentication?.TokenType === "fixed" && {
+              TokenType: "fixed",
+              FixedToken: importConfig.Authentication?.FixedToken ?? ""
+            }),
+          
+            ...(importConfig.Authentication?.TokenType === "dynamic" && {
+              TokenType: "dynamic",
+              DynamicAuth: {
+                UserId: importConfig.Authentication?.DynamicAuth?.UserId ?? "",
+                Password: importConfig.Authentication?.DynamicAuth?.Password ?? "",
+                AuthUrl: importConfig.Authentication?.DynamicAuth?.AuthUrl ?? "",
+                TokenPath: importConfig.Authentication?.DynamicAuth?.TokenPath ?? ""
+              }
+            })
+          },
+    
+          // authenticationType: config.Authentication?.Type ?? "none",
+          // tokenType: config.Authentication?.TokenType ?? "",
+    
+          // fixedToken: config.Authentication?.FixedToken ?? "",
+    
+          // userId: config.Authentication?.DynamicAuth?.UserId ?? "",
+          // password: config.Authentication?.DynamicAuth?.Password ?? "",
+          // authUrl: config.Authentication?.DynamicAuth?.AuthUrl ?? "",
+          // tokenPath: config.Authentication?.DynamicAuth?.TokenPath ?? "",
+    
+          queryParameters:
+            config.QueryParameters?.map(x => ({
+              key: x.Key,
+              value: x.Value
+            })) ?? [],
+    
+          headers:
+            config.Headers?.map(x => ({
+              key: x.Key,
+              value: x.Value
+            })) ?? [],
+    
+          body:
+            config.Body?.map(x => ({
+              key: x.Key,
+              value: x.Value
+            })) ?? [],
+    
+          apiReadTemplate:
+            typeof config.ApiReadTemplate === "string"
+              ? config.ApiReadTemplate
+              : JSON.stringify(config.ApiReadTemplate, null, 2)
+        });
+      }else{
+        setReportQuery({
+          parametersID: initialData.parametersID || "",
+          timePeriodTypeID: initialData.timePeriodTypeID || "",
+          averageInterval: initialData.averageInterval || "",
+          showFlag: initialData.showFlag || false,
+          showNullCodes: initialData.showNullCodes || false,
+          showInvalidValues: initialData.showInvalidValues || false,
+          lookbackValue: initialData.lookbackInterval || "",
+          startDate: initialData.startDate || "",
+          endDate: initialData.endDate || "",
+        });
+      }  
     }
   }, [initialData]);
 
@@ -140,6 +210,90 @@ export function TaskSchedulerForm({
           },
     );
 
+
+    // =============================
+// IMPORT CONFIG ASSIGNMENT
+// =============================
+if (
+  initialData.reportType === "Import" &&
+  initialData.configJson
+) {
+  let importConfig = null;
+
+  try {
+    importConfig = JSON.parse(initialData.configJson);
+  } catch (err) {
+    console.error("Invalid ConfigJson", err);
+  }
+
+  if (importConfig) {
+    updateCfg({
+      stationId: importConfig.StationId ?? "",
+      importType: importConfig.ImportType ?? "",
+      apiUrl: importConfig.Url ?? "",
+      method: importConfig.Method ?? "GET",
+
+        // Authentication
+      Authentication: importConfig.Authentication
+  ? {
+      Type: importConfig.Authentication?.Type ?? "none",
+
+      ...(importConfig.Authentication?.TokenType === "fixed" && {
+        TokenType: "fixed",
+        FixedToken: importConfig.Authentication?.FixedToken ?? ""
+      }),
+
+      ...(importConfig.Authentication?.TokenType === "dynamic" && {
+        TokenType: "dynamic",
+        DynamicAuth: {
+          UserId:
+            importConfig.Authentication?.DynamicAuth?.UserId ?? "",
+          Password:
+            importConfig.Authentication?.DynamicAuth?.Password ?? "",
+          AuthUrl:
+            importConfig.Authentication?.DynamicAuth?.AuthUrl ?? "",
+          TokenPath:
+            importConfig.Authentication?.DynamicAuth?.TokenPath ?? ""
+        }
+      })
+    }
+  : { Type: "none" },
+
+        QueryParameters:
+        importConfig.QueryParameters?.length > 0
+          ? importConfig.QueryParameters.map((x) => ({
+              key: x.Key,
+              value: x.Value,
+            }))
+          : [{ key: "", value: "" }],
+      
+      // Headers
+      Headers:
+        importConfig.Headers?.length > 0
+          ? importConfig.Headers.map((x) => ({
+              key: x.Key,
+              value: x.Value,
+            }))
+          : [{ key: "", value: "" }],
+      
+      // Body
+      Body:
+        importConfig.Body?.length > 0
+          ? importConfig.Body.map((x) => ({
+              key: x.Key,
+              value: x.Value,
+            }))
+          : [{ key: "", value: "" }],
+
+      // Template
+      ApiReadTemplate:
+        typeof importConfig.ApiReadTemplate === "string"
+          ? importConfig.ApiReadTemplate
+          : JSON.stringify(importConfig.ApiReadTemplate, null, 2),
+    });
+  }
+}
+
     // Config assignments
     if (initialData.downloadedFileName)
       updateCfg({ baseFilename: initialData.downloadedFileName });
@@ -188,34 +342,81 @@ export function TaskSchedulerForm({
     
   }, [initialData]);
 
-  const updateConfig = (field, value) => {
-    if (field === "exportFormat") {
-      let ext = "";
-      switch (value) {
-        case "xls":
-          ext = "XLS";
-          break;
-        case "csv":
-          ext = "CSV";
-          break;
-        case "pdf":
-          ext = "PDF";
-          break;
-        default:
-          ext = "";
-      }
-      setConfig((prev) => ({
-        ...prev,
-        exportFormat: value,
-        fileExtension: ext,
-      }));
-      if (errors.exportFormat) setErrors((prev) => ({ ...prev, exportFormat: "" }));
-    } else {
-      setConfig((prev) => ({ ...prev, [field]: value }));
-      if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
-    }
-  };
+  // const updateConfig = (field, value) => {
+  //   if (field === "exportFormat") {
+  //     let ext = "";
+  //     switch (value) {
+  //       case "xls":
+  //         ext = "XLS";
+  //         break;
+  //       case "csv":
+  //         ext = "CSV";
+  //         break;
+  //       case "pdf":
+  //         ext = "PDF";
+  //         break;
+  //       default:
+  //         ext = "";
+  //     }
+  //     setConfig((prev) => ({
+  //       ...prev,
+  //       exportFormat: value,
+  //       fileExtension: ext,
+  //     }));
+  //     if (errors.exportFormat) setErrors((prev) => ({ ...prev, exportFormat: "" }));
+  //   } else {
+  //     setConfig((prev) => ({ ...prev, [field]: value }));
+  //     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: "" }));
+  //   }
+  // };
 
+  const updateConfig = (field, value, options = {}) => {
+    const { nested = false, parent = null } = options;
+  
+    setConfig((prev) => {
+      let updatedConfig = { ...prev };
+  
+      // Handle special logic
+      if (field === "exportFormat") {
+        let ext = "";
+        switch (value) {
+          case "xls":
+            ext = "XLS";
+            break;
+          case "csv":
+            ext = "CSV";
+            break;
+          case "pdf":
+            ext = "PDF";
+            break;
+          default:
+            ext = "";
+        }
+  
+        updatedConfig.exportFormat = value;
+        updatedConfig.fileExtension = ext;
+      }
+      // Handle nested update
+      else if (nested && parent) {
+        updatedConfig[parent] = {
+          ...prev[parent],
+          [field]: value,
+        };
+      }
+      // Normal field update
+      else {
+        updatedConfig[field] = value;
+      }
+  
+      return updatedConfig;
+    });
+  
+    // Clear error automatically
+    setErrors((prev) => ({
+      ...prev,
+      [field]: "",
+    }));
+  };
 
   const handleChange = (field, value) => {
     if (field === "timeRestriction" && value === "unrestricted") {
@@ -301,34 +502,154 @@ export function TaskSchedulerForm({
     if (!config.reportType || config.reportType === "") {
       newErrors.reportType = "Report type is required";
     }
-    // Export Format validation
-    if (!config.exportFormat || config.exportFormat === "") {
-      newErrors.exportFormat = "Export format is required";
+    // ==============================
+// IMPORT VALIDATION
+// ==============================
+let ReportTypeName =  lookUpData.listReportTypes?.find(
+  (x) => x.id === Number(config?.reportType)
+)?.reportTypeName;
+
+if (ReportTypeName === "Import") {
+  // StationId
+  if (!config.stationId) {
+    newErrors.stationId = "Station is required";
+  }
+
+  // Import Type
+  if (!config.importType || config.importType.trim() === "") {
+    newErrors.importType = "Import type is required";
+  }
+
+  // API URL
+  if (!config.apiUrl || config.apiUrl.trim() === "") {
+    newErrors.apiUrl = "API URL is required";
+  }
+
+  // Method
+  if (!config.method || config.method.trim() === "") {
+    newErrors.method = "HTTP Method is required";
+  }
+
+  // Authentication Type
+  
+  if (
+    config.Authentication?.Type === "bearerToken" &&
+    config.Authentication?.TokenType === "fixed"
+  ) {
+    if (!config.Authentication?.FixedToken?.trim()) {
+      newErrors.fixedToken = "Fixed token is required";
     }
-    // Base Filename validation
-    if (!config.baseFilename || config.baseFilename.trim() === "") {
-      newErrors.baseFilename = "Base filename is required";
+  }
+  
+  if (
+    config.Authentication?.Type === "bearerToken" &&
+    config.Authentication?.TokenType === "dynamic"
+  ) {
+    const dynamic = config.Authentication?.DynamicAuth;
+  
+    if (!dynamic?.UserId?.trim()) {
+      newErrors.userId = "User ID is required";
     }
-    // Local Save validation
-    if (config.enableLocalSave) {
-      if (!config.destinationFolder || config.destinationFolder.trim() === "") {
-        newErrors.destinationFolder =
-          "Destination folder is required when local save is enabled";
+  
+    if (!dynamic?.Password?.trim()) {
+      newErrors.password = "Password is required";
+    }
+  
+    if (!dynamic?.AuthUrl?.trim()) {
+      newErrors.authUrl = "Auth URL is required";
+    }
+  
+    if (!dynamic?.TokenPath?.trim()) {
+      newErrors.tokenPath = "Token path is required";
+    }
+  }
+
+ // Query Parameters validation (optional but at least one if GET)
+ if (config.method === "GET") {
+  if (!config.QueryParameters || config.QueryParameters.length === 0) {
+    newErrors.queryParameters =
+      "At least one query parameter is required for GET";
+  } else {
+    config.QueryParameters.forEach((param, index) => {
+      if (!param.key || param.key.trim() === "") {
+        newErrors[`queryKey_${index}`] = "Key is required";
       }
-    }
-    // Remote Upload validation
-    if (config.enableRemoteUpload) {
-      if (!config.uploadProtocol || config.uploadProtocol === "") {
-        newErrors.uploadProtocol =
-          "Protocol is required when remote upload is enabled";
+      if (!param.value || param.value.trim() === "") {
+        newErrors[`queryValue_${index}`] = "Value is required";
       }
+    });
+  }
+}
+  // Headers validation (optional but validate if present)
+  if (config.Headers && config.Headers.length > 0) {
+    config.Headers.forEach((header, index) => {
+      if (!header.key || header.key.trim() === "") {
+        newErrors[`headerKey_${index}`] = "Header key is required";
+      }
+      if (!header.value || header.value.trim() === "") {
+        newErrors[`headerValue_${index}`] = "Header value is required";
+      }
+    });
+  }
+
+  // Body validation (only for POST/PUT)
+  if (config.method === "POST" || config.method === "PUT") {
+    if (config.Body && config.Body.length > 0) {
+      config.Body.forEach((item, index) => {
+        if (!item.key || item.key.trim() === "") {
+          newErrors[`bodyKey_${index}`] = "Body key is required";
+        }
+        if (!item.value || item.value.trim() === "") {
+          newErrors[`bodyValue_${index}`] = "Body value is required";
+        }
+      });
+    }
+  }
+
+  // ApiReadTemplate required
+  if (!config.ApiReadTemplate) {
+    newErrors.apiReadTemplate = "API Read Template is required";
+  }
+}else{
+// Export Format validation
+if (!config.exportFormat || config.exportFormat === "") {
+  newErrors.exportFormat = "Export format is required";
+}
+// Base Filename validation
+if (!config.baseFilename || config.baseFilename.trim() === "") {
+  newErrors.baseFilename = "Base filename is required";
+}
+
+if (config.enableLocalSave && deliveryLocations.length > 0) {
+  deliveryLocations.forEach((item, index) => {
+    if (!item.directory || item.directory.trim() === "") {
+      newErrors[`directory_${index}`] =
+        "Directory is required";
     }
 
-    // Report Query Modal validation (require at least one key field)
-    const rq = config.reportQuery || {};
-    if (!rq.TimePeriodTypeID || !rq.ParametersID || !rq.AverageInterval ) {
-      newErrors.reportQueryModal = "Please enter data in Configure Report Query.";
+    if (!item.storageConnectionId || item.storageConnectionId === "") {
+      newErrors[`storageConnectionId_${index}`] =
+        "Storage connection is required";
     }
+  });
+}
+
+// Report Query Modal validation (require at least one key field)
+const rq = config.reportQuery || {};
+if (!rq.TimePeriodTypeID || !rq.ParametersID || !rq.AverageInterval ) {
+  newErrors.reportQueryModal = "Please enter data in Configure Report Query.";
+}
+
+}
+    
+    // Local Save validation
+    // if (config.enableLocalSave) {
+    //   if (!config.destinationFolder || config.destinationFolder.trim() === "") {
+    //     newErrors.destinationFolder =
+    //       "Destination folder is required when local save is enabled";
+    //   }
+    // }
+  
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -344,11 +665,160 @@ export function TaskSchedulerForm({
     return dt;
   };
 
+  useEffect(() => {
+    if (initialData) {
+      setDeliveryLocations(
+        initialData.jobDeliveries?.length > 0
+          ? initialData.jobDeliveries.map(d => ({
+              directory: d.directory || "",
+              storageConnectionId: d.storageConnectionId || ""
+            }))
+          : [
+              {
+                directory: "",
+                storageConnectionId: ""
+              }
+            ]
+      );
+    }
+  }, [initialData]);
+
+  // useEffect(() => {
+  //   if (!config.QueryParameters || config.QueryParameters.length === 0) {
+  //     updateConfig("QueryParameters", [{ key: "", value: "" }]);
+  //   }
+  // }, []);
+
+  // useEffect(() => {
+  //   if (!config.Body || config.Body.length === 0) {
+  //     updateConfig("Body", [{ key: "", value: "" }]);
+  //   }
+  // }, []);
+
+  useEffect(() => {
+    setConfig(prev => ({
+      ...prev,
+      QueryParameters: prev.QueryParameters?.length
+        ? prev.QueryParameters
+        : [{ key: "", value: "" }],
+      Headers: prev.Headers?.length
+        ? prev.Headers
+        : [{ key: "", value: "" }],
+      Body: prev.Body?.length
+        ? prev.Body
+        : [{ key: "", value: "" }]
+    }));
+  }, []);
+
+  // Convert Query Parameters array to object
+const queryParamsObject = {};
+(config.QueryParameters || []).forEach((p) => {
+  if (p.key) {
+    queryParamsObject[p.key] = p.value;
+  }
+});
+
+// Convert Headers array to object (if array)
+let headersObject = {};
+if (Array.isArray(config.Headers)) {
+  config.Headers.forEach((h) => {
+    if (h.key) {
+      headersObject[h.key] = h.value;
+    }
+  });
+} else if (config.Headers?.key) {
+  headersObject[config.Headers.key] = config.Headers.value;
+}
+
+// Convert Body array to object
+const bodyObject = {};
+(config.Body || []).forEach((p) => {
+  if (p.key) {
+    bodyObject[p.key] = p.value;
+  }
+});
+
+let authPayload = {
+  AuthenticationType: "none",
+  FixedToken: null,
+  UserId: null,
+  Password: null,
+  AuthUrl: null,
+  TokenPath: null
+};
+
+if (config.Authentication?.Type === "bearerToken") {
+  authPayload.AuthenticationType = "bearerToken";
+
+  if (config.Authentication?.TokenType === "fixed") {
+    authPayload.FixedToken = config.Authentication.FixedToken;
+  }
+
+  if (config.Authentication?.TokenType === "dynamic") {
+    authPayload.UserId = config.Authentication.DynamicAuth?.UserId;
+    authPayload.Password = config.Authentication.DynamicAuth?.Password;
+    authPayload.AuthUrl = config.Authentication.DynamicAuth?.AuthUrl;
+    authPayload.TokenPath = config.Authentication.DynamicAuth?.TokenPath;
+  }
+}
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const payload = {
+    const apiConfig = {
+      StationId: Number(config.stationId) ?? null,
+      ImportType: config.importType ?? null,
+      Url: config.apiUrl ?? "",
+      Method: config.method ?? "GET",
+    
+      Authentication: {
+        Type: config.Authentication?.Type ?? "none",
+        ...(config.Authentication?.TokenType === "fixed" && {
+          TokenType: config.Authentication?.TokenType ?? "",
+          FixedToken: config.Authentication.FixedToken ?? ""
+        }),
+        ...(config.Authentication?.TokenType === "dynamic" && {
+          TokenType: config.Authentication?.TokenType ?? "",
+          DynamicAuth: {
+            UserId: config.Authentication?.DynamicAuth?.UserId ?? "",
+            Password: config.Authentication?.DynamicAuth?.Password ?? "",
+            AuthUrl: config.Authentication?.DynamicAuth?.AuthUrl ?? "",
+            TokenPath: config.Authentication?.DynamicAuth?.TokenPath ?? ""
+          }
+        })
+      },
+    
+      QueryParameters: (() => {
+        const filtered = (config.QueryParameters ?? [])
+          .filter(x => x.key?.trim())
+          .map(x => ({ Key: x.key, Value: x.value ?? "" }));
+      
+        return filtered.length > 0 ? filtered : null;
+      })(),
+    
+      Headers: (() => {
+        const filtered = (config.Headers ?? [])
+          .filter(x => x.key?.trim())
+          .map(x => ({ Key: x.key, Value: x.value ?? "" }));
+      
+        return filtered.length > 0 ? filtered : null;
+      })(),
+    
+        Body: (() => {
+          const filtered = (config.Body ?? [])
+            .filter(x => x.key?.trim())
+            .map(x => ({ Key: x.key, Value: x.value ?? "" }));
+        
+          return filtered.length > 0 ? filtered : null;
+        })(),
+    
+        ApiReadTemplate: config.ApiReadTemplate
+        ? JSON.parse(config.ApiReadTemplate)
+        : null
+    };
+
+ const payload = {
       JobName: formData.taskName,
       JobDescription: formData.description,
       IsActive: formData.enabled,
@@ -369,26 +839,46 @@ export function TaskSchedulerForm({
       ExecuteOnThursday: formData.daysToRun.thursday,
       ExecuteOnFriday: formData.daysToRun.friday,
       ExecuteOnSaturday: formData.daysToRun.saturday,
-      DailyExecutionStartTime: formData.timeFrom,
-      DailyExecutionEndTime: formData.timeTo,
+      DailyExecutionStartTime: formData.timeFrom ?? null,
+      DailyExecutionEndTime: formData.timeTo ?? null,
       ...(config.reportQuery || {}),
       TimePeriodTypeID: config.reportQuery?.TimePeriodTypeID ?? null,
       LookbackInterval: config.reportQuery?.LookbackInterval ?? null,
-      ParametersID: config.reportQuery?.ParametersID ?? "",
-      AverageInterval: config.reportQuery?.AverageInterval ?? "",
+      ParametersID: config.reportQuery?.ParametersID ?? null,
+      AverageInterval: config.reportQuery?.AverageInterval ?? null,
       ShowFlag: config.reportQuery?.ShowFlag ?? null,
       ShowNullCodes: config.reportQuery?.ShowNullCodes ?? null,
       ShowInvalidValues: config.reportQuery?.ShowInvalidValues ?? null,
-      LocalFileDownload: config.enableLocalSave,
-      LocalFileDownloadPath: config.enableLocalSave ? config.destinationFolder : null,
-      DownloadedFileName: config.baseFilename,
-      IsDateFormatAppend: config.includeTimestamp,
+      // LocalFileDownload: config.enableLocalSave ?? false,
+      // LocalFileDownloadPath: config.enableLocalSave ? config.destinationFolder : null,
+      DownloadedFileName: config.baseFilename ?? null,
+      IsDateFormatAppend: config.includeTimestamp ?? false,
       DateFormatAppend: config.includeTimestamp ? "yyyyMMddHHmm" : null,
-      FileDownloadFormat: config.exportFormat,
-      FtpFileDownload: config.enableRemoteUpload,
+      FileDownloadFormat: config.exportFormat ?? "",
+      FtpFileDownload: config.enableRemoteUpload ?? false,
       FtpConfigID: config.enableRemoteUpload ? config.uploadProtocol ?? null : null,
-      ReportTypeId: config?.reportType ?? null,
+      ReportTypeID: Number(config.reportType) ?? null,
       CreatedBy: currentUser.id,
+        // NEW API FIELDS
+  // StationId: Number(config.stationId) ?? null,
+  // ImportType: config.importType ?? null,
+  // ApiUrl: config.apiUrl ?? "",
+  // Method: config.method ?? "GET",
+
+  // QueryParameters: convertToDictionary(config.QueryParameters ?? []),
+  // Headers: convertToDictionary(config.Headers ?? []),
+  // Body: convertToDictionary(config.Body ?? []),
+  // ApiReadTemplate: config.ApiReadTemplate ?? "",
+
+  // // Authentication Fields
+  // ...authPayload,
+  // ✅ Store full API configuration as JSON string
+  ConfigJson: JSON.stringify(apiConfig),
+
+      ReportType: lookUpData.listReportTypes?.find(
+        (x) => x.id === Number(config?.reportType)
+      )?.reportTypeName || null ,
+      JobDeliveries: deliveryLocations ?? null
     };
 
     // Determine if this is an update or create
@@ -456,6 +946,109 @@ export function TaskSchedulerForm({
   ];
   const dayLabels = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
+  const addDeliveryLocation = () => {
+    setDeliveryLocations((prev) => [
+      ...prev,
+      {
+        directory: "",
+        storageConnectionId: ""
+      }
+    ]);
+  };
+  const removeDeliveryLocation = (index) => {
+    setDeliveryLocations((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
+  };
+  const updateDeliveryLocation = (index, field, value) => {
+    setDeliveryLocations((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      )
+    );
+  };
+  const isImportReport =
+  (lookUpData.listReportTypes?.find(
+    (x) => x.id === Number(config?.reportType)
+  )?.reportTypeName)?.toLowerCase() === "import";
+  const getAuthSelectValue = () => {
+    if (!config.Authentication) return "";
+  
+    if (config.Authentication.Type === "none") return "none";
+    if (config.Authentication.Type === "") return "";
+  
+    if (
+      config.Authentication.Type === "bearerToken" &&
+      config.Authentication?.TokenType === "fixed"
+    )
+      return "bearer-fixed";
+  
+    if (
+      config.Authentication.Type === "bearerToken" &&
+      config.Authentication?.TokenType === "dynamic"
+    )
+      return "bearer-dynamic";
+  
+    return "";
+  };
+  const addQueryParam = () => {
+    const existing = config.QueryParameters ?? [];
+    updateConfig("QueryParameters", [
+      ...existing,
+      { key: "", value: "" }
+    ]);
+  };
+  
+  const removeQueryParam = (index) => {
+    const updated = config.QueryParameters.filter((_, i) => i !== index);
+  
+    // Always keep at least one row
+    if (updated.length === 0) {
+      updateConfig("QueryParameters", [{ key: "", value: "" }]);
+    } else {
+      updateConfig("QueryParameters", updated);
+    }
+  };
+  
+  const updateQueryParam = (index, field, value) => {
+    const updated = [...config.QueryParameters];
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
+  
+    updateConfig("QueryParameters", updated);
+  };
+
+  const addBodyParam = () => {
+    const updated = [
+      ...(config.Body || []),
+      { key: "", value: "" }
+    ];
+  
+    updateConfig("Body", updated);
+  };
+  
+  const removeBodyParam = (index) => {
+    const updated = config.Body.filter((_, i) => i !== index);
+  
+    if (updated.length === 0) {
+      updateConfig("Body", [{ key: "", value: "" }]);
+    } else {
+      updateConfig("Body", updated);
+    }
+  };
+  
+  const updateBodyParam = (index, field, value) => {
+    const updated = [...config.Body];
+  
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
+  
+    updateConfig("Body", updated);
+  };
   return (
     <>
       <div className="tsf-container">
@@ -923,13 +1516,31 @@ export function TaskSchedulerForm({
             {/* ===== Report Data Section ===== */}
             <section className="tsf-section">
               <div className="tsf-section-header">
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px" }}>
                 <FontAwesomeIcon
                   icon={faFileAlt}
                   className="tsf-section-faicon"
                 />
                 <h4 className="tsf-section-title">Report Data</h4>
+                </div>
+                {!isImportReport && (
+                <button
+                  type="button"
+                  className="tsf-btn tsf-btn-legacy"
+                  aria-label="Configure Report Query"
+                  aria-expanded={showAccordion}
+                  aria-controls="report-query-collapse"
+                  onClick={() => {
+                    setShowAccordionHeader(true);
+                    setShowAccordion(true);
+                  }}
+                  style={{ whiteSpace: "nowrap" }}
+                >
+                  <FontAwesomeIcon icon={faCog} className="tsf-btn-icon" />
+                  Configure Report Query
+                </button>
+                )}
               </div>
-
               <div
                 className="tsf-topbar-grid"
                 aria-label="Report Data Source and Export Filters"
@@ -959,10 +1570,15 @@ export function TaskSchedulerForm({
                     }
                   >
                     <option value="">Select report...</option>
-                    <option value="1">System Logs</option>
+                    {/* <option value="1">System Logs</option>
                     <option value="2">Event History</option>
                     <option value="3">Activity Records</option>
-                    <option value="4">Performance Metrics</option>
+                    <option value="4">Performance Metrics</option> */}
+                     {lookUpData.listReportTypes?.map((type) => (
+              <option key={type.id} value={type.id}>
+                {type.reportTypeName}
+              </option>
+            ))}
                   </select>
                   {errors.reportType && (
                     <p  className="tsf-error-text">
@@ -970,21 +1586,7 @@ export function TaskSchedulerForm({
                     </p>
                   )}
                 </div>
-                <button
-                  type="button"
-                  className="tsf-btn tsf-btn-legacy"
-                  aria-label="Configure Report Query"
-                  aria-expanded={showAccordion}
-                  aria-controls="report-query-collapse"
-                  onClick={() => {
-                    setShowAccordionHeader(true);
-                    setShowAccordion(true);
-                  }}
-                  style={{ whiteSpace: "nowrap" }}
-                >
-                  <FontAwesomeIcon icon={faCog} className="tsf-btn-icon" />
-                  Configure Report Query
-                </button>
+               
               </div>
 
               {/* ===== Accordion (Bootstrap flush style) ===== */}
@@ -1040,7 +1642,7 @@ export function TaskSchedulerForm({
               </div>
 
               {/* Tabs and File Output Settings: Only show when accordion is closed */}
-              {!showAccordion && (
+              {!showAccordion && !isImportReport && (
                 <>
                   <div
                     className="tsf-row tsf-row-tabs"
@@ -1218,110 +1820,262 @@ export function TaskSchedulerForm({
                           )}
                         </div>
 
-                        {/* Local Storage Option (moved here) */}
-                        <div
-                          className="tsf-row tsf-row-folder"
+                      <div className="tsf-row tsf-row-folder">
+
+                      {/* Top Row (Checkbox Only) */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "16px",
+                        }}
+                      >
+                        <label
+                          className="form-checkbox-label"
                           style={{
+                            whiteSpace: "nowrap",
                             display: "flex",
                             alignItems: "center",
-                            gap: "16px",
                           }}
                         >
-                          <label
-                            className="form-checkbox-label"
-                            style={{
-                              whiteSpace: "nowrap",
-                              display: "flex",
-                              alignItems: "center",
-                            }}
-                          >
-                            <input
-                              type="checkbox"
-                              checked={config.enableLocalSave}
-                              onChange={(e) =>
-                                updateConfig(
-                                  "enableLocalSave",
-                                  e.target.checked,
-                                )
-                              }
-                              className="form-checkbox tsf-checkbox"
-                              style={{ marginRight: "8px" }}
-                            />
-                            <label
-                              className="form-label"
-                              htmlFor="enableLocalSave"
-                            >
-                              Enable Local Save
-                            </label>
+                          <input
+                            type="checkbox"
+                            checked={config.enableLocalSave}
+                            onChange={(e) =>
+                              updateConfig("enableLocalSave", e.target.checked)
+                            }
+                            className="form-checkbox tsf-checkbox"
+                            style={{ marginRight: "8px" }}
+                          />
+                          <label className="form-label">
+                            Job Delivery location
                           </label>
-                          {config.enableLocalSave && (
-                            <>
-                              <label
-                                className="form-label"
-                                htmlFor="destinationFolder"
+                        </label>
+                      </div>
+
+                      {/* Delivery Rows (Stacked Vertically) */}
+                      {config.enableLocalSave && (
+                        <div
+                          style={{
+                            marginTop: "12px",
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: "10px"
+                          }}
+                        >
+                          {/* {deliveryLocations.map((item, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "16px",
+                              }}
+                            >
+
+                            <select
+                                value={item.storageConnectionId}
+                                onChange={(e) =>
+                                  updateDeliveryLocation(
+                                    index,
+                                    "storageConnectionId",
+                                    e.target.value
+                                  )
+                                }
+                                className="tsf-input"
+                                style={{ minWidth: "180px" }}
                               >
-                                Directory:
-                              </label>
+                                <option value="">Select Storage Connection</option>
+                                {lookUpData.listStorageConnection.map((st) => ( <option key={st.id} value={st.id}> {st.name} - {st.storageType} </option> ))}
+                              </select>
+
+                              <label className="form-label">Directory:</label>
+
                               <div className="tsf-div">
                                 <input
-                                  id="destinationFolder"
                                   type="text"
-                                  value={config.destinationFolder}
+                                  value={item.directory}
                                   onChange={(e) =>
-                                    updateConfig(
-                                      "destinationFolder",
-                                      e.target.value,
-                                    )
+                                    updateDeliveryLocation(index, "directory", e.target.value)
                                   }
-                                  className={`tsf-input${errors.destinationFolder ? " tsf-input-error" : ""}`}
+                                  className="tsf-input"
                                   placeholder="Select destination folder"
-                                  style={{
-                                    marginBottom: 0,
-                                    minWidth: 0,
-                                  }}
-                                  disabled={!config.enableLocalSave}
-                                  aria-invalid={!!errors.destinationFolder}
-                                  aria-describedby={
-                                    errors.destinationFolder
-                                      ? "destinationFolder-error"
-                                      : undefined
-                                  }
+                                  style={{ marginBottom: 0 }}
                                 />
-                                {errors.destinationFolder && (
-                                  <p
-                                    className="tsf-error-text"
-                                  >
-                                    {errors.destinationFolder}
-                                  </p>
-                                )}
                               </div>
+
                               <input
-                                id="folderInput"
+                                id={`folderInput-${index}`}
                                 type="file"
                                 webkitdirectory=""
                                 directory=""
                                 multiple
-                                onChange={handleFolderInputChange}
+                                onChange={(e) => {
+                                  if (e.target.files.length > 0) {
+                                    const folderName =
+                                      e.target.files[0].webkitRelativePath;
+
+                                    updateDeliveryLocation(index, "directory", folderName);
+                                  }
+                                }}
                                 className="hidden"
                               />
+
                               <button
                                 type="button"
-                                onClick={handleBrowseFolder}
-                                className="tsf-btn tsf-btn-secondary tsf-btn-inline"
-                                style={{
-                                  marginBottom: 0,
-                                  whiteSpace: "nowrap",
-                                }}
-                                disabled={!config.enableLocalSave}
+                                onClick={() =>
+                                  document.getElementById(`folderInput-${index}`)?.click()
+                                }
+                                className="tsf-btn tsf-btn-secondary"
                               >
                                 Browse
                               </button>
-                            </>
-                          )}
-                        </div>
 
+                              {deliveryLocations.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeDeliveryLocation(index)}
+                                  className="tsf-btn tsf-btn-danger"
+                                >
+                                  -
+                                </button>
+                              )}
+
+                              {index === deliveryLocations.length - 1 && (
+                                <button
+                                  type="button"
+                                  onClick={addDeliveryLocation}
+                                  className="tsf-btn tsf-btn-primary"
+                                >
+                                  +
+                                </button>
+                              )}
+                            </div>
+                          ))} */}
+                          {deliveryLocations.map((item, index) => {
+                        // Find selected storage for this row
+                        const selectedStorage = lookUpData.listStorageConnection.find(
+                          (st) => st.id.toString() === item.storageConnectionId?.toString()
+                        );
+
+                        const isLocal =
+                          selectedStorage?.storageType?.toLowerCase() === "local";
+
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "16px",
+                            }}
+                          >
+                            {/* Storage Connection Dropdown */}
+                            <select
+                              value={item.storageConnectionId}
+                              onChange={(e) =>
+                                updateDeliveryLocation(
+                                  index,
+                                  "storageConnectionId",
+                                  e.target.value
+                                )
+                              }
+                              className="tsf-input"
+                              style={{ minWidth: "180px" }}
+                            >
+                              <option value="">Select Storage Connection</option>
+                              {lookUpData.listStorageConnection.map((st) => (
+                                <option key={st.id} value={st.id}>
+                                  {st.name} - {st.storageType}
+                                </option>
+                              ))}
+                            </select>
+
+                            {/* Directory Label */}
+                            <label className="form-label">Directory:</label>
+
+                            {/* Directory Textbox */}
+                            <div className="tsf-div">
+                              <input
+                                type="text"
+                                value={item.directory}
+                                onChange={(e) =>
+                                  updateDeliveryLocation(index, "directory", e.target.value)
+                                }
+                                className="tsf-input"
+                                placeholder={
+                                  isLocal
+                                    ? "Select local destination folder"
+                                    : "Enter remote path"
+                                }
+                                style={{ marginBottom: 0 }}
+                              />
+                            </div>
+
+                            {/* Browse Button ONLY for Local */}
+                            {isLocal && (
+                              <>
+                                <input
+                                  id={`folderInput-${index}`}
+                                  type="file"
+                                  webkitdirectory=""
+                                  directory=""
+                                  multiple
+                                  onChange={(e) => {
+                                    if (e.target.files && e.target.files.length > 0) {
+                                      // Get only top-level folder name
+                                      const fullPath = e.target.files[0].webkitRelativePath;
+                                      const folderName = fullPath.split("/")[0];
+
+                                      updateDeliveryLocation(index, "directory", folderName);
+                                    }
+                                  }}
+                                  className="hidden"
+                                />
+
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    document
+                                      .getElementById(`folderInput-${index}`)
+                                      ?.click()
+                                  }
+                                  className="tsf-btn tsf-btn-secondary"
+                                >
+                                  Browse
+                                </button>
+                              </>
+                            )}
+
+                            {/* Remove Button */}
+                            {deliveryLocations.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeDeliveryLocation(index)}
+                                className="tsf-btn tsf-btn-danger"
+                              >
+                                -
+                              </button>
+                            )}
+
+                            {/* Add Button */}
+                            {index === deliveryLocations.length - 1 && (
+                              <button
+                                type="button"
+                                onClick={addDeliveryLocation}
+                                className="tsf-btn tsf-btn-primary"
+                              >
+                                +
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
+                        </div>
+                      )}
+                      </div>
                         {/* Remote Upload Option (moved here) */}
-                        <div
+                        {/* <div
                           className="tsf-row tsf-row-upload"
                           style={{
                             display: "flex",
@@ -1403,11 +2157,412 @@ export function TaskSchedulerForm({
                               </div>
                             </>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
                 </>
+              )}
+
+              {!showAccordion && isImportReport && (
+                <>
+                <div
+                  className="tsf-row tsf-row-tabs"
+                  role="tablist"
+                  aria-label="Report tabs"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={true}
+                    aria-controls="tab-file-output"
+                    className="tsf-tab-btn tsf-tab-btn-active"
+                    tabIndex={0}
+                  >
+                    File Import Settings
+                  </button>
+                </div>
+
+                {/* ===== Tab Content ===== */}
+                <div className="tsf-tab-content">
+                  <div
+                    id="tab-file-output"
+                    role="tabpanel"
+                    className="tsf-file-output-settings"
+                  >
+                 
+                    <div className="tsf-row">
+                    <label className="form-label">Station:</label>
+                     <select
+                        value={config.stationId}
+                        onChange={(e) => updateConfig("stationId", e.target.value)}
+                        className="tsf-select"
+                      >
+                        <option value="">Select Station...</option>
+                        {lookUpData.listStation?.map((st) => (
+                          <option key={st.id} value={st.id}>
+                            {st.stationName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    {/* File Naming Settings */}
+                    <div className="tsf-row-group">
+                    <div className="tsf-row">
+                      <label className="form-label">Import Type:</label>
+                      <select
+                        value={config.importType}
+                        onChange={(e) => updateConfig("importType", e.target.value)}
+                        className="tsf-select"
+                      >
+                        <option value="">Select Import Type...</option>
+                        <option value="API">API</option>
+                        <option value="AirQuality">AirQuality</option>
+                      </select>
+                    </div>  
+                    <div className="tsf-row">
+                    <label className="form-label">API URL:</label>
+                    <input
+                      type="text"
+                      value={config.apiUrl || ""}
+                      onChange={(e) =>
+                        updateConfig("apiUrl", e.target.value)
+                      }
+                      className="tsf-input"
+                     // placeholder="https://example.com/api"
+                    />
+                  </div>
+
+                  {/* Method */}
+                  <div className="tsf-row">
+                    <label className="form-label">Method:</label>
+                    <select
+                      value={config.method || ""}
+                      onChange={(e) =>
+                        updateConfig("method", e.target.value)
+                      }
+                      className="tsf-select"
+                    >
+                      <option value="">Select Method...</option>
+                      <option value="GET">GET</option>
+                      <option value="POST">POST</option>
+                    </select>
+                  </div>
+                  <div className="tsf-row">
+                  <label className="form-label">Authentication Type:</label>
+                  <select
+                      value={getAuthSelectValue()}
+                      onChange={(e) => {
+                        const type = e.target.value;
+
+                        if (type === "none") {
+                          updateConfig("Authentication", { Type: "none" });
+                        }
+
+                        if (type === "bearer-fixed") {
+                          updateConfig("Authentication", {
+                            Type: "bearerToken",
+                            TokenType: "fixed",
+                            FixedToken: "",
+                          });
+                        }
+
+                        if (type === "bearer-dynamic") {
+                          updateConfig("Authentication", {
+                            Type: "bearerToken",
+                            TokenType: "dynamic",
+                            DynamicAuth: {
+                              UserId: "",
+                              Password: "",
+                              AuthUrl: "",
+                              TokenPath: "",
+                            },
+                          });
+                        }
+                      }}
+                      className="tsf-select"
+                    >
+                      <option value="none">None</option>
+                      <option value="bearer-fixed">Bearer Token (Fixed)</option>
+                      <option value="bearer-dynamic">Bearer Token (Dynamic)</option>
+                    </select>
+                  </div>   
+                  {config.Authentication?.Type === "bearerToken" &&
+ config.Authentication?.TokenType === "fixed" && (
+  <div className="tsf-row">
+    <label className="form-label">Fixed Token:</label>
+    <input
+      type="text"
+      value={config.Authentication?.FixedToken || ""}
+      onChange={(e) =>
+        updateConfig("Authentication", {
+          ...config.Authentication,
+          FixedToken: e.target.value
+        })
+      }
+      className="tsf-input"
+    />
+  </div>
+)}     
+{/* Dynamic Auth Inputs */}
+{config.Authentication?.Type === "bearerToken" &&
+ config.Authentication?.TokenType === "dynamic" && (
+  <div className="space-y-3">
+
+    <div className="tsf-row">
+      <label className="form-label">User ID:</label>
+      <input
+        type="text"
+        value={config.Authentication?.DynamicAuth?.UserId || ""}
+        onChange={(e) =>
+          updateConfig("Authentication", {
+            ...config.Authentication,
+            DynamicAuth: {
+              ...config.Authentication.DynamicAuth,
+              UserId: e.target.value
+            }
+          })
+        }
+        className="tsf-input"
+      />
+    </div>
+
+    <div className="tsf-row">
+      <label className="form-label">Password:</label>
+      <input
+        type="password"
+        value={config.Authentication?.DynamicAuth?.Password || ""}
+        onChange={(e) =>
+          updateConfig("Authentication", {
+            ...config.Authentication,
+            DynamicAuth: {
+              ...config.Authentication.DynamicAuth,
+              Password: e.target.value
+            }
+          })
+        }
+        className="tsf-input"
+      />
+    </div>
+
+    <div className="tsf-row">
+      <label className="form-label">Auth URL:</label>
+      <input
+        type="text"
+        value={config.Authentication?.DynamicAuth?.AuthUrl || ""}
+        onChange={(e) =>
+          updateConfig("Authentication", {
+            ...config.Authentication,
+            DynamicAuth: {
+              ...config.Authentication.DynamicAuth,
+              AuthUrl: e.target.value
+            }
+          })
+        }
+        className="tsf-input"
+      />
+    </div>
+
+    <div className="tsf-row">
+      <label className="form-label">Token Path:</label>
+      <input
+        type="text"
+        value={config.Authentication?.DynamicAuth?.TokenPath || ""}
+        onChange={(e) =>
+          updateConfig("Authentication", {
+            ...config.Authentication,
+            DynamicAuth: {
+              ...config.Authentication.DynamicAuth,
+              TokenPath: e.target.value
+            }
+          })
+        }
+        className="tsf-input"
+      />
+    </div>
+
+  </div>
+)} 
+   <div className="tsf-row">
+  <label className="form-label">Query Parameters:</label>
+
+  <div style={{ flex: 1 }}>
+    {(config.QueryParameters ?? []).map((param, index, arr) => (
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "8px",
+          alignItems: "center",
+          width: "100%"
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Key"
+          value={param.key}
+          onChange={(e) =>
+            updateQueryParam(index, "key", e.target.value)
+          }
+          className="tsf-input"
+          style={{ flex: 1 }}
+        />
+
+        <input
+          type="text"
+          placeholder="Value"
+          value={param.value}
+          onChange={(e) =>
+            updateQueryParam(index, "value", e.target.value)
+          }
+          className="tsf-input"
+          style={{ flex: 1 }}
+        />
+
+        <div style={{ display: "flex", gap: "6px" }}>
+          {arr.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeQueryParam(index)}
+              className="tsf-btn tsf-btn-primary"
+            >
+              -
+            </button>
+          )}
+
+          {index === arr.length - 1 && (
+            <button
+              type="button"
+              onClick={addQueryParam}
+              className="tsf-btn tsf-btn-primary"
+            >
+              +
+            </button>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+<div className="tsf-row">
+  <label className="form-label">Headers:</label>
+
+  {config.Headers?.map((header, index) => (
+  <div key={index} style={{ display: "flex", gap: "10px" }}>
+    <input
+      type="text"
+      placeholder="Key"
+      value={header.key}
+      onChange={(e) => {
+        const updated = [...config.Headers];
+        updated[index].key = e.target.value;
+        updateConfig("Headers", updated);
+      }}
+      className="tsf-input"
+      style={{ flex: 1 }}
+    />
+
+    <input
+      type="text"
+      placeholder="Value"
+      value={header.value}
+      onChange={(e) => {
+        const updated = [...config.Headers];
+        updated[index].value = e.target.value;
+        updateConfig("Headers", updated);
+      }}
+      className="tsf-input"
+      style={{ flex: 1 }}
+    />
+  </div>
+))}
+</div>
+<div className="tsf-row">
+  <label className="form-label">Body:</label>
+
+  <div style={{ flex: 1 }}>
+    {(config.Body || []).map((param, index) => (
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "8px",
+          alignItems: "center",
+          width: "100%"
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Key"
+          value={param.key}
+          onChange={(e) =>
+            updateBodyParam(index, "key", e.target.value)
+          }
+          className="tsf-input"
+          style={{ flex: 1 }}
+        />
+
+        <input
+          type="text"
+          placeholder="Value"
+          value={param.value}
+          onChange={(e) =>
+            updateBodyParam(index, "value", e.target.value)
+          }
+          className="tsf-input"
+          style={{ flex: 1 }}
+        />
+
+        <div style={{ display: "flex", gap: "6px" }}>
+          {config.Body.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeBodyParam(index)}
+              className="tsf-btn tsf-btn-primary"
+            >
+              -
+            </button>
+          )}
+
+          {index === config.Body.length - 1 && (
+            <button
+              type="button"
+              onClick={addBodyParam}
+              className="tsf-btn tsf-btn-primary"
+            >
+              +
+            </button>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+</div>
+<div className="tsf-row">
+  <label className="form-label">API Read Template:</label>
+
+  <textarea
+    className="tsf-textarea"
+    rows="8"
+    value={config.ApiReadTemplate}
+    onChange={(e) =>
+      updateConfig("ApiReadTemplate", e.target.value)
+    }
+  />
+
+  {errors.ApiReadTemplate && (
+    <p className="tsf-error-text">
+      {errors.ApiReadTemplate}
+    </p>
+  )}
+</div>
+                    </div>
+                  </div>
+                </div>
+              </>
               )}
             </section>
 

@@ -175,7 +175,7 @@ function Sidenavbar() {
                 className="animation-forwards animate-delay-3"
               >
                 <i className="bi bi-circle"></i>
-                <span>Ftp Configuration</span>
+                <span>Storage Connection</span>
               </NavLink>
             </li>
              <li>

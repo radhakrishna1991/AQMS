@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState,useEffect, useRef } from "react";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { toast } from 'react-toastify';
@@ -10,6 +10,8 @@ function Header() {
   const [LicenseMessage,setLicenseMessage]=useState("");
   const [redirectToLicense, setRedirectToLicense] = useState(false);
   const user = JSON.parse(sessionStorage.getItem('UserData'));
+  const [open, setOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const sidebartoggle = (e) => {
     document.querySelector('body').classList.toggle('toggle-sidebar')
   }
@@ -39,7 +41,17 @@ function Header() {
     showLicenseMessage(JSON.parse(licenseInfo));
   }*/
     GetStation();
-  }, [])
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const GetLicenseInfo =async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
@@ -140,7 +152,7 @@ function Header() {
               <i className="bi bi-search"></i>
             </a>
           </li>
-          <li className="nav-item dropdown pe-3">
+          {/* <li className="nav-item dropdown pe-3">
             <a className="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
               <span className="d-none d-md-block dropdown-toggle ps-2">{user.userName}</span>
             </a>
@@ -178,7 +190,7 @@ function Header() {
               </li>
               <li>
                 <hr className="dropdown-divider" />
-              </li> */}
+              </li> 
                <li>
                <NavLink to="/ChangePassword" className="dropdown-item d-flex align-items-center cursor_pointer">
                   <i className="bi bi-lock"></i>
@@ -193,7 +205,50 @@ function Header() {
                 </a>
               </li>
             </ul>
+          </li> */}
+           <li className="nav-item dropdown pe-3" ref={dropdownRef}>
+      <button
+        className="nav-link nav-profile d-flex align-items-center pe-0 btn btn-link"
+        onClick={() => setOpen(!open)}
+        type="button"
+      >
+        <span className="d-none d-md-block dropdown-toggle ps-2">
+          {user.userName}
+        </span>
+      </button>
+
+      {open && (
+        <ul className="dropdown-menu dropdown-menu-end show">
+          <li className="dropdown-header">
+            <h6>{user.userName}</h6>
+            <span>({user.role})</span>
           </li>
+
+          <li><hr className="dropdown-divider" /></li>
+
+          <li>
+            <NavLink
+              to="/ChangePassword"
+              className="dropdown-item d-flex align-items-center"
+              onClick={() => setOpen(false)}
+            >
+              <i className="bi bi-lock me-2"></i>
+              Change Password
+            </NavLink>
+          </li>
+
+          <li>
+            <button
+              className="dropdown-item d-flex align-items-center"
+              onClick={Signout}
+            >
+              <i className="bi bi-box-arrow-right me-2"></i>
+              Sign Out
+            </button>
+          </li>
+        </ul>
+      )}
+    </li>
         </ul>
       </nav>
     </header>

@@ -116,7 +116,7 @@ export default function TaskScheduler() {
   const handleDelete = (id) => {
   Swal.fire({
       title: "Are you sure?",
-      text: "You want to delete this Parameter Alarm !",
+      text: "You want to delete this Scheduled Task !",
       type: "warning",
       showCancelButton: true,
       confirmButtonColor: "#5cb85c",
