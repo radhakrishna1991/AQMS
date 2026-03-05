@@ -348,6 +348,28 @@ function DeviceAlarams() {
         )
       );
   };
+
+  const initAlarmSumo = () => {
+  const el = $("#alarmname");
+
+  if (!el.length) return;
+
+  // destroy if already exists
+  if (el[0].sumo) {
+    el[0].sumo.unload();
+  }
+
+  el.SumoSelect({
+    triggerChangeCombined: true,
+    placeholder: "Select Alarm",
+    floatWidth: 200,
+    selectAll: true,
+    search: true,
+    nativeOnDevice: [],
+    forceCustomRendering: true,
+  });
+};
+  
   const EditDeviceAlarm = function (param) {
     debugger;
     setDeviceAlarmList(false);
@@ -411,8 +433,9 @@ function DeviceAlarams() {
     );
     setModel(DeviceModels);
     setTimeout(function () {
-      $(".alarmname")[0].sumo.reload();
-    }, 10);
+      //$(".alarmname")[0].sumo.reload();
+      //initAlarmSumo();
+    }, 50);
   };
 
   const ChangeDeviceModel = function () {
