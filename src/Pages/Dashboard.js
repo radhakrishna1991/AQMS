@@ -61,6 +61,11 @@ function Dashboard() {
   const [UserRole, setUserRole] = useState(true);
   const [IntervalCriteria, setIntervalCriteria] = useState([]);
   const [SelectedInterval, setSelectedInterval] = useState("1M");
+  const [monitoringTypesData,setMonitoringTypesData] = useState([]);
+  const [stationsData,setStationsData] = useState([]);
+      const[selectedStation,setSelectedStation]=useState([]);
+    const[selectedMonitorType,setSelectedMonitorType]=useState([]);
+      const[filteredStations,setFilteredStations]=useState([]);
   ListAllDataCopy.current = ListAllData;
   const colorArray = [
     "#96cdf5",
@@ -205,6 +210,14 @@ function Dashboard() {
 
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, []);
+
+  useEffect(() => {
+  const filteredStations = stationsData.filter(
+    (station) => station.monitoringTypeId == selectedMonitorType
+  );
+  setFilteredStations(filteredStations);
+  setSelectedStation([]);
+}, [selectedMonitorType, stationsData]);
 
   const GetLivedata = async function () {
     //  console.log('Logs every minute');
@@ -959,6 +972,37 @@ function Dashboard() {
       pdf.save("DashboardChart.pdf");
     });
   };
+    const handleChange =(value,name)=>
+  {
+    if(name === "monitorTypes")
+    {
+      setSelectedMonitorType(value)
+    }else if(name === "stations" )
+    {
+      setSelectedStation(value);
+    }
+  }
+
+
+  useEffect(()=>
+{
+ const fetchData = async () => {
+        try {
+            let authHeader = await CommonFunctions.getAuthHeader();
+            const response = await fetch(CommonFunctions.getWebApiUrl() + "api/monitoringTyPElookupdata", {
+                method: 'GET',
+                headers: authHeader,
+            });
+            const data = await response.json();
+            setMonitoringTypesData(data?.listMonitoringTypes);
+            setStationsData(data?.stationsList);
+          }catch(error)
+          {
+           console.error(error);
+          }
+        }
+        fetchData();
+},[]);
 
   return (
     <main id="main" className="main">
@@ -2284,26 +2328,68 @@ function Dashboard() {
                 )}
               </div>
               <div className="row my-3 justify-content-center">
-                <label className="col-sm-2 col-form-label text-end">
-                  Select Interval
-                </label>
-                <div className="col-sm-2">
-                  <select
-                    className="form-select"
-                    id="criteriaid"
-                    onChange={(e) => Intervalchange(e)}
-                  >
-                    <option value="1M" selected>
-                      1-M
-                    </option>
-                    {IntervalCriteria.map((x, y) => (
-                      <option value={x.value + x.type} key={y}>
-                        {x.value + "-" + x.type}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+  <label className="col-sm-2 col-form-label text-end">
+    Select Interval
+  </label>
+  <div className="col-sm-2">
+    <select
+      className="form-select"
+      id="criteriaid"
+      onChange={(e) => Intervalchange(e)}
+    >
+      <option value="1M" selected>
+        1-M
+      </option>
+      {IntervalCriteria.map((x, y) => (
+        <option value={x.value + x.type} key={y}>
+          {x.value + "-" + x.type}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <label className="col-sm-2 col-form-label text-end">
+    Select Monitoring Type
+  </label>
+  <div className="col-sm-2">
+    <select
+      className="form-select"
+      id="monitoringTypeId"
+       onChange={(e)=>handleChange(e.target.value,"monitorTypes")}
+        value={selectedMonitorType}
+    >
+      <option value="" disabled selected>
+        Please Select
+      </option>
+      {monitoringTypesData.map((type) => (
+        <option key={type.id} value={type.id}>
+          {type.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <label className="col-sm-2 col-form-label text-end">
+    Select Station
+  </label>
+  <div className="col-sm-2">
+    <select
+      className="form-select"
+      id="stationId"
+       onChange={(e)=>handleChange(e.target.value,"stations")}
+      value={selectedStation}
+    >
+      <option value="" disabled selected>
+        Please Select
+      </option>
+      {filteredStations.map((station) => (
+        <option key={station.id} value={station.id}>
+          {station.stationName}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
               <div className="row">
                 <div className="col-md-11 align-self-start">
                   <Line

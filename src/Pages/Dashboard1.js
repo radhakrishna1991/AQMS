@@ -138,47 +138,7 @@ function useLiveData(fetchUrl, refreshInterval) {
     }
   }, [fetchUrl]);
   
-useEffect(() => {
-    const fetchData = async () => {
-        try {
-            let authHeader = await CommonFunctions.getAuthHeader();
-            const response = await fetch(CommonFunctions.getWebApiUrl() + "api/dashboardparemetersdata", {
-                method: 'GET',
-                headers: authHeader,
-            });
-            const data = await response.json();
 
-            // Process the data into the required format
-            const formattedData = data?.map((item) => {
-                return {
-                    id: item?.id,
-                    name:item?.parameterName || '-',
-                    sym: item?.parameterName,
-                    val: item?.latestValue || '-',
-                     unit:item?.unitName||"-",
-                    min:item?.minValue||0,
-                    max:item?.maxValue||0,
-                     avg:item?.avgValue||0,
-                     scale:item?.scale ||0,
-                    limitH: item?.high || null,
-                    limitHH: item?.highHigh || null,
-                    floor:item?.floor||0,
-                    ceiling:item?.ceiling ||0,
-                    status: item?.highHigh != null && item?.latestValue >= item?.highHigh ? 'alarm': item?. High != null && item?.latestValue >=item?.high ?'warning':'normal'  ,
-                    hourlyValues:item?.hourlyValues||[]
-                };
-            });
-
-            setData(formattedData); 
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        }
-    };
-
-    fetchData();
-}, []);
-
-  
 
   useEffect(() => {
     //fetchData();
@@ -190,26 +150,33 @@ useEffect(() => {
   return { data, loading, error, lastSync, refetch: fetchData };
 }
 
-// ══════════════════════════════════════════════════════════════
-//  SPARKLINE — SVG-based, no dependencies
-// ══════════════════════════════════════════════════════════════
+
 function Sparkline({ data, color }) {
   const ref = useRef(null);
 
   useEffect(() => {
     const svg = ref.current;
     if (!svg || !data || data.length < 2) return;
-    const W = 220, H = 40;
-    const mn  = Math.min(...data);
-    const mx  = Math.max(...data);
-    const rng = mx - mn || 1;
+
+    const W = 220, H = 40; // Dimensions of the sparkline chart
+
+    // Ensure data has a minimum and maximum for proper scaling
+    const mn = Math.min(...data);
+    const mx = Math.max(...data);
+    const padding = (mx - mn) * 0.3; // Increased padding to allow better scaling and spikes (more space)
+    const rng = mx - mn || 1;  // Range, ensuring no zero division
+
+    const yMin = mn - padding;  // Minimum value with extra padding for better visualization of small changes
+    const yMax = mx + padding;  // Maximum value with extra padding for better visibility of spikes
+
     const pts = data
       .map((d, i) => {
-        const x = (i / (data.length - 1)) * W;
-        const y = H - ((d - mn) / rng) * (H - 6) - 3;
+        const x = (i / (data.length - 1)) * W; // X-position based on data index
+        const y = H - ((d - yMin) / (yMax - yMin)) * H - 3; // Y-position for the value in scaled range
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       })
       .join(" ");
+
     const gid = "sg_" + color.replace("#", "");
     svg.innerHTML = `
       <defs>
@@ -233,6 +200,7 @@ function Sparkline({ data, color }) {
     />
   );
 }
+
 
 // ══════════════════════════════════════════════════════════════
 //  DUAL LIMIT TRACK
@@ -450,12 +418,27 @@ function ParamCard({ param, colorIndex, sparkData ,onClick }) {
 function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
   if (!open) return null;
 
+
   const sw = getSwatch(colorIndex);
 
-  // Example X and Y axis labels
-  const labelX = ['0h', '1h', '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h'];
-  const labelY = ['0', '10', '20', '30', '40'];
+  // Format X and Y axis dynamically based on the spark data
+  // const labelX = sparkData.map((d, idx) => {
+  //   const date = new Date(d.dateTime); // Convert dateTime to Date object
+  //   return `${date.getHours()}:${date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()}`; // Hour:Minute
+  // });
+  const labelX = sparkData.map((d) => {
+    const date = new Date(d.dateTime);
+    const datePart = `${date.getDate().toString().padStart(2,'0')}/${(date.getMonth()+1).toString().padStart(2,'0')}`;
+    const timePart = `${date.getHours().toString().padStart(2,'0')}:${date.getMinutes().toString().padStart(2,'0')}`;
+    return `${datePart} ${timePart}`; // e.g. "05/03 15:19"
+});
 
+  const minValue = Math.min(...sparkData.map(d => d.value));
+  const maxValue = Math.max(...sparkData.map(d => d.value));
+  const labelY = Array.from({ length: 5 }, (_, idx) => {
+    const step = (maxValue - minValue) / 4; // divide range into 4 steps
+    return (minValue + step * idx).toFixed(1);
+  });
   return (
     <div
       onClick={onClose}
@@ -491,7 +474,7 @@ function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
           <div>
             <div style={{ fontSize: 12, color: T.textSoft }}>{param?.parameterName}</div>
             <div style={{ fontSize: 16, fontWeight: 800, color: sw.accent, marginTop: 2 }}>
-              1-Hour Trend
+              24-Hour Trend
             </div>
           </div>
           <button
@@ -511,6 +494,9 @@ function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
         </div>
 
         <div style={{ padding: 16 }}>
+            <div style={{ fontSize: 18, fontWeight: 600, color: T.textMid, marginBottom: 12 }}>
+            {param?.name} 
+          </div>
           <div style={{
             display: "flex",
             gap: 14,
@@ -523,10 +509,10 @@ function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
               fontWeight: 700,
               color: sw.accent,
             }}>
-              {fmtVal(param?.latestValue)}
+              {fmtVal(param?.val)}
             </div>
             <div style={{ color: T.textSoft, fontSize: 12 }}>
-              {param?.unitName}
+              {param?.unit}
             </div>
           </div>
 
@@ -538,24 +524,28 @@ function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
   );
 }
 
+// ══════════════════════════════════════════════════════════════
+//  STATUS SUMMARY BAR
+// ══════════════════════════════════════════════════════════════
+
 function BigSparkline({ data, color, xLabels, labelY }) {
   const W = 720;
   const H = 260;
-
   // chart margins for axes/labels
   const M = { left: 50, right: 18, top: 14, bottom: 40 };
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
 
   const clean = (Array.isArray(data) ? data : []).map((d) =>
-    d == null ? null : Number(d)
+    d == null ? null : Number(d.value) // Extract 'value' from the data objects
   );
 
   const valid = clean.filter((d) => d != null && !Number.isNaN(d));
+
   if (valid.length < 2) {
     return (
       <div style={{ height: 220, display: "grid", placeItems: "center", color: T.textSoft }}>
-        Not enough data
+        Not enough data Available
       </div>
     );
   }
@@ -570,7 +560,53 @@ function BigSparkline({ data, color, xLabels, labelY }) {
   const xAt = (i) => M.left + (i / (clean.length - 1)) * plotW;
   const yAt = (v) => M.top + (1 - (v - yMin) / rng) * plotH;
 
-  // Build polyline points (nulls: use last good value or yMin)
+  // Handle single data point case by plotting a single point
+  if (valid.length === 1) {
+    const x = xAt(0);
+    const y = yAt(valid[0]);
+
+    return (
+      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: 260, display: "block" }}>
+        <defs>
+          <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+            <stop offset="100%" stopColor={color} stopOpacity="0" />
+          </linearGradient>
+        </defs>
+
+        {/* Axes */}
+        <line x1={M.left} y1={M.top} x2={M.left} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
+        <line x1={M.left} y1={M.top + plotH} x2={M.left + plotW} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
+
+        {/* Y axis ticks */}
+        {labelY.map((v, idx) => {
+          const y = yAt(parseFloat(v));
+          return (
+            <g key={idx}>
+              <line x1={M.left - 6} y1={y} x2={M.left} y2={y} stroke={T.border} strokeWidth="1" />
+              <text x={M.left - 10} y={y + 4} fontSize="11" fill={T.textSoft} textAnchor="end" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+                {v}
+              </text>
+              <line x1={M.left} y1={y} x2={M.left + plotW} y2={y} stroke={T.divider} strokeWidth="1" opacity="0.7" />
+            </g>
+          );
+        })}
+
+        {/* X axis tick */}
+        <g>
+          <line x1={x} y1={M.top + plotH} x2={x} y2={M.top + plotH + 6} stroke={T.border} strokeWidth="1" />
+          <text x={x} y={M.top + plotH + 22} fontSize="11" fill={T.textSoft} textAnchor="middle">
+            {xLabels[0] || "1"}
+          </text>
+        </g>
+
+        {/* Single Point */}
+        <circle cx={x} cy={y} r={4} fill={color} />
+      </svg>
+    );
+  }
+
+  // If you have more than one point, proceed as usual with the line chart
   let lastGood = valid[0];
   const pts = clean.map((d, i) => {
     if (d == null || Number.isNaN(d)) d = lastGood;
@@ -578,25 +614,24 @@ function BigSparkline({ data, color, xLabels, labelY }) {
     return `${xAt(i).toFixed(1)},${yAt(d).toFixed(1)}`;
   }).join(" ");
 
-  // Area path
   const firstX = xAt(0);
   const lastX = xAt(clean.length - 1);
   const baseY = M.top + plotH;
   const areaPath = `M ${firstX},${baseY} L ${pts} L ${lastX},${baseY} Z`;
 
-  // Y ticks (5 ticks)
   const yTicks = 5;
+  // const yTickVals = Array.from({ length: yTicks }, (_, k) => {
+  //   return yMin + (k * (yMax - yMin)) / (yTicks - 1);
+  // }).reverse();
   const yTickVals = Array.from({ length: yTicks }, (_, k) => {
     return yMin + (k * (yMax - yMin)) / (yTicks - 1);
-  }).reverse();
+});
 
-  // X ticks (show fewer so labels don’t overlap)
   const xTicks = Math.min(6, clean.length);
   const xTickIdx = Array.from({ length: xTicks }, (_, k) => {
     return Math.round((k * (clean.length - 1)) / (xTicks - 1));
   });
 
-  // X labels fallback (if you don’t pass xLabels)
   const xl = Array.isArray(xLabels) && xLabels.length >= clean.length
     ? xLabels
     : clean.map((_, i) => `${i}`);
@@ -604,11 +639,7 @@ function BigSparkline({ data, color, xLabels, labelY }) {
   const gid = "bg_" + color.replace("#", "");
 
   return (
-    <svg
-      viewBox={`0 0 ${W} ${H}`}
-      preserveAspectRatio="none"
-      style={{ width: "100%", height: 260, display: "block" }}
-    >
+    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: 260, display: "block" }}>
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor={color} stopOpacity="0.25" />
@@ -617,106 +648,76 @@ function BigSparkline({ data, color, xLabels, labelY }) {
       </defs>
 
       {/* Axes */}
-      {/* Y axis line */}
-      <line
-        x1={M.left}
-        y1={M.top}
-        x2={M.left}
-        y2={M.top + plotH}
-        stroke={T.border}
-        strokeWidth="1"
-      />
-      {/* X axis line */}
-      <line
-        x1={M.left}
-        y1={M.top + plotH}
-        x2={M.left + plotW}
-        y2={M.top + plotH}
-        stroke={T.border}
-        strokeWidth="1"
-      />
+      <line x1={M.left} y1={M.top} x2={M.left} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
+      <line x1={M.left} y1={M.top + plotH} x2={M.left + plotW} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
 
-      {/* Y ticks + labels */}
+      {/* Y axis ticks */}
       {yTickVals.map((v, idx) => {
         const y = yAt(v);
         return (
           <g key={idx}>
-            <line
-              x1={M.left - 6}
-              y1={y}
-              x2={M.left}
-              y2={y}
-              stroke={T.border}
-              strokeWidth="1"
-            />
-            <text
-              x={M.left - 10}
-              y={y + 4}
-              fontSize="11"
-              fill={T.textSoft}
-              textAnchor="end"
-              style={{ fontFamily: "'Roboto Mono', monospace" }}
-            >
+            <line x1={M.left - 6} y1={y} x2={M.left} y2={y} stroke={T.border} strokeWidth="1" />
+            <text x={M.left - 10} y={y + 4} fontSize="11" fill={T.textSoft} textAnchor="end" style={{ fontFamily: "'Roboto Mono', monospace" }}>
               {labelY ? labelY[idx] : v.toFixed(1)}
             </text>
-
-            {/* optional horizontal grid */}
-            <line
-              x1={M.left}
-              y1={y}
-              x2={M.left + plotW}
-              y2={y}
-              stroke={T.divider}
-              strokeWidth="1"
-              opacity="0.7"
-            />
+            <line x1={M.left} y1={y} x2={M.left + plotW} y2={y} stroke={T.divider} strokeWidth="1" opacity="0.7" />
           </g>
         );
       })}
 
-      {/* X ticks + labels */}
-      {xTickIdx.map((i) => {
+      {/* X axis ticks */}
+      {/* {xTickIdx.map((i) => {
         const x = xAt(i);
         return (
           <g key={i}>
-            <line
-              x1={x}
-              y1={M.top + plotH}
-              x2={x}
-              y2={M.top + plotH + 6}
-              stroke={T.border}
-              strokeWidth="1"
-            />
-            <text
-              x={x}
-              y={M.top + plotH + 22}
-              fontSize="11"
-              fill={T.textSoft}
-              textAnchor="middle"
-            >
+            <line x1={x} y1={M.top + plotH} x2={x} y2={M.top + plotH + 6} stroke={T.border} strokeWidth="1" />
+            <text x={x} y={M.top + plotH + 22} fontSize="11" fill={T.textSoft} textAnchor="middle">
               {xl[i] ?? ""}
             </text>
           </g>
         );
-      })}
+      })} */}
+      {/* X axis ticks */}
+{xTickIdx.map((i) => {
+    const x = xAt(i);
+    const label = xl[i] ?? "";
+    
+    // Split "05/03 15:19" into date and time parts
+    const [datePart, timePart] = label.split(" ");
 
-      {/* Area + line */}
+    return (
+        <g key={i}>
+            <line 
+                x1={x} y1={M.top + plotH} 
+                x2={x} y2={M.top + plotH + 6} 
+                stroke={T.border} strokeWidth="1" 
+            />
+            {/* Time on first line */}
+            <text 
+                x={x} y={M.top + plotH + 18} 
+                fontSize="11" fill={T.textSoft} textAnchor="middle"
+            >
+                {timePart || label}
+            </text>
+            {/* Date on second line */}
+            {datePart && timePart && (
+                <text 
+                    x={x} y={M.top + plotH + 32} 
+                    fontSize="10" fill={T.textSoft} textAnchor="middle" 
+                    opacity="0.7"
+                >
+                    {datePart}
+                </text>
+            )}
+        </g>
+    );
+})}
+
       <path d={areaPath} fill={`url(#${gid})`} />
-      <polyline
-        points={pts}
-        fill="none"
-        stroke={color}
-        strokeWidth="3"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
+      <polyline points={pts} fill="none" stroke={color} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
     </svg>
   );
 }
-
-// ══════════════════════════════════════════════════════════════
-//  STATUS SUMMARY BAR
-// ══════════════════════════════════════════════════════════════
 function StatusBar({ counts, loading, error, lastSync, onRefresh }) {
   const pills = [
     { key: "normal",  label: "Normal",  color: T.normal  },
@@ -973,9 +974,9 @@ function useSparkHistories(params, sparkPoints = 24) {
 
       // If no history exists OR hourly length changed, reset from hourlyValues
       if (!updated[p.id] || updated[p.id].length !== hv.length) {
-        // If hourlyValues empty, fallback to [latestValue] or []
-        const seed = hv.length ? hv : (p.latestValue != null ? [Number(p.latestValue)] : []);
-        updated[p.id] = seed.map(Number);
+        // Extract values from hourlyValues array
+        const seed = hv.length ? hv.map(item => Number(item.value)) : (p.latestValue != null ? [Number(p.latestValue)] : []);
+        updated[p.id] = seed;
         changed = true;
       }
     });
@@ -986,32 +987,18 @@ function useSparkHistories(params, sparkPoints = 24) {
     }
   }, [params]);
 
-  // Push new point (use real latestValue, not random)
-  const pushPoint = useCallback((params) => {
-    const updated = { ...historiesRef.current };
-    let changed = false;
-
-    params.forEach((p) => {
-      if (!updated[p.id]) return;
-
-      const val = Number(p.latestValue);
-      if (Number.isNaN(val)) return;
-
-      const arr = [...updated[p.id]];
-      arr.push(val);
-
-      // keep last sparkPoints points
-      while (arr.length > sparkPoints) arr.shift();
-
-      updated[p.id] = arr;
-      changed = true;
-    });
-
-    if (changed) {
-      historiesRef.current = updated;
-      setHistories({ ...updated });
+  // Optional pushPoint functionality (if required)
+  const pushPoint = (id, newValue) => {
+    if (historiesRef.current[id]) {
+      const updatedHistory = [...historiesRef.current[id], newValue];
+      // Ensure that the history doesn't exceed sparkPoints
+      if (updatedHistory.length > sparkPoints) {
+        updatedHistory.shift(); // Remove the first (oldest) value if it exceeds the limit
+      }
+      historiesRef.current[id] = updatedHistory;
+      setHistories({ ...historiesRef.current });
     }
-  }, [sparkPoints]);
+  };
 
   return { histories, pushPoint };
 }
@@ -1026,16 +1013,41 @@ export default function AQMSDashboard({
   sparkPoints      = 50,
 }) {
   // Live data
-  const { data, loading, error, lastSync, refetch } = useLiveData(fetchUrl, refreshInterval);
-
+  const { loading, error, lastSync, refetch } = useLiveData(fetchUrl, refreshInterval);
+  
   // Search & filter state
   const [query,        setQuery]        = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selectedParam, setSelectedParam] = useState(null);
+    const [monitoringTypesData,setMonitoringTypesData] = useState([]);
+  const [stationsData,setStationsData] = useState([]);
+  const[filteredStations,setFilteredStations]=useState([]);
+    const[selectedStation,setSelectedStation]=useState([]);
+    const[selectedMonitorType,setSelectedMonitorType]=useState([]);
+    const [data,setData] =useState([]);
 
   // Sparkline histories
   const { histories, pushPoint } = useSparkHistories(data, sparkPoints);
 
+useEffect(()=>
+{
+ const fetchData = async () => {
+        try {
+            let authHeader = await CommonFunctions.getAuthHeader();
+            const response = await fetch(CommonFunctions.getWebApiUrl() + "api/monitoringTyPElookupdata", {
+                method: 'GET',
+                headers: authHeader,
+            });
+            const data = await response.json();
+            setMonitoringTypesData(data?.listMonitoringTypes);
+            setStationsData(data?.stationsList);
+          }catch(error)
+          {
+           console.error(error);
+          }
+        }
+        fetchData();
+},[]);
   // Animate sparklines every 2s
   useEffect(() => {
     if (!data.length) return;
@@ -1051,12 +1063,101 @@ export default function AQMSDashboard({
     return matchQuery && matchStatus;
   });
 
-  console.log(filtered,"filtered");
   // Status counts
   const counts = data?.reduce(
     (acc, p) => { acc[p.status] = (acc[p.status] || 0) + 1; return acc; },
     { normal: 0, warning: 0, alarm: 0 }
   );
+
+  const handleChange =(value,name)=>
+  {
+    if(name === "monitorTypes")
+    {
+      setSelectedMonitorType(value)
+    }else if(name === "stations" )
+    {
+      setSelectedStation(value);
+    }
+  }
+
+
+
+useEffect(() => {
+  const filteredStations = stationsData.filter(
+    (station) => station.monitoringTypeId == selectedMonitorType
+  );
+  setFilteredStations(filteredStations);
+  setSelectedStation([]);
+}, [selectedMonitorType, stationsData]);
+
+useEffect(() => {
+  if (monitoringTypesData.length > 0) {
+    setSelectedMonitorType(monitoringTypesData[0].id); 
+  }
+}, [monitoringTypesData]);
+
+
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            let authHeader = await CommonFunctions.getAuthHeader();
+             const url = `${CommonFunctions.getWebApiUrl()}api/dashboardparemetersdata?stationId=${selectedStation}`; 
+                const response = await fetch(url, { method: 'GET', headers: authHeader });
+            const data = await response.json();
+
+            // Process the data into the required format
+            const formattedData = data?.map((item) => {
+                      
+        const formattedHourlyValues = item?.hourlyValues?.map((hv) => {
+        return {
+            value: hv?.value || '-', 
+            dateTime: new Date(hv?.dateTime).toLocaleString("en-GB", { hour12: false }) 
+        };
+    }) || [];
+
+        const formattedIntervalData = item?.intervalData?.map((interval) => {
+        return {
+            value: interval?.value || '-',
+            dateTime: new Date(interval?.dateTime).toLocaleString("en-GB", { hour12: false }) 
+        };
+    }) || [];
+                return {
+                    id: item?.id,
+                    name:item?.parameterName || '-',
+                    sym: item?.parameterName,
+                    val: item?.latestValue !=null ? item?.latestValue.toFixed(2):'-',
+                     unit:item?.unitName||"-",
+                     min: item?.minValue != null ? item?.minValue.toFixed(2) : '-',
+                     max: item?.maxValue != null ? item?.maxValue.toFixed(2) : '-',
+                     avg: item?.avgValue != null ? item?.avgValue.toFixed(2) : '-',
+                     scale:item?.scale ||0,
+                    limitH: item?.high || null,
+                    limitHH: item?.highHigh || null,
+                    floor:item?.floor||0,
+                    ceiling:item?.ceiling ||0,
+                    status: item?.highHigh != null && item?.latestValue >= item?.highHigh ? 'alarm': item?. High != null && item?.latestValue >=item?.high ?'warning':'normal'  ,
+                     hourlyValues: formattedHourlyValues,
+                     intervalData: formattedIntervalData 
+                };
+            });
+
+            setData(formattedData); 
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+       if (!selectedStation) {
+        setData([]);
+        return;
+    }
+    fetchData();
+    
+    const intervalId = setInterval(fetchData, 60000); 
+
+  
+    return () => clearInterval(intervalId);
+}, [selectedStation]);
 
   return (
     <>
@@ -1082,17 +1183,62 @@ export default function AQMSDashboard({
           paddingBottom: 18,
           borderBottom: `1.5px solid #edf1fb`,
         }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 4, height: 26, background: T.blue, borderRadius: 3 }} />
-            <div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: T.text, lineHeight: 1.2 }}>
-                {stationName}
-              </div>
-              <div style={{ fontSize: 11, color: T.textSoft, marginTop: 3 }}>
-                Real-time emissions monitoring dashboard
-              </div>
-            </div>
-          </div>
+  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+  <div>
+    <label style={{ fontSize: "14px", marginRight: "8px" }}>Monitoring Types</label>
+    <select
+         style={{
+        padding: '8px 12px',
+        fontSize: '14px',
+        borderRadius: '8px',
+        border: '1px solid #ccc',
+        outline: 'none',
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+        backgroundColor: '#fff',
+        width: '200px',
+      }}
+      value={selectedMonitorType}
+        onChange={(e)=>handleChange(e.target.value,"monitorTypes")}
+    >
+     <option value="" disabled>
+        Please Select
+      </option>
+      {monitoringTypesData.map((type) => (
+        <option key={type.id} value={type.id}>
+          {type.name}
+        </option>
+      ))}
+    </select>
+  </div>
+
+  <div>
+    <label style={{ fontSize: "14px", marginRight: "8px" }}>Stations</label>
+    <select
+         style={{
+        padding: '8px 12px',
+        fontSize: '14px',
+        borderRadius: '8px',
+        border: '1px solid #ccc',
+        outline: 'none',
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
+        backgroundColor: '#fff',
+        width: '200px',
+      }}
+      value={selectedStation}
+      onChange={(e)=>handleChange(e.target.value,"stations")}
+    >
+           <option value="" disabled>
+        Please Select
+      </option>
+      {filteredStations.map((station) => (
+        <option key={station.id} value={station.id}>
+          {station.stationName}
+        </option>
+      ))}
+    </select>
+  </div>
+</div>
+       
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
             <StatusBar
               counts={counts}
@@ -1155,7 +1301,7 @@ export default function AQMSDashboard({
   open={!!selectedParam}
   onClose={() => setSelectedParam(null)}
   param={selectedParam?.param}
-  sparkData={selectedParam?.sparkData || []}
+  sparkData={selectedParam?.param?.intervalData || []}
   colorIndex={selectedParam?.colorIndex ?? 0}
 />
       </div>
