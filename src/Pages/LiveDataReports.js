@@ -11,6 +11,11 @@ function LiveDataReports() {
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Autorefresh, setAutorefresh] = useState(true);
   const [Pollutents, setPollutents] = useState([]);
+  const [Stations, setStations] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
+  const [selectedStationId, setSelectedStationId] = useState("");
+  const [filteredPollutents, setFilteredPollutents] = useState([]);
   const [ItemCount, setItemCount] = useState(0);
   const [Gridcall, setGridcall] = useState(false);
   const [RefreshGrid, setRefreshGrid] = useState(false);
@@ -39,20 +44,27 @@ function LiveDataReports() {
             setGridcall(true);
             setRefreshGrid(true);
             // setItemCount(data.count);
-            let parameterslist = [];
-            data.listPollutents.filter(function (item) {
-              if (item.status == 1) {
-                var i = parameterslist.findIndex(
-                  (x) => x.parameterName == item.parameterName
-                );
-                if (i <= -1) {
-                  parameterslist.push(item);
-                }
+            setStations(data.listStations);
+            const stationIds = data.listStations.map(s => s.id);
+            let finaldata = data.listPollutents.filter(
+              x => stationIds.includes(x.stationID)
+            );
+            var finaldata1 = [];
+            finaldata1 = finaldata.reduce((unique, o) => {
+              if (
+                !unique.some(
+                  (obj) =>
+                    obj.stationID == o.stationID &&
+                    obj.parameterName === o.parameterName
+                )
+              ) {
+                unique.push(o);
               }
-              return null;
-            });
-            setPollutents(parameterslist);
-            setSelectedPollutents(parameterslist);
+              return unique;
+            }, []);
+            setPollutents(finaldata1);
+            setSelectedPollutents(finaldata1);
+            setListMonitoringTypes(data.listMonitoringTypes);
             setTimeout(function () {
               $("#pollutentid").SumoSelect({
                 triggerChangeCombined: true,
@@ -73,6 +85,20 @@ function LiveDataReports() {
   useEffect(() => {
     initializeJsGrid();
   }, [RefreshGrid, SelectedPollutents]);
+  useEffect(() => {
+    setFilteredStations(Stations);
+  }, [Stations]);
+  useEffect(() => {
+    if (filteredStations.length > 0) {
+      const firstStationId = filteredStations[0].id;
+  
+      setSelectedStationId(firstStationId);
+  
+      handleStationChange({
+        target: { value: firstStationId }
+      });
+    }
+  }, [filteredStations]);
   /* useEffect(() => {
     initializeJsGrid();
   }, [SelectedPollutents]);
@@ -330,8 +356,51 @@ function LiveDataReports() {
     $(".pollutentid")[0].sumo.reload();
     $(".pollutentid")[0].sumo.unSelectAll();
     //setGridcall(false);
-   // getdtareport("reset");
+    getdtareport("reset");
    setSelectedPollutents(Pollutents);
+  };
+  const handleMonitoringTypeChange = (e) => {
+    const value = e.target.value;
+    $('#stationid').val("");
+  
+    // If empty, show all stations
+    if (value === "") {
+      setFilteredStations(Stations);
+      return;
+    }
+  
+    const monitoringTypeId = parseInt(value);
+  
+    const filtered = Stations.filter(
+      (s) => s.monitoringTypeId === monitoringTypeId
+    );
+  
+    setFilteredStations(filtered);
+  };
+
+  const handleStationChange = (e) => {
+    const stationId = e.target.value;
+  
+    if (stationId === "") {
+      setFilteredPollutents([]); // or set original data if needed
+      return;
+    }
+  
+    const filtered = Pollutents.filter(
+      (p) => p.stationID === parseInt(stationId)
+    );
+  
+    setFilteredPollutents(filtered);
+    setSelectedStationId(stationId);
+
+     // 🔹 Reload SumoSelect
+    setTimeout(() => {
+      if ($('.pollutentid')[0]?.sumo) {
+        $('.pollutentid')[0].sumo.reload();
+        $('.pollutentid')[0].sumo.unSelectAll();
+        $('#pollutentid').trigger('change');
+      }
+    }, 10);
   };
   return (
     <main id="main" className="main">
@@ -397,6 +466,32 @@ function LiveDataReports() {
         <div>
           <div className="mb-4">
             <div className="row align-items-end">
+            <div className="col-lg-2 col-sm-6">
+              <label className="form-label">Monitoring Type</label>
+              <select
+                className="form-select"
+                id="monitoringTypeId"
+                onChange={handleMonitoringTypeChange}
+              >
+                <option value="">All</option>
+                {ListMonitoringTypes.map((x, y) => (
+                  <option value={x.id} key={y}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+              <div className="col-lg-2 col-sm-6">
+                <label className="form-label">Station Name</label>
+                <select className="form-select stationid" id="stationid" onChange={handleStationChange}>
+                <option value="" selected>Select Station</option>
+                  {filteredStations.map((x, y) => (
+                    <option value={x.id} key={y}>
+                      {x.stationName}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="col-md-4 col-sm-6">
                 <label className="form-label">Parameters</label>
                 <select
@@ -404,7 +499,7 @@ function LiveDataReports() {
                   id="pollutentid"
                   multiple="multiple"
                 >
-                  {Pollutents.map((x, y) => (
+                  {filteredPollutents.map((x, y) => (
                     <option value={x.parameterName} key={y}>
                       {x.parameterName}
                     </option>

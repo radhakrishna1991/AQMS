@@ -41,7 +41,10 @@ function StasticsReport() {
   const [ChartOptions, setChartOptions] = useState();
   const [AllLookpdata, setAllLookpdata] = useState(null);
   const [Stations, setStations] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
   const [Pollutents, setPollutents] = useState([]);
+  const [filteredPollutents, setFilteredPollutents] = useState([]);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
   const [Criteria, setcriteria] = useState([]);
   const [ChartType, setChartType] = useState();
   const [downloadBtn, setDownloadBtn] = useState(false);
@@ -113,8 +116,9 @@ function StasticsReport() {
         .then((data) => {
           setAllLookpdata(data);
           setStations(data.listStations);
+          const stationIds = data.listStations.map(s => s.id);
           let finaldata = data.listPollutents.filter(
-            (x) => x.stationID == data.listStations[0].id
+            x => stationIds.includes(x.stationID)
           );
           var finaldata1 = [];
           finaldata1 = finaldata.reduce((unique, o) => {
@@ -129,7 +133,8 @@ function StasticsReport() {
             }
             return unique;
           }, []);
-          setPollutents(data.listPollutents);
+          setPollutents(finaldata1);
+          setListMonitoringTypes(data.listMonitoringTypes);
           setTimeout(function () {
             /* $('#stationid').SumoSelect({
               triggerChangeCombined: true, placeholder: 'Select Station', floatWidth: 200, selectAll: true,
@@ -153,6 +158,9 @@ function StasticsReport() {
     fetchData();
     // initializeJsGrid();
   }, []);
+  useEffect(() => {
+    setFilteredStations(Stations);
+  }, [Stations]);
   const GenarateChart = async function () {
     let Station = $("#stationid").val();
     let Pollutent = $("#pollutentid").val();
@@ -332,12 +340,12 @@ function StasticsReport() {
 
   $("#pollutentid").change(function (e) {
     setcriteria([]);
-    let stationID = $("#stationid").val();
+  //  let stationID = $("#stationid").val();
     let filter1 = $(this).val();
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
-    let finaldata = AllLookpdata.listPollutents.filter(
+    let finaldata = Pollutents.filter(
       (obj) =>
-        stationID.includes(obj.stationID) || filter1.includes(obj.parameterName)
+        selectedStations.includes(obj.stationID) || filter1.includes(obj.parameterName)
     );
     if (finaldata.length > 0) {
       let finalinterval = [];
@@ -360,6 +368,7 @@ function StasticsReport() {
       setcriteria(finalinterval);
     }
   });
+
 
   /* Barchart Start */
   const hexToRgbA = function (hex) {
@@ -639,6 +648,50 @@ function StasticsReport() {
     });
   };
 
+  const handleMonitoringTypeChange = (e) => {
+    const value = e.target.value;
+    $('#stationid').val("");
+  
+    // If empty, show all stations
+    if (value === "") {
+      setFilteredStations(Stations);
+      return;
+    }
+  
+    const monitoringTypeId = parseInt(value);
+  
+    const filtered = Stations.filter(
+      (s) => s.monitoringTypeId === monitoringTypeId
+    );
+  
+    setFilteredStations(filtered);
+  };
+
+  const handleStationChange = (e) => {
+    const stationId = e.target.value;
+  
+    if (stationId === "") {
+      setFilteredPollutents([]); // or set original data if needed
+      return;
+    }
+  
+    const filtered = Pollutents.filter(
+      (p) => p.stationID === parseInt(stationId)
+    );
+  
+    setFilteredPollutents(filtered);
+    setselectedStations(stationId);
+
+     // 🔹 Reload SumoSelect
+    setTimeout(() => {
+      if ($('.pollutentid')[0]?.sumo) {
+        $('.pollutentid')[0].sumo.reload();
+        $('.pollutentid')[0].sumo.unSelectAll();
+        $('#pollutentid').trigger('change');
+      }
+    }, 10);
+  };
+
   /* Barchart End */
   return (
     <main id="main" className="main">
@@ -649,11 +702,27 @@ function StasticsReport() {
         <div className="container">
           <div>
             <div className="row filtergroup">
-              <div style={{ visibility: "hidden", height: "0px" }}>
+            <div className="col-lg-2 col-sm-6">
+              <label className="form-label">Monitoring Type</label>
+              <select
+                className="form-select"
+                id="monitoringTypeId"
+                onChange={handleMonitoringTypeChange}
+              >
+                <option value="">All</option>
+                {ListMonitoringTypes.map((x, y) => (
+                  <option value={x.id} key={y}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid">
-                  {Stations.map((x, y) => (
-                    <option value={x.id} key={y} selected={y == 1}>
+                <select className="form-select stationid" id="stationid" onChange={handleStationChange}>
+                <option value="" selected>Select Station</option>
+                  {filteredStations.map((x, y) => (
+                    <option value={x.id} key={y}>
                       {x.stationName}
                     </option>
                   ))}
@@ -667,7 +736,7 @@ function StasticsReport() {
                   multiple="multiple"
                 >
                   {/* <option selected> Select Pollutents</option> */}
-                  {Pollutents.map((x, y) => (
+                  {filteredPollutents.map((x, y) => (
                     <option value={x.ID} key={y}>
                       {x.parameterName}
                     </option>

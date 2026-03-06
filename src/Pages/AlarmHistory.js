@@ -11,7 +11,13 @@ function AlarmHistory() {
   const [Isgrid, setIsgrid] = useState(0);
   const [grid, setgrid] = useState(false);
   const [ListStations, setListStations] = useState([]);
+  const [AllLookpdata, setAllLookpdata] = useState(null);
+  const [Stations, setStations] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
   const [Listparameters, setListparameters] = useState([]);
+  const [filteredPollutents, setFilteredPollutents] = useState([]);
+  const [selectedStations, setselectedStations] = useState([]);
   const currentUser = JSON.parse(sessionStorage.getItem("UserData"));
   const [ItemCount, setItemCount] = useState(0);
 
@@ -25,17 +31,40 @@ function AlarmHistory() {
   useEffect(() => {
     grid && initializeJsGrid();
   }, [grid]);
+  useEffect(() => {
+    setFilteredStations(Stations);
+  }, [Stations]);
 
   const GetParameters = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/ParametersList", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData", {
       method: "GET",
       headers: authHeader,
     })
       .then((response) => response.json())
       .then((data) => {
         if (data) {
-          setListparameters(data);
+          setAllLookpdata(data);
+          setStations(data.listStations);
+          const stationIds = data.listStations.map(s => s.id);
+          let finaldata = data.listPollutents.filter(
+            x => stationIds.includes(x.stationID)
+          );
+          var finaldata1 = [];
+          finaldata1 = finaldata.reduce((unique, o) => {
+            if (
+              !unique.some(
+                (obj) =>
+                  obj.stationID == o.stationID &&
+                  obj.parameterName === o.parameterName
+              )
+            ) {
+              unique.push(o);
+            }
+            return unique;
+          }, []);
+          setListMonitoringTypes(data.listMonitoringTypes);
+          setListparameters(finaldata1);
           setTimeout(function () {
             $("#pollutentid").SumoSelect({
               triggerChangeCombined: true,
@@ -185,13 +214,83 @@ function AlarmHistory() {
     });
   };
 
+  const handleMonitoringTypeChange = (e) => {
+    const value = e.target.value;
+    $('#stationid').val("");
+  
+    // If empty, show all stations
+    if (value === "") {
+      setFilteredStations(Stations);
+      return;
+    }
+  
+    const monitoringTypeId = parseInt(value);
+  
+    const filtered = Stations.filter(
+      (s) => s.monitoringTypeId === monitoringTypeId
+    );
+  
+    setFilteredStations(filtered);
+  };
+
+  const handleStationChange = (e) => {
+    const stationId = e.target.value;
+  
+    if (stationId === "") {
+      setFilteredPollutents([]); // or set original data if needed
+      return;
+    }
+  
+    const filtered = Listparameters.filter(
+      (p) => p.stationID === parseInt(stationId)
+    );
+  
+    setFilteredPollutents(filtered);
+    setselectedStations(stationId);
+
+     // 🔹 Reload SumoSelect
+    setTimeout(() => {
+      if ($('.pollutentid')[0]?.sumo) {
+        $('.pollutentid')[0].sumo.reload();
+        $('.pollutentid')[0].sumo.unSelectAll();
+        $('#pollutentid').trigger('change');
+      }
+    }, 10);
+  };
+
   return (
     <main id="main" className="main">
       <div className="container">
         <section className="section">
           <div className="container">
-            <div className="row">
-              <div className="col-md-3">
+            <div className="row row-cols-lg-5 row-cols-sm-2 g-3">
+            <div className="col">
+              <label className="form-label">Monitoring Type</label>
+              <select
+                className="form-select"
+                id="monitoringTypeId"
+                onChange={handleMonitoringTypeChange}
+              >
+                <option value="">All</option>
+                {ListMonitoringTypes.map((x, y) => (
+                  <option value={x.id} key={y}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+              <div className="col">
+                <label className="form-label">Station Name</label>
+                <select className="form-select stationid" id="stationid" onChange={handleStationChange}>
+                <option value="" selected>Select Station</option>
+                  {filteredStations.map((x, y) => (
+                    <option value={x.id} key={y}>
+                      {x.stationName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="col">
                 <label className="form-label">Parameters</label>
                 <select
                   className="form-select pollutentid"
@@ -199,7 +298,7 @@ function AlarmHistory() {
                   multiple="multiple"
                 >
                   {/* <option selected> Select Pollutents</option> */}
-                  {Listparameters.map((x, y) => (
+                  {filteredPollutents.map((x, y) => (
                     <option value={x.id} key={y}>
                       {x.parameterName}
                     </option>
@@ -207,7 +306,7 @@ function AlarmHistory() {
                 </select>
               </div>
 
-              <div className="col-md-3">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">From Date</label>
                 <DatePicker
                   className="form-control"
@@ -216,7 +315,7 @@ function AlarmHistory() {
                   onChange={(date) => setFromDate(date)}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">To Date</label>
                 <DatePicker
                   className="form-control"

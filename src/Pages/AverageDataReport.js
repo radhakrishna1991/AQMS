@@ -26,6 +26,10 @@ function AverageDataReport() {
   const [SelectedPollutents, setSelectedPollutents] = useState([]);
 
   const [AllLookpdata, setAllLookpdata] = useState(null);
+  const [filteredPollutents, setFilteredPollutents] = useState([]);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
+  const [Stations, setStations] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
 
   const [Pollutents, setPollutents] = useState([]);
   const [loadGrid, setLoadGrid] = useState(false);
@@ -41,7 +45,7 @@ function AverageDataReport() {
     async function fetchData() {
       let authHeader = await CommonFunctions.getAuthHeader();
       await fetch(
-        CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAverageLookupData",
+        CommonFunctions.getWebApiUrl() + "api/AirQuality/GetAllLookupData",
         {
           method: "GET",
           headers: authHeader,
@@ -51,22 +55,26 @@ function AverageDataReport() {
 
         .then((data) => {
           setAllLookpdata(data);
-
-          let parameterslist = [];
-
-          data.listPollutents.filter(function (item) {
-            var i = parameterslist.findIndex(
-              (x) => x.parameterName == item.parameterName
-            );
-
-            if (i <= -1) {
-              parameterslist.push(item);
+          setStations(data.listStations);
+          const stationIds = data.listStations.map(s => s.id);
+          let finaldata = data.listPollutents.filter(
+            x => stationIds.includes(x.stationID)
+          );
+          var finaldata1 = [];
+          finaldata1 = finaldata.reduce((unique, o) => {
+            if (
+              !unique.some(
+                (obj) =>
+                  obj.stationID == o.stationID &&
+                  obj.parameterName === o.parameterName
+              )
+            ) {
+              unique.push(o);
             }
-
-            return null;
-          });
-
-          setPollutents(parameterslist);
+            return unique;
+          }, []);
+          setPollutents(finaldata1);
+          setListMonitoringTypes(data.listMonitoringTypes);
 
           setTimeout(function () {
             $("#pollutentid").SumoSelect({
@@ -94,6 +102,9 @@ function AverageDataReport() {
       initializeJsGrid();
     }
   }, [SelectedPollutents]);
+  useEffect(() => {
+    setFilteredStations(Stations);
+  }, [Stations]);
   /* reported data start */
 
   const UpdateColPos = function (cols) {
@@ -1033,8 +1044,9 @@ function AverageDataReport() {
 
     // let finaldata = AllLookpdata.listPollutentsConfig.filter(obj => obj.stationID == stationID && obj.parameterName == e.target.value);
 
-    let finaldata = AllLookpdata.listPollutents.filter((obj) =>
-      filter1.includes(obj.parameterName)
+    let finaldata = Pollutents.filter(
+      (obj) =>
+        selectedStations.includes(obj.stationID) || filter1.includes(obj.parameterName)
     );
 
     if (finaldata.length > 0) {
@@ -1078,6 +1090,50 @@ function AverageDataReport() {
     setListReportData(0);
 
     setSelectedPollutents([]);
+  };
+
+  const handleMonitoringTypeChange = (e) => {
+    const value = e.target.value;
+    $('#stationid').val("");
+  
+    // If empty, show all stations
+    if (value === "") {
+      setFilteredStations(Stations);
+      return;
+    }
+  
+    const monitoringTypeId = parseInt(value);
+  
+    const filtered = Stations.filter(
+      (s) => s.monitoringTypeId === monitoringTypeId
+    );
+  
+    setFilteredStations(filtered);
+  };
+
+  const handleStationChange = (e) => {
+    const stationId = e.target.value;
+  
+    if (stationId === "") {
+      setFilteredPollutents([]); // or set original data if needed
+      return;
+    }
+  
+    const filtered = Pollutents.filter(
+      (p) => p.stationID === parseInt(stationId)
+    );
+  
+    setFilteredPollutents(filtered);
+    setselectedStations(stationId);
+
+     // 🔹 Reload SumoSelect
+    setTimeout(() => {
+      if ($('.pollutentid')[0]?.sumo) {
+        $('.pollutentid')[0].sumo.reload();
+        $('.pollutentid')[0].sumo.unSelectAll();
+        $('#pollutentid').trigger('change');
+      }
+    }, 10);
   };
 
   return (
@@ -1159,8 +1215,34 @@ function AverageDataReport() {
                   )}
                 </select>
               </div> */}
+              <div className="col-lg-2 col-sm-6">
+              <label className="form-label">Monitoring Type</label>
+              <select
+                className="form-select"
+                id="monitoringTypeId"
+                onChange={handleMonitoringTypeChange}
+              >
+                <option value="">All</option>
+                {ListMonitoringTypes.map((x, y) => (
+                  <option value={x.id} key={y}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+              <div className="col-lg-2 col-sm-6">
+                <label className="form-label">Station Name</label>
+                <select className="form-select stationid" id="stationid" onChange={handleStationChange}>
+                <option value="" selected>Select Station</option>
+                  {filteredStations.map((x, y) => (
+                    <option value={x.id} key={y}>
+                      {x.stationName}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-              <div className="col-md-2 col-sm-6">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">Parameters</label>
 
                 <select
@@ -1171,7 +1253,7 @@ function AverageDataReport() {
                 >
                   {/* <option selected> Select Pollutents</option> */}
 
-                  {Pollutents.map((x, y) => (
+                  {filteredPollutents.map((x, y) => (
                     <option value={x.parameterName} key={y}>
                       {x.parameterName}
                     </option>
@@ -1179,7 +1261,7 @@ function AverageDataReport() {
                 </select>
               </div>
 
-              <div className="col-md-2 col-sm-6">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">From Date</label>
 
                 <DatePicker
@@ -1190,7 +1272,7 @@ function AverageDataReport() {
                 />
               </div>
 
-              <div className="col-md-2 col-sm-6">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">To Date</label>
 
                 <DatePicker
@@ -1201,7 +1283,7 @@ function AverageDataReport() {
                 />
               </div>
 
-              <div className="col-md-2 col-sm-6">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">Interval</label>
 
                 <select className="form-select" id="criteriaid">
@@ -1222,7 +1304,7 @@ function AverageDataReport() {
                 </select>
               </div>
 
-              <div className="col-md-4 my-4 text-center">
+              <div className="col-md-3 my-4">
                 <button
                   type="button"
                   className="btn btn-primary datashow"

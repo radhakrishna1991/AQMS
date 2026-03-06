@@ -6,6 +6,8 @@ function AddStation() {
   const $ = window.jQuery;
   const gridRefjsgridreport = useRef();
   const [ListStations, setListStations] = useState([]);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
+  const [ListSourceTypes, setListSourceTypes] = useState([]);
   const [StationList, setStationList] = useState(true);
   const [StationId, setStationId] = useState(0);
   const [Status, setStatus] = useState(true);
@@ -33,6 +35,8 @@ function AddStation() {
   const Stationadd = async function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
+    let MonitoringTypeId = document.getElementById("monitoringtype").value;
+    let SourceTypeId = document.getElementById("sourcetype").value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
@@ -55,6 +59,8 @@ function AddStation() {
         Status: status,
         CreatedBy: CreatedBy,
         ModifiedBy: ModifiedBy,
+        MonitoringTypeId: MonitoringTypeId,
+        SourceTypeId: SourceTypeId,
       }),
     })
       .then((response) => response.json())
@@ -83,6 +89,8 @@ function AddStation() {
     setTimeout(() => {
       document.getElementById("StationName").value = param.stationName;
       document.getElementById("Description").value = param.description;
+      document.getElementById("monitoringtype").value = param.monitoringTypeId;
+      document.getElementById("sourcetype").value = param.sourceTypeId;
       //setStatus(param.status==1?true:false)
     }, 1);
   };
@@ -90,6 +98,8 @@ function AddStation() {
   const UpdateStation = async function () {
     let StationName = document.getElementById("StationName").value;
     let Description = document.getElementById("Description").value;
+    let MonitoringTypeId = document.getElementById("monitoringtype").value;
+    let SourceTypeId = document.getElementById("sourcetype").value;
     let CreatedBy = currentUser.id;
     let ModifiedBy = currentUser.id;
     let status = Status ? 1 : 0;
@@ -112,6 +122,8 @@ function AddStation() {
         Status: status,
         CreatedBy: CreatedBy,
         ModifiedBy: ModifiedBy,
+        MonitoringTypeId: MonitoringTypeId,
+        SourceTypeId: SourceTypeId,
       }),
     })
       .then((response) => response.json())
@@ -172,14 +184,16 @@ function AddStation() {
   const GetStation = async function () {
     document.getElementById("loader").style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/Stations", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/GetStationsLookup", {
       method: "GET",
       headers: authHeader,
     })
       .then((response) => response.json())
       .then((data) => {
         if (data) {
-          setListStations(data);
+          setListStations(data.listStations);
+          setListMonitoringTypes(data.listMonitoringTypes);
+          setListSourceTypes(data.listSourceTypes);
         }
       })
       .catch((error) =>
@@ -230,7 +244,9 @@ function AddStation() {
               (!filter.description ||
                 item.description
                   .toUpperCase()
-                  .indexOf(filter.description.toUpperCase()) >= 0)
+                  .indexOf(filter.description.toUpperCase()) >= 0) &&
+                  (!filter.monitoringTypeId || item.monitoringTypeId === filter.monitoringTypeId) &&
+                  (!filter.sourceTypeId || item.sourceTypeId === filter.sourceTypeId)
             );
           });
         },
@@ -247,6 +263,24 @@ function AddStation() {
           title: "Description",
           type: "text",
           align: "left",
+        },
+        {
+          name: "monitoringTypeId",
+          title: "Monitoring Type",
+          align: "left",
+          type: "select",
+          items: ListMonitoringTypes,
+          valueField: "id",
+          textField: "name",
+        },
+        {
+          name: "sourceTypeId",
+          title: "Source Type",
+          align: "left",
+          type: "select",
+          items: ListSourceTypes,
+          valueField: "id",
+          textField: "name",
         },
         {
           type: "control",
@@ -380,7 +414,7 @@ function AddStation() {
               <form id="AddStationform" className="row">
                 <div className="col-md-12 mb-3">
                   <label for="StationName" className="form-label">
-                    Station Name:
+                  <span className="text-danger">*</span> Station Name:
                   </label>
                   <input
                     type="text"
@@ -402,7 +436,7 @@ function AddStation() {
                 </div>
                 <div className="col-md-12 mb-3">
                   <label for="Description" className="form-label">
-                    Description:
+                  <span className="text-danger">*</span> Description:
                   </label>
                   <textarea
                     class="form-control"
@@ -425,6 +459,42 @@ function AddStation() {
                   </div>
                   <div class="invalid-feedback">Please enter description</div>
                 </div>
+                <div className="col-md-12 mb-3">
+                    <label htmlFor="MonitoringType" className="form-label">
+                      <span className="text-danger">*</span> Monitoring Type:
+                    </label>
+                    <select className="form-select" id="monitoringtype" required>
+                      <option selected value="">
+                        Select monitoring type
+                      </option>
+                      {ListMonitoringTypes.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select monitoring type
+                    </div>
+                  </div>
+                  <div className="col-md-12 mb-3">
+                    <label htmlFor="SourceType" className="form-label">
+                      <span className="text-danger">*</span> Source Type:
+                    </label>
+                    <select className="form-select" id="sourcetype" required>
+                      <option selected value="">
+                        Select source type
+                      </option>
+                      {ListSourceTypes.map((x, y) => (
+                        <option value={x.id} key={y}>
+                          {x.name}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="invalid-feedback">
+                      Please select Source type
+                    </div>
+                  </div>
                 <div className="col-md-12">
                   <label for="Status" className="form-label">
                     Status:{" "}
