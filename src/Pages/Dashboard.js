@@ -66,6 +66,9 @@ function Dashboard() {
       const[selectedStation,setSelectedStation]=useState([]);
     const[selectedMonitorType,setSelectedMonitorType]=useState([]);
       const[filteredStations,setFilteredStations]=useState([]);
+      const [isLoading, setIsLoading] = useState(false);
+
+  const selectedStationRef = useRef(selectedStation);
   ListAllDataCopy.current = ListAllData;
   const colorArray = [
     "#96cdf5",
@@ -124,6 +127,8 @@ function Dashboard() {
 
   useEffect(() => {
     async function fetchDataload() {
+      if(!selectedStation) return;
+      setIsLoading(true); 
       let authHeader = await CommonFunctions.getAuthHeader();
       let Interval = SelectedInterval;
       let type = Interval.substr(Interval.length - 1);
@@ -136,7 +141,7 @@ function Dashboard() {
       await fetch(
         CommonFunctions.getWebApiUrl() +
           "api/Dashboard?Interval=" +
-          Intervaltype,
+          Intervaltype + (selectedStation ? "&stationId=" + selectedStation : ""),
         {
           method: "GET",
           headers: authHeader,
@@ -198,10 +203,12 @@ function Dashboard() {
         })
         .catch((error) =>
           toast.error("Unable to get the data. Please contact adminstrator")
-        );
+        ).finally(() => {
+        setIsLoading(false);
+    });;
     }
     fetchDataload();
-  }, []);
+  }, [selectedStation]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -211,17 +218,22 @@ function Dashboard() {
     return () => clearInterval(interval); // This represents the unmount function, in which you need to clear your interval to prevent memory leaks.
   }, []);
 
-  useEffect(() => {
+useEffect(() => {
   const filteredStations = stationsData.filter(
     (station) => station.monitoringTypeId == selectedMonitorType
   );
-  setFilteredStations(filteredStations);
-  setSelectedStation([]);
+   if (filteredStations.length > 0) {
+    setFilteredStations(filteredStations);
+    setSelectedStation(filteredStations[0].id); 
+  } else {
+    setFilteredStations([]); 
+    setSelectedStation(null); 
+  }
 }, [selectedMonitorType, stationsData]);
 
   const GetLivedata = async function () {
     //  console.log('Logs every minute');
-    let Intervalvalue = document.getElementById("criteriaid").value;
+    let Intervalvalue = document.getElementById("criteriaid")?.value;
     let type = Intervalvalue.substr(Intervalvalue.length - 1);
     let Intervaltype;
     if (type == "H") {
@@ -250,8 +262,10 @@ function Dashboard() {
   };
 
   async function fetchData() {
+     const currentStation = selectedStationRef.current;
+    if (!currentStation) return;
     let authHeader = await CommonFunctions.getAuthHeader();
-    await fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard", {
+    await fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard" +  "?stationId=" + currentStation, {
       method: "GET",
       headers: authHeader,
     })
@@ -1003,6 +1017,29 @@ function Dashboard() {
         }
         fetchData();
 },[]);
+
+useEffect(() => {
+  if (stationsData.length > 0) {
+    const stationWithMonitoringType = stationsData.find(station => station.monitoringTypeId);
+    
+    if (stationWithMonitoringType) {
+      setSelectedStation(stationWithMonitoringType.id);
+
+      const matchingMonitoringType = monitoringTypesData.find(
+        type => type.id === stationWithMonitoringType.monitoringTypeId
+      );
+      
+      if (matchingMonitoringType) {
+        setSelectedMonitorType(matchingMonitoringType.id);
+      }
+    }
+  }
+}, [stationsData, monitoringTypesData]);
+
+
+useEffect(() => {
+    selectedStationRef.current = selectedStation;
+}, [selectedStation]);
 
   return (
     <main id="main" className="main">
@@ -2068,7 +2105,49 @@ function Dashboard() {
           <span className="dashboard_date"> {currentdatetime} </span>
         </div>
       </div>
+         <div className=" d-flex mb-3"> 
+ <label className="col-sm-2 col-form-label text-end">
+    Select Monitor Type
+  </label>
+  <div className="col-sm-2 ms-3">
+    <select
+      className="form-select"
+      id="monitoringTypeId"
+       onChange={(e)=>handleChange(e.target.value,"monitorTypes")}
+        value={selectedMonitorType}
+    >
+      <option value="" disabled selected>
+        Please Select
+      </option>
+      {monitoringTypesData.map((type) => (
+        <option key={type.id} value={type.id}>
+          {type.name}
+        </option>
+      ))}
+    </select>
+  </div>
 
+  <label className="col-sm-2 col-form-label text-end">
+    Select Station
+  </label>
+  <div className="col-sm-2 ms-3">
+    <select
+      className="form-select"
+      id="stationId"
+       onChange={(e)=>handleChange(e.target.value,"stations")}
+      value={selectedStation}
+    >
+      <option value="" disabled selected>
+        Please Select
+      </option>
+      {filteredStations.map((station) => (
+        <option key={station.id} value={station.id}>
+          {station.stationName}
+        </option>
+      ))}
+    </select>
+  </div>
+  </div>
       <section className="section dashboard">
         {ListAllData && (
           <div className="row">
@@ -2347,57 +2426,24 @@ function Dashboard() {
       ))}
     </select>
   </div>
-
-  <label className="col-sm-2 col-form-label text-end">
-    Select Monitoring Type
-  </label>
-  <div className="col-sm-2">
-    <select
-      className="form-select"
-      id="monitoringTypeId"
-       onChange={(e)=>handleChange(e.target.value,"monitorTypes")}
-        value={selectedMonitorType}
-    >
-      <option value="" disabled selected>
-        Please Select
-      </option>
-      {monitoringTypesData.map((type) => (
-        <option key={type.id} value={type.id}>
-          {type.name}
-        </option>
-      ))}
-    </select>
-  </div>
-
-  <label className="col-sm-2 col-form-label text-end">
-    Select Station
-  </label>
-  <div className="col-sm-2">
-    <select
-      className="form-select"
-      id="stationId"
-       onChange={(e)=>handleChange(e.target.value,"stations")}
-      value={selectedStation}
-    >
-      <option value="" disabled selected>
-        Please Select
-      </option>
-      {filteredStations.map((station) => (
-        <option key={station.id} value={station.id}>
-          {station.stationName}
-        </option>
-      ))}
-    </select>
-  </div>
 </div>
               <div className="row">
                 <div className="col-md-11 align-self-start">
-                  <Line
-                    ref={chartRef}
-                    options={ChartOptions}
-                    data={ChartData}
-                    height={400}
-                  />
+                  {isLoading && (
+    <div className="col-md-4">
+        <div className="row">
+            <div className="loader"></div>
+        </div>
+    </div>
+)}
+          {!isLoading && Object.keys(ListAllData).length > 0 && (
+    <Line
+        ref={chartRef}
+        options={ChartOptions}
+        data={ChartData}
+        height={400}
+    />
+)}
                 </div>
                 <div className="col-md-1 mt-5">
                   <div className="form-check">
@@ -2425,7 +2471,7 @@ function Dashboard() {
                           type="checkbox"
                           id={i.id}
                           value={i.id}
-                          defaultChecked={LiveChartStatus[j].ChartStatus}
+                          defaultChecked={LiveChartStatus[j]?.ChartStatus}
                           onChange={() => DeviceGraph(i)}
                         />
                         {/* <input className="form-check-input" type="checkbox" name="paramtername" value={i.id}  onChange={() => DeviceGraph(i)}/> */}

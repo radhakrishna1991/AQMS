@@ -1086,15 +1086,38 @@ useEffect(() => {
   const filteredStations = stationsData.filter(
     (station) => station.monitoringTypeId == selectedMonitorType
   );
-  setFilteredStations(filteredStations);
-  setSelectedStation([]);
+   if (filteredStations.length > 0) {
+    setFilteredStations(filteredStations);
+    setSelectedStation(filteredStations[0].id); 
+  } else {
+    setFilteredStations([]); 
+    setSelectedStation(null); 
+  }
 }, [selectedMonitorType, stationsData]);
 
+// useEffect(() => {
+//   if (monitoringTypesData.length > 0) {
+//     setSelectedMonitorType(monitoringTypesData[0].id); 
+//   }
+// }, [monitoringTypesData]);
+
 useEffect(() => {
-  if (monitoringTypesData.length > 0) {
-    setSelectedMonitorType(monitoringTypesData[0].id); 
+  if (stationsData.length > 0) {
+    const stationWithMonitoringType = stationsData.find(station => station.monitoringTypeId);
+    
+    if (stationWithMonitoringType) {
+      setSelectedStation(stationWithMonitoringType.id);
+
+      const matchingMonitoringType = monitoringTypesData.find(
+        type => type.id === stationWithMonitoringType.monitoringTypeId
+      );
+      
+      if (matchingMonitoringType) {
+        setSelectedMonitorType(matchingMonitoringType.id);
+      }
+    }
   }
-}, [monitoringTypesData]);
+}, [stationsData, monitoringTypesData]);
 
 
 useEffect(() => {
