@@ -7,7 +7,7 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 function PollutionRose() {
-  // const $ = window.jQuery;
+  const $ = window.jQuery;
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [Stations, setListStations] = useState([]);
@@ -15,6 +15,8 @@ function PollutionRose() {
   const [Units, setListUnits] = useState([]);
   const [PollutionRoseConfig, setPollutionRoseConfig] = useState([]);
   const [AllLookpdata, setAllLookpdata] = useState(null);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
   const chartRef = useRef(null);
   const [Isdownload, setIsdownload] = useState(false);
   const [loadMessage, setLoadMessage] = useState(false);
@@ -47,6 +49,25 @@ function PollutionRose() {
     };
   }, []);
 
+  useEffect(() => {
+    if (Stations.length > 0 && ListMonitoringTypes.length > 0) {
+  
+      // Find AQMS monitoring type id
+      const aqmsType = ListMonitoringTypes.find(
+        (m) => (m.name).toLowerCase() === "aqms"
+      );
+  
+      if (!aqmsType) return;
+  
+      // Filter stations with AQMS monitoring type
+      const filtered = Stations.filter(
+        (s) => s.monitoringTypeId === aqmsType.id
+      );
+  
+      setFilteredStations(filtered);
+    }
+  }, [Stations, ListMonitoringTypes]);
+
   const GetStation = async function () {
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(
@@ -63,6 +84,7 @@ function PollutionRose() {
           setListStations(data.listStations);
           setPollutionRoseConfig(JSON.parse(data.pollutionRoseConfig));
           setListUnits(data.listReportedUnits);
+          setListMonitoringTypes(data.listMonitoringTypes);
         }
       })
       .catch((error) =>
@@ -470,6 +492,25 @@ function PollutionRose() {
     });
   };
 
+  // const handleMonitoringTypeChange = (e) => {
+  //   const value = e.target.value;
+  //   $('#stationid').val("");
+  
+  //   // If empty, show all stations
+  //   if (value === "") {
+  //     setFilteredStations(Stations);
+  //     return;
+  //   }
+  
+  //   const monitoringTypeId = parseInt(value);
+  
+  //   const filtered = Stations.filter(
+  //     (s) => s.monitoringTypeId === monitoringTypeId
+  //   );
+  
+  //   setFilteredStations(filtered);
+  // };
+
   return (
     <main id="main" className="main">
       <section className="section">
@@ -477,6 +518,21 @@ function PollutionRose() {
           <div className="card">
             <div className="card-body">
               <div className="row filtergroup">
+              {/* <div className="col-lg-2 col-sm-6">
+              <label className="form-label">Monitoring Type</label>
+              <select
+                className="form-select"
+                id="monitoringTypeId"
+                onChange={handleMonitoringTypeChange}
+              >
+                <option value="">All</option>
+                {ListMonitoringTypes.map((x, y) => (
+                  <option value={x.id} key={y}>
+                    {x.name}
+                  </option>
+                ))}
+              </select>
+            </div> */}
                 <div className="col-md-3">
                   <label className="form-label">Station Name</label>
                   <select
@@ -488,7 +544,7 @@ function PollutionRose() {
                       {" "}
                       Select Station Name
                     </option>
-                    {Stations.map((x, y) => (
+                    {filteredStations.map((x, y) => (
                       <option value={x.id} key={y}>
                         {x.stationName}
                       </option>

@@ -16,6 +16,7 @@ function LiveDataReports() {
   const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
   const [selectedStationId, setSelectedStationId] = useState("");
   const [filteredPollutents, setFilteredPollutents] = useState([]);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [ItemCount, setItemCount] = useState(0);
   const [Gridcall, setGridcall] = useState(false);
   const [RefreshGrid, setRefreshGrid] = useState(false);
@@ -99,6 +100,18 @@ function LiveDataReports() {
       });
     }
   }, [filteredStations]);
+  useEffect(() => {
+    if (filteredPollutents.length > 0) {
+      setTimeout(() => {
+        const select = $('#pollutentid')[0];
+  
+        if (select?.sumo && isInitialLoad) {
+          select.sumo.reload();
+          select.sumo.selectAll();   // select all parameters
+        }
+      }, 100);
+    }
+  }, [filteredPollutents]);
   /* useEffect(() => {
     initializeJsGrid();
   }, [SelectedPollutents]);
@@ -223,6 +236,7 @@ function LiveDataReports() {
   };
   const LiveData = async function (startIndex, lastIndex, sortorder) {
     dataForGrid = [];
+    let StationID = parseInt(selectedStationId);
     let Pollutent = $("#pollutentid").val();
     let finalpollutent = [];
     for (let i = 0; i < Pollutent.length; i++) {
@@ -241,6 +255,7 @@ function LiveDataReports() {
     }
     document.getElementById("loader").style.display = "block";
     let params = new URLSearchParams({
+      StationID: StationID,
       Pollutent: Pollutent,
       StartIndex: startIndex,
       SortOrder: sortorder,
@@ -362,6 +377,7 @@ function LiveDataReports() {
   const handleMonitoringTypeChange = (e) => {
     const value = e.target.value;
     $('#stationid').val("");
+    setSelectedStationId("");
   
     // If empty, show all stations
     if (value === "") {
@@ -377,12 +393,24 @@ function LiveDataReports() {
   
     setFilteredStations(filtered);
   };
-
+ 
   const handleStationChange = (e) => {
     const stationId = e.target.value;
   
     if (stationId === "") {
+      setSelectedStationId("");
       setFilteredPollutents([]); // or set original data if needed
+      setTimeout(() => {
+        if ($('.pollutentid')[0]?.sumo) {
+          $('.pollutentid')[0].sumo.reload();
+    
+          // Select all parameters only on first load
+          if (isInitialLoad) {
+            $('.pollutentid')[0].sumo.selectAll();
+            setIsInitialLoad(false);
+          }
+        }
+      }, 10);
       return;
     }
   
@@ -394,11 +422,15 @@ function LiveDataReports() {
     setSelectedStationId(stationId);
 
      // 🔹 Reload SumoSelect
-    setTimeout(() => {
+     setTimeout(() => {
       if ($('.pollutentid')[0]?.sumo) {
         $('.pollutentid')[0].sumo.reload();
-        $('.pollutentid')[0].sumo.unSelectAll();
-        $('#pollutentid').trigger('change');
+  
+        // Select all parameters only on first load
+        if (isInitialLoad) {
+          $('.pollutentid')[0].sumo.selectAll();
+          setIsInitialLoad(false);
+        }
       }
     }, 10);
   };
@@ -481,18 +513,24 @@ function LiveDataReports() {
                 ))}
               </select>
             </div>
+            <div className="col-lg-2 col-sm-6">
+              <label className="form-label">Station Name</label>
+
+              <select
+                className="form-select stationid"
+                id="stationid"
+                value={selectedStationId || ""}
+                onChange={handleStationChange}
+              >
+                <option value="">Select Station</option>
+                {filteredStations.map((x, y) => (
+                  <option value={x.id} key={y}>
+                    {x.stationName}
+                  </option>
+                ))}
+              </select>
+            </div>
               <div className="col-lg-2 col-sm-6">
-                <label className="form-label">Station Name</label>
-                <select className="form-select stationid" id="stationid" onChange={handleStationChange}>
-                <option value="" selected>Select Station</option>
-                  {filteredStations.map((x, y) => (
-                    <option value={x.id} key={y}>
-                      {x.stationName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="col-md-4 col-sm-6">
                 <label className="form-label">Parameters</label>
                 <select
                   className="form-select pollutentid"
@@ -529,7 +567,7 @@ function LiveDataReports() {
                   Flags
                 </button>
               </div>
-              <div className="col-2 mt-3">
+              <div className="col-2 mt-3 mx-auto">
                 <div className="form-check">
                   <input
                     className="form-check-input"
@@ -539,7 +577,7 @@ function LiveDataReports() {
                     defaultChecked={Autorefresh}
                   />
                   <label
-                    className="form-check-label form-label"
+                    className="form-check-label"
                     htmlFor="autorefresh"
                   >
                     Autorefresh
