@@ -1117,6 +1117,13 @@ function AverageDataReport() {
   
     if (stationId === "") {
       setFilteredPollutents([]); // or set original data if needed
+      setTimeout(() => {
+        if ($('.pollutentid')[0]?.sumo) {
+          $('.pollutentid')[0].sumo.reload();
+          $('.pollutentid')[0].sumo.unSelectAll();
+          $('#pollutentid').trigger('change');
+        }
+      }, 10);
       return;
     }
   

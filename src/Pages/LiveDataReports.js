@@ -50,21 +50,21 @@ function LiveDataReports() {
             let finaldata = data.listPollutents.filter(
               x => stationIds.includes(x.stationID)
             );
-            var finaldata1 = [];
-            finaldata1 = finaldata.reduce((unique, o) => {
-              if (
-                !unique.some(
-                  (obj) =>
-                    obj.stationID == o.stationID &&
-                    obj.parameterName === o.parameterName
-                )
-              ) {
-                unique.push(o);
-              }
-              return unique;
-            }, []);
-            setPollutents(finaldata1);
-            setSelectedPollutents(finaldata1);
+            // var finaldata1 = [];
+            // finaldata1 = finaldata.reduce((unique, o) => {
+            //   if (
+            //     !unique.some(
+            //       (obj) =>
+            //         obj.stationID == o.stationID &&
+            //         obj.parameterName === o.parameterName
+            //     )
+            //   ) {
+            //     unique.push(o);
+            //   }
+            //   return unique;
+            // }, []);
+             setPollutents(finaldata);
+             setSelectedPollutents(finaldata);
             setListMonitoringTypes(data.listMonitoringTypes);
             setTimeout(function () {
               $("#pollutentid").SumoSelect({
@@ -186,7 +186,8 @@ function LiveDataReports() {
             let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Selectedparameter + "flag"]);
               //let flag = AllLookpdata.listFlagCodes.filter(x => x.id == value[Object.keys(value).find(key => value[key] === item) + "flag"]);
               console.log(item, value,value[Selectedparameter]); 
-              let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFF"
+              
+              let bgcolor = flag.length > 0 ? flag[0].colorCode : "#FFFFFF"
               return $("<td>").css("background-color", bgcolor).append(item);
             }
           });
@@ -328,6 +329,7 @@ function LiveDataReports() {
             }
           }
           document.getElementById("loader").style.display = "none";
+          console.log(dataForGrid);
           return dataForGrid;
         }
         document.getElementById("loader").style.display = "none";
@@ -352,7 +354,7 @@ function LiveDataReports() {
     }
     let finalpollutent = [];
     for (let i = 0; i < Pollutent.length; i++) {
-      let filter = Pollutents.filter((x) => x.parameterName == Pollutent[i]);
+      let filter = Pollutents.filter((x) => x.parameterName == Pollutent[i] && x.stationID == selectedStationId);
       finalpollutent.push(filter[0]);
     }
     if (param == "reset" || Pollutent.length == 0) {
@@ -441,7 +443,7 @@ function LiveDataReports() {
         id="alertcode"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLabel"
         aria-hidden="true"
       >
