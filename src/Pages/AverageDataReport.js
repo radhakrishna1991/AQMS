@@ -328,7 +328,7 @@ function AverageDataReport() {
     if (Pollutent.length > 0) {
       Pollutent.join(",");
     }
-
+    let StationID = parseInt(selectedStations);
     let Fromdate = document.getElementById("fromdateid").value;
 
     let Todate = document.getElementById("todateid").value;
@@ -372,6 +372,7 @@ function AverageDataReport() {
     let SortOrder =
       sortorder == undefined || sortorder == "desc" ? "asc" : "desc";
     let params = new URLSearchParams({
+      StationID: StationID,
       Pollutent: Pollutent,
       Fromdate: Fromdate,
       Todate: Todate,

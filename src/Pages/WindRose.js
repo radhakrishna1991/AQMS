@@ -10,11 +10,17 @@ function WindRose() {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [Stations, setListStations] = useState([]);
+  const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
+  const [filteredStations, setFilteredStations] = useState([]);
+  const [AllLookpdata, setAllLookpdata] = useState(null);
   const chartRef = useRef();
   const [Isdownload, setIsdownload] = useState(false);
   const [loadMessage, setLoadMessage] = useState(false);
   //const $ = window.jQuery;
 
+  useEffect(() => {
+    GetStation();
+  }, []);
   useEffect(() => {
     // debugger;
     const chartInstance =
@@ -40,6 +46,49 @@ function WindRose() {
       resizeObserver.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (Stations.length > 0 && ListMonitoringTypes.length > 0) {
+  
+      // Find AQMS monitoring type id
+      const aqmsType = ListMonitoringTypes.find(
+        (m) => (m.name).toLowerCase() === "aqms"
+      );
+  
+      if (!aqmsType) return;
+  
+      // Filter stations with AQMS monitoring type
+      const filtered = Stations.filter(
+        (s) => s.monitoringTypeId === aqmsType.id
+      );
+  
+      setFilteredStations(filtered);
+    }
+  }, [Stations, ListMonitoringTypes]);
+
+  const GetStation = async function () {
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(
+      CommonFunctions.getWebApiUrl() + "api/AirQuality/getPollutionRoseLookup",
+      {
+        method: "GET",
+        headers: authHeader,
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setAllLookpdata(data);
+          setListStations(data.listStations);
+          setListMonitoringTypes(data.listMonitoringTypes);
+        }
+      })
+      .catch((error) =>
+        toast.error(
+          "Unable to get the lookup data. Please contact adminstrator"
+        )
+      );
+  };
 
   const ReportValidations = function (Fromdate, Todate) {
     let isvalid = true;
@@ -363,7 +412,24 @@ function WindRose() {
           <div className="card">
             <div className="card-body">
               <div className="row filtergroup">
-                <div className="col-md-3">
+              <div className="col-md-3">
+                  <label className="form-label">Station Name</label>
+                  <select
+                    className="form-select stationid"
+                    id="stationid"
+                  >
+                    <option value="" selected>
+                      {" "}
+                      Select Station Name
+                    </option>
+                    {filteredStations.map((x, y) => (
+                      <option value={x.id} key={y}>
+                        {x.stationName}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="col-md-2 mt-md-0 mt-2">
                   <label className="form-label">From Date</label>
                   <DatePicker
                     className="form-control"
@@ -372,7 +438,7 @@ function WindRose() {
                     onChange={(date) => setFromDate(date)}
                   />
                 </div>
-                <div className="col-md-3">
+                <div className="col-md-2 mt-md-0 mt-2">
                   <label className="form-label">To Date</label>
                   <DatePicker
                     className="form-control"
