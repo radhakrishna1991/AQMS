@@ -673,7 +673,7 @@ function AddDeviceModels() {
                       id="forcemultiplecoils"
                     />
                     &nbsp;
-                    <label for="forcemultiplecoils" className="form-label ms-2">
+                    <label for="forcemultiplecoils" className="form-label ms-2 mt-0">
                       Supports Force Multiple Coils
                     </label>
                   </div>

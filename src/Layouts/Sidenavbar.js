@@ -417,7 +417,7 @@ function Sidenavbar() {
                 <span>Statistical Reports</span>
               </NavLink>
             </li>
-            <li>
+            {/* <li>
               <NavLink
                 to="/PredefinedCharts"
                 className="nav-item animation-forwards animate-delay-3"
@@ -425,7 +425,7 @@ function Sidenavbar() {
                 <i className="bi bi-circle"></i>
                 <span>Pre-Defned Charts</span>
               </NavLink>
-            </li>
+            </li> */}
             {/* <li>
               <NavLink to="/DetailedAnalysisReports" className="nav-item animation-forwards animate-delay-4" >
                 <i className="bi bi-circle"></i>
