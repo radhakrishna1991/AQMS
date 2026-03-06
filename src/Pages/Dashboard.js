@@ -2018,7 +2018,7 @@ function Dashboard() {
       <div className="pagetitle d-flex justify-content-between">
         <h1>Dashboard</h1>
         <div className="col-md-3 mb-3 d-inline-flex">
-          <label htmlFor="Interval" className="form-label me-3">
+          <label htmlFor="Interval" className="form-label me-3 mt-0">
             Date & Time:
           </label>
           <span className="dashboard_date"> {currentdatetime} </span>

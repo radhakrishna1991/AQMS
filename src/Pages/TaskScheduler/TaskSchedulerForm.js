@@ -73,6 +73,7 @@ export function TaskSchedulerForm({
         setImportConfig({
           stationId: config.StationId ?? "",
           importType: config.ImportType ?? "",
+          apiConfig: {
           apiUrl: config.Url ?? "",
           method: config.Method ?? "GET",
 
@@ -127,6 +128,7 @@ export function TaskSchedulerForm({
             typeof config.ApiReadTemplate === "string"
               ? config.ApiReadTemplate
               : JSON.stringify(config.ApiReadTemplate, null, 2)
+          }
         });
       }else{
         setReportQuery({
@@ -230,38 +232,38 @@ if (
     updateCfg({
       stationId: importConfig.StationId ?? "",
       importType: importConfig.ImportType ?? "",
-      apiUrl: importConfig.Url ?? "",
-      method: importConfig.Method ?? "GET",
+      apiUrl: importConfig?.ApiConfig?.Url ?? "",
+      method: importConfig?.ApiConfig?.Method ?? "GET",
 
         // Authentication
-      Authentication: importConfig.Authentication
+      Authentication: importConfig?.ApiConfig?.Authentication
   ? {
-      Type: importConfig.Authentication?.Type ?? "none",
+      Type: importConfig?.ApiConfig?.Authentication?.Type ?? "none",
 
-      ...(importConfig.Authentication?.TokenType === "fixed" && {
+      ...(importConfig?.ApiConfig?.Authentication?.TokenType === "fixed" && {
         TokenType: "fixed",
-        FixedToken: importConfig.Authentication?.FixedToken ?? ""
+        FixedToken: importConfig?.ApiConfig?.Authentication?.FixedToken ?? ""
       }),
 
-      ...(importConfig.Authentication?.TokenType === "dynamic" && {
+      ...(importConfig?.ApiConfig?.Authentication?.TokenType === "dynamic" && {
         TokenType: "dynamic",
         DynamicAuth: {
           UserId:
-            importConfig.Authentication?.DynamicAuth?.UserId ?? "",
+            importConfig?.ApiConfig?.Authentication?.DynamicAuth?.UserId ?? "",
           Password:
-            importConfig.Authentication?.DynamicAuth?.Password ?? "",
+            importConfig?.ApiConfig?.Authentication?.DynamicAuth?.Password ?? "",
           AuthUrl:
-            importConfig.Authentication?.DynamicAuth?.AuthUrl ?? "",
+            importConfig?.ApiConfig?.Authentication?.DynamicAuth?.AuthUrl ?? "",
           TokenPath:
-            importConfig.Authentication?.DynamicAuth?.TokenPath ?? ""
+            importConfig?.ApiConfig?.Authentication?.DynamicAuth?.TokenPath ?? ""
         }
       })
     }
   : { Type: "none" },
 
         QueryParameters:
-        importConfig.QueryParameters?.length > 0
-          ? importConfig.QueryParameters.map((x) => ({
+        importConfig?.ApiConfig?.QueryParameters?.length > 0
+          ? importConfig?.ApiConfig?.QueryParameters.map((x) => ({
               key: x.Key,
               value: x.Value,
             }))
@@ -269,8 +271,8 @@ if (
       
       // Headers
       Headers:
-        importConfig.Headers?.length > 0
-          ? importConfig.Headers.map((x) => ({
+        importConfig?.ApiConfig?.Headers?.length > 0
+          ? importConfig?.ApiConfig?.Headers.map((x) => ({
               key: x.Key,
               value: x.Value,
             }))
@@ -278,8 +280,8 @@ if (
       
       // Body
       Body:
-        importConfig.Body?.length > 0
-          ? importConfig.Body.map((x) => ({
+        importConfig?.ApiConfig?.Body?.length > 0
+          ? importConfig?.ApiConfig?.Body.map((x) => ({
               key: x.Key,
               value: x.Value,
             }))
@@ -287,9 +289,9 @@ if (
 
       // Template
       ApiReadTemplate:
-        typeof importConfig.ApiReadTemplate === "string"
-          ? importConfig.ApiReadTemplate
-          : JSON.stringify(importConfig.ApiReadTemplate, null, 2),
+        typeof importConfig?.ApiConfig?.ApiReadTemplate === "string"
+          ? importConfig?.ApiConfig?.ApiReadTemplate
+          : JSON.stringify(importConfig?.ApiConfig?.ApiReadTemplate, null, 2),
     });
   }
 }
@@ -769,6 +771,7 @@ if (config.Authentication?.Type === "bearerToken") {
     const apiConfig = {
       StationId: Number(config.stationId) ?? null,
       ImportType: config.importType ?? null,
+       ApiConfig: {
       Url: config.apiUrl ?? "",
       Method: config.method ?? "GET",
     
@@ -816,7 +819,8 @@ if (config.Authentication?.Type === "bearerToken") {
         ApiReadTemplate: config.ApiReadTemplate
         ? JSON.parse(config.ApiReadTemplate)
         : null
-    };
+    }
+  };
 
  const payload = {
       JobName: formData.taskName,

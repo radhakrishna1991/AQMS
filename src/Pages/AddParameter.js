@@ -1042,7 +1042,7 @@ function AddParameter() {
                       </div>
                       <div className="col-4 Frequency1 mb-3">
                         <select
-                          className="form-select"
+                          className="form-select mt-2"
                           id="frequency1"
                           // required
                         >
@@ -1326,7 +1326,7 @@ function AddParameter() {
                   <div className="offset-md-1 col-md-3 col-6 align-self-end mb-3">
                     <div className="form-check mt-2">
                       <input
-                        className="form-check-input"
+                        className="form-check-input mt-075"
                         type="checkbox"
                         id="enableparametersalarms"
                         onChange={(e) =>
