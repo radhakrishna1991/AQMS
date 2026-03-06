@@ -38,6 +38,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import CommonFunctions from "../utils/CommonFunctions";
 
 // ══════════════════════════════════════════════════════════════
 //  THEME
@@ -115,7 +116,7 @@ const STATUS_CFG = {
 //  Falls back to SAMPLE_PARAMETERS if no URL / fetch fails.
 // ══════════════════════════════════════════════════════════════
 function useLiveData(fetchUrl, refreshInterval) {
-  const [data,    setData]    = useState(SAMPLE_PARAMETERS);
+  const [data,    setData]    = useState([]);
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState(null);
   const [lastSync,setLastSync]= useState(null);
@@ -136,9 +137,51 @@ function useLiveData(fetchUrl, refreshInterval) {
       setLoading(false);
     }
   }, [fetchUrl]);
+  
+useEffect(() => {
+    const fetchData = async () => {
+        try {
+            let authHeader = await CommonFunctions.getAuthHeader();
+            const response = await fetch(CommonFunctions.getWebApiUrl() + "api/dashboardparemetersdata", {
+                method: 'GET',
+                headers: authHeader,
+            });
+            const data = await response.json();
+
+            // Process the data into the required format
+            const formattedData = data?.map((item) => {
+                return {
+                    id: item?.id,
+                    name:item?.parameterName || '-',
+                    sym: item?.parameterName,
+                    val: item?.latestValue || '-',
+                     unit:item?.unitName||"-",
+                    min:item?.minValue||0,
+                    max:item?.maxValue||0,
+                     avg:item?.avgValue||0,
+                     scale:item?.scale ||0,
+                    limitH: item?.high || null,
+                    limitHH: item?.highHigh || null,
+                    floor:item?.floor||0,
+                    ceiling:item?.ceiling ||0,
+                    status: item?.highHigh != null && item?.latestValue >= item?.highHigh ? 'alarm': item?. High != null && item?.latestValue >=item?.high ?'warning':'normal'  ,
+                    hourlyValues:item?.hourlyValues||[]
+                };
+            });
+
+            setData(formattedData); 
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
+
+    fetchData();
+}, []);
+
+  
 
   useEffect(() => {
-    fetchData();
+    //fetchData();
     if (!fetchUrl) return;
     const id = setInterval(fetchData, refreshInterval);
     return () => clearInterval(id);
@@ -194,11 +237,18 @@ function Sparkline({ data, color }) {
 // ══════════════════════════════════════════════════════════════
 //  DUAL LIMIT TRACK
 // ══════════════════════════════════════════════════════════════
-function DualLimitTrack({ val, scale, limitH, limitHH, fillColor }) {
+function DualLimitTrack({ val, limitH , limitHH ,floor, ceiling, fillColor }) {
+  const scale = 1000;
   const rawVal  = Math.abs(Number(val)) || 0;
   const fillPct = Math.min(100, (rawVal / scale) * 100);
-  const hPct    = limitH  != null ? Math.min(100, (limitH  / scale) * 100) : null;
+
+  const hPct    =  limitH != null ? Math.min(100, (limitH  / scale) * 100) : null;
   const hhPct   = limitHH != null ? Math.min(100, (limitHH / scale) * 100) : null;
+
+const roundedHPct  = hPct  != null ? Math.round(hPct)  : null;
+const roundedHHPct = hhPct != null ? Math.round(hhPct) : null;
+
+
 
   return (
     <div style={{ marginTop: 10 }}>
@@ -215,14 +265,14 @@ function DualLimitTrack({ val, scale, limitH, limitHH, fillColor }) {
         }} />
         {hPct != null && (
           <div title={`High: ${limitH}`} style={{
-            position: "absolute", left: `${hPct}%`,
+            position: "absolute", left: `${roundedHPct}%`,
             top: -3, width: 2, height: 12,
             background: T.limitH, borderRadius: 1,
           }} />
         )}
         {hhPct != null && (
           <div title={`High-High: ${limitHH}`} style={{
-            position: "absolute", left: `${hhPct}%`,
+            position: "absolute", left: `${roundedHHPct}%`,
             top: -3, width: 2, height: 12,
             background: T.limitHH, borderRadius: 1,
           }} />
@@ -269,7 +319,7 @@ function DualLimitTrack({ val, scale, limitH, limitHH, fillColor }) {
 // ══════════════════════════════════════════════════════════════
 //  PARAMETER CARD
 // ══════════════════════════════════════════════════════════════
-function ParamCard({ param, colorIndex, sparkData }) {
+function ParamCard({ param, colorIndex, sparkData ,onClick }) {
   const [hovered, setHovered] = useState(false);
   const sw  = getSwatch(colorIndex);
   const st  = STATUS_CFG[param.status] || STATUS_CFG.normal;
@@ -284,6 +334,7 @@ function ParamCard({ param, colorIndex, sparkData }) {
 
   return (
     <div
+     onClick={onClick} 
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
@@ -298,7 +349,7 @@ function ParamCard({ param, colorIndex, sparkData }) {
           ? `0 8px 28px ${rgba(sw.accent, 0.15)}`
           : `0 1px 5px rgba(30,64,174,0.06)`,
         transform: hovered ? "translateY(-2px)" : "translateY(0)",
-        cursor: "default",
+      cursor: "pointer",
       }}
     >
       {/* Top accent bar */}
@@ -354,9 +405,11 @@ function ParamCard({ param, colorIndex, sparkData }) {
       {/* Dual limit track */}
       <DualLimitTrack
         val={param.val}
-        scale={param.scale}
+        // scale={param.scale}
         limitH={param.limitH}
         limitHH={param.limitHH}
+        floor={param.floor}
+        ceiling={param.ceiling}
         fillColor={fillColor}
       />
 
@@ -388,6 +441,276 @@ function ParamCard({ param, colorIndex, sparkData }) {
       </div>
       <Sparkline data={sparkData} color={sw.accent} />
     </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════
+//  TrendModal
+// ══════════════════════════════════════════════════════════════
+function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
+  if (!open) return null;
+
+  const sw = getSwatch(colorIndex);
+
+  // Example X and Y axis labels
+  const labelX = ['0h', '1h', '2h', '3h', '4h', '5h', '6h', '7h', '8h', '9h', '10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h', '22h', '23h'];
+  const labelY = ['0', '10', '20', '30', '40'];
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.45)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        zIndex: 9999,
+        padding: 16,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "min(720px, 96vw)",
+          borderRadius: 16,
+          background: T.cardBg,
+          border: `1px solid ${T.border}`,
+          boxShadow: "0 16px 60px rgba(0,0,0,0.25)",
+          overflow: "hidden",
+        }}
+      >
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "14px 16px",
+          borderBottom: `1px solid ${T.divider}`,
+        }}>
+          <div>
+            <div style={{ fontSize: 12, color: T.textSoft }}>{param?.parameterName}</div>
+            <div style={{ fontSize: 16, fontWeight: 800, color: sw.accent, marginTop: 2 }}>
+              1-Hour Trend
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            style={{
+              border: `1px solid ${T.border}`,
+              background: "transparent",
+              color: T.textMid,
+              borderRadius: 10,
+              padding: "6px 10px",
+              cursor: "pointer",
+              fontWeight: 700,
+            }}
+          >
+            ✕
+          </button>
+        </div>
+
+        <div style={{ padding: 16 }}>
+          <div style={{
+            display: "flex",
+            gap: 14,
+            alignItems: "baseline",
+            marginBottom: 12,
+          }}>
+            <div style={{
+              fontFamily: "'Roboto Mono', monospace",
+              fontSize: 26,
+              fontWeight: 700,
+              color: sw.accent,
+            }}>
+              {fmtVal(param?.latestValue)}
+            </div>
+            <div style={{ color: T.textSoft, fontSize: 12 }}>
+              {param?.unitName}
+            </div>
+          </div>
+
+          {/* Big Sparkline */}
+          <BigSparkline data={sparkData} color={sw.accent} xLabels={labelX} labelY={labelY} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function BigSparkline({ data, color, xLabels, labelY }) {
+  const W = 720;
+  const H = 260;
+
+  // chart margins for axes/labels
+  const M = { left: 50, right: 18, top: 14, bottom: 40 };
+  const plotW = W - M.left - M.right;
+  const plotH = H - M.top - M.bottom;
+
+  const clean = (Array.isArray(data) ? data : []).map((d) =>
+    d == null ? null : Number(d)
+  );
+
+  const valid = clean.filter((d) => d != null && !Number.isNaN(d));
+  if (valid.length < 2) {
+    return (
+      <div style={{ height: 220, display: "grid", placeItems: "center", color: T.textSoft }}>
+        Not enough data
+      </div>
+    );
+  }
+
+  const mn = Math.min(...valid);
+  const mx = Math.max(...valid);
+  const pad = (mx - mn) * 0.08 || 1; // small padding so line doesn't touch border
+  const yMin = mn - pad;
+  const yMax = mx + pad;
+  const rng = yMax - yMin || 1;
+
+  const xAt = (i) => M.left + (i / (clean.length - 1)) * plotW;
+  const yAt = (v) => M.top + (1 - (v - yMin) / rng) * plotH;
+
+  // Build polyline points (nulls: use last good value or yMin)
+  let lastGood = valid[0];
+  const pts = clean.map((d, i) => {
+    if (d == null || Number.isNaN(d)) d = lastGood;
+    else lastGood = d;
+    return `${xAt(i).toFixed(1)},${yAt(d).toFixed(1)}`;
+  }).join(" ");
+
+  // Area path
+  const firstX = xAt(0);
+  const lastX = xAt(clean.length - 1);
+  const baseY = M.top + plotH;
+  const areaPath = `M ${firstX},${baseY} L ${pts} L ${lastX},${baseY} Z`;
+
+  // Y ticks (5 ticks)
+  const yTicks = 5;
+  const yTickVals = Array.from({ length: yTicks }, (_, k) => {
+    return yMin + (k * (yMax - yMin)) / (yTicks - 1);
+  }).reverse();
+
+  // X ticks (show fewer so labels don’t overlap)
+  const xTicks = Math.min(6, clean.length);
+  const xTickIdx = Array.from({ length: xTicks }, (_, k) => {
+    return Math.round((k * (clean.length - 1)) / (xTicks - 1));
+  });
+
+  // X labels fallback (if you don’t pass xLabels)
+  const xl = Array.isArray(xLabels) && xLabels.length >= clean.length
+    ? xLabels
+    : clean.map((_, i) => `${i}`);
+
+  const gid = "bg_" + color.replace("#", "");
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      style={{ width: "100%", height: 260, display: "block" }}
+    >
+      <defs>
+        <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      {/* Axes */}
+      {/* Y axis line */}
+      <line
+        x1={M.left}
+        y1={M.top}
+        x2={M.left}
+        y2={M.top + plotH}
+        stroke={T.border}
+        strokeWidth="1"
+      />
+      {/* X axis line */}
+      <line
+        x1={M.left}
+        y1={M.top + plotH}
+        x2={M.left + plotW}
+        y2={M.top + plotH}
+        stroke={T.border}
+        strokeWidth="1"
+      />
+
+      {/* Y ticks + labels */}
+      {yTickVals.map((v, idx) => {
+        const y = yAt(v);
+        return (
+          <g key={idx}>
+            <line
+              x1={M.left - 6}
+              y1={y}
+              x2={M.left}
+              y2={y}
+              stroke={T.border}
+              strokeWidth="1"
+            />
+            <text
+              x={M.left - 10}
+              y={y + 4}
+              fontSize="11"
+              fill={T.textSoft}
+              textAnchor="end"
+              style={{ fontFamily: "'Roboto Mono', monospace" }}
+            >
+              {labelY ? labelY[idx] : v.toFixed(1)}
+            </text>
+
+            {/* optional horizontal grid */}
+            <line
+              x1={M.left}
+              y1={y}
+              x2={M.left + plotW}
+              y2={y}
+              stroke={T.divider}
+              strokeWidth="1"
+              opacity="0.7"
+            />
+          </g>
+        );
+      })}
+
+      {/* X ticks + labels */}
+      {xTickIdx.map((i) => {
+        const x = xAt(i);
+        return (
+          <g key={i}>
+            <line
+              x1={x}
+              y1={M.top + plotH}
+              x2={x}
+              y2={M.top + plotH + 6}
+              stroke={T.border}
+              strokeWidth="1"
+            />
+            <text
+              x={x}
+              y={M.top + plotH + 22}
+              fontSize="11"
+              fill={T.textSoft}
+              textAnchor="middle"
+            >
+              {xl[i] ?? ""}
+            </text>
+          </g>
+        );
+      })}
+
+      {/* Area + line */}
+      <path d={areaPath} fill={`url(#${gid})`} />
+      <polyline
+        points={pts}
+        fill="none"
+        stroke={color}
+        strokeWidth="3"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 
@@ -549,9 +872,9 @@ function Clock() {
 // ══════════════════════════════════════════════════════════════
 function SummaryStats({ data }) {
   const total   = data.length;
-  const normal  = data.filter((p) => p.status === "normal").length;
-  const warning = data.filter((p) => p.status === "warning").length;
-  const alarm   = data.filter((p) => p.status === "alarm").length;
+  const normal  = data.filter((p) => p.status.toLowerCase() === "normal").length;
+  const warning = data.filter((p) => p.status.toLowerCase() === "warning").length;
+  const alarm   = data.filter((p) => p.status.toLowerCase() === "alarm").length;
   const alarmPct = total ? Math.round((alarm / total) * 100) : 0;
 
   const stats = [
@@ -591,48 +914,104 @@ function SummaryStats({ data }) {
 //  Keeps rolling sparkline history per parameter.
 //  Updates automatically when new data arrives.
 // ══════════════════════════════════════════════════════════════
-function useSparkHistories(params, sparkPoints = 50) {
+// function useSparkHistories(params, sparkPoints = 50) {
+//   const historiesRef = useRef({});
+//   const [histories, setHistories] = useState({});
+
+//   // Initialise or extend history when params change
+//   useEffect(() => {
+//     const updated = { ...historiesRef.current };
+//     let changed = false;
+//     params.forEach((p) => {
+//       if (!updated[p.id]) {
+//         const base = Math.abs(Number(p.val)) || 1;
+//         const va   = base * 0.08 || 0.5;
+//         let v = base;
+//         updated[p.id] = Array.from({ length: sparkPoints }, () => {
+//           v += (Math.random() - 0.5) * va * 2;
+//           return Math.max(0, v);
+//         });
+//         changed = true;
+//       }
+//     });
+//     if (changed) {
+//       historiesRef.current = updated;
+//       setHistories({ ...updated });
+//     }
+//   }, [params, sparkPoints]);
+
+//   // Push new data point from live param val
+//   const pushPoint = useCallback((params) => {
+//     const updated = { ...historiesRef.current };
+//     params.forEach((p) => {
+//       if (!updated[p.id]) return;
+//       const base = Math.abs(Number(p.val)) || 1;
+//       const va   = base * 0.08 || 0.5;
+//       const arr  = [...updated[p.id]];
+//       let next   = arr.at(-1) + (Math.random() - 0.5) * va * 2;
+//       arr.push(Math.max(0, next));
+//       arr.shift();
+//       updated[p.id] = arr;
+//     });
+//     historiesRef.current = updated;
+//     setHistories({ ...updated });
+//   }, []);
+
+//   return { histories, pushPoint };
+// }
+function useSparkHistories(params, sparkPoints = 24) {
   const historiesRef = useRef({});
   const [histories, setHistories] = useState({});
 
-  // Initialise or extend history when params change
+  // Initialize / refresh history when params change (use hourlyValues)
   useEffect(() => {
     const updated = { ...historiesRef.current };
     let changed = false;
+
     params.forEach((p) => {
-      if (!updated[p.id]) {
-        const base = Math.abs(Number(p.val)) || 1;
-        const va   = base * 0.08 || 0.5;
-        let v = base;
-        updated[p.id] = Array.from({ length: sparkPoints }, () => {
-          v += (Math.random() - 0.5) * va * 2;
-          return Math.max(0, v);
-        });
+      const hv = Array.isArray(p.hourlyValues) ? p.hourlyValues : [];
+
+      // If no history exists OR hourly length changed, reset from hourlyValues
+      if (!updated[p.id] || updated[p.id].length !== hv.length) {
+        // If hourlyValues empty, fallback to [latestValue] or []
+        const seed = hv.length ? hv : (p.latestValue != null ? [Number(p.latestValue)] : []);
+        updated[p.id] = seed.map(Number);
         changed = true;
       }
     });
+
     if (changed) {
       historiesRef.current = updated;
       setHistories({ ...updated });
     }
-  }, [params, sparkPoints]);
+  }, [params]);
 
-  // Push new data point from live param val
+  // Push new point (use real latestValue, not random)
   const pushPoint = useCallback((params) => {
     const updated = { ...historiesRef.current };
+    let changed = false;
+
     params.forEach((p) => {
       if (!updated[p.id]) return;
-      const base = Math.abs(Number(p.val)) || 1;
-      const va   = base * 0.08 || 0.5;
-      const arr  = [...updated[p.id]];
-      let next   = arr.at(-1) + (Math.random() - 0.5) * va * 2;
-      arr.push(Math.max(0, next));
-      arr.shift();
+
+      const val = Number(p.latestValue);
+      if (Number.isNaN(val)) return;
+
+      const arr = [...updated[p.id]];
+      arr.push(val);
+
+      // keep last sparkPoints points
+      while (arr.length > sparkPoints) arr.shift();
+
       updated[p.id] = arr;
+      changed = true;
     });
-    historiesRef.current = updated;
-    setHistories({ ...updated });
-  }, []);
+
+    if (changed) {
+      historiesRef.current = updated;
+      setHistories({ ...updated });
+    }
+  }, [sparkPoints]);
 
   return { histories, pushPoint };
 }
@@ -641,9 +1020,9 @@ function useSparkHistories(params, sparkPoints = 50) {
 //  MAIN DASHBOARD COMPONENT
 // ══════════════════════════════════════════════════════════════
 export default function AQMSDashboard({
-  fetchUrl         = "",                 // your API URL — leave empty to use sample data
-  refreshInterval  = 5000,              // polling ms
-  stationName      = "Aqdat Al Mawaniah",
+  fetchUrl         = "",                 
+  refreshInterval  = 5000,              
+  stationName      = "",
   sparkPoints      = 50,
 }) {
   // Live data
@@ -652,6 +1031,7 @@ export default function AQMSDashboard({
   // Search & filter state
   const [query,        setQuery]        = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [selectedParam, setSelectedParam] = useState(null);
 
   // Sparkline histories
   const { histories, pushPoint } = useSparkHistories(data, sparkPoints);
@@ -664,15 +1044,16 @@ export default function AQMSDashboard({
   }, [data, pushPoint]);
 
   // Filtered parameter list
-  const filtered = data.filter((p) => {
+  const filtered = data?.filter((p) => {
     const matchQuery  = !query || p.name.toLowerCase().includes(query.toLowerCase()) ||
                         p.sym.toLowerCase().includes(query.toLowerCase());
     const matchStatus = statusFilter === "all" || p.status === statusFilter;
     return matchQuery && matchStatus;
   });
 
+  console.log(filtered,"filtered");
   // Status counts
-  const counts = data.reduce(
+  const counts = data?.reduce(
     (acc, p) => { acc[p.status] = (acc[p.status] || 0) + 1; return acc; },
     { normal: 0, warning: 0, alarm: 0 }
   );
@@ -733,7 +1114,7 @@ export default function AQMSDashboard({
           onQuery={setQuery}
           statusFilter={statusFilter}
           onStatusFilter={setStatusFilter}
-          total={data.length}
+          total={data?.length}
           shown={filtered.length}
         />
 
@@ -747,12 +1128,14 @@ export default function AQMSDashboard({
             {filtered.map((param) => {
               // Use original index for stable color assignment
               const originalIndex = data.findIndex((d) => d.id === param.id);
+              const sparkData = histories[param.id] || [];
               return (
                 <ParamCard
                   key={param.id}
                   param={param}
                   colorIndex={originalIndex}
-                  sparkData={histories[param.id] || []}
+                  sparkData={sparkData}
+                  onClick={() => setSelectedParam({ param, sparkData, colorIndex: originalIndex })}
                 />
               );
             })}
@@ -767,6 +1150,14 @@ export default function AQMSDashboard({
               : "No parameters match your search."}
           </div>
         )}
+
+        <TrendModal
+  open={!!selectedParam}
+  onClose={() => setSelectedParam(null)}
+  param={selectedParam?.param}
+  sparkData={selectedParam?.sparkData || []}
+  colorIndex={selectedParam?.colorIndex ?? 0}
+/>
       </div>
       </main>
     </>
