@@ -91,13 +91,16 @@ function LiveDataReports() {
   }, [Stations]);
   useEffect(() => {
     if (filteredStations.length > 0) {
+  
       const firstStationId = filteredStations[0].id;
   
       setSelectedStationId(firstStationId);
   
-      handleStationChange({
-        target: { value: firstStationId }
-      });
+      handleStationChange(
+        { target: { value: firstStationId } },
+        false 
+      );
+  
     }
   }, [filteredStations]);
   useEffect(() => {
@@ -338,7 +341,7 @@ function LiveDataReports() {
   };
   const getdtareport = function (param) {
     //setListReportData([]);
-    let Pollutent = $("#pollutentid").val();
+    let Pollutent = $("#pollutentid").val() || [];
     if (Pollutent.length <= 0) {
       toast.error("Please select parameter", {
         position: "top-right",
@@ -369,12 +372,46 @@ function LiveDataReports() {
   };
 
   /* reported data end */
+  // const Resetfilters = function () {
+  //   $(".pollutentid")[0].sumo.reload();
+  //   $(".pollutentid")[0].sumo.unSelectAll();
+  //   //setGridcall(false);
+  //   getdtareport("reset");
+  //  setSelectedPollutents(Pollutents);
+  // };
   const Resetfilters = function () {
-    $(".pollutentid")[0].sumo.reload();
-    $(".pollutentid")[0].sumo.unSelectAll();
-    //setGridcall(false);
+
+    // make reset behave like initial load
+    setIsInitialLoad(true);
+  
+    if (filteredStations && filteredStations.length > 0) {
+  
+      const firstStationId = filteredStations[0].id;
+  
+      setSelectedStationId(firstStationId);
+  
+      // pass false because this is not a user action
+      handleStationChange(
+        { target: { value: firstStationId } },
+        false
+      );
+    }
+  
+    setTimeout(() => {
+  
+      const select = $("#pollutentid")[0];
+  
+      if (select?.sumo) {
+        select.sumo.reload();
+        select.sumo.selectAll();
+      }
+  
+    }, 100);
+  
+    setSelectedPollutents(Pollutents);
+  
     getdtareport("reset");
-   setSelectedPollutents(Pollutents);
+  
   };
   const handleMonitoringTypeChange = (e) => {
     const value = e.target.value;
@@ -396,23 +433,25 @@ function LiveDataReports() {
     setFilteredStations(filtered);
   };
  
-  const handleStationChange = (e) => {
+  const handleStationChange = (e, isUserAction = true) => {
+
     const stationId = e.target.value;
+  
+    if (isUserAction) {
+      setIsInitialLoad(false);   // only for manual change
+    }
   
     if (stationId === "") {
       setSelectedStationId("");
-      setFilteredPollutents([]); // or set original data if needed
+      setFilteredPollutents([]);
+  
       setTimeout(() => {
         if ($('.pollutentid')[0]?.sumo) {
           $('.pollutentid')[0].sumo.reload();
-    
-          // Select all parameters only on first load
-          if (isInitialLoad) {
-            $('.pollutentid')[0].sumo.selectAll();
-            setIsInitialLoad(false);
-          }
+          $(".pollutentid")[0].sumo.unSelectAll();
         }
       }, 10);
+  
       return;
     }
   
@@ -422,17 +461,11 @@ function LiveDataReports() {
   
     setFilteredPollutents(filtered);
     setSelectedStationId(stationId);
-
-     // 🔹 Reload SumoSelect
-     setTimeout(() => {
+  
+    setTimeout(() => {
       if ($('.pollutentid')[0]?.sumo) {
         $('.pollutentid')[0].sumo.reload();
-  
-        // Select all parameters only on first load
-        if (isInitialLoad) {
-          $('.pollutentid')[0].sumo.selectAll();
-          setIsInitialLoad(false);
-        }
+        $(".pollutentid")[0].sumo.unSelectAll();
       }
     }, 10);
   };
