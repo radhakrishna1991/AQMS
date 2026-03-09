@@ -186,9 +186,9 @@ function StasticsReport() {
         return false;
       }
     }
-    if (Station.length > 1) {
-      Station.join(",");
-    }
+    // if (Station.length > 1) {
+    //   Station.join(",");
+    // }
     if (Pollutent.length > 1) {
       Pollutent.join(",");
     }
@@ -672,6 +672,13 @@ function StasticsReport() {
   
     if (stationId === "") {
       setFilteredPollutents([]); // or set original data if needed
+      setTimeout(() => {
+        if ($('.pollutentid')[0]?.sumo) {
+          $('.pollutentid')[0].sumo.reload();
+          $('.pollutentid')[0].sumo.unSelectAll();
+          $('#pollutentid').trigger('change');
+        }
+      }, 10);
       return;
     }
   
