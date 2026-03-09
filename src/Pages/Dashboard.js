@@ -69,6 +69,7 @@ function Dashboard() {
       const [defaultInterval,setDefaultInterval]=useState([]);
       const [isLoading, setIsLoading] = useState(true);
       const [isDefaultInterval,setIsDefaultInterval]=useState(false);
+      const [PollutentsData,setPollutentsData]=useState([])
       const isDefaultIntervalRef = useRef(isDefaultInterval);
 
   const selectedStationRef = useRef(selectedStation);
@@ -129,8 +130,9 @@ function Dashboard() {
   const Minute = window.DashboardRefreshtime;
 
 const getDefaultInterval = (pollutents) => {
+if(selectedStation?.length<=0) return;
   const freqPollutent = pollutents.find(
-    p => p.dataSyncFrequency && p.dataSyncFrequency > 0
+    p => p.dataSyncFrequency && p.dataSyncFrequency > 0 && p.stationID == selectedStation
   );
   if (!freqPollutent) {
     setDefaultInterval("1M"); 
@@ -149,7 +151,6 @@ const getDefaultInterval = (pollutents) => {
   setIsDefaultInterval(true);
 };
 
-
 useEffect(()=>
 {
  const fetchData = async () => {
@@ -162,7 +163,7 @@ useEffect(()=>
             const data = await response.json();
              if(data.length > 0)
              {
-              getDefaultInterval(data);
+          setPollutentsData(data);
              }
           }catch(error)
           {
@@ -284,6 +285,11 @@ useEffect(() => {
     setSelectedStation(null); 
   }
 }, [selectedMonitorType, stationsData]);
+
+useEffect(()=>
+{
+  getDefaultInterval(PollutentsData)
+},[PollutentsData,selectedStation])
 
 useEffect(() => {
   isDefaultIntervalRef.current = isDefaultInterval;
