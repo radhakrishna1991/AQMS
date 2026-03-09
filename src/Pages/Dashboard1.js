@@ -531,13 +531,18 @@ function TrendModal({ open, onClose, param, sparkData, colorIndex }) {
 function BigSparkline({ data, color, xLabels, labelY }) {
   const W = 720;
   const H = 260;
-  // chart margins for axes/labels
   const M = { left: 50, right: 18, top: 14, bottom: 40 };
   const plotW = W - M.left - M.right;
   const plotH = H - M.top - M.bottom;
 
+  // ── Tooltip state ──────────────────────────────────────────────
+  const [tooltip, setTooltip] = useState(null);
+  // tooltip: { x, y, value, label } | null
+
+  const svgRef = useRef(null);
+
   const clean = (Array.isArray(data) ? data : []).map((d) =>
-    d == null ? null : Number(d.value) // Extract 'value' from the data objects
+    d == null ? null : Number(d.value)
   );
 
   const valid = clean.filter((d) => d != null && !Number.isNaN(d));
@@ -552,7 +557,7 @@ function BigSparkline({ data, color, xLabels, labelY }) {
 
   const mn = Math.min(...valid);
   const mx = Math.max(...valid);
-  const pad = (mx - mn) * 0.08 || 1; // small padding so line doesn't touch border
+  const pad = (mx - mn) * 0.08 || 1;
   const yMin = mn - pad;
   const yMax = mx + pad;
   const rng = yMax - yMin || 1;
@@ -560,53 +565,56 @@ function BigSparkline({ data, color, xLabels, labelY }) {
   const xAt = (i) => M.left + (i / (clean.length - 1)) * plotW;
   const yAt = (v) => M.top + (1 - (v - yMin) / rng) * plotH;
 
-  // Handle single data point case by plotting a single point
-  if (valid.length === 1) {
-    const x = xAt(0);
-    const y = yAt(valid[0]);
+  // Mouse handler: find nearest data point 
+  const handleMouseMove = (e) => {
+    const svg = svgRef.current;
+    if (!svg) return;
 
-    return (
-      <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: 260, display: "block" }}>
-        <defs>
-          <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={color} stopOpacity="0.25" />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
-          </linearGradient>
-        </defs>
+    const rect = svg.getBoundingClientRect();
+    // Map mouse X to SVG coordinate space
+    const mouseXSvg = ((e.clientX - rect.left) / rect.width) * W;
+    const mouseYSvg = ((e.clientY - rect.top) / rect.height) * H;
 
-        {/* Axes */}
-        <line x1={M.left} y1={M.top} x2={M.left} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
-        <line x1={M.left} y1={M.top + plotH} x2={M.left + plotW} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
+    // Only react inside the plot area
+    if (
+      mouseXSvg < M.left || mouseXSvg > M.left + plotW ||
+      mouseYSvg < M.top  || mouseYSvg > M.top  + plotH
+    ) {
+      setTooltip(null);
+      return;
+    }
 
-        {/* Y axis ticks */}
-        {labelY.map((v, idx) => {
-          const y = yAt(parseFloat(v));
-          return (
-            <g key={idx}>
-              <line x1={M.left - 6} y1={y} x2={M.left} y2={y} stroke={T.border} strokeWidth="1" />
-              <text x={M.left - 10} y={y + 4} fontSize="11" fill={T.textSoft} textAnchor="end" style={{ fontFamily: "'Roboto Mono', monospace" }}>
-                {v}
-              </text>
-              <line x1={M.left} y1={y} x2={M.left + plotW} y2={y} stroke={T.divider} strokeWidth="1" opacity="0.7" />
-            </g>
-          );
-        })}
+    // Find the closest index
+    const fraction = (mouseXSvg - M.left) / plotW;
+    const rawIdx  = fraction * (clean.length - 1);
+    const idx     = Math.max(0, Math.min(clean.length - 1, Math.round(rawIdx)));
 
-        {/* X axis tick */}
-        <g>
-          <line x1={x} y1={M.top + plotH} x2={x} y2={M.top + plotH + 6} stroke={T.border} strokeWidth="1" />
-          <text x={x} y={M.top + plotH + 22} fontSize="11" fill={T.textSoft} textAnchor="middle">
-            {xLabels[0] || "1"}
-          </text>
-        </g>
+    // Walk to nearest non-null value
+    let value = clean[idx];
+    if (value == null || Number.isNaN(value)) {
+      // search outward
+      for (let d = 1; d < clean.length; d++) {
+        if (idx - d >= 0 && clean[idx - d] != null) { value = clean[idx - d]; break; }
+        if (idx + d < clean.length && clean[idx + d] != null) { value = clean[idx + d]; break; }
+      }
+    }
+    if (value == null) { setTooltip(null); return; }
 
-        {/* Single Point */}
-        <circle cx={x} cy={y} r={4} fill={color} />
-      </svg>
-    );
-  }
+    const xl = Array.isArray(xLabels) && xLabels.length >= clean.length
+      ? xLabels
+      : clean.map((_, i) => `${i}`);
 
-  // If you have more than one point, proceed as usual with the line chart
+    setTooltip({
+      svgX : xAt(idx),
+      svgY : yAt(value),
+      value,
+      label: xl[idx] ?? "",
+    });
+  };
+
+  const handleMouseLeave = () => setTooltip(null);
+
+  // ── Build polyline ─────────────────────────────────────────────
   let lastGood = valid[0];
   const pts = clean.map((d, i) => {
     if (d == null || Number.isNaN(d)) d = lastGood;
@@ -615,22 +623,19 @@ function BigSparkline({ data, color, xLabels, labelY }) {
   }).join(" ");
 
   const firstX = xAt(0);
-  const lastX = xAt(clean.length - 1);
-  const baseY = M.top + plotH;
+  const lastX  = xAt(clean.length - 1);
+  const baseY  = M.top + plotH;
   const areaPath = `M ${firstX},${baseY} L ${pts} L ${lastX},${baseY} Z`;
 
-  const yTicks = 5;
-  // const yTickVals = Array.from({ length: yTicks }, (_, k) => {
-  //   return yMin + (k * (yMax - yMin)) / (yTicks - 1);
-  // }).reverse();
-  const yTickVals = Array.from({ length: yTicks }, (_, k) => {
-    return yMin + (k * (yMax - yMin)) / (yTicks - 1);
-});
+  const yTicks   = 5;
+  const yTickVals = Array.from({ length: yTicks }, (_, k) =>
+    yMin + (k * (yMax - yMin)) / (yTicks - 1)
+  );
 
-  const xTicks = Math.min(6, clean.length);
-  const xTickIdx = Array.from({ length: xTicks }, (_, k) => {
-    return Math.round((k * (clean.length - 1)) / (xTicks - 1));
-  });
+  const xTicks  = Math.min(6, clean.length);
+  const xTickIdx = Array.from({ length: xTicks }, (_, k) =>
+    Math.round((k * (clean.length - 1)) / (xTicks - 1))
+  );
 
   const xl = Array.isArray(xLabels) && xLabels.length >= clean.length
     ? xLabels
@@ -638,18 +643,38 @@ function BigSparkline({ data, color, xLabels, labelY }) {
 
   const gid = "bg_" + color.replace("#", "");
 
+  // ── Tooltip box dimensions ─────────────────────────────────────
+  const TW = 130, TH = 48, TR = 7;
+
+  // Keep tooltip inside SVG bounds
+  const ttX = tooltip
+    ? Math.min(Math.max(tooltip.svgX - TW / 2, M.left), M.left + plotW - TW)
+    : 0;
+  const ttY = tooltip
+    ? (tooltip.svgY - TH - 12 < M.top
+        ? tooltip.svgY + 14          // flip below if too close to top
+        : tooltip.svgY - TH - 12)
+    : 0;
+
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" style={{ width: "100%", height: 260, display: "block" }}>
+    <svg
+      ref={svgRef}
+      viewBox={`0 0 ${W} ${H}`}
+      preserveAspectRatio="none"
+      style={{ width: "100%", height: 260, display: "block", cursor: "crosshair" }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
       <defs>
         <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={color} stopOpacity="0.25" />
+          <stop offset="0%"   stopColor={color} stopOpacity="0.25" />
           <stop offset="100%" stopColor={color} stopOpacity="0" />
         </linearGradient>
       </defs>
 
       {/* Axes */}
-      <line x1={M.left} y1={M.top} x2={M.left} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
-      <line x1={M.left} y1={M.top + plotH} x2={M.left + plotW} y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
+      <line x1={M.left} y1={M.top}          x2={M.left}          y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
+      <line x1={M.left} y1={M.top + plotH}  x2={M.left + plotW}  y2={M.top + plotH} stroke={T.border} strokeWidth="1" />
 
       {/* Y axis ticks */}
       {yTickVals.map((v, idx) => {
@@ -657,7 +682,8 @@ function BigSparkline({ data, color, xLabels, labelY }) {
         return (
           <g key={idx}>
             <line x1={M.left - 6} y1={y} x2={M.left} y2={y} stroke={T.border} strokeWidth="1" />
-            <text x={M.left - 10} y={y + 4} fontSize="11" fill={T.textSoft} textAnchor="end" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+            <text x={M.left - 10} y={y + 4} fontSize="11" fill={T.textSoft} textAnchor="end"
+              style={{ fontFamily: "'Roboto Mono', monospace" }}>
               {labelY ? labelY[idx] : v.toFixed(1)}
             </text>
             <line x1={M.left} y1={y} x2={M.left + plotW} y2={y} stroke={T.divider} strokeWidth="1" opacity="0.7" />
@@ -666,55 +692,86 @@ function BigSparkline({ data, color, xLabels, labelY }) {
       })}
 
       {/* X axis ticks */}
-      {/* {xTickIdx.map((i) => {
+      {xTickIdx.map((i) => {
         const x = xAt(i);
+        const label = xl[i] ?? "";
+        const [datePart, timePart] = label.split(" ");
         return (
           <g key={i}>
             <line x1={x} y1={M.top + plotH} x2={x} y2={M.top + plotH + 6} stroke={T.border} strokeWidth="1" />
-            <text x={x} y={M.top + plotH + 22} fontSize="11" fill={T.textSoft} textAnchor="middle">
-              {xl[i] ?? ""}
+            <text x={x} y={M.top + plotH + 18} fontSize="11" fill={T.textSoft} textAnchor="middle">
+              {timePart || label}
             </text>
+            {datePart && timePart && (
+              <text x={x} y={M.top + plotH + 32} fontSize="10" fill={T.textSoft} textAnchor="middle" opacity="0.7">
+                {datePart}
+              </text>
+            )}
           </g>
         );
-      })} */}
-      {/* X axis ticks */}
-{xTickIdx.map((i) => {
-    const x = xAt(i);
-    const label = xl[i] ?? "";
-    
-    // Split "05/03 15:19" into date and time parts
-    const [datePart, timePart] = label.split(" ");
+      })}
 
-    return (
-        <g key={i}>
-            <line 
-                x1={x} y1={M.top + plotH} 
-                x2={x} y2={M.top + plotH + 6} 
-                stroke={T.border} strokeWidth="1" 
-            />
-            {/* Time on first line */}
-            <text 
-                x={x} y={M.top + plotH + 18} 
-                fontSize="11" fill={T.textSoft} textAnchor="middle"
-            >
-                {timePart || label}
-            </text>
-            {/* Date on second line */}
-            {datePart && timePart && (
-                <text 
-                    x={x} y={M.top + plotH + 32} 
-                    fontSize="10" fill={T.textSoft} textAnchor="middle" 
-                    opacity="0.7"
-                >
-                    {datePart}
-                </text>
-            )}
-        </g>
-    );
-})}
-
+      {/* Area fill + line */}
       <path d={areaPath} fill={`url(#${gid})`} />
       <polyline points={pts} fill="none" stroke={color} strokeWidth="3" strokeLinejoin="round" strokeLinecap="round" />
+
+      {/* ── Tooltip ──────────────────────────────────────────────── */}
+      {tooltip && (
+        <g style={{ pointerEvents: "none" }}>
+          {/* Vertical crosshair line */}
+          <line
+            x1={tooltip.svgX} y1={M.top}
+            x2={tooltip.svgX} y2={M.top + plotH}
+            stroke={color} strokeWidth="1" strokeDasharray="4 3" opacity="0.55"
+          />
+
+          {/* Dot on line */}
+          <circle cx={tooltip.svgX} cy={tooltip.svgY} r="6" fill={color} opacity="0.25" />
+          <circle cx={tooltip.svgX} cy={tooltip.svgY} r="4" fill={color} />
+          <circle cx={tooltip.svgX} cy={tooltip.svgY} r="2" fill="#fff" />
+
+          {/* Tooltip box */}
+          <rect
+            x={ttX} y={ttY}
+            width={TW} height={TH}
+            rx={TR} ry={TR}
+            fill={T.cardBg}
+            stroke={color}
+            strokeWidth="1.2"
+            opacity="0.97"
+            style={{ filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.35))" }}
+          />
+
+          {/* Value */}
+          <text
+            x={ttX + TW / 2} y={ttY + 17}
+            fontSize="13" fontWeight="700"
+            fill={color} textAnchor="middle"
+            style={{ fontFamily: "'Roboto Mono', monospace" }}
+          >
+            {tooltip.value.toFixed(2)}
+          </text>
+
+          {/* Label — split date / time */}
+          {(() => {
+            const [dp, tp] = tooltip.label.split(" ");
+            return tp ? (
+              <>
+                <text x={ttX + TW / 2} y={ttY + 31} fontSize="10" fill={T.textSoft} textAnchor="middle">
+                  {tp}
+                </text>
+                <text x={ttX + TW / 2} y={ttY + 43} fontSize="9" fill={T.textSoft} textAnchor="middle" opacity="0.65">
+                  {dp}
+                </text>
+              </>
+            ) : (
+              <text x={ttX + TW / 2} y={ttY + 31} fontSize="10" fill={T.textSoft} textAnchor="middle">
+                {tooltip.label}
+              </text>
+            );
+          })()}
+        </g>
+      )}
     </svg>
   );
 }
