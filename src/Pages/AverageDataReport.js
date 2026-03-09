@@ -1170,7 +1170,7 @@ function AverageDataReport() {
       return [(frequency / 60) + "-H"];
     }
   
-    return [1 + "-M"];
+    return [frequency + "-M"];
   };
 
   return (
