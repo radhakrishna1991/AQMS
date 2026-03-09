@@ -206,7 +206,7 @@ function Sparkline({ data, color }) {
 //  DUAL LIMIT TRACK
 // ══════════════════════════════════════════════════════════════
 function DualLimitTrack({ val, limitH , limitHH ,floor, ceiling, fillColor }) {
-  const scale = 1000;
+  const scale = 700;
   const rawVal  = Math.abs(Number(val)) || 0;
   const fillPct = Math.min(100, (rawVal / scale) * 100);
 

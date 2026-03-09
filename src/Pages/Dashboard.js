@@ -66,7 +66,10 @@ function Dashboard() {
       const[selectedStation,setSelectedStation]=useState([]);
     const[selectedMonitorType,setSelectedMonitorType]=useState([]);
       const[filteredStations,setFilteredStations]=useState([]);
+      const [defaultInterval,setDefaultInterval]=useState([]);
       const [isLoading, setIsLoading] = useState(true);
+      const [isDefaultInterval,setIsDefaultInterval]=useState(false);
+      const isDefaultIntervalRef = useRef(isDefaultInterval);
 
   const selectedStationRef = useRef(selectedStation);
   ListAllDataCopy.current = ListAllData;
@@ -125,14 +128,60 @@ function Dashboard() {
   let parameterChartStatus = [];
   const Minute = window.DashboardRefreshtime;
 
+const getDefaultInterval = (pollutents) => {
+  const freqPollutent = pollutents.find(
+    p => p.dataSyncFrequency && p.dataSyncFrequency > 0
+  );
+  if (!freqPollutent) {
+    setDefaultInterval("1M"); 
+    return;
+  }
+
+  const frequency = freqPollutent.dataSyncFrequency;
+
+  if (frequency > 60) {
+    setDefaultInterval((frequency / 60) + "-H");
+    setSelectedInterval((frequency / 60) + "-H")
+  } else {
+    setDefaultInterval(frequency + "-M");
+    setSelectedInterval(frequency + "-M");
+  }
+  setIsDefaultInterval(true);
+};
+
+
+useEffect(()=>
+{
+ const fetchData = async () => {
+        try {
+            let authHeader = await CommonFunctions.getAuthHeader();
+            const response = await fetch(CommonFunctions.getWebApiUrl() + "api/ParametersList", {
+                method: 'GET',
+                headers: authHeader,
+            });
+            const data = await response.json();
+             if(data.length > 0)
+             {
+              getDefaultInterval(data);
+             }
+          }catch(error)
+          {
+           console.error(error);
+          }
+        }
+        fetchData();
+},[]);
+
   useEffect(() => {
     async function fetchDataload() {
-      if(!selectedStation) return;
+      //  if(!selectedStation) return;
+          if (!selectedStation || !defaultInterval || defaultInterval.length === 0) return;
       setIsLoading(true);
    const loader = document.getElementById("loader");
     if (loader) loader.style.display = "block";
       let authHeader = await CommonFunctions.getAuthHeader();
-      let Interval = SelectedInterval;
+      // let Interval = SelectedInterval;
+       let Interval =  defaultInterval.replace("-", "");
       let type = Interval.substr(Interval.length - 1);
       let Intervaltype;
       if (type == "H") {
@@ -143,7 +192,8 @@ function Dashboard() {
       await fetch(
         CommonFunctions.getWebApiUrl() +
           "api/Dashboard?Interval=" +
-          Intervaltype + (selectedStation ? "&stationId=" + selectedStation : ""),
+          Intervaltype + (selectedStation ? "&stationId=" + selectedStation : "")+
+        "&isDefaultInterval=" + isDefaultInterval,
         {
           method: "GET",
           headers: authHeader,
@@ -212,7 +262,7 @@ function Dashboard() {
       });
     }
     fetchDataload();
-  }, [selectedStation]);
+  }, [selectedStation,defaultInterval]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -235,7 +285,11 @@ useEffect(() => {
   }
 }, [selectedMonitorType, stationsData]);
 
-  const GetLivedata = async function () {
+useEffect(() => {
+  isDefaultIntervalRef.current = isDefaultInterval;
+}, [isDefaultInterval]);
+
+  const GetLivedata = async function (isDefault = isDefaultIntervalRef.current) {
     //  console.log('Logs every minute');
     //  setIsLoading(true);
     //    const loader = document.getElementById("loader");
@@ -250,7 +304,7 @@ useEffect(() => {
     }
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(
-      CommonFunctions.getWebApiUrl() + "api/Livedata?Interval=" + Intervaltype,
+      CommonFunctions.getWebApiUrl() + "api/Livedata?Interval=" + Intervaltype +"&isDefaultInterval=" + isDefault,
       {
         method: "GET",
         headers: authHeader,
@@ -476,8 +530,18 @@ useEffect(() => {
 
   const Intervalchange = function (e) {
     let value = e.target.value;
+  const normalizedDefault = defaultInterval.replace("-", "");
+    const isDefault = value === normalizedDefault;
+
+    if(value == normalizedDefault )
+    {
+      setSelectedInterval(value);
+      setIsDefaultInterval(true);
+    }else{
     setSelectedInterval(value);
-    GetLivedata();
+    setIsDefaultInterval(isDefault);
+    }
+    GetLivedata(isDefault);
   };
 
   const GenerateChart = function (data) {
@@ -2480,9 +2544,9 @@ useEffect(() => {
       id="criteriaid"
       onChange={(e) => Intervalchange(e)}
     >
-      <option value="1M" selected>
-        1-M
-      </option>
+   <option value={defaultInterval.replace("-", "")} selected>
+  {defaultInterval}
+</option>
       {IntervalCriteria.map((x, y) => (
         <option value={x.value + x.type} key={y}>
           {x.value + "-" + x.type}

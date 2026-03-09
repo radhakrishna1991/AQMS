@@ -50,7 +50,16 @@ function Sidenavbar() {
             className="nav-link animation-forwards animate-delay-1"
           >
             <i className="bi bi-grid"></i>
-            <span>Dashboard</span>
+            <span>Dashboard - Devices</span>
+          </NavLink>
+        </li>
+                <li className="nav-item">
+          <NavLink
+            to="/DashboardParameters"
+            className="nav-link animation-forwards animate-delay-1"
+          >
+            <i className="bi bi-grid"></i>
+            <span>Dashboard - Parameters</span>
           </NavLink>
         </li>
         <li className="nav-item" id="Masters-Panel">

@@ -10,6 +10,7 @@ const ForgotPassword = lazy(() => import("./Pages/ForgotPassword"));
 const ChangePassword = lazy(() => import("./Pages/ChangePassword"));
 const ResetPassword = lazy(() => import("./Pages/ResetPassword"));
 const Dashboard = lazy(() => import("./Pages/Dashboard")); 
+const Dashboard1 = lazy(() => import("./Pages/Dashboard1")); 
 const Profile = lazy(() => import("./Pages/Profile"));
 const Parameters = lazy(() => import("./Pages/Parameters"));
 const AirQuality = lazy(() => import("./Pages/AirQuality"));
@@ -63,6 +64,7 @@ function App() {
           <Route   path="/ChangePassword" exact element={currentUser !=null ? <ChangePassword /> : (<Navigate to="/" />)} />
             <Route path="*" exact element={currentUser ==null ? <Login /> : (<Navigate to="/Dashboard" />)} />
             <Route path="/Dashboard" exact element={currentUser !=null ? <Dashboard /> : (<Navigate to="/" />)} />
+             <Route path="/DashboardParameters" exact element={currentUser !=null ? <Dashboard1 /> : (<Navigate to="/" />)} />
             <Route path="/Profile" exact element={currentUser !=null ? <Profile />: (<Navigate to="/" />)} />
             <Route path="/AddParameter" exact element={currentUser !=null ? <AddParameter /> : (<Navigate to="/" />)} />
             <Route path="/AirQuality" exact element={currentUser != null ? <AirQuality /> : (<Navigate to="/" />)} />
