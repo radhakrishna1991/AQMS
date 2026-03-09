@@ -46,6 +46,7 @@ function StasticsReport() {
   const [filteredPollutents, setFilteredPollutents] = useState([]);
   const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
   const [Criteria, setcriteria] = useState([]);
+  const [defaultInterval, setDefaultInterval] = useState([]);
   const [ChartType, setChartType] = useState();
   const [downloadBtn, setDownloadBtn] = useState(false);
   const [loadMessage, setLoadMessage] = useState(false);
@@ -168,6 +169,7 @@ function StasticsReport() {
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("intervalid").value;
     let Criteria = document.getElementById("criteriaid").value;
+    let isDefaultInterval = defaultInterval.includes(Interval);
     if (Criteria == "Raw") {
       if (Station.length > 1) {
         toast.error(
@@ -242,6 +244,7 @@ function StasticsReport() {
         DataFilter: Interval,
         Pollutant: Pollutent.toString(),
         DataFilterID: Intervaltype,
+        IsDefaultInterval:isDefaultInterval
       }),
     })
       .then((response) => response.json())
@@ -689,6 +692,10 @@ function StasticsReport() {
     setFilteredPollutents(filtered);
     setselectedStations(stationId);
 
+    // set default interval
+    const interval = getDefaultInterval(filtered);
+    setDefaultInterval(interval);
+
      // 🔹 Reload SumoSelect
     setTimeout(() => {
       if ($('.pollutentid')[0]?.sumo) {
@@ -699,6 +706,24 @@ function StasticsReport() {
     }, 10);
   };
 
+  const getDefaultInterval = (pollutents) => {
+
+    const freqPollutent = pollutents.find(
+      p => p.dataSyncFrequency && p.dataSyncFrequency > 0
+    );
+  
+    if (!freqPollutent) {
+      return ["1M"]; // default
+    }
+  
+    const frequency = freqPollutent.dataSyncFrequency;
+  
+    if (frequency >= 60) {
+      return [(frequency / 60) + "H"];
+    }
+  
+    return [frequency + "M"];
+  };
   /* Barchart End */
   return (
     <main id="main" className="main">
@@ -796,7 +821,12 @@ function StasticsReport() {
                   <option value="" selected>
                     Select Interval
                   </option>
-                  <option value="1M">1-M</option>
+                  {/* <option value="1M">1-M</option> */}
+                  {defaultInterval.map((val, i) => (
+                    <option value={val} key={`default-${i}`}>
+                      {val.slice(0, -1) + "-" + val.slice(-1)}
+                    </option>
+                  ))}
                   {Criteria.map((x, y) => (
                     <option value={x.value + x.type} key={y}>
                       {x.value + "-" + x.type}

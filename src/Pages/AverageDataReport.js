@@ -30,6 +30,7 @@ function AverageDataReport() {
   const [ListMonitoringTypes, setListMonitoringTypes] = useState([]);
   const [Stations, setStations] = useState([]);
   const [filteredStations, setFilteredStations] = useState([]);
+  const [defaultInterval, setDefaultInterval] = useState([]);
 
   const [Pollutents, setPollutents] = useState([]);
   const [loadGrid, setLoadGrid] = useState(false);
@@ -333,6 +334,7 @@ function AverageDataReport() {
 
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("criteriaid").value;
+    let isDefaultInterval = defaultInterval.includes(Interval);
     let valid = ReportValidations(Pollutent, Fromdate, Todate, Interval);
     if (!valid) {
       return false;
@@ -382,7 +384,7 @@ function AverageDataReport() {
     });
     let url = "";
     // console.log(Intervaltype);
-    if (Intervaltype == "1") {
+    if (isDefaultInterval) {
       url = CommonFunctions.getWebApiUrl() + "api/AirQuality/RawDataReport?";
     } else {
       url =
@@ -792,6 +794,7 @@ function AverageDataReport() {
     let Fromdate = document.getElementById("fromdateid").value;
     let Todate = document.getElementById("todateid").value;
     let Interval = document.getElementById("criteriaid").value;
+    let isDefaultInterval = defaultInterval.includes(Interval);
 
     let valid = ReportValidations(
       Station,
@@ -865,6 +868,7 @@ function AverageDataReport() {
       TruncateorRound: window.TruncateorRound,
       validRecord: validRecord,
       fileType: filetype,
+      IsDefaultInterval: isDefaultInterval
     });
     let url = CommonFunctions.getWebApiUrl() + "api/AirQuality/ExportToExcel?";
     //  window.open(url + params, "_blank");
@@ -1081,6 +1085,8 @@ function AverageDataReport() {
     $(".pollutentid")[0].sumo.reload();
 
     $(".pollutentid")[0].sumo.unSelectAll();
+    $('#monitoringTypeId').val("");
+    $('#stationid').val("");
 
     setcriteria([]);
 
@@ -1134,6 +1140,10 @@ function AverageDataReport() {
     setFilteredPollutents(filtered);
     setselectedStations(stationId);
 
+     // set default interval
+     const interval = getDefaultInterval(filtered);
+     setDefaultInterval(interval);
+
      // 🔹 Reload SumoSelect
     setTimeout(() => {
       if ($('.pollutentid')[0]?.sumo) {
@@ -1142,6 +1152,25 @@ function AverageDataReport() {
         $('#pollutentid').trigger('change');
       }
     }, 10);
+  };
+
+  const getDefaultInterval = (pollutents) => {
+
+    const freqPollutent = pollutents.find(
+      p => p.dataSyncFrequency && p.dataSyncFrequency > 0
+    );
+  
+    if (!freqPollutent) {
+      return ["1-M"];
+    }
+  
+    const frequency = freqPollutent.dataSyncFrequency;
+  
+    if (frequency >= 60) {
+      return [(frequency / 60) + "-H"];
+    }
+  
+    return [1 + "-M"];
   };
 
   return (
@@ -1298,9 +1327,14 @@ function AverageDataReport() {
                   <option value="" selected>
                     Select Interval
                   </option>
-                  <option value="1-M" selected>
+                  {/* <option value="1-M" selected>
                     1-M
-                  </option>
+                  </option> */}
+                    {defaultInterval.map((val, i) => (
+                      <option value={val} key={`default-${i}`}>
+                        {val}
+                      </option>
+                    ))}
                   {Criteria.map((x, y) => (
                     <option value={x.value + "-" + x.type} key={y}>
                       {x.value + "-" + x.type}

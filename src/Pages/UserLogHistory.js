@@ -229,7 +229,7 @@ function UserLogHistory() {
                   ))}
                 </select>
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">From Date</label>
                 <DatePicker
                   className="form-control"
@@ -238,7 +238,7 @@ function UserLogHistory() {
                   onChange={(date) => setFromDate(date)}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">To Date</label>
                 <DatePicker
                   className="form-control"

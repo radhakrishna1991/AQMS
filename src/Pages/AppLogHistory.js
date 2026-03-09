@@ -190,7 +190,7 @@ function AppLogHistory() {
         <section className="section">
           <div className="container px-0">
             <div className="row my-4">
-              <div className="col-md-3">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">From Date</label>
                 <DatePicker
                   className="form-control"
@@ -199,7 +199,7 @@ function AppLogHistory() {
                   onChange={(date) => setFromDate(date)}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-lg-2 col-sm-6">
                 <label className="form-label">To Date</label>
                 <DatePicker
                   className="form-control"

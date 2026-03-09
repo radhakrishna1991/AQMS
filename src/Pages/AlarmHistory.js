@@ -163,6 +163,8 @@ function AlarmHistory() {
   const Resetalarmdata = function () {
     $(".pollutentid")[0].sumo.reload();
     $(".pollutentid")[0].sumo.unSelectAll();
+    $('#monitoringTypeId').val("");
+    $('#stationid').val("");
     setFromDate(new Date());
     setToDate(new Date());
     setIsgrid(0);

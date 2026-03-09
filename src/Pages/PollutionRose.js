@@ -554,7 +554,7 @@ function PollutionRose() {
                 <div className="col-md-2 mt-md-0 mt-2">
                   <label className="form-label">Parameters</label>
                   <select className="form-select pollutentid" id="pollutentid">
-                    {/* <option selected> Select Pollutents</option> */}
+                   <option value="" selected> Select Pollutents</option> 
                     {Pollutents.map((x, y) => (
                       <option value={x.parameterName} key={y}>
                         {x.parameterName}
