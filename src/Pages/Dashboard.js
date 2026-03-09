@@ -66,7 +66,7 @@ function Dashboard() {
       const[selectedStation,setSelectedStation]=useState([]);
     const[selectedMonitorType,setSelectedMonitorType]=useState([]);
       const[filteredStations,setFilteredStations]=useState([]);
-      const [isLoading, setIsLoading] = useState(false);
+      const [isLoading, setIsLoading] = useState(true);
 
   const selectedStationRef = useRef(selectedStation);
   ListAllDataCopy.current = ListAllData;
@@ -128,7 +128,9 @@ function Dashboard() {
   useEffect(() => {
     async function fetchDataload() {
       if(!selectedStation) return;
-      setIsLoading(true); 
+      setIsLoading(true);
+   const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
       let authHeader = await CommonFunctions.getAuthHeader();
       let Interval = SelectedInterval;
       let type = Interval.substr(Interval.length - 1);
@@ -203,9 +205,11 @@ function Dashboard() {
         })
         .catch((error) =>
           toast.error("Unable to get the data. Please contact adminstrator")
-        ).finally(() => {
-        setIsLoading(false);
-    });;
+        ) .finally(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.style.display = "none";
+         setIsLoading(false);
+      });
     }
     fetchDataload();
   }, [selectedStation]);
@@ -233,6 +237,9 @@ useEffect(() => {
 
   const GetLivedata = async function () {
     //  console.log('Logs every minute');
+    //  setIsLoading(true);
+    //    const loader = document.getElementById("loader");
+    // if (loader) loader.style.display = "block";
     let Intervalvalue = document.getElementById("criteriaid")?.value;
     let type = Intervalvalue.substr(Intervalvalue.length - 1);
     let Intervaltype;
@@ -258,12 +265,21 @@ useEffect(() => {
       })
       .catch((error) =>
         toast.error("Unable to get the data. Please contact adminstrator")
-      );
+      ) 
+      // .finally(() => {
+      //   const loader = document.getElementById("loader");
+      //   if (loader) loader.style.display = "none";
+      //    setIsLoading(false);
+      // });
   };
 
   async function fetchData() {
      const currentStation = selectedStationRef.current;
     if (!currentStation) return;
+    //  setIsLoading(true);
+    //     const loader = document.getElementById("loader");
+    // if (loader) loader.style.display = "block";
+
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/LiveDashboard" +  "?stationId=" + currentStation, {
       method: "GET",
@@ -281,6 +297,11 @@ useEffect(() => {
       .catch((error) =>
         toast.error("Unable to get the data. Please contact adminstrator")
       );
+      // .finally(() => {
+      //   const loader = document.getElementById("loader");
+      //   if (loader) loader.style.display = "none";
+      //    setIsLoading(false);
+      // });
   }
 
   useEffect(() => {
@@ -415,6 +436,9 @@ useEffect(() => {
     setInfoParameters(parameters);
     setCommands(listcommands);
     setCalibrationsCommands(listcalibartioncommands);
+     setIsLoading(true);
+       const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(
       CommonFunctions.getWebApiUrl() + "api/Calibration?Deviceid=" + param.id,
@@ -439,7 +463,11 @@ useEffect(() => {
       })
       .catch((error) =>
         toast.error("Unable to get the data. Please contact adminstrator")
-      );
+      ) .finally(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.style.display = "none";
+         setIsLoading(false);
+      });
   };
 
   const generateDatabaseDateTime = function (date) {
@@ -582,6 +610,9 @@ useEffect(() => {
       }
       finaldata.push(data);
     }
+     setIsLoading(true);
+        const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(CommonFunctions.getWebApiUrl() + "api/Calibration", {
       method: "POST",
@@ -608,7 +639,11 @@ useEffect(() => {
         toast.error(
           "Unable to add the Calibration sequence. Please contact adminstrator"
         )
-      );
+      ).finally(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.style.display = "none";
+         setIsLoading(false);
+      });
   };
 
   const Parameterchange = function (e) {
@@ -854,6 +889,9 @@ useEffect(() => {
 
   const DeviceServiceMode = async function (param) {
     let servicemode = !param.serviceMode;
+     setIsLoading(true);
+        const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(
       CommonFunctions.getWebApiUrl() + "api/Devices/ServiceMode/" + param.id,
@@ -888,10 +926,17 @@ useEffect(() => {
         toast.error(
           "Unable to change the service mode. Please contact adminstrator"
         )
-      );
+      )     .finally(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.style.display = "none";
+         setIsLoading(false);
+      });
   };
   const ParameterEnable = async function (param) {
     let isEnable = !param.isEnable;
+     setIsLoading(true);
+        const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
     let authHeader = await CommonFunctions.getAuthHeader();
     await fetch(
       CommonFunctions.getWebApiUrl() + "api/Parametres/IsEnable/" + param.id,
@@ -923,7 +968,11 @@ useEffect(() => {
         toast.error(
           "Unable to change the parameter status. Please contact adminstrator"
         )
-      );
+      ).finally(() => {
+        const loader = document.getElementById("loader");
+        if (loader) loader.style.display = "none";
+         setIsLoading(false);
+      });
   };
 
   const GetTotalTime = function () {
@@ -1001,6 +1050,9 @@ useEffect(() => {
   useEffect(()=>
 {
  const fetchData = async () => {
+   setIsLoading(true);
+     const loader = document.getElementById("loader");
+    if (loader) loader.style.display = "block";
         try {
             let authHeader = await CommonFunctions.getAuthHeader();
             const response = await fetch(CommonFunctions.getWebApiUrl() + "api/monitoringTyPElookupdata", {
@@ -1013,7 +1065,11 @@ useEffect(() => {
           }catch(error)
           {
            console.error(error);
-          }
+          } finally {
+  const loader = document.getElementById("loader");
+  if (loader) loader.style.display = "none";
+   setIsLoading(false);
+}
         }
         fetchData();
 },[]);
@@ -1042,6 +1098,14 @@ useEffect(() => {
 }, [selectedStation]);
 
   return (
+    <>
+       {isLoading ? (
+       <div className="col-md-4">
+            <div className="row">
+              <div id="loader" className="loader"></div>
+            </div>
+          </div>
+       ):(
     <main id="main" className="main">
       <div
         className="modal fade zoom dashboard_dmodal"
@@ -2429,21 +2493,13 @@ useEffect(() => {
 </div>
               <div className="row">
                 <div className="col-md-11 align-self-start">
-                  {isLoading && (
-    <div className="col-md-4">
-        <div className="row">
-            <div className="loader"></div>
-        </div>
-    </div>
-)}
-          {!isLoading && Object.keys(ListAllData).length > 0 && (
     <Line
         ref={chartRef}
         options={ChartOptions}
         data={ChartData}
         height={400}
     />
-)}
+
                 </div>
                 <div className="col-md-1 mt-5">
                   <div className="form-check">
@@ -2504,6 +2560,8 @@ useEffect(() => {
         )}
       </section>
     </main>
+       )}
+    </>
   );
 }
 export default Dashboard;

@@ -1013,7 +1013,7 @@ export default function AQMSDashboard({
   sparkPoints      = 50,
 }) {
   // Live data
-  const { loading, error, lastSync, refetch } = useLiveData(fetchUrl, refreshInterval);
+  const { loading,error, lastSync, refetch } = useLiveData(fetchUrl, refreshInterval);
   
   // Search & filter state
   const [query,        setQuery]        = useState("");
@@ -1122,6 +1122,8 @@ useEffect(() => {
 
 useEffect(() => {
     const fetchData = async () => {
+      // setLoading(true);
+  document.getElementById("loader").style.display = "block";
         try {
             let authHeader = await CommonFunctions.getAuthHeader();
              const url = `${CommonFunctions.getWebApiUrl()}api/dashboardparemetersdata?stationId=${selectedStation}`; 
@@ -1167,6 +1169,9 @@ useEffect(() => {
             setData(formattedData); 
         } catch (error) {
             console.error("Error fetching data:", error);
+        }finally
+        {
+            document.getElementById("loader").style.display = "none";
         }
     };
 
@@ -1184,13 +1189,18 @@ useEffect(() => {
 
   return (
     <>
+           <div className="col-md-4">
+            <div className="row">
+              <div id="loader" className="loader"></div>
+            </div>
+          </div>
       {/* Global keyframes */}
       <style>{`
         @keyframes aqms_blink { 0%,100%{opacity:1} 50%{opacity:.15} }
         @keyframes aqms_spin  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         * { box-sizing: border-box; }
       `}</style>
-   <main id="main" className="main">
+  <main id="main" className="main">
       <div style={{
         background: T.bg,
         minHeight: "100%",
@@ -1315,7 +1325,7 @@ useEffect(() => {
             color: T.textSoft, fontSize: 14,
           }}>
             {data.length === 0
-              ? "No parameters available. Connect your API."
+              ? ""
               : "No parameters match your search."}
           </div>
         )}
