@@ -111,6 +111,7 @@ function LiveDataReports() {
         if (select?.sumo && isInitialLoad) {
           select.sumo.reload();
           select.sumo.selectAll();   // select all parameters
+          getdtareport("refresh");
         }
       }, 100);
     }
