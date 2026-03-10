@@ -1377,7 +1377,7 @@ function AddParameter() {
                   <div className="col-md-4 col-6 mb-3">
                     <div className="form-check">
                       <input
-                        className="form-check-input"
+                        className="form-check-input mt-075"
                         type="checkbox"
                         id="isderived"
                         onChange={(e) => setIsDerived(e.target.checked)}
