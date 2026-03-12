@@ -163,7 +163,7 @@ function Sparkline({ data, color }) {
     // Ensure data has a minimum and maximum for proper scaling
     const mn = Math.min(...data);
     const mx = Math.max(...data);
-    const padding = (mx - mn) * 0.3; // Increased padding to allow better scaling and spikes (more space)
+   const padding = Math.max((mx - mn) * 0.3, 1);  // Increased padding to allow better scaling and spikes (more space)
     const rng = mx - mn || 1;  // Range, ensuring no zero division
 
     const yMin = mn - padding;  // Minimum value with extra padding for better visualization of small changes
@@ -1028,7 +1028,6 @@ function useSparkHistories(params, sparkPoints = 24) {
 
     params.forEach((p) => {
       const hv = Array.isArray(p.hourlyValues) ? p.hourlyValues : [];
-
       // If no history exists OR hourly length changed, reset from hourlyValues
       if (!updated[p.id] || updated[p.id].length !== hv.length) {
         // Extract values from hourlyValues array
@@ -1192,14 +1191,14 @@ useEffect(() => {
                       
         const formattedHourlyValues = item?.hourlyValues?.map((hv) => {
         return {
-            value: hv?.value || '-', 
+                 value: hv?.value ?? '-', 
             dateTime: new Date(hv?.dateTime).toLocaleString("en-GB", { hour12: false }) 
         };
     }) || [];
 
         const formattedIntervalData = item?.intervalData?.map((interval) => {
         return {
-            value: interval?.value || '-',
+            value: interval?.value ?? '-',
             dateTime: new Date(interval?.dateTime).toLocaleString("en-GB", { hour12: false }) 
         };
     }) || [];
