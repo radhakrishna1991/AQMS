@@ -2009,36 +2009,44 @@ if (config.Authentication?.Type === "bearerToken") {
                             key={index}
                             style={{
                               display: "flex",
-                              alignItems: "center",
+                              alignItems: "flex-start",
                               gap: "16px",
                             }}
                           >
-                            {/* Storage Connection Dropdown */}
-                            <select
-                              value={item.storageConnectionId}
-                              onChange={(e) =>
-                                updateDeliveryLocation(
-                                  index,
-                                  "storageConnectionId",
-                                  e.target.value
-                                )
-                              }
-                              className="tsf-input"
-                              style={{ minWidth: "180px" }}
+                           <div
+                              className="tsf-div"
+                              style={{ display: "flex", flexDirection: "column", minWidth: "220px" }}
                             >
-                              <option value="">Select Storage Connection</option>
-                              {lookUpData.listStorageConnection.map((st) => (
-                                <option key={st.id} value={st.id}>
-                                  {st.name} - {st.storageType}
-                                </option>
-                              ))}
-                            </select>
+                              <label className="form-label">Storage Connection</label>
 
-                            {/* Directory Label */}
-                            <label className="form-label">Directory:</label>
+                              <select
+                                value={item.storageConnectionId}
+                                onChange={(e) =>
+                                  updateDeliveryLocation(index, "storageConnectionId", e.target.value)
+                                }
+                                className="tsf-input"
+                              >
+                                <option value="">Select Storage Connection</option>
+                                {lookUpData.listStorageConnection.map((st) => (
+                                  <option key={st.id} value={st.id}>
+                                    {st.name} - {st.storageType}
+                                  </option>
+                                ))}
+                              </select>
 
-                            {/* Directory Textbox */}
-                            <div className="tsf-div">
+                              {errors[`storageConnectionId_${index}`] && (
+                                <p className="tsf-error-text">
+                                  {errors[`storageConnectionId_${index}`]}
+                                </p>
+                              )}
+                            </div>
+
+                            <div
+                              className="tsf-div"
+                              style={{ display: "flex", flexDirection: "column", minWidth: "250px" }}
+                            >
+                              <label className="form-label">Directory</label>
+
                               <input
                                 type="text"
                                 value={item.directory}
@@ -2051,8 +2059,13 @@ if (config.Authentication?.Type === "bearerToken") {
                                     ? "Select local destination folder"
                                     : "Enter remote path"
                                 }
-                                style={{ marginBottom: 0 }}
                               />
+
+                              {errors[`directory_${index}`] && (
+                                <p className="tsf-error-text">
+                                  {errors[`directory_${index}`]}
+                                </p>
+                              )}
                             </div>
 
                             {/* Browse Button ONLY for Local */}

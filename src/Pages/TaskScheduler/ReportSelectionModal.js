@@ -46,10 +46,17 @@ export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData
       setErrors(errors => ({ ...errors, showOptions: undefined }));
     };
     const handleSelectRowWithErrorClear = (id) => {
-      setSelectedRows((prev) =>
-        prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
-      );
-      setErrors(errors => ({ ...errors, parameters: undefined }));
+      setSelectedRows((prev = []) => {
+        if (prev.includes(id)) {
+          return prev.filter(rowId => rowId !== id);
+        }
+        return [...prev, id];
+      });
+    
+      setErrors(prev => ({
+        ...prev,
+        parameters: undefined
+      }));
     };
 
 useEffect(() => {
@@ -130,10 +137,11 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
 
   const [searchTerm, setSearchTerm] = useState("");
   const averageIntervalOptions = [
-    { value: "1min", label: "1min average" },
-    { value: "15min", label: "15min average" },
-    { value: "1hr", label: "1hr average" },
-    { value: "1day", label: "1day average" },
+    { value: "1", label: "1min average" },
+    { value: "5", label: "5min average" },
+    { value: "15", label: "15min average" },
+    { value: "60", label: "1hr average" },
+    { value: "1440", label: "1day average" },
   ];
   const showOptionsList = [
     { value: 'showFlags', label: 'Show Flags' },
@@ -151,7 +159,8 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
 
 const filteredParameters = parameters.filter(p =>
   p.parameterName.toLowerCase().includes(term) ||
-  p.siteName.toLowerCase().includes(term)
+  p.siteName.toLowerCase().includes(term) || 
+  p.monitoringTypeName.toLowerCase().includes(term)
 );
   // const totalPages = Math.ceil(filteredParameters.length / itemsPerPage);
   // const paginatedParameters = filteredParameters.slice(
@@ -184,9 +193,9 @@ const filteredParameters = parameters.filter(p =>
       newErrors.averageInterval = 'Average interval is required';
     }
     // Show options validation (at least one must be selected)
-    if (!showOptions || showOptions.length === 0) {
-      newErrors.showOptions = 'At least one show option must be selected';
-    }
+    // if (!showOptions || showOptions.length === 0) {
+    //   newErrors.showOptions = 'At least one show option must be selected';
+    // }
     // Parameter selection validation
     if (!selectedRows || selectedRows.length === 0) {
       newErrors.parameters = 'At least one parameter must be selected';
@@ -211,6 +220,14 @@ const filteredParameters = parameters.filter(p =>
     onSave?.(payload);   // parent will collapse
   };
 
+  const handleSelectAll = (e) => {
+    if (e.target.checked) {
+      const allIds = filteredParameters.map(p => p.id);
+      setSelectedRows(allIds);
+    } else {
+      setSelectedRows([]);
+    }
+  };
   // 🔧 CHANGE: remove internal header & local open state; keep only body + footer
   return (
     <div className="rq-accordion-panel">
@@ -346,9 +363,9 @@ const filteredParameters = parameters.filter(p =>
                       }
                     }}
                   />
-                  {errors.showOptions && (
+                  {/* {errors.showOptions && (
                     <p className="tsf-error-text">{errors.showOptions}</p>
-                  )}
+                  )} */}
                 </div>
               </div>          
             </div>
@@ -371,7 +388,7 @@ const filteredParameters = parameters.filter(p =>
                   <FontAwesomeIcon icon={faSearch} className="search-icon" />
                   <input
                     type="text"
-                    placeholder="Search site/parameters..."
+                    placeholder="Search monitoringType/site/parameters..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="form-control search-input"
@@ -383,7 +400,18 @@ const filteredParameters = parameters.filter(p =>
               <table>
                 <thead className="modern-table-header">
                   <tr>
-                    <th className="modern-table-checkbox">#</th>
+                    {/* <th className="modern-table-checkbox">#</th> */}
+                    <th className="modern-table-checkbox">
+                      <input
+                        type="checkbox"
+                        className="modern-checkbox"
+                        checked={
+                          filteredParameters.length > 0 &&
+                          filteredParameters.every(p => selectedRows.includes(p.id))
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
                     <th className="modern-table-th">Monitoring Type</th>
                     <th className="modern-table-th">Site Name</th>
                     <th className="modern-table-th">Parameter Name</th>
@@ -393,9 +421,9 @@ const filteredParameters = parameters.filter(p =>
                 <tbody>
                   {filteredParameters.length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="modern-table-empty">
+                      <td colSpan="4" className="modern-table-empty">
                         {searchTerm
-                          ? "No site/parameters match your search"
+                          ? "No monitoringType/site/parameters match your search"
                           : "No parameters available"}
                       </td>
                     </tr>
@@ -428,11 +456,8 @@ const filteredParameters = parameters.filter(p =>
                   )}
                 </tbody>
               </table>
-
-          {errors.parameters && (
-            <p className="tsf-error-text">{errors.parameters}</p>
-          )}
         </div>
+        
               {/* <div className="modern-table-wrapper">
                 <table>
                   <thead className="modern-table-header">
@@ -519,6 +544,10 @@ const filteredParameters = parameters.filter(p =>
                 )}
               </div> */}
             </div>
+            
+          {errors.parameters && (
+            <p className="tsf-error-text">{errors.parameters}</p>
+          )}
           </div>
         </div>
       </div>
