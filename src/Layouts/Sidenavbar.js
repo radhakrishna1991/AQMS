@@ -13,13 +13,13 @@ function Sidenavbar() {
       currentUser.role.toUpperCase() == window.UserRoles[0].ADMIN.toUpperCase()
     ) {
       document.getElementById("Configuration-Panel").style.display = "block";
-      //document.getElementById("User-subpannel").style.display="block";
+      document.getElementById("Masters-Panel").style.display="block";
       document.getElementById("Admin-Pannel").style.display = "block";
     } else if (
       currentUser.role.toUpperCase() == window.UserRoles[0].GUEST.toUpperCase()
     ) {
       document.getElementById("Configuration-Panel").style.display = "none";
-      //document.getElementById("User-subpannel").style.display="none";
+      document.getElementById("Masters-Panel").style.display="none";
       document.getElementById("Admin-Pannel").style.display = "none";
     }
   };

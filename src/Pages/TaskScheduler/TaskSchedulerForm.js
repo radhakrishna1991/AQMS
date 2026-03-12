@@ -971,10 +971,17 @@ if (config.Authentication?.Type === "bearerToken") {
       )
     );
   };
+
   const isImportReport =
   (lookUpData.listReportTypes?.find(
     (x) => x.id === Number(config?.reportType)
   )?.reportTypeName)?.toLowerCase() === "import";
+
+ const isExportReport =
+  (lookUpData.listReportTypes?.find(
+    (x) => x.id === Number(config?.reportType)
+  )?.reportTypeName)?.toLowerCase() === "export";
+
   const getAuthSelectValue = () => {
     if (!config.Authentication) return "";
   
@@ -1555,7 +1562,7 @@ if (config.Authentication?.Type === "bearerToken") {
                 />
                 <h4 className="tsf-section-title">Report Data</h4>
                 </div>
-                {!isImportReport && (
+                {isExportReport && (
                 <button
                   type="button"
                   className="tsf-btn tsf-btn-legacy"
@@ -1588,13 +1595,16 @@ if (config.Authentication?.Type === "bearerToken") {
                   htmlFor="dataSourceSelect"
                   style={{ margin: 0, whiteSpace: "nowrap" }}
                 >
-                  Report:
+                  Report Type:
                 </label>
                 <div className="tsf-div">
                   <select
                     id="dataSourceSelect"
                     value={config.reportType}
-                    onChange={(e) => updateConfig("reportType", e.target.value)}
+                   onChange={(e) => {
+                      updateConfig("reportType", e.target.value);
+                      setShowAccordion(false);
+                    }}
                     className={`tsf-select tsf-select-legacy${errors.reportType ? " tsf-input-error" : ""}`}
                     aria-invalid={!!errors.reportType}
                     aria-describedby={
@@ -1628,7 +1638,7 @@ if (config.Authentication?.Type === "bearerToken") {
               >
                 <div className="accordion-item">
                   <h2 className="accordion-header" id="reportQueryHeading">
-                    {showAccordionHeader && (
+                    {(showAccordionHeader && isExportReport) && (
                       <button
                         className={`accordion-header-button accordion-button ${showAccordion ? "" : "collapsed"}`}
                         type="button"
@@ -1647,7 +1657,7 @@ if (config.Authentication?.Type === "bearerToken") {
                       </button>
                     )}
                   </h2>
-
+        {isExportReport && (
                   <div
                     id="report-query-collapse"
                     className={`accordion-collapse collapse ${showAccordion ? "show" : ""}`}
@@ -1670,11 +1680,12 @@ if (config.Authentication?.Type === "bearerToken") {
                       />
                     </div>
                   </div>
+          )}
                 </div>
               </div>
 
               {/* Tabs and File Output Settings: Only show when accordion is closed */}
-              {!showAccordion && !isImportReport && (
+              {!showAccordion && isExportReport && (
                 <>
                   <div
                     className="tsf-row tsf-row-tabs"
@@ -2196,7 +2207,7 @@ if (config.Authentication?.Type === "bearerToken") {
                 </>
               )}
 
-              {!showAccordion && isImportReport && (
+              {isImportReport && (
                 <>
                 <div
                   className="tsf-row tsf-row-tabs"

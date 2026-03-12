@@ -2358,7 +2358,7 @@ useEffect(() => {
                               </div>
                             </div>
                             <div className="d-flex justify-content-start mt-2">
-                              {!x.serviceMode && (
+                              {/* {!x.serviceMode && (
                                 <div
                                   className={
                                     "icons " + (UserRole ? "" : "disable")
@@ -2387,7 +2387,7 @@ useEffect(() => {
                                 onClick={() => Devicecalibration(x)}
                               >
                                 <i className="bi bi-gear"></i>&nbsp;
-                              </div>
+                              </div> */}
                               <div
                                 className="icons"
                                 title="Alarm"
