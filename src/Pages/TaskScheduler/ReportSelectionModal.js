@@ -146,12 +146,18 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
   const isLookbackOption = [1, 2, 13].includes(selectedOption);
   const showDateInputs = selectedOption === 9; // Fixed Range
 
-  const filteredParameters = parameters.filter(x => x.parameterName.toLowerCase().includes(searchTerm.toLowerCase()))
-  const totalPages = Math.ceil(filteredParameters.length / itemsPerPage);
-  const paginatedParameters = filteredParameters.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+ // const filteredParameters = parameters.filter(x => x.parameterName.toLowerCase().includes(searchTerm.toLowerCase()));
+ const term = searchTerm.toLowerCase();
+
+const filteredParameters = parameters.filter(p =>
+  p.parameterName.toLowerCase().includes(term) ||
+  p.siteName.toLowerCase().includes(term)
+);
+  // const totalPages = Math.ceil(filteredParameters.length / itemsPerPage);
+  // const paginatedParameters = filteredParameters.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
 
   useEffect(() => { setCurrentPage(1); }, [searchTerm, parameters.length]);
 
@@ -365,7 +371,7 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                   <FontAwesomeIcon icon={faSearch} className="search-icon" />
                   <input
                     type="text"
-                    placeholder="Search parameters..."
+                    placeholder="Search site/parameters..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="form-control search-input"
@@ -374,6 +380,60 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
               </div>
 
               <div className="modern-table-wrapper">
+              <table>
+                <thead className="modern-table-header">
+                  <tr>
+                    <th className="modern-table-checkbox">#</th>
+                    <th className="modern-table-th">Monitoring Type</th>
+                    <th className="modern-table-th">Site Name</th>
+                    <th className="modern-table-th">Parameter Name</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredParameters.length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="modern-table-empty">
+                        {searchTerm
+                          ? "No site/parameters match your search"
+                          : "No parameters available"}
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredParameters.map((param, idx) => (
+                      <tr
+                        key={param.id}
+                        className={
+                          idx % 2 === 0
+                            ? "modern-table-row-even"
+                            : "modern-table-row-odd"
+                        }
+                      >
+                        <td className="modern-table-checkbox">
+                          <input
+                            type="checkbox"
+                            checked={selectedRows.includes(param.id)}
+                            onChange={() =>
+                              handleSelectRowWithErrorClear(param.id)
+                            }
+                            className="modern-checkbox"
+                          />
+                        </td>
+
+                        <td className="modern-table-td">{param.monitoringTypeName}</td>
+                        <td className="modern-table-td">{param.siteName}</td>
+                        <td className="modern-table-td">{param.parameterName}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+
+          {errors.parameters && (
+            <p className="tsf-error-text">{errors.parameters}</p>
+          )}
+        </div>
+              {/* <div className="modern-table-wrapper">
                 <table>
                   <thead className="modern-table-header">
                     <tr>
@@ -457,7 +517,7 @@ const dateOptions = groupTimePeriodOptions(lookUpData?.listTimePeriodType);
                 {errors.parameters && (
                   <p className="tsf-error-text">{errors.parameters}</p>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

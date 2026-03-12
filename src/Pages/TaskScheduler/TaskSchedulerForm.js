@@ -1053,6 +1053,34 @@ if (config.Authentication?.Type === "bearerToken") {
   
     updateConfig("Body", updated);
   };
+  const addHeader = () => {
+    const existing = config.Headers ?? [];
+    updateConfig("Headers", [
+      ...existing,
+      { key: "", value: "" }
+    ]);
+  };
+  
+  const removeHeader = (index) => {
+    const updated = config.Headers.filter((_, i) => i !== index);
+  
+    // Keep at least one row
+    if (updated.length === 0) {
+      updateConfig("Headers", [{ key: "", value: "" }]);
+    } else {
+      updateConfig("Headers", updated);
+    }
+  };
+  
+  const updateHeader = (index, field, value) => {
+    const updated = [...config.Headers];
+    updated[index] = {
+      ...updated[index],
+      [field]: value
+    };
+  
+    updateConfig("Headers", updated);
+  };
   return (
     <>
       <div className="tsf-container">
@@ -2453,35 +2481,64 @@ if (config.Authentication?.Type === "bearerToken") {
 <div className="tsf-row">
   <label className="form-label">Headers:</label>
 
-  {config.Headers?.map((header, index) => (
-  <div key={index} style={{ display: "flex", gap: "10px" }}>
-    <input
-      type="text"
-      placeholder="Key"
-      value={header.key}
-      onChange={(e) => {
-        const updated = [...config.Headers];
-        updated[index].key = e.target.value;
-        updateConfig("Headers", updated);
-      }}
-      className="tsf-input"
-      style={{ flex: 1 }}
-    />
+  <div style={{ flex: 1 }}>
+    {(config.Headers ?? []).map((header, index, arr) => (
+      <div
+        key={index}
+        style={{
+          display: "flex",
+          gap: "10px",
+          marginBottom: "8px",
+          alignItems: "center",
+          width: "100%"
+        }}
+      >
+        <input
+          type="text"
+          placeholder="Key"
+          value={header.key}
+          onChange={(e) =>
+            updateHeader(index, "key", e.target.value)
+          }
+          className="tsf-input"
+          style={{ flex: 1 }}
+        />
 
-    <input
-      type="text"
-      placeholder="Value"
-      value={header.value}
-      onChange={(e) => {
-        const updated = [...config.Headers];
-        updated[index].value = e.target.value;
-        updateConfig("Headers", updated);
-      }}
-      className="tsf-input"
-      style={{ flex: 1 }}
-    />
+        <input
+          type="text"
+          placeholder="Value"
+          value={header.value}
+          onChange={(e) =>
+            updateHeader(index, "value", e.target.value)
+          }
+          className="tsf-input"
+          style={{ flex: 1 }}
+        />
+
+        <div style={{ display: "flex", gap: "6px" }}>
+          {arr.length > 1 && (
+            <button
+              type="button"
+              onClick={() => removeHeader(index)}
+              className="tsf-btn tsf-btn-primary"
+            >
+              -
+            </button>
+          )}
+
+          {index === arr.length - 1 && (
+            <button
+              type="button"
+              onClick={addHeader}
+              className="tsf-btn tsf-btn-primary"
+            >
+              +
+            </button>
+          )}
+        </div>
+      </div>
+    ))}
   </div>
-))}
 </div>
 <div className="tsf-row">
   <label className="form-label">Body:</label>
