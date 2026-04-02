@@ -859,6 +859,7 @@ function AverageDataReport() {
 
     let validRecord = "Valid";
     let params = new URLSearchParams({
+      StationID: Station,
       Pollutent: Pollutent,
       Fromdate: Fromdate,
       Todate: Todate,
