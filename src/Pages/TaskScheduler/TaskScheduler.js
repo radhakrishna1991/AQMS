@@ -35,9 +35,47 @@ export default function TaskScheduler() {
   };
 
   const [currentView, setCurrentView] = useState('list'); // 'list' | 'form'
+    // Clone handler: fetch full task details, then open form without IDs
+    const handleClone = async (task) => {
+      try {
+        let sourceTask = task;
+        if (task?.jobID) {
+          const fullTaskData = await GetScheduledTaskById(task.jobID);
+          if (Array.isArray(fullTaskData) && fullTaskData.length > 0) {
+            sourceTask = fullTaskData[0];
+          }
+        }
+
+        // Remove all unique identifiers and audit fields
+        const {
+          jobID,
+          id,
+          JobID,
+          createdBy,
+          createdDate,
+          updatedBy,
+          updatedDate,
+          ...cloneData
+        } = sourceTask || {};
+
+        cloneData.jobName = (cloneData.jobName || '') + ' (Copy)';
+
+        // Ensure form opens in create mode
+        delete cloneData.jobID;
+        delete cloneData.id;
+        delete cloneData.JobID;
+
+        setEditingTask(cloneData);
+        setCurrentView('form');
+      } catch (error) {
+        toast.error('Unable to clone task details. Please contact administrator');
+      }
+    };
+
     useEffect(() => {
       if (currentView === 'list') {
         $(function () {
+          const handleCloneRef = handleClone;
           $(gridRefjsgridftp.current).jsGrid({
             width: '100%',
             height: 'auto',
@@ -66,13 +104,19 @@ export default function TaskScheduler() {
                 deleteButton: false,
                 itemTemplate: (value, item) => {
                   const $editBtn = $('<button>')
-                    .attr({ class: 'customGridEditbutton jsgrid-button jsgrid-edit-button' })
+                    .attr({ class: 'customGridEditbutton jsgrid-button jsgrid-edit-button', title: 'Edit' })
                     .click((e) => { handleEdit(item); e.stopPropagation(); });
+                  const $cloneBtn = $('<button>')
+                    .attr({ class: 'customGridClonebutton jsgrid-button jsgrid-clone-button', title: 'Clone' })
+                    .html('<i class="bi bi-files"></i>')
+                    .css({ marginLeft: '6px', color: '#2663AC', background: 'none', border: 'none', cursor: 'pointer' })
+                    .click((e) => { handleCloneRef(item); e.stopPropagation(); });
                   const $deleteBtn = $('<button>')
-                    .attr({ class: 'customGridDeletebutton jsgrid-button jsgrid-delete-button' })
+                    .attr({ class: 'customGridDeletebutton jsgrid-button jsgrid-delete-button', title: 'Delete' })
                     .click((e) => { handleDelete(item.jobID); e.stopPropagation(); });
-                  return $('<div>').append($editBtn).append($deleteBtn);
+                  return $('<div>').append($editBtn).append($cloneBtn).append($deleteBtn);
                 },
+                // Clone handler: open form with all fields except jobID
               },
             ],
           });
@@ -173,8 +217,8 @@ export default function TaskScheduler() {
       <div className="container">
         <div className="row my-2">
           <div className="pagetitle col">
-            {currentView === 'form' && !editingTask && <h1>Add Scheduled Task</h1>}
-            {currentView === 'form' && editingTask && <h1>Update Scheduled Task</h1>}
+            {currentView === 'form' && !(editingTask?.jobID || editingTask?.id) && <h1>Add Scheduled Task</h1>}
+            {currentView === 'form' && (editingTask?.jobID || editingTask?.id) && <h1>Update Scheduled Task</h1>}
             {currentView === 'list' && <h1>Scheduled Task List</h1>}
           </div>
           <div className="col text-end">
@@ -190,7 +234,10 @@ export default function TaskScheduler() {
             ) : (
               <span
                 className="operation_class mx-2"
-                onClick={() => setCurrentView('list')}
+                onClick={() => {
+                  setEditingTask(null);
+                  setCurrentView('list');
+                }}
                 style={{ cursor: 'pointer' }}
               >
                 <i className="bi bi-card-list"></i>{' '}

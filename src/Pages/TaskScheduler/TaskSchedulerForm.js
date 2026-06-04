@@ -24,6 +24,16 @@ export function TaskSchedulerForm({
   fetchTaskSchedulerLookup,
   lookUpData,
 }) {
+  const toBoolean = (value) => {
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return value === 1;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      return normalized === "true" || normalized === "1" || normalized === "yes";
+    }
+    return false;
+  };
+
   const [formData, setFormData] = useState({
     taskName: initialData?.jobName || "",
     description: initialData?.jobDescription || "",
@@ -64,6 +74,10 @@ export function TaskSchedulerForm({
       storageConnectionId: ""
     }
   ]);
+
+  const [exceedanceList, setExceedanceList] = useState([]);
+  // Track if we need to assign exceedanceInterval after list loads
+  const [pendingExceedanceInterval, setPendingExceedanceInterval] = useState(null);
 
   useEffect(() => {
     if (initialData) {
@@ -130,7 +144,7 @@ export function TaskSchedulerForm({
               : JSON.stringify(config.ApiReadTemplate, null, 2)
           }
         });
-      }else{
+      }else if (initialData.reportType==="Export"){ 
         setReportQuery({
           parametersID: initialData.parametersID || "",
           timePeriodTypeID: initialData.timePeriodTypeID || "",
@@ -141,8 +155,21 @@ export function TaskSchedulerForm({
           lookbackValue: initialData.lookbackInterval || "",
           startDate: initialData.startDate || "",
           endDate: initialData.endDate || "",
+          isForward: toBoolean(initialData.isForward ?? initialData.IsForward),
         });
-      }  
+      } else if (initialData.reportType === "Exceedance") {
+        // Bind exceedance fields on edit
+        setConfig((prev) => ({
+          ...prev,
+          isForward: toBoolean(initialData.isForward ?? initialData.IsForward)
+        }));
+        // Defer setting exceedanceInterval until list is loaded
+        setPendingExceedanceInterval(
+          initialData.exceedanceInterval !== undefined && initialData.exceedanceInterval !== null
+            ? String(initialData.exceedanceInterval)
+            : ""
+        );
+      }
     }
   }, [initialData]);
 
@@ -323,7 +350,9 @@ if (
     if (
       initialData.timePeriodTypeID !== undefined ||
       initialData.parametersID !== undefined ||
-      initialData.averageInterval !== undefined
+      initialData.averageInterval !== undefined ||
+      initialData.isForward !== undefined ||
+      initialData.IsForward !== undefined
     ) {
       const reportQueryObj = {
         TimePeriodTypeID: initialData.timePeriodTypeID || "",
@@ -335,8 +364,22 @@ if (
         ShowInvalidValues: initialData.showInvalidValues || false,
         StartDate: initialData.startDate || "",
         EndDate: initialData.endDate || "",
+        IsForward: toBoolean(initialData.isForward ?? initialData.IsForward),
       };
       updateCfg({ reportQuery: reportQueryObj });
+      setReportQuery({
+        parametersID: reportQueryObj.ParametersID,
+        timePeriodTypeID: reportQueryObj.TimePeriodTypeID,
+        averageInterval: reportQueryObj.AverageInterval,
+        showFlag: reportQueryObj.ShowFlag,
+        showNullCodes: reportQueryObj.ShowNullCodes,
+        showInvalidValues: reportQueryObj.ShowInvalidValues,
+        lookbackValue: reportQueryObj.LookbackInterval,
+        startDate: reportQueryObj.StartDate,
+        endDate: reportQueryObj.EndDate,
+        isForward: reportQueryObj.IsForward,
+        IsForward: reportQueryObj.IsForward,
+      });
     }
     if (initialData.reportTypeId !== undefined) {
       updateCfg({ reportType: initialData.reportTypeId });
@@ -344,6 +387,85 @@ if (
     
   }, [initialData]);
 
+  const getExceedanceData = async (value) => {
+    let isExceedance = (lookUpData.listReportTypes?.find(
+      (x) => x.id === Number(value)
+    )?.reportTypeName)?.toLowerCase() === "exceedance";
+    if (!isExceedance) return;
+    let authHeader = await CommonFunctions.getAuthHeader();
+    await fetch(CommonFunctions.getWebApiUrl() + "api/GetParameterExceedanceValues", {
+      method: "GET",
+      headers: authHeader,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data) {
+          setExceedanceList(data);
+        }
+      })
+      .catch(() => {
+        toast.error(
+          "Unable to get the exceedance list. Please contact adminstrator"
+        );
+      });
+  };
+
+  // When exceedanceList changes and we have a pending interval, set it
+  useEffect(() => {
+    if (
+      pendingExceedanceInterval !== null &&
+      Array.isArray(exceedanceList) &&
+      exceedanceList.length > 0 &&
+      exceedanceList.some((x) => String(x.interval) === pendingExceedanceInterval)
+    ) {
+      setConfig((prev) => ({
+        ...prev,
+        exceedanceInterval: pendingExceedanceInterval
+      }));
+      setPendingExceedanceInterval(null);
+    }
+  }, [exceedanceList, pendingExceedanceInterval]);
+
+  useEffect(() => {
+    if (!initialData || !config.reportType) return;
+    getExceedanceData(config.reportType);
+  }, [initialData, config.reportType]);
+
+const getIntervalLabel = (typeId) => {
+  switch (typeId) {
+    case 1:
+      return "1 Minute";
+
+    case 60:
+      return "1 Hour";
+
+    case 43200:
+      return "1 Month";
+
+    case 129600:
+      return "1 Quarter";
+
+    case 525600:
+      return "1 Year";
+
+    default:
+      // Dynamic handling
+      if (typeId < 60) {
+        return `${typeId} Minute${typeId > 1 ? "s" : ""}`;
+      }
+
+      if (typeId < 43200) {
+        const hours = typeId / 60;
+        return `${hours} Hour${hours > 1 ? "s" : ""}`;
+      }
+
+      if (typeId === 129600) {
+        return "1 Quarter";
+      }
+
+      return `${typeId}`;
+  }
+};
   // const updateConfig = (field, value) => {
   //   if (field === "exportFormat") {
   //     let ext = "";
@@ -418,6 +540,53 @@ if (
       ...prev,
       [field]: "",
     }));
+  };
+
+  const handleReportTypeChange = (value) => {
+    setShowAccordion(false);
+    setShowAccordionHeader(false);
+    setReportQuery({});
+    setExceedanceList([]);
+    setPendingExceedanceInterval(null);
+    setDeliveryLocations([
+      {
+        directory: "",
+        storageConnectionId: ""
+      }
+    ]);
+
+    setConfig((prev) => ({
+      ...prev,
+      reportType: value,
+      reportQuery: { IsForward: false },
+
+      // Export-specific fields
+      exportFormat: "",
+      fileExtension: "",
+      baseFilename: "",
+      includeTimestamp: false,
+      enableLocalSave: false,
+      enableRemoteUpload: false,
+      uploadProtocol: "",
+
+      // Import-specific fields
+      stationId: "",
+      importType: "",
+      apiUrl: "",
+      method: "GET",
+      Authentication: { Type: "none" },
+      QueryParameters: [{ key: "", value: "" }],
+      Headers: [{ key: "", value: "" }],
+      Body: [{ key: "", value: "" }],
+      ApiReadTemplate: "",
+
+      // Exceedance-specific fields
+      exceedanceInterval: "",
+      isForward: false,
+    }));
+
+    setErrors({});
+    getExceedanceData(value);
   };
 
   const handleChange = (field, value) => {
@@ -612,7 +781,7 @@ if (ReportTypeName === "Import") {
   if (!config.ApiReadTemplate) {
     newErrors.apiReadTemplate = "API Read Template is required";
   }
-}else{
+}else if(ReportTypeName === "Export"){
 // Export Format validation
 if (!config.exportFormat || config.exportFormat === "") {
   newErrors.exportFormat = "Export format is required";
@@ -642,6 +811,10 @@ if (!rq.TimePeriodTypeID || !rq.ParametersID || !rq.AverageInterval ) {
   newErrors.reportQueryModal = "Please enter data in Configure Report Query.";
 }
 
+}else if(ReportTypeName === "Exceedance"){
+  if (!config.exceedanceInterval || config.exceedanceInterval === "") {
+    newErrors.exceedanceInterval = "Exceedance interval is required";
+  }
 }
     
     // Local Save validation
@@ -863,6 +1036,13 @@ if (config.Authentication?.Type === "bearerToken") {
       FtpConfigID: config.enableRemoteUpload ? config.uploadProtocol ?? null : null,
       ReportTypeID: Number(config.reportType) ?? null,
       CreatedBy: currentUser.id,
+      exceedanceInterval: config.exceedanceInterval ?? null,
+      IsForward:
+        ((lookUpData.listReportTypes?.find(
+          (x) => x.id === Number(config?.reportType)
+        )?.reportTypeName)?.toLowerCase() === "export"
+          ? toBoolean(config.reportQuery?.IsForward)
+          : toBoolean(config.isForward)) ?? false,
         // NEW API FIELDS
   // StationId: Number(config.stationId) ?? null,
   // ImportType: config.importType ?? null,
@@ -981,6 +1161,21 @@ if (config.Authentication?.Type === "bearerToken") {
   (lookUpData.listReportTypes?.find(
     (x) => x.id === Number(config?.reportType)
   )?.reportTypeName)?.toLowerCase() === "export";
+
+  useEffect(() => {
+    if (!isExportReport) return;
+    setDeliveryLocations((prev) => {
+      if (!Array.isArray(prev) || prev.length === 0) {
+        return [{ directory: "", storageConnectionId: "" }];
+      }
+      return [prev[0]];
+    });
+  }, [isExportReport]);
+
+   const isExceedanceReport =
+  (lookUpData.listReportTypes?.find(
+    (x) => x.id === Number(config?.reportType)
+  )?.reportTypeName)?.toLowerCase() === "exceedance";
 
   const getAuthSelectValue = () => {
     if (!config.Authentication) return "";
@@ -1101,7 +1296,7 @@ if (config.Authentication?.Type === "bearerToken") {
                 />
               </div>
               <div>
-                <h3 className="tsf-title">Create New Schedule</h3>
+                <h3 className="tsf-title">{!initialData?.jobID && !initialData?.id ? 'Create New Schedule' : 'Update Schedule'}</h3>
                 <p className="tsf-subtitle">
                   Configure job scheduling parameters
                 </p>
@@ -1601,10 +1796,7 @@ if (config.Authentication?.Type === "bearerToken") {
                   <select
                     id="dataSourceSelect"
                     value={config.reportType}
-                   onChange={(e) => {
-                      updateConfig("reportType", e.target.value);
-                      setShowAccordion(false);
-                    }}
+                    onChange={(e) => handleReportTypeChange(e.target.value)}
                     className={`tsf-select tsf-select-legacy${errors.reportType ? " tsf-input-error" : ""}`}
                     aria-invalid={!!errors.reportType}
                     aria-describedby={
@@ -1666,9 +1858,17 @@ if (config.Authentication?.Type === "bearerToken") {
                   >
                     <div className="accordion-body p-0">
                       <ReportSelectionModal
-                        initialValue={reportQuery}
+                        initialValue={{
+                          ...(config.reportQuery || {}),
+                          ...(reportQuery || {}),
+                        }}
                         onSave={(payload) => {
-                          updateConfig("reportQuery", payload);
+                          const nextReportQuery = {
+                            ...(config.reportQuery || {}),
+                            ...payload,
+                          };
+                          updateConfig("reportQuery", nextReportQuery);
+                          setReportQuery(nextReportQuery);
                           setShowAccordion(false);
                           setShowAccordionHeader(false);
                         }}
@@ -2021,9 +2221,10 @@ if (config.Authentication?.Type === "bearerToken") {
 
                               <select
                                 value={item.storageConnectionId}
-                                onChange={(e) =>
-                                  updateDeliveryLocation(index, "storageConnectionId", e.target.value)
-                                }
+                                onChange={(e) => {
+                                  updateDeliveryLocation(index, "storageConnectionId", e.target.value);
+                                  updateDeliveryLocation(index, "directory", "");
+                                }}
                                 className="tsf-input"
                               >
                                 <option value="">Select Storage Connection</option>
@@ -2096,34 +2297,14 @@ if (config.Authentication?.Type === "bearerToken") {
                                       .getElementById(`folderInput-${index}`)
                                       ?.click()
                                   }
-                                  className="tsf-btn tsf-btn-secondary"
+                                  className="tsf-btn tsf-btn-secondary mt-225rem"
                                 >
                                   Browse
                                 </button>
                               </>
                             )}
 
-                            {/* Remove Button */}
-                            {deliveryLocations.length > 1 && (
-                              <button
-                                type="button"
-                                onClick={() => removeDeliveryLocation(index)}
-                                className="tsf-btn tsf-btn-danger"
-                              >
-                                -
-                              </button>
-                            )}
-
-                            {/* Add Button */}
-                            {index === deliveryLocations.length - 1 && (
-                              <button
-                                type="button"
-                                onClick={addDeliveryLocation}
-                                className="tsf-btn tsf-btn-primary"
-                              >
-                                +
-                              </button>
-                            )}
+                            {/* Export supports exactly one delivery location */}
                           </div>
                         );
                       })}
@@ -2649,6 +2830,74 @@ if (config.Authentication?.Type === "bearerToken") {
                 </div>
               </>
               )}
+
+               {isExceedanceReport && (
+                <>
+                <div
+                  className="tsf-row tsf-row-tabs"
+                  role="tablist"
+                  aria-label="Report tabs"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={true}
+                    aria-controls="tab-file-output"
+                    className="tsf-tab-btn tsf-tab-btn-active"
+                    tabIndex={0}
+                  >
+                    Exceedance Settings
+                  </button>
+                </div>
+
+                {/* ===== Tab Content ===== */}
+                <div className="tsf-tab-content">
+                  <div
+                    id="tab-exceedance-settings"
+                    role="tabpanel"
+                    className="tsf-exceedance-settings"
+                  >
+              <div className="tsf-inline-row">
+
+                {/* Is Forward Checkbox */}
+                <div className="tsf-checkbox-container">
+                  <label className="form-label">IsForward Average:</label>
+
+                  <input
+                    type="checkbox"
+                    checked={config.isForward || false}
+                    onChange={(e) => updateConfig("isForward", e.target.checked)}
+                    className="tsf-checkbox"
+                  />
+                </div>
+
+                {/* Exceedance Interval Dropdown */}
+                <div className="tsf-interval-container">
+                  <label className="form-label">Exceedance Interval:</label>
+
+                  <select
+                    value={config.exceedanceInterval !== undefined && config.exceedanceInterval !== null ? String(config.exceedanceInterval) : ""}
+                    onChange={(e) =>
+                      updateConfig("exceedanceInterval", e.target.value)
+                    }
+                    className="tsf-select"
+                  >
+                    <option value="">Select Interval...</option>
+                    {[...new Set(exceedanceList?.map((x) => x.interval))]?.map(
+                        (interval) => (
+                          <option key={interval} value={String(interval)}>
+                            {getIntervalLabel(interval)}
+                          </option>
+                        )
+                      )}
+                  </select>
+                </div>
+
+              </div>
+                  </div>
+                </div>
+              </>
+              )}
             </section>
 
             {/* Actions */}
@@ -2662,7 +2911,7 @@ if (config.Authentication?.Type === "bearerToken") {
                   Cancel
                 </button>
                 <button type="submit" className="tsf-btn tsf-btn-submit">
-                  {initialData ? "✓ Update" : "+ Create"}
+                  {!initialData?.jobID && !initialData?.id ? "+ Create" : "✓ Update"}
                 </button>
               </div>
             )}

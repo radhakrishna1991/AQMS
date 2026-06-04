@@ -1505,3 +1505,49 @@ button.nav-link {
 .mt-075{
   margin-top: 0.75rem !important;
 }
+.react-datepicker-wrapper{
+  display: block !important;
+}
+
+.tsf-inline-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.tsf-checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tsf-interval-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tsf-checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.text-right {
+    text-align: right;
+}
+.operation_class {
+    cursor: pointer;
+    font-weight: 600;
+}
+.operation_class span {
+   /*  vertical-align: -2px; */
+    font-size: 15px;
+    font-family: 'Roboto Bold';
+    color: #2663AC;
+    margin-left: 5px;
+}
+.mt-225rem {
+    margin-top: 2.25rem !important;
+}

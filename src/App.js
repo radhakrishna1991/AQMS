@@ -45,6 +45,8 @@ const AddAlarms =lazy(() => import("./Pages/AddAlarms"));
 const AddParameterDriver =lazy(() => import("./Pages/AddParameterDriver"));
 const FTPData =lazy(() => import("./Pages/FTP/FtpData"));
 const TaskScheduler =lazy(() => import("./Pages/TaskScheduler/TaskScheduler"));
+const ExceedanceConfiguration = lazy(() => import("./Pages/ExceedanceConfiguration"));
+
 function App() {
   const currentUser = JSON.parse(sessionStorage.getItem('UserData'));
   const location = useLocation();
@@ -99,7 +101,8 @@ function App() {
             <Route path="/AddAlarms" exact element={currentUser != null ? <AddAlarms /> : (<Navigate to="/" />)} />
             <Route path="/AddParameterDriver" exact element={currentUser != null ? <AddParameterDriver /> : (<Navigate to="/" />)} />
             <Route path="/License" exact element={<License />} />
-          </Routes>
+            <Route path="/ExceedanceConfiguration" exact element={currentUser != null  ? <ExceedanceConfiguration /> : (<Navigate to="/" />)} />
+           </Routes>
         </Suspense>
       
     </div>

@@ -10,14 +10,25 @@ import {
 import Select from "react-select";
 
 export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData }) {
+  const toBoolean = (value) => {
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return value === 1;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      return normalized === "true" || normalized === "1" || normalized === "yes";
+    }
+    return false;
+  };
+
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedOption, setSelectedOption] = useState("");
-  const [startDate, setStartDate] = useState(initialValue?.startDate || "");
-  const [endDate, setEndDate] = useState(initialValue?.endDate || "");
-  const [lookbackValue, setLookbackValue] = useState(initialValue?.lookbackValue || "");
+  const [startDate, setStartDate] = useState(initialValue?.startDate || initialValue?.StartDate || "");
+  const [endDate, setEndDate] = useState(initialValue?.endDate || initialValue?.EndDate || "");
+  const [lookbackValue, setLookbackValue] = useState(initialValue?.lookbackValue || initialValue?.LookbackInterval || "");
   const [parameters, setParameters] = useState(lookUpData?.listParameters || []);
   const [averageInterval, setAverageInterval] = useState(null);
   const [showOptions, setShowOptions] = useState([]);
+  const [isForward, setIsForward] = useState(toBoolean(initialValue?.isForward ?? initialValue?.IsForward));
   const [errors, setErrors] = useState({});
   
     // Error clearing handlers
@@ -60,28 +71,29 @@ export function ReportSelectionModal({ initialValue, onSave, onClose, lookUpData
     };
 
 useEffect(() => {
-  if (initialValue?.parametersID) {
+  if (initialValue?.parametersID || initialValue?.ParametersID) {
     setSelectedRows(
-      initialValue.parametersID
+      (initialValue.parametersID || initialValue.ParametersID)
         .split(',')
         .map(id => isNaN(Number(id)) ? id : Number(id))
     );
   }
-  if (initialValue?.averageInterval) {
-    setAverageInterval(initialValue.averageInterval);
+  if (initialValue?.averageInterval || initialValue?.AverageInterval) {
+    setAverageInterval(initialValue.averageInterval || initialValue.AverageInterval);
   }
-  if (initialValue?.timePeriodTypeID) {
-    setSelectedOption(initialValue.timePeriodTypeID);
+  if (initialValue?.timePeriodTypeID || initialValue?.TimePeriodTypeID) {
+    setSelectedOption(initialValue.timePeriodTypeID || initialValue.TimePeriodTypeID);
   }
-  if (initialValue?.lookbackValue) {
-    setLookbackValue(initialValue.lookbackValue);
+  if (initialValue?.lookbackValue || initialValue?.LookbackInterval) {
+    setLookbackValue(initialValue.lookbackValue || initialValue.LookbackInterval);
   }
   // Show options
   const opts = [];
-  if (initialValue.showFlag) opts.push('showFlags');
-  if (initialValue.showNullCodes) opts.push('showNullCodes');
-  if (initialValue.showInvalidValues) opts.push('showInvalidValues');
+  if (initialValue.showFlag || initialValue.ShowFlag) opts.push('showFlags');
+  if (initialValue.showNullCodes || initialValue.ShowNullCodes) opts.push('showNullCodes');
+  if (initialValue.showInvalidValues || initialValue.ShowInvalidValues) opts.push('showInvalidValues');
   setShowOptions(opts);
+  setIsForward(toBoolean(initialValue?.isForward ?? initialValue?.IsForward));
 }, [initialValue]);
 
 const groupTimePeriodOptions = (listTimePeriodType = []) => {
@@ -216,6 +228,7 @@ const filteredParameters = parameters.filter(p =>
       ShowFlag,
       ShowNullCodes,
       ShowInvalidValues,
+      IsForward: !!isForward,
     };
     onSave?.(payload);   // parent will collapse
   };
@@ -366,6 +379,17 @@ const filteredParameters = parameters.filter(p =>
                   {/* {errors.showOptions && (
                     <p className="tsf-error-text">{errors.showOptions}</p>
                   )} */}
+                </div>
+
+                <div className="dropdown-container" style={{ marginTop: 16 }}>
+                  <label className="input-label" htmlFor="reportQueryIsForward">IsForward Average</label>
+                  <input
+                    id="reportQueryIsForward"
+                    type="checkbox"
+                    checked={!!isForward}
+                    onChange={(e) => setIsForward(e.target.checked)}
+                    className="tsf-checkbox"
+                  />
                 </div>
               </div>          
             </div>

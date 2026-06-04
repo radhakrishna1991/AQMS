@@ -196,6 +196,15 @@ function Sidenavbar() {
                 <span>Task Scheduler</span>
               </NavLink>
             </li>
+            <li>
+              <NavLink
+                to="/ExceedanceConfiguration"
+                className="animation-forwards animate-delay-4"
+              >
+                <i className="bi bi-circle"></i>
+                <span>Exceedance Configuration</span>
+              </NavLink>
+            </li>
 
             {/*  <li>
                   <NavLink to="/AverageAlarm" className="animation-forwards animate-delay-2" >
